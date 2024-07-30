@@ -247,13 +247,6 @@ export const scale = (num: DecimalSource, type: number | string, inverse = false
 
 export const D = (x: DecimalSource) => { return new Decimal(x); }
 
-export const pad = (num: string, length: number) => {
-    while (num.length < length) {
-        num = "0" + num;
-    }
-    return num;
-}
-
 export const colorChange = (color: string, val: number, sat: number) => { // #ABCDEF format only
     if (color[0] === "#") { color = color.slice(1); }
     const colorInt = parseInt(color, 16);
@@ -266,9 +259,9 @@ export const colorChange = (color: string, val: number, sat: number) => { // #AB
     r = Math.min(255, r * val * 256);
     g = Math.min(255, g * val * 256);
     b = Math.min(255, b * val * 256);
-    return "#" + pad(Math.floor(r).toString(16), 2)
-        + pad(Math.floor(g).toString(16), 2)
-        + pad(Math.floor(b).toString(16), 2);
+    return "#" + Math.floor(r).toString(16).padStart(2, "0")
+        + Math.floor(g).toString(16).padStart(2, "0")
+        + Math.floor(b).toString(16).padStart(2, "0");
 }
 
 export const mixColor = (color: string, nextColor: string, type: string, time: number) => {
@@ -285,9 +278,9 @@ export const mixColor = (color: string, nextColor: string, type: string, time: n
     r = lerp(time, r, lr, type) * 256;
     g = lerp(time, g, lg, type) * 256;
     b = lerp(time, b, lb, type) * 256;
-    return "#" + pad(Math.floor(r).toString(16), 2)
-        + pad(Math.floor(g).toString(16), 2)
-        + pad(Math.floor(b).toString(16), 2);
+    return "#" + Math.floor(r).toString(16).padStart(2, "0")
+        + Math.floor(g).toString(16).padStart(2, "0")
+        + Math.floor(b).toString(16).padStart(2, "0");
 }
 
 export const gRC = (time: number, val: number, sat: number) => {
@@ -330,24 +323,20 @@ export const gRC = (time: number, val: number, sat: number) => {
     r = r * val * 255;
     g = g * val * 255;
     b = b * val * 255;
-    return "#" + pad(Math.round(r).toString(16), 2)
-        + pad(Math.round(g).toString(16), 2)
-        + pad(Math.round(b).toString(16), 2);
+    return "#" + Math.round(r).toString(16).padStart(2, "0")
+        + Math.round(g).toString(16).padStart(2, "0")
+        + Math.round(b).toString(16).padStart(2, "0");
 }
 
-export const clampNum = (num: number, min: number, max: number) => {
+export const clamp = (num: number, min: number, max: number) => {
     return Math.min(Math.max(num, min), max);
-}
-
-export const clampDec = (num: DecimalSource, min: DecimalSource, max: DecimalSource) => {
-    return Decimal.min(Decimal.max(num, min), max);
 }
 
 export const lerp = (t: number, s: number, e: number, type: string) => {
     if (isNaN(t)) {
         throw new Error(`malformed input [LERP]: ${t}, expecting f64`)
     }
-    t = clampNum(t, 0, 1);
+    t = clamp(t, 0, 1);
     if (t === 0) {
         return s;
     }

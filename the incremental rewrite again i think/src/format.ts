@@ -45,7 +45,7 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
         const abb = Decimal.log10(number).mul(0.33333333336666665).floor();
         return `${Decimal.div(number, abb.mul(3).pow10()).toNumber().toFixed(expdec)} ${abbSuffixes[abb.toNumber()]}`;
     } else if (Decimal.lt(number, "ee6")) {
-        const exp = Decimal.log10(number).mul(1.0000000001).floor();
+        const exp = Decimal.log10(number).mul(1.00000000001).floor();
         return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
     } else if (Decimal.lt(number, "10^^7")) {
         return `e${format(Decimal.log10(number), dec, expdec)}`;

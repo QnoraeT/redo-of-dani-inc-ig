@@ -1,0 +1,474 @@
+import Decimal, { type DecimalSource } from 'break_eternity.js'
+import { tmp, player, gameVars } from './main'
+import { D, gRC, colorChange, scale } from './calc'
+import { format } from './format'
+import { getAchievementEffect, ifAchievement } from './components/Game/Game_Achievements/Game_Achievements'
+
+export const SCALE_ATTR = [
+    { pow: 2,   type: 0, name: "Scaled",        color: `#3080FF` },
+    { pow: 3,   type: 0, name: "Superscaled",   color: `#dfb600` },
+    { pow: 4,   type: 1, name: "Hyper",         color: `#FF0060` },
+    { pow: 4,   type: 0, name: "Atomic",        color: `#20BF3A` },
+    { pow: 5,   type: 1, name: "Supercritical", color: `#8636FF` },
+    { pow: 6,   type: 2, name: "Meta",          color: `#00C7F3` },
+    { pow: 15,  type: 0, name: "Exotic",        color: `#FF8000` },
+    { pow: 75,  type: 0, name: "Instant",       color: `#D0D0D0` },
+    { pow: 100, type: 1, name: "WTF",           get color() { return colorChange("#ffffff", Math.sin(gameVars.value.sessionTime) ** 2, 1) } },
+    { pow: 60,  type: 2, name: "Ultimate",      get color() { return gRC(gameVars.value.sessionTime, 1, 1) } }
+]
+
+export const SOFT_ATTR = [
+    { name: "Softcap",         color: `#FF4040` },
+    { name: "Super Softcap",   color: `#efc600` },
+    { name: "Hyper Softcap",   color: `#6040FF` },
+]
+
+type ScSlData = {
+    start: Decimal
+    basePow: Decimal
+    power: Decimal
+    displayedEffect: string
+}
+
+export type ScSlItems = "points" | "upg1" | "upg2" | "upg3" | "upg4" | "upg5" | "upg6" | "pr2"
+const ScSlItemsList: Array<ScSlItems> = ["points", "upg1", "upg2", "upg3", "upg4", "upg5", "upg6", "pr2"]
+
+type ListOfScSl = {
+    points: {
+        id: number,
+        scale: Array<ScSlData>
+        soft: Array<ScSlData>
+    }
+    upg1: {
+        id: number,
+        scale: Array<ScSlData>
+        soft: Array<ScSlData>
+    }
+    upg2: {
+        id: number,
+        scale: Array<ScSlData>
+        soft: Array<ScSlData>
+    }
+    upg3: {
+        id: number
+        scale: Array<ScSlData>
+        soft: Array<ScSlData>
+    }
+    upg4: {
+        id: number
+        scale: Array<ScSlData>
+        soft: Array<ScSlData>
+    }
+    upg5: {
+        id: number
+        scale: Array<ScSlData>
+        soft: Array<ScSlData>
+    }
+    upg6: {
+        id: number
+        scale: Array<ScSlData>
+        soft: Array<ScSlData>
+    }
+    pr2: {
+        id: number
+        scale: Array<ScSlData>
+        soft: Array<ScSlData>
+    }
+}
+
+export const LIST_OF_SCSL: ListOfScSl = {
+    points: {
+        id: 0,
+        scale: [],
+        soft: []
+    },
+    upg1: {
+        id: 1,
+        scale: [],
+        soft: []
+    },
+    upg2: {
+        id: 2,
+        scale: [],
+        soft: []
+    },
+    upg3: {
+        id: 3,
+        scale: [],
+        soft: []
+    },
+    upg4: {
+        id: 4,
+        scale: [],
+        soft: []
+    },
+    upg5: {
+        id: 5,
+        scale: [],
+        soft: []
+    },
+    upg6: {
+        id: 6,
+        scale: [],
+        soft: []
+    },
+    pr2: {
+        id: 7,
+        scale: [],
+        soft: [],
+    },
+}
+
+export const setSCSLEffectDisp = (type: ScSlItems, isScaling: boolean, index: number, toWhat: string): void => {
+    const item = LIST_OF_SCSL[type][isScaling ? 'scale' : 'soft'];
+    item[index].displayedEffect = toWhat;
+}
+
+export const updateAllSCSL = () => {
+    for (let i = 0; i < ScSlItemsList.length; i++) {
+        getSCSLAttribute(ScSlItemsList[i], false, true);
+        getSCSLAttribute(ScSlItemsList[i], true, true);
+    }
+}
+
+export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = false): Array<ScSlData> => {
+    const data: Array<ScSlData> = []
+    if (LIST_OF_SCSL[type][isScaling ? 'scale' : 'soft'].length === 0 || update) {
+        if (isScaling) {
+            switch (type) {
+                case 'points':
+                    // empty
+                    break;
+                case 'upg1':
+                    data.push({
+                        start: D(20),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(100),
+                        basePow: D(3),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(250),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+
+                    if (ifAchievement(0, 3)) {
+                        data[0].start = data[0].start.add(1);
+                    }
+
+                    if (ifAchievement(0, 7)) {
+                        data[0].power = data[0].power.div(getAchievementEffect(0, 7));
+                    }
+
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 7)) {
+                        data[0].power = data[0].power.div(10 / 9);
+                    }
+        
+                    // data[0].power = data[0].power.div(tmp.value.kuaEffects.upg1Scaling);
+        
+                    // if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) && Decimal.gte(player.value.kua.amount, 10)) {
+                    //     data[0].start = data[0].start.add(15);
+                    //     data[1].start = data[1].start.add(15);
+                    // }
+        
+                    // if (getKuaUpgrade("s", 4)) {
+                    //     data[0].start = data[0].start.add(5);
+                    //     data[0].power = data[0].power.mul(0.9);
+                    //     data[1].start = data[1].start.add(2);
+                    //     data[1].power = data[1].power.mul(0.95);
+                    // }
+        
+                    // data[1].power = data[1].power.div(tmp.value.kuaEffects.upg1SuperScaling);
+        
+                    // if (getKuaUpgrade("p", 9)) {
+                    //     data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff);
+                    // }
+                    break;
+                case 'upg2':
+                    data.push({
+                        start: D(15),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(100),
+                        basePow: D(3),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(500),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+
+                    // if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 15)) {
+                    //     data[1].power = data[1].power.mul(0.875);
+                    // }
+        
+                    // if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) && Decimal.gte(player.value.kua.amount, 10)) {
+                    //     data[0].start = data[0].start.add(15);
+                    //     data[1].start = data[1].start.add(15);
+                    // }
+        
+                    // if (getKuaUpgrade("s", 3)) {
+                    //     data[0].power = data[0].power.div(KUA_UPGRADES.KShards[2].eff)
+                    // }
+        
+                    // if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 15)) {
+                    //     data[1].power = data[1].power.mul(0.875);
+                    // }
+        
+                    // if (getKuaUpgrade("s", 6)) {
+                    //     data[1].power = data[1].power.div(1.5);
+                    // }
+        
+                    // if (getKuaUpgrade("p", 9)) {
+                    //     data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff);
+                    // }
+                    break;
+                case 'upg3':
+                    data.push({
+                        start: D(50),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'upg4':
+                    data.push({
+                        start: D(2000),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'upg5':
+                    data.push({
+                        start: D(2000),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'upg6':
+                    data.push({
+                        start: D(2000),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'pr2':
+                    // empty
+                    break;
+                default:
+                    throw new Error(`scaling item ${type} doesn't exist!`)
+            }
+        } else {
+            switch (type) {
+                case 'points':
+                    data.push({
+                        start: D(Number.MAX_VALUE),
+                        basePow: D(0.75),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'upg1':
+                    data.push({
+                        start: D(1e100),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'upg2':
+                    data.push({
+                        start: D(10),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D("e2500"),
+                        basePow: D(0.75),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+
+                    // if (getKuaUpgrade("p", 4)) {
+                    //     data[0].start = data[0].start.mul(KUA_UPGRADES.KPower[3].eff);
+                    //     data[0].power = data[0].power.mul(0.6);
+                    // }
+        
+                    // if (getKuaUpgrade("s", 6)) {
+                    //     data[0].power = data[0].power.div(1.5);
+                    // }
+        
+                    // if (ifAchievement(18)) {
+                    //     data[0].power = data[0].power.mul(0.95);
+                    // }
+        
+                    // data[0].start = data[0].start.mul(tmp.value.kuaEffects.upg2Softcap);
+                    break;
+                case 'upg3':
+                    data.push({
+                        start: D(8.5),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'upg4':
+                    data.push({
+                        start: D(8.5),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'upg5':
+                    data.push({
+                        start: D(8.5),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'upg6':
+                    data.push({
+                        start: D(2),
+                        basePow: D(0.25),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(10),
+                        basePow: D(0.1),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'pr2':
+                    // empty
+                    break;
+                default:
+                    throw new Error(`softcap item ${type} doesn't exist!`);
+            }
+        }
+        LIST_OF_SCSL[type][isScaling ? 'scale' : 'soft'] = data;
+    }
+
+    return LIST_OF_SCSL[type][isScaling ? 'scale' : 'soft'];
+}
+
+export const doAllScaling = (x: DecimalSource, scalList: Array<ScSlData>, inv: boolean) => {
+    let result = D(x);
+    let sta, pow, sType, base, index;
+    for (let i = 0; i < scalList.length; i++) {
+        index = inv ? i : scalList.length - i - 1;
+        sta = scalList[index].start;
+        pow = scalList[index].power;
+        sType = SCALE_ATTR[index].type;
+        base = scalList[index].basePow;
+        
+        result = scale(result, sType, inv, sta, pow, base);
+    }
+    return result;
+}
+
+export const compileScalSoftList = () => {
+    for (let i = 0; i < tmp.value.scaleList.length; i++) {
+        tmp.value.scaleList[i].list = []
+    }
+    for (let i = 0; i < tmp.value.softList.length; i++) {
+        tmp.value.softList[i].list = []
+    }
+
+    for (let i = 0; i < ScSlItemsList.length; i++) {
+        const item = LIST_OF_SCSL[ScSlItemsList[i]]
+        for (let j = 0; j < item.scale.length; j++) {
+            if (Decimal.gte(SCAL_VALUES[ScSlItemsList[i]], item.scale[j].start)) {
+                tmp.value.scaleList[j].list.push({
+                    id: j,
+                    txt: `${tmp.value.scaleSoftcapNames[ScSlItemsList[i]]} - ${format(item.scale[j].power.mul(100), 3)}% starting at ${format(item.scale[j].start, 3)}`
+                })
+            }
+        }
+        for (let j = 0; j < item.soft.length; j++) {
+            if (Decimal.gte(SOFT_VALUES[ScSlItemsList[i]], item.soft[j].start)) {
+                tmp.value.softList[j].list.push({
+                    id: j,
+                    txt: `${tmp.value.scaleSoftcapNames[ScSlItemsList[i]]} - ${format(item.soft[j].power.mul(100), 3)}% starting at ${format(item.soft[j].start, 3)} (${item.soft[j].displayedEffect})`
+                })
+            }
+        }
+    }
+}
+
+const SOFT_VALUES = {
+    get points() {
+        return player.value.gameProgress.main.points;
+    },
+    get upg1() {
+        return tmp.value.main.upgrades[0].effect;
+    },
+    get upg2() {
+        return tmp.value.main.upgrades[1].effect;
+    },
+    get upg3() {
+        return tmp.value.main.upgrades[2].effect;
+    },
+    get upg4() {
+        return tmp.value.main.upgrades[3].effect;
+    },
+    get upg5() {
+        return tmp.value.main.upgrades[4].effect;
+    },
+    get upg6() {
+        return tmp.value.main.upgrades[5].effect;
+    },
+    get prai() {
+        return tmp.value.main.prai.effect;
+    },
+    get pr2() {
+        return tmp.value.main.pr2.effect;
+    }
+}
+
+const SCAL_VALUES = {
+    get points() {
+        return D(0);
+    },
+    get upg1() {
+        return player.value.gameProgress.main.upgrades[0].bought;
+    },
+    get upg2() {
+        return player.value.gameProgress.main.upgrades[1].bought;
+    },
+    get upg3() {
+        return player.value.gameProgress.main.upgrades[2].bought;
+    },
+    get upg4() {
+        return player.value.gameProgress.main.upgrades[3].bought;
+    },
+    get upg5() {
+        return player.value.gameProgress.main.upgrades[4].bought;
+    },
+    get upg6() {
+        return player.value.gameProgress.main.upgrades[5].bought;
+    },
+    get pr2() {
+        return player.value.gameProgress.main.pr2.amount;
+    }
+}

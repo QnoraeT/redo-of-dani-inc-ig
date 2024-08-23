@@ -1,37 +1,18 @@
 import Decimal, { type DecimalSource } from 'break_eternity.js'
 import { format } from './format'
 
-export const DEFAULT_SCALE = [
-    { pow: 2,   type: 0, },
-    { pow: 3,   type: 0, },
-    { pow: 4,   type: 1, },
-    { pow: 4,   type: 0, },
-    { pow: 5,   type: 1, },
-    { pow: 6,   type: 2, },
-    { pow: 15,  type: 0, },
-    { pow: 75,  type: 0, },
-    { pow: 100, type: 1, },
-    { pow: 60,  type: 2, }
-]
-
-export const doAllScaling = (x: DecimalSource, scalList: Array<{start: DecimalSource, strength: DecimalSource, type: number | string, bp: DecimalSource}>, inv: boolean) => {
-    let sta, pow, sType, base, index
-    for (let i = 0; i < scalList.length; i++) {
-        index = inv ? i : scalList.length - i - 1;
-        sta = scalList[index].start;
-        pow = scalList[index].strength;
-        sType = scalList[index].type;
-        base = scalList[index].bp;
-        
-        x = scale(x, sType, inv, sta, pow, base);
-    }
-    return x;
-}
-
-export const scale = (num: DecimalSource, type: number | string, inverse = false, start: DecimalSource, str: DecimalSource, powScale: DecimalSource) => {
-    if (Decimal.lte(num, start)) { return num; }
+export const scale = (num: DecimalSource, type: number | string, inverse = false, start: DecimalSource, str: DecimalSource, powScale: DecimalSource): Decimal => {
+    if (Decimal.lte(num, start)) { return new Decimal(num); }
     str = Decimal.pow(powScale, str);
     switch (type) {
+        // Divide
+        case -1:
+        case -1.1:
+        case "L":
+        case "L1":
+            return inverse
+                    ? Decimal.pow(num, 2).add(Decimal.sub(str, 1).mul(start).mul(num).mul(4)).sub(Decimal.sub(str, 1).mul(Decimal.pow(start, 2)).mul(4)).add(Decimal.sub(str, 1).mul(start).mul(2)).add(num).div(2).div(str)
+                    : Decimal.mul(str, num).add(Decimal.mul(start, Decimal.sub(1, str)).mul(Decimal.sub(2, Decimal.div(start, num))))
         // Polynomial
         case 0:
         case 0.1:
@@ -176,7 +157,7 @@ export const clamp = (num: number, min: number, max: number) => {
     return Math.min(Math.max(num, min), max);
 }
 
-export const lerp = (t: number, s: number, e: number, type: string) => {
+export const lerp = (t: number, s: number, e: number, type = "Linear") => {
     if (isNaN(t)) {
         throw new Error(`malformed input [LERP]: ${t}, expecting f64`)
     }
@@ -290,9 +271,9 @@ export const sumHarmonicSeries = (x: DecimalSource) => {
 }
 
 /**
- * this only works fine on exponentials and higher
- * @param {export const} =  target 
- * @param {export const} =  cost 
+ * this only works fine on exponentials (type a^x^b with b >= 1 and a >= ~1.05) and higher
+ * @param {Function} target 
+ * @param {Function} cost 
  * @param {Decimal} resource 
  * @param {Decimal} bought 
  */

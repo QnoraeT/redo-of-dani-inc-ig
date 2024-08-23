@@ -1,6 +1,6 @@
 import Decimal, { type DecimalSource } from 'break_eternity.js'
 
-const abbSuffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc",
+const abbSuffixes: Array<string> = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc",
                     "UDc", "DDc", "TDc", "QaDc", "QiDc", "SxDc", "SpDc", "OcDc", "NoDc", "Vg"];
 
 
@@ -28,7 +28,7 @@ const timeList = [
 
 const abbExp = 1e66;
 
-function numberWithCommas(x: string) {
+function numberWithCommas(x: string): string {
     return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 

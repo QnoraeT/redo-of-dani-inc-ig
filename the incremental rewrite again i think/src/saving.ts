@@ -3,6 +3,7 @@ import { game, initPlayer, player, tmp, setPlayerFromSave, setGameFromSave } fro
 export const saveID = "danidanijr_save_revamp_redo";
 export const SAVE_MODES = [
     {
+        id: 0,
         name: "Hard",
         desc: "This mode makes the game harder, meaning there will be more strategizing, and sometimes a longer wait time. Some requirements will also be tougher to satisfy. However, some other requirements have been made slightly easier to somewhat accomodate for this.",
         borderColor: "#ff8000",
@@ -11,6 +12,7 @@ export const SAVE_MODES = [
         textColor: "#ffc080"
     },
     {
+        id: 1,
         name: "Extreme",
         desc: "This mode makes the game way more difficult, meaning this does what Hard does, + you might also have to solve puzzles as well. This mode may also add in special layers to compensate.",
         borderColor: "#ff5040",
@@ -19,6 +21,7 @@ export const SAVE_MODES = [
         textColor: "#ffd0c0"
     },
     {
+        id: 2,
         name: "Easy",
         desc: "This mode makes the game easier. This increases the pace of the game, and requirements with conditions will be nerfed.",
         borderColor: "#40ff60",
@@ -27,6 +30,7 @@ export const SAVE_MODES = [
         textColor: "#80ffa0"
     },
     {
+        id: 3,
         name: "Idler's Dream",
         desc: "This mode makes the game more like an idle game instead of the hybrid it is. (At least I hope so... >_>') Many things may become slower, but you will not have to be active as much, and the difficulty will stay roughly the same.",
         borderColor: "#80c0ff",
@@ -35,6 +39,7 @@ export const SAVE_MODES = [
         textColor: "#c0d0e0"
     },
     {
+        id: 4,
         name: "Softcap Central",
         desc: "This mode adds many, many softcaps into the game. Truly a Jacorbian spectacle! There will be a few added mechanics to help you deal with these softcaps, but overall the game will be harder.",
         borderColor: "#c040ff",
@@ -43,26 +48,27 @@ export const SAVE_MODES = [
         textColor: "#e0c0ff"
     },
     {
+        id: 5,
         name: "Scaled Ruins",
-        desc: "This mode adds many, many scaling increases into the game. Is IM:R calling? This also includes scaling increases beyond the legendary \"Atomic\" scaling. There will be a few added mechanics to help you deal with these softcaps, but overall the game will be harder.",
+        desc: "This mode adds many, many scaling increases into the game. Is IM:R calling? This also includes scaling increases beyond the legendary \"Atomic\" scaling. There will be a few added mechanics to help you deal with these softcaps, but overall the game.value will be harder.",
         borderColor: "#6040ff",
         borderSelectedColor: "#a080ff",
         bgColor: "#1f1a46",
         textColor: "#c8c0ff"
-    },
+    }
 ]
 
-function setTempModes(id: number) {
-    tmp.saveModes[id] = !tmp.saveModes[id];
+export const setTempModes = (id: number): void => {
+    tmp.value.saveModes[id] = !tmp.value.saveModes[id];
 }
 
-function resetModes() {
-    for (let i = 0; i < tmp.saveModes.length; i++) {
-        tmp.saveModes[i] = false;
+export const resetModes = (): void => {
+    for (let i = 0; i < tmp.value.saveModes.length; i++) {
+        tmp.value.saveModes[i] = false;
     }
 }
 
-function displayModes(mode: Array<number>) {
+export const displayModes = (mode: Array<number>): string => {
     let txt = "";
     if (mode.length === 0) { return "Normal"; }
     if (mode.length === 1) { return SAVE_MODES[mode[0]].name; }
@@ -73,7 +79,7 @@ function displayModes(mode: Array<number>) {
     return txt;
 }
 
-function displayModesNonOptArray(modes: Array<boolean>) {
+export const displayModesNonOptArray = (modes: Array<boolean>): string => {
     const mode = [];
     let txt = "";
     for (let i = 0; i < modes.length; i++) {
@@ -90,28 +96,27 @@ function displayModesNonOptArray(modes: Array<boolean>) {
     return txt;
 }
 
-export const saveTheFrickingGame = () => {
-    try {
-        localStorage.setItem(saveID, btoa(JSON.stringify(game)));
-        return "Game was saved!";
-    } catch (e) {
-        console.warn("Something went wrong while trying to save the game!!");
-        throw e;
-    }
+export const saveTheFrickingGame = (): void => {
+    localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
+    console.log("Game was saved!")
 }
 
-function resetTheWholeGame() {
-    if (!confirm("Are you sure you want to delete EVERY save?")) {
-        return;
+export const resetTheWholeGame = (prompt: boolean): void => {
+    if (prompt) {
+        if (!confirm("Are you sure you want to delete EVERY save?")) {
+            return;
+        }
+        if (!confirm("You cannot recover ANY of your save files unless if you have an exported backup! Are you still sure? [Final Warning]")) {
+            return;
+        }
     }
-    if (!confirm("You cannot recover ANY of your save files unless if you have an exported backup! Are you still sure? [Final Warning]")) {
-        return;
-    }
+
     localStorage.setItem(saveID, 'null');
-    tmp.gameIsRunning = false;
+    initPlayer(true);
+    tmp.value.gameIsRunning = false;
 }
 
-function resetThisSave(prompt: boolean) {
+export const resetThisSave = (prompt: boolean): void => {
     if (prompt) {
         if (!confirm("Are you sure you want to delete this save?")) {
             return;
@@ -122,77 +127,76 @@ function resetThisSave(prompt: boolean) {
     }
     initPlayer(true);
     saveTheFrickingGame();
-    tmp.gameIsRunning = false;
+    tmp.value.gameIsRunning = false;
 }
 
-function createNewSave(modes: Array<boolean>) {
+export const createNewSave = (modes: Array<boolean>): void => {
     const mode = [];
     for (let i = 0; i < modes.length; i++) {
         if (modes[i]) {
             mode.push(i);
         }
     }
-    game.list.push({
-        name: `Save #${game.list.length + 1}`,
+    game.value.list.push({
+        id: game.value.idGen,
+        name: `Save #${game.value.list.length + 1}`,
         modes: mode,
-        data: player
+        data: player.value
     })
-    switchToSave(game.list.length - 1);
-    initPlayer(true);
-    saveTheFrickingGame();
+    game.value.idGen++;
+    game.value.currentSave = game.value.list.length - 1;
+    game.value.list[game.value.currentSave].data = initPlayer();
+    localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
+    tmp.value.gameIsRunning = false;
 }
 
-function switchToSave(id: number) {
-    try {
-        game.currentSave = id;
-        localStorage.setItem(saveID, btoa(JSON.stringify(game)));
-        tmp.gameIsRunning = false;
-    } catch (e) {
-        console.warn("Something went wrong while trying to switch save files!!");
-        throw e;
-    }
+export const switchToSave = (id: number): void => {
+    game.value.currentSave = id;
+    localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
+    tmp.value.gameIsRunning = false;
 }
 
-function renameSave(id: number) {
+export const renameSave = (id: number): void => {
     const i = prompt('What name would you like to give this save? (Input blank to keep the name.)'); 
     if (!(i === '' || i === null)) { 
-        game.list[id].name = i;
+        game.value.list[id].name = i;
     }
 }
 
-function duplicateSave(id: number) {
+export const duplicateSave = (id: number): void => {
     if (!confirm("Are you sure you want to duplicate this save?")) {
         return;
     }
-    if (id < game.currentSave) {
-        game.currentSave++
+    if (id < game.value.currentSave) {
+        game.value.currentSave++
     }
-    game.list.splice(id+1, 0, game.list[id]);
+    // i don't know how this doesn't bug out, this also copied the id for the save
+    game.value.list.splice(id + 1, 0, game.value.list[id]);
     saveTheFrickingGame();
-    tmp.gameIsRunning = false;
+    tmp.value.gameIsRunning = false;
 }
 
-function deleteSave(id: number) {
+export const deleteSave = (id: number): void => {
     if (!confirm("Are you sure you want to delete this save?")) {
         return;
     }
     if (!confirm("You cannot recover this save unless if you have an exported backup! Are you still sure? [Final Warning]")) {
         return;
     }
-    if (game.list.length === 1) {
+    if (game.value.list.length === 1) {
         initPlayer(true);
         return;
     }
-    game.list.splice(id, 1);
-    if (game.currentSave === id) {
+    game.value.list.splice(id, 1);
+    if (game.value.currentSave === id) {
         switchToSave(id - 1);
     }
-    if (id < game.currentSave) {
-        game.currentSave--;
+    if (id < game.value.currentSave) {
+        game.value.currentSave--;
     }
 }
 
-function importSave(id: number) {
+export const importSave = (id: number): void => {
     if (!confirm("Are you sure you want to do this? This will overwrite this save file!")) {
         return;
     }
@@ -209,10 +213,9 @@ function importSave(id: number) {
         return;
     }
 
-    let isSaveList = true
+    let isSaveList = true;
     try {
-        JSON.parse(atob(save)).list
-        JSON.parse(atob(save)).currentGame
+        JSON.parse(atob(save)).list[0].id;
     } catch {
         isSaveList = false;
     }
@@ -224,11 +227,11 @@ function importSave(id: number) {
 
     setPlayerFromSave(save, id)
     saveTheFrickingGame();
-    tmp.gameIsRunning = false;
+    tmp.value.gameIsRunning = false;
 }
 
-function exportSave(id: number) {
-    const str = btoa(JSON.stringify(game.list[id]));
+export const exportSave = (id: number): void => {
+    const str = btoa(JSON.stringify(game.value.list[id]));
 	const el = document.createElement("textarea");
 	el.value = str;
 	document.body.appendChild(el);
@@ -238,7 +241,7 @@ function exportSave(id: number) {
 	document.body.removeChild(el);
 }
 
-function importSaveList() {
+export const importSaveList = (): void => {
     if (!confirm("Are you sure you want to do this? This will overwrite EVERY save file in your save list!")) {
         return;
     }
@@ -256,26 +259,26 @@ function importSaveList() {
         return;
     }
 
-    let isSaveFile = true
+    let isSaveFile = true;
     try {
-        JSON.parse(atob(save)).gameProgress
-        JSON.parse(atob(save)).offlineTime
+        JSON.parse(atob(save)).data.lastUpdated;
+        JSON.parse(atob(save)).data.offlineTime;
     } catch {
         isSaveFile = false;
     }
 
     if (isSaveFile) {
-        alert("Importing save list failed because this is an export of a save file, and not a save list.");
-        return
+        alert("Importing save list failed because either this is an export of a save file, and not a save list, or this save file is corrupted.");
+        return;
     }
 
-    setGameFromSave(save)
+    setGameFromSave(save);
     saveTheFrickingGame();
-    tmp.gameIsRunning = false;
+    tmp.value.gameIsRunning = false;
 }
 
-function exportSaveList() {
-	const str = btoa(JSON.stringify(game));
+export const exportSaveList = (): void => {
+	const str = btoa(JSON.stringify(game.value));
 	const el = document.createElement("textarea");
 	el.value = str;
 	document.body.appendChild(el);
@@ -285,7 +288,7 @@ function exportSaveList() {
 	document.body.removeChild(el);
 }
 
-function setAutosaveInterval() {
+export const setAutosaveInterval = (): void => {
     const i = window.prompt('Set your new auto-saving interval in seconds. Set it to Infinity if you want to disable auto-saving.'); 
 
     if (i === '') {
@@ -310,6 +313,6 @@ function setAutosaveInterval() {
         numI = 1e100;
     }
 
-    player.settings.autoSaveInterval = numI * 1000; 
+    game.value.autoSaveInterval = numI; 
 }
 

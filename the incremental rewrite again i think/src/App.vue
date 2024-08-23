@@ -1,47 +1,28 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { format } from './format'
+import { player, tmp, gameVars } from './main'
+import GameTabs from './components/MainTabs/MainTabs.vue'
+import Game_Main from './components/Game/Game_Progress/Game_Main/Game_Main.vue'
+import Game_Options from './components/Game/Game_Options/Game_Options.vue'
+import Game_Stats from './components/Game/Game_Stats/Game_Stats.vue';
+import Game_Achievements from './components/Game/Game_Achievements/Game_Achievements.vue'
+import Game_Kuaraniai from './components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai.vue'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div>
+    <canvas ref="canvas" id="canvas" style="height: 100vh; width: 100vw; position: absolute; top: 0vw; left: 0vw; z-index: -2;"></canvas>
+    <div class="flex-container" style="background-color: #ffffff20;">
+      <div style="flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.4vw;" class="bigText whiteText grayShadow fontVerdana"> {{format(player.gameProgress.main.points, 3)}}</div>
+      <div style="flex-grow: 1; flex-basis: 0; text-align: center; text-shadow: #ffff00 0vw 0vw 0.24vw;" class="mediumBigText yellowText fontVerdana">FPS: {{gameVars.displayedFPS}}</div>
+      <div style="flex-grow: 1; flex-basis: 0; text-align: right; text-shadow: #ffffff 0vw 0vw 0.4vw;" class="bigText whiteText grayShadow fontVerdana">{{format(tmp.main.pps, 3)}}/s </div>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <GameTabs />
+    <Game_Main />
+    <Game_Options />
+    <Game_Stats />
+    <Game_Achievements />
+    <Game_Kuaraniai />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>

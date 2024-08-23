@@ -5,6 +5,7 @@ import { tmp, player, NEXT_UNLOCKS, reset } from '@/main'
 import { format, formatTime } from '@/format'
 import { getSCSLAttribute } from '@/softcapScaling'
 import { MAIN_UPGS, buyGenUPG } from './Game_Main'
+import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
 </script>
 <template>
     <div id="generators" v-if="tab.currentTab === 0">
@@ -70,7 +71,7 @@ import { MAIN_UPGS, buyGenUPG } from './Game_Main'
 
                         <button style="text-align: center; width: 24vw; height: 4vw; font-size: 1.0667vw" 
                         :class="{ nopeFill: !player.gameProgress.main.prai.auto, okFill: player.gameProgress.main.prai.auto }"
-                        class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPRai" v-if="false" @click="player.gameProgress.main.prai.auto = !player.gameProgress.main.prai.auto">
+                        class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPRai" v-if="getKuaUpgrade('p', 0)" @click="player.gameProgress.main.prai.auto = !player.gameProgress.main.prai.auto">
                             <b>PRai Generator: {{player.gameProgress.main.prai.auto?"On":"Off"}}</b>
                         </button>
                     </div>

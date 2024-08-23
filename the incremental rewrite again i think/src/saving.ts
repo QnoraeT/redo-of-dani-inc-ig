@@ -152,6 +152,7 @@ export const createNewSave = (modes: Array<boolean>): void => {
 
 export const switchToSave = (id: number): void => {
     game.value.currentSave = id;
+    player.value = game.value.list[game.value.currentSave].data
     localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
     tmp.value.gameIsRunning = false;
 }

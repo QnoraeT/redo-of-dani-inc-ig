@@ -275,7 +275,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get name() { return `What even is this thing? Why do I have so little of it?`; },
                 get desc() { return `Convert all of your PRai to Kuaraniai.`; },
                 get cond() { return Decimal.gt(player.value.gameProgress.kua.amount, 0); },
-                get reward() { return `Your number generation is increased by ${format(1e2)}%, and you start at ${format(10)} PRai every Kuaraniai reset, but the starting PRai doesn't count for Kuaraniai gain.`; },
+                get reward() { return `Your number generation is increased by ${format(1e2)}%.`; },
                 get show() { return player.value.gameProgress.unlocks.kua; },
                 status: true
             },
@@ -397,7 +397,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 autoComplete: false,
                 get reward() { return `Increase PRai's gain exponent from ^${format(1 / 3, 3)} to ^${format(0.35, 3)}`; },
                 get show() { return player.value.gameProgress.unlocks.kua; },
-                status: true
+                get status() { return Decimal.lte(player.value.gameProgress.main.prai.times, 0) ? true : `Failed due to having reset PRai ${format(player.value.gameProgress.main.prai.times)} times.`; }
             },
             { 
                 id: 9,
@@ -488,7 +488,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return eff;
                 },
                 get show() { return player.value.gameProgress.unlocks.kua; },
-                status: true
+                get status() { return Decimal.lte(player.value.gameProgress.kua.timeInKua, 5) ? true : `Failed due to taking ${formatTime(player.value.gameProgress.kua.timeInKua)} / ${formatTime(5)} in the current Kuaraniai run.`; }
             },
             { 
                 id: 14,

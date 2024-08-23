@@ -29,14 +29,14 @@ export const NEXT_UNLOCKS = [
         dispPart2: `PR2 to unlock the next layer.`,
         color: "#7958ff"
     },
-    // {
-    //     id: 2,
-    //     get shown() { return player.value.kua.kpower.upgrades >= 2; },
-    //     get done() { return player.value.gameProgress.unlocks.col; },
-    //     get dispPart1() { return `${format(player.value.kua.amount, 3)} / ${format(c.e2)}`; },
-    //     dispPart2: `Kuaraniai to unlock the next layer.`,
-    //     color: "#ff6000"
-    // },
+    {
+        id: 2,
+        get shown() { return player.value.gameProgress.kua.kpower.upgrades >= 2; },
+        get done() { return player.value.gameProgress.unlocks.col; },
+        get dispPart1() { return `${format(player.value.gameProgress.kua.amount, 3)} / ${format(100)}`; },
+        dispPart2: `Kuaraniai to unlock the next layer.`,
+        color: "#ff6000"
+    },
     // {
     //     id: 3,
     //     get shown() { return Decimal.gte(player.value.points, c.e250); },
@@ -69,7 +69,9 @@ type Player = {
     setTimeSpeed: DecimalSource
     version: number
     displayVersion: string
-    settings: {}
+    settings: {
+        notation: number
+    }
 
     gameProgress: {
         achievements: Array<Array<number>>
@@ -231,7 +233,9 @@ export const initPlayer = (set = false): Player => {
         setTimeSpeed: D(1),
         version: 0,
         displayVersion: "v1.0.0",
-        settings: {},
+        settings: {
+            notation: 0
+        },
     
         gameProgress: {
             unlocks: {
@@ -663,13 +667,13 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 0;
     }
     if (player.version === 0) {
-
+        player.settings.notation = 0
         // player.displayVersion = '1.0.0'
         player.version = 1;
     }
     if (player.version === 1) {
-        player.gameProgress.kua.enhancers.autoSources = false
-        player.version = 2;
+
+        // player.version = 2;
     }
     if (player.version === 2) {
 

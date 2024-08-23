@@ -29,7 +29,7 @@ import { KUA_UPGRADES, KUA_ENHANCERS, kuaEnhReset, kuaEnh, buyKShardUpg, buyKPow
                 <div v-if="tmp.kua.active.effects">
                     <li>Reduces Upgrade 1's scaling strength by {{formatPerc(tmp.kua.kuaEffects.upg1Scaling, 3)}}</li> 
                     <li v-if="player.gameProgress.kua.kpower.upgrades >= 6">Reduces Upgrade 1's super scaling strength by {{formatPerc(tmp.kua.kuaEffects.upg1SuperScaling, 3)}}</li>
-                    <li v-if="Decimal.gt(player.gameProgress.kua.amount, 0)"> Adds Upgrade 1 B-Side, and makes it's base x{{format(tmp.kua.kuaEffects.up4, 4)}}/bought. </li>
+                    <li v-if="Decimal.gt(player.gameProgress.kua.amount, 0)"> Adds Upgrade 4, and makes it's base x{{format(tmp.kua.kuaEffects.up4, 4)}}/bought. </li>
                     <li v-if="player.gameProgress.kua.kpower.upgrades >= 3">Raises Points gain to ^{{format(tmp.kua.kuaEffects.ptPower, 4)}}</li>
                     <li v-if="player.gameProgress.kua.kpower.upgrades >= 6">Delays Upgrade 2's softcap by {{format(tmp.kua.kuaEffects.upg2Softcap, 2)}}x</li>
                     <li v-if="player.gameProgress.kua.kshards.upgrades >= 7">Multiplies Point gain by {{format(tmp.kua.kuaEffects.pts, 2)}}x</li>
@@ -44,7 +44,7 @@ import { KUA_UPGRADES, KUA_ENHANCERS, kuaEnhReset, kuaEnh, buyKShardUpg, buyKPow
                         <div v-if="tmp.kua.active.kshards.effects" class="fontVerdana">
                             <li>Boosts PRai gain by {{format(tmp.kua.kuaEffects.kshardPassive, 3)}}x.</li>
                             <li>Generate {{format(tmp.kua.kuaPowerGeneration, 3)}} Kuaraniai Power (KPower) per second.</li>
-                            <li v-if="Decimal.gt(player.gameProgress.kua.kshards.amount, 0)">Adds Upgrade 2 B-Side, and makes it's base x{{format(tmp.kua.kuaEffects.up5, 4)}}/bought.</li>
+                            <li v-if="Decimal.gt(player.gameProgress.kua.kshards.amount, 0)">Adds Upgrade 5, and makes it's base x{{format(tmp.kua.kuaEffects.up5, 4)}}/bought.</li>
                             <li v-if="player.gameProgress.kua.kshards.upgrades >= 2">Multiply PRai's effect by {{format(KUA_UPGRADES.KShards[1].eff!, 2)}}x.</li>
                             <li v-if="player.gameProgress.kua.kshards.upgrades >= 8">Multiply PRai gain by {{format(KUA_UPGRADES.KShards[7].eff!, 2)}}x.</li>
                             <li v-if="player.gameProgress.kua.kshards.upgrades >= 9">Delays Upgrade 2's cost growth (after scaling costs) by +{{format(KUA_UPGRADES.KShards[8].eff!, 2)}} purchases.</li>
@@ -66,7 +66,7 @@ import { KUA_UPGRADES, KUA_ENHANCERS, kuaEnhReset, kuaEnh, buyKShardUpg, buyKPow
                         You have <b>{{format(player.gameProgress.kua.kpower.amount, 3)}}</b> Kuaraniai power.
                         <div v-if="tmp.kua.active.kpower.effects" class="fontVerdana">
                             <li>Boosts Point gain by {{format(tmp.kua.kuaEffects.kpowerPassive, 3)}}x.</li>
-                            <li v-if="Decimal.gt(player.gameProgress.kua.kpower.amount, 0)">Adds Upgrade 3 B-Side, and makes it's base +{{format(tmp.kua.kuaEffects.up6, 5)}}/bought.</li>
+                            <li v-if="Decimal.gt(player.gameProgress.kua.kpower.amount, 0)">Adds Upgrade 6, and makes it's base +{{format(tmp.kua.kuaEffects.up6, 5)}}/bought.</li>
                             <li v-if="player.gameProgress.kua.kpower.upgrades >= 1">Increases Upgrade 2's base by +{{format(KUA_UPGRADES.KPower[0].eff!, 3)}}.</li>
                             <li v-if="player.gameProgress.kua.kpower.upgrades >= 2">Makes Upgrade 3 {{format(KUA_UPGRADES.KPower[1].eff!.sub(1).mul(100), 3)}}% more effective.</li>
                             <li v-if="player.gameProgress.kua.kpower.upgrades >= 4">Delays Upgrade 2's softcap by {{format(KUA_UPGRADES.KPower[3].eff!, 2)}}x.</li>

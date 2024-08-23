@@ -167,7 +167,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
     KPower: [
         { // 1
             get desc() {
-                return `Multiply KShard gain by ${format(2_5)}x, and KPower buffs Upgrade 2's base. Currently: +${format(this.eff!, 4)}`;
+                return `Multiply KShard gain by ${format(2.5, 1)}x, and KPower buffs Upgrade 2's base. Currently: +${format(this.eff!, 4)}`;
             },
             get eff() {
                 let i = D(0);
@@ -216,7 +216,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             get eff() {
                 let i = D(1);
                 if (tmp.value.kua.active.kpower.effects) {
-                    i = Decimal.max(player.value.gameProgress.kua.kpower.totals.col, 0).add(1).log10().pow(1_05).pow10().pow(0.75);
+                    i = Decimal.max(player.value.gameProgress.kua.kpower.totals.col, 0).add(1).log10().pow(1.05).pow10().pow(0.75);
                 }
                 return i;
             },
@@ -563,7 +563,7 @@ function updateKua(type: number, delta: DecimalSource) {
             if (tmp.value.kua.active.kshards.gain) {
                 i = D(player.value.gameProgress.kua.amount);
                 if (getKuaUpgrade("p", 1)) {
-                    i = i.mul(2_5);
+                    i = i.mul(2.5);
                 }
             }
             tmp.value.kua.kuaShardGeneration = i;

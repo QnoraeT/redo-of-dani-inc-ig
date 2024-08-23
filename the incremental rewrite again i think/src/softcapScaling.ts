@@ -120,8 +120,7 @@ export const LIST_OF_SCSL: ListOfScSl = {
 }
 
 export const setSCSLEffectDisp = (type: ScSlItems, isScaling: boolean, index: number, toWhat: string): void => {
-    const item = LIST_OF_SCSL[type][isScaling ? 'scale' : 'soft'];
-    item[index].displayedEffect = toWhat;
+    LIST_OF_SCSL[type][isScaling ? 'scale' : 'soft'][index].displayedEffect = toWhat;
 }
 
 export const updateAllSCSL = () => {

@@ -202,7 +202,7 @@ export const MAIN_UPGS = [
             data.prevEff = eff
 
             eff = scale(eff, 2.1, false, data.scal[1].start, data.scal[1].power, data.scal[1].basePow);
-            setSCSLEffectDisp('upg2', false, 0, `/${format(data.prevEff.div(eff), 3)}`);
+            setSCSLEffectDisp('upg2', false, 1, `/${format(data.prevEff.div(eff), 3)}`);
             return eff;
         },
         get calcEB(): Decimal {
@@ -529,7 +529,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
             if (upgID === 2) {
                 if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 11)) {
-                    scal = scal.div(1 / 9);
+                    scal = scal.div(10 / 9);
                 }
             }
             

@@ -18,6 +18,7 @@ jobs:
 
     - name: Install and Build 🔧
       run: |
+        working-directory: ./the incremental rewrite again i think
         yarn install --frozen-lockfile
         yarn run build
 

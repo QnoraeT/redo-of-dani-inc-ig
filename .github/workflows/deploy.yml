@@ -19,8 +19,8 @@ jobs:
     - name: Install and Build 🔧
       working-directory: "./the incremental rewrite again i think"
       run: |
-        yarn install --frozen-lockfile
-        yarn run build
+        npm install --frozen-lockfile
+        npm run build
 
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@v4.2.5

@@ -640,7 +640,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 tmp.value.main.prai.next = tmp.value.main.prai.req.sub(player.value.gameProgress.main.totals.prai).div(tmp.value.main.pps);
             }
 
-            if (getKuaUpgrade("s", 1) && player.value.gameProgress.main.prai.auto) { 
+            if (player.value.gameProgress.main.prai.auto) { 
                 generate = tmp.value.main.prai.pending.mul(delta).mul(0.0001);
                 player.value.gameProgress.main.prai.amount = Decimal.add(player.value.gameProgress.main.prai.amount, generate);
                 for (const i in player.value.gameProgress.main.prai.totals) {

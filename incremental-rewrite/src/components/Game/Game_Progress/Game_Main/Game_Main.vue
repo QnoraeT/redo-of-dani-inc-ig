@@ -71,7 +71,7 @@ import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
 
                         <button style="text-align: center; width: 24vw; height: 4vw; font-size: 1.0667vw" 
                         :class="{ nopeFill: !player.gameProgress.main.prai.auto, okFill: player.gameProgress.main.prai.auto }"
-                        class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPRai" v-if="getKuaUpgrade('p', 0)" @click="player.gameProgress.main.prai.auto = !player.gameProgress.main.prai.auto">
+                        class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPRai" v-if="getKuaUpgrade('s', 1)" @click="player.gameProgress.main.prai.auto = !player.gameProgress.main.prai.auto">
                             <b>PRai Generator: {{player.gameProgress.main.prai.auto?"On":"Off"}}</b>
                         </button>
                     </div>

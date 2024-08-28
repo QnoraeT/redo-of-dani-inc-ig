@@ -2,6 +2,7 @@ import Decimal, { type DecimalSource } from 'break_eternity.js'
 import { player, tmp } from '@/main'
 import { format, formatPerc } from '@/format'
 import { D, smoothExp, smoothPoly } from '@/calc'
+import { ACHIEVEMENT_DATA } from '../../Game_Achievements/Game_Achievements'
 
 // use get show if it can change in the mean time, currently unused as a placeholder
 // costs will get the same treatment later
@@ -504,9 +505,10 @@ function updateKua(type: number, delta: DecimalSource) {
                 pts: D(1) 
             };
 
-            k = player.value.gameProgress.kua.amount;
+            k = Decimal.max(player.value.gameProgress.kua.amount, 1);
+            k = k.pow(ACHIEVEMENT_DATA[1].eff);
             if (getKuaUpgrade("s", 11)) {
-                k = Decimal.max(k, 1).pow(KUA_UPGRADES.KShards[10].eff!);
+                k = k.pow(KUA_UPGRADES.KShards[10].eff!);
             }
 
             if (tmp.value.kua.active.effects) {

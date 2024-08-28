@@ -22,9 +22,9 @@ import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
                 </span>
             </div> -->
         </div>
-        <div class="flex-container" style="flex-direction: row; justify-content: center; margin-top: 1vw; margin-bottom: 1vw;">
-            <div v-for="item in NEXT_UNLOCKS" :key='item.id' style="text-align: center;" :style="{ color: item.color }">
-                <span v-if="item.shown && !item.done" style="font-size: 1.6vw;" class="fontVerdana">
+        <div class="flex-container" style="flex-direction: column; align-items: center; margin-top: 1vw; margin-bottom: 1vw;">
+            <div v-for="(item, index) in NEXT_UNLOCKS" :key='index' :style="{ color: item.color }">
+                <span v-if="item.shown && !item.done" style="font-size: 1.6vw; text-align: center;" class="fontVerdana">
                     You must reach <span style="font-size: 2vw;"><b>{{item.dispPart1}}</b></span> {{item.dispPart2}}
                 </span>
             </div>

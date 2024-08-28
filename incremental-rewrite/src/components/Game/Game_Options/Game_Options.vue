@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import Decimal from 'break_eternity.js'
 import { gRC } from '@/calc'
-import { tab, game, tmp, getEndgame, gameVars } from '@/main'
+import { tab, game, player, tmp, getEndgame, gameVars } from '@/main'
 import { format, formatTime } from '@/format'
 import { switchSubTab } from '../../MainTabs/MainTabs'
 import { saveTheFrickingGame, setAutosaveInterval, exportSaveList,  exportSave, importSave, importSaveList, resetTheWholeGame, switchToSave, duplicateSave, deleteSave, renameSave, createNewSave, SAVE_MODES, setTempModes, resetModes, displayModesNonOptArray, displayModes } from '@/saving'
+import { setTimeSpeed } from './Game_Options'
 </script>
 <template>
     <div id="options" v-if="tab.currentTab === 1">
@@ -151,6 +152,13 @@ import { saveTheFrickingGame, setAutosaveInterval, exportSaveList,  exportSave, 
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div v-if="tab.tabList[tab.currentTab][0] === 1">
+            <div class="flex-container" style="flex-direction: row; justify-content: center;">
+                <button @click="setTimeSpeed()" class="whiteText fontVerdana generatorButton" style="margin: 0.5vw; border: 0.3vw solid #ff0000; height: 8vw; width: 16vw; font-size: 1vw; color: #ff0000">
+                    Set Time Speed. Currently: {{ format(player.setTimeSpeed, 2) }}
+                </button>
             </div>
         </div>
     </div>

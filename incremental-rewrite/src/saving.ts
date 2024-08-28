@@ -1,4 +1,4 @@
-import { game, initPlayer, player, tmp, setPlayerFromSave, setGameFromSave } from './main'
+import { game, initPlayer, player, tmp, setPlayerFromSave, setGameFromSave, initGameBeforeSave } from './main'
 
 export const saveID = "danidanijr_save_revamp_redo";
 export const SAVE_MODES = [
@@ -111,8 +111,9 @@ export const resetTheWholeGame = (prompt: boolean): void => {
         }
     }
 
-    localStorage.setItem(saveID, 'null');
-    initPlayer(true);
+    game.value = initGameBeforeSave();
+    initPlayer(true)
+    saveTheFrickingGame()
     tmp.value.gameIsRunning = false;
 }
 

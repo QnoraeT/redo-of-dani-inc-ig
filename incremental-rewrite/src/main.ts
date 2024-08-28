@@ -14,7 +14,6 @@ import { getKuaUpgrade, updateAllKua } from './components/Game/Game_Progress/Gam
 
 export const NEXT_UNLOCKS = [
     {
-        id: 0,
         get shown() { return Decimal.gte(player.value.gameProgress.main.prai.best.ever, 3); },
         get done() { return Decimal.gte(player.value.gameProgress.main.prai.best.ever, 9.5); },
         get dispPart1() { return `${format(player.value.gameProgress.main.prai.best.ever)} / ${format(10)}`; },
@@ -22,7 +21,6 @@ export const NEXT_UNLOCKS = [
         color: "#ffffff",
     },
     {
-        id: 1,
         get shown() { return Decimal.gte(player.value.gameProgress.main.pr2.best.ever, 3); },
         get done() { return player.value.gameProgress.unlocks.kua; },
         get dispPart1() { return `${format(player.value.gameProgress.main.pr2.best.ever)} / ${format(10)}`; },
@@ -30,15 +28,20 @@ export const NEXT_UNLOCKS = [
         color: "#7958ff"
     },
     {
-        id: 2,
+        get shown() { return player.value.gameProgress.kua.kpower.upgrades >= 2; },
+        get done() { return player.value.gameProgress.unlocks.kuaEnhancers; },
+        get dispPart1() { return `${format(player.value.gameProgress.kua.amount, 3)} / ${format(0.01, 2)}`; },
+        dispPart2: `Kuaraniai to unlock the next feature.`,
+        color: "#a040ff"
+    },
+    {
         get shown() { return player.value.gameProgress.kua.kpower.upgrades >= 2; },
         get done() { return player.value.gameProgress.unlocks.col; },
         get dispPart1() { return `${format(player.value.gameProgress.kua.amount, 3)} / ${format(100)}`; },
-        dispPart2: `Kuaraniai to unlock the next layer.`,
+        dispPart2: `Kuaraniai to unlock the next feature.`,
         color: "#ff6000"
     },
     // {
-    //     id: 3,
     //     get shown() { return Decimal.gte(player.value.points, c.e250); },
     //     get done() { return player.value.gameProgress.unlocks.tax; },
     //     get dispPart1() { return `${format(player.value.points)} / ${format(c.inf)}`; },
@@ -185,13 +188,13 @@ type Player = {
             }
             enhancers: {
                 autoSources: boolean
-                sources: Array<DecimalSource>,
-                enhancers: Array<DecimalSource>,
-                enhanceXP: Array<DecimalSource>,
-                enhancePow: Array<DecimalSource>,
-                xpSpread: DecimalSource,
-                inExtraction: number,
-                extractionXP: Array<DecimalSource>,
+                sources: Array<DecimalSource>
+                enhancers: Array<DecimalSource>
+                enhanceXP: Array<DecimalSource>
+                enhancePow: Array<DecimalSource>
+                xpSpread: DecimalSource
+                inExtraction: number
+                extractionXP: Array<DecimalSource>
                 upgrades: Array<number>
             }
         }
@@ -468,13 +471,14 @@ type Tmp = {
             effects: boolean
             gain: boolean
         }
-        kuaBaseSourceXPGen: Array<Decimal>
+        baseSourceXPGen: Array<Decimal>
         kuaTrueSourceXPGen: Array<Decimal>
-        kuaSourcesCanBuy: Array<boolean>
-        kuaTotalEnhSources: Decimal
-        kuaEnhSourcesUsed: Decimal
-        kuaEnhShowSlow: boolean
-        kuaEnhSlowdown: Decimal
+        trueEnhPower: Array<Decimal>
+        sourcesCanBuy: Array<boolean>
+        totalEnhSources: Decimal
+        enhSourcesUsed: Decimal
+        enhShowSlow: boolean
+        enhSlowdown: Decimal
     }
     gameIsRunning: boolean
     saveModes: Array<boolean>
@@ -612,13 +616,14 @@ function initTemp(): Tmp {
                 effects: true,
                 gain: true
             },
-            kuaBaseSourceXPGen: [],
+            baseSourceXPGen: [],
             kuaTrueSourceXPGen: [],
-            kuaSourcesCanBuy: [false, false, false],
-            kuaTotalEnhSources: D(0),
-            kuaEnhSourcesUsed: D(0),
-            kuaEnhShowSlow: false,
-            kuaEnhSlowdown: D(1)
+            trueEnhPower: [],
+            sourcesCanBuy: [false, false, false],
+            totalEnhSources: D(0),
+            enhSourcesUsed: D(0),
+            enhShowSlow: false,
+            enhSlowdown: D(1)
         },
         gameIsRunning: true,
         saveModes: Array(SAVE_MODES.length).fill(false),
@@ -667,9 +672,9 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 0;
     }
     if (player.version === 0) {
-        player.settings.notation = 0
+
         // player.displayVersion = '1.0.0'
-        player.version = 1;
+        player.version = 0;
     }
     if (player.version === 1) {
 
@@ -1003,6 +1008,7 @@ function gameLoop(): void {
 
         player.value.gameProgress.unlocks.pr2 = player.value.gameProgress.unlocks.pr2 || Decimal.gte(player.value.gameProgress.main.prai.amount, 9.5);
         player.value.gameProgress.unlocks.kua = player.value.gameProgress.unlocks.kua || Decimal.gte(player.value.gameProgress.main.pr2.amount, 10);
+        player.value.gameProgress.unlocks.kuaEnhancers = player.value.gameProgress.unlocks.kuaEnhancers || Decimal.gte(player.value.gameProgress.kua.amount, 0.0095);
         player.value.gameProgress.unlocks.col = player.value.gameProgress.unlocks.col || (player.value.gameProgress.kua.kpower.upgrades >= 2 && Decimal.gte(player.value.gameProgress.kua.amount, 1e2));
 
         for (let i = 0; i < ACHIEVEMENT_DATA.length; i++) {

@@ -309,7 +309,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get name() { return `Gathering Pieces Together`; },
                 get desc() { return `Have ${format(0.01, 3)} Kuaraniai.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.kua.amount, 0.01); },
-                get reward() { return `KShard and KPower now passively boost points and PRai.`; },
+                reward: ``,
                 get show() { return player.value.gameProgress.unlocks.kua; },
                 status: true
             },
@@ -317,7 +317,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 id: 3,
                 get name() { return `You like making progress, don't you?`; },
                 get desc() { return `Have ${format(0.1, 2)} Kuaraniai.`; },
-                get cond() { return Decimal.gte(player.value.gameProgress.kua.amount, 0.1); },
+                get cond() { return Decimal.gte(player.value.gameProgress.kua.amount, 0.095); },
                 get reward() { return `Kuaraniai gain is increased by ${format(50)}%, and KShards produce another point multiplier. Currently: ${format(this.eff!, 2)}x`; },
                 get eff() { return Decimal.max(player.value.gameProgress.kua.kshards.totals.col, 0).add(1).mul(8).sqrt().sub(1).div(2); },
                 get show() { return player.value.gameProgress.unlocks.kua; },

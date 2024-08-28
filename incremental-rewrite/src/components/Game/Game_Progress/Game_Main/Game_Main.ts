@@ -4,7 +4,7 @@ import { tmp, player, type TmpMainUpgrade } from '@/main'
 import { scale, D, smoothPoly, smoothExp, expQuadCostGrowth } from '@/calc'
 import { getSCSLAttribute, setSCSLEffectDisp, SCALE_ATTR, SOFT_ATTR, doAllScaling, type ScSlItems } from '@/softcapScaling'
 import { getAchievementEffect, ifAchievement } from '../../Game_Achievements/Game_Achievements'
-import { getKuaUpgrade, KUA_UPGRADES } from '../Game_Kuaraniai/Game_Kuaraniai'
+import { getKuaUpgrade, KUA_ENHANCERS, KUA_UPGRADES } from '../Game_Kuaraniai/Game_Kuaraniai'
 
 export const PR2_EFF = [
     {
@@ -109,6 +109,7 @@ export const MAIN_UPGS = [
             if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 9)) {
                 i = i.add(0.05);
             }
+            i = i.add(KUA_ENHANCERS.enhances[0].effect());
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
             }
@@ -170,6 +171,7 @@ export const MAIN_UPGS = [
             if (getKuaUpgrade("p", 1)) {
                 i = i.add(KUA_UPGRADES.KPower[0].eff!);
             }
+            i = i.add(KUA_ENHANCERS.enhances[1].effect());
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
             }
@@ -233,6 +235,7 @@ export const MAIN_UPGS = [
         },
         get effectBase() {
             let i = D(0.01);
+            i = i.add(KUA_ENHANCERS.enhances[2].effect());
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
             }

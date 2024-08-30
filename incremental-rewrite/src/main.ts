@@ -11,6 +11,7 @@ import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL
 import { updateAllStart, updateStart, initAllMainUpgrades } from './components/Game/Game_Progress/Game_Main/Game_Main'
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from './components/Game/Game_Achievements/Game_Achievements'
 import { getKuaUpgrade, updateAllKua } from './components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai'
+import { diePopupsDie, popupList, spawnPopup } from './popups'
 
 export const NEXT_UNLOCKS = [
     {
@@ -1021,10 +1022,12 @@ function gameLoop(): void {
         }
 
         compileScalSoftList();
+        diePopupsDie();
 
         if (gameVars.value.sessionTime > gameVars.value.lastSave + game.value.autoSaveInterval) {
             saveTheFrickingGame();
             gameVars.value.lastSave = gameVars.value.sessionTime;
+            spawnPopup(0, `The game has been saved!`, `Save`, 3, `#00FF00`)
         }
 
         // drawing();

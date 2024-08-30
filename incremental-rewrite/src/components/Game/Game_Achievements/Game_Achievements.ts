@@ -3,6 +3,7 @@ import { format, formatPerc, formatTime } from '@/format'
 import { player, tmp } from '@/main'
 import { D } from '@/calc'
 import { getKuaUpgrade } from '../Game_Progress/Game_Kuaraniai/Game_Kuaraniai'
+import { spawnPopup } from '@/popups'
 
 export type Ach_Types = "main" | "kua" | "col" | "tax" | "kb"
 export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "tax", "kb"]
@@ -891,6 +892,7 @@ export const setAchievement = (type: number, id: number, bool: boolean) => {
     if (!ifAchievement(type, id) && bool) {
         console.log(`Gained Achievement ${type}, ${id + 1}!`)
         player.value.gameProgress.achievements[type].push(tmp.value.achievementList[type][id]);
+        spawnPopup(0, ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].desc, ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].name, 3, `#FFFF00`)
         // notify("Achievement", `You gained Achievement `)
     }
 }

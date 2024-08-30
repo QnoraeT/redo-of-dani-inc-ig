@@ -7,6 +7,7 @@ import Game_Options from './components/Game/Game_Options/Game_Options.vue'
 import Game_Stats from './components/Game/Game_Stats/Game_Stats.vue';
 import Game_Achievements from './components/Game/Game_Achievements/Game_Achievements.vue'
 import Game_Kuaraniai from './components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai.vue'
+import { popupList } from './popups'
 </script>
 
 <template>
@@ -23,6 +24,21 @@ import Game_Kuaraniai from './components/Game/Game_Progress/Game_Kuaraniai/Game_
     <Game_Stats />
     <Game_Achievements />
     <Game_Kuaraniai />
+    <!-- taken from TMT :3 -->
+    <div>
+      <div class="popup-container">
+        <transition-group name="fade">
+          <div v-for="(item, index) in popupList" :key="item.id" style="background-color: #ffffff; width: 300px; min-height: 60px; color: #000000; display: block;">
+            {{ index }} lmao
+          </div>
+          <!-- <div v-for="(item, index) in popupList" class="popup" style="color: #fff;" :class="popup.type"
+            :key="item.id" v-on:click="() => {popupList.splice(index, 1)}" :style="{ 'background-color': item.color }">
+            <h3>{{item.title}}</h3><br>
+            <h2 v-html="item.message"></h2>
+          </div> -->
+        </transition-group>
+      </div>
+    </div>
   </div>
 </template>
 

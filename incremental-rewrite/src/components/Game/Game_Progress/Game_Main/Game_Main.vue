@@ -30,7 +30,7 @@ import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
             </div>
         </div>
         <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 1vw; margin-bottom: 1vw; width: 50vw; align-content: center;">
-            <div v-for="(item, index) in MAIN_UPGS" :key='item.id'>
+            <div v-for="(item, index) in MAIN_UPGS" :key='index'>
                 <div class="flex-container" style="flex-direction: column; margin: 0.2vw;" v-if="tmp.main.upgrades[index].active && item.shown">
                     <button style="text-align: center; font-size: 1.0667vw" 
                     :class="{ nope: !tmp.main.upgrades[index].canBuy, ok: tmp.main.upgrades[index].canBuy }"
@@ -65,8 +65,8 @@ import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
                                         : `(${format(Decimal.div(tmp.main.prai.pending, player.gameProgress.main.prai.timeInPRai), 2)}/s)`
                                     : `You can PRai reset in ${formatTime(tmp.main.prai.next)}`
                             }}
-                            <br>You have {{format(player.gameProgress.main.prai.amount)}} PRai, which boosts your points by {{format(tmp.main.prai.effect, 2)}}x.
-                            <br>{{tmp.main.prai.canDo ? `Resetting now, PRai will boost your points by ${format(tmp.main.prai.nextEffect, 2)}x` : ""}}
+                            <br>You have {{format(player.gameProgress.main.prai.amount)}} PRai, which boosts your points by {{format(tmp.main.prai.effect, 2)}}×.
+                            <br>{{tmp.main.prai.canDo ? `Resetting now, PRai will boost your points by ${format(tmp.main.prai.nextEffect, 2)}×` : ""}}
                         </button>
 
                         <button style="text-align: center; width: 24vw; height: 4vw; font-size: 1.0667vw" 
@@ -80,7 +80,7 @@ import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
                     <div class="flex-container" style="flex-direction: column;">
                         <button style="text-align: center; font-size: 1.0667vw" 
                         :class="{ nope: !tmp.main.pr2.canDo, ok: tmp.main.pr2.canDo }"
-                        class="whiteText largeButton fontVerdana generatorButton" id="pr2" v-if="Decimal.gte(player.gameProgress.main.prai.best.ever, 9.5)" @click="reset('pr2')">
+                        class="whiteText largeButton fontVerdana generatorButton" id="pr2" v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)" @click="reset('pr2')">
                             <h3 style="font-size: 1.25vw">PR2: {{format(player.gameProgress.main.pr2.amount)}}</h3>
                             Reset all of your previous progress to for a PR2 reset.
                             <br><span :style="{ color: tmp.main.pr2.costTextColor }">{{
@@ -90,7 +90,7 @@ import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
                                         : `You can PR2 reset! (${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai)`
                                     : `You need ${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai to PR2 reset.`
                             }}</span>
-                            <br>You have {{format(player.gameProgress.main.pr2.amount)}} PR2, which boosts your PRai and points by {{format(tmp.main.pr2.effect, 2)}}x.
+                            <br>You have {{format(player.gameProgress.main.pr2.amount)}} PR2, which boosts your PRai and points by {{format(tmp.main.pr2.effect, 2)}}×.
                             <br>{{tmp.main.pr2.textEffect.txt===""?"":`At ${format(tmp.main.pr2.textEffect.when)} PR2 reset${tmp.main.pr2.textEffect.when.eq(1)?"":"s"}, ${tmp.main.pr2.textEffect.txt}`}}
                         </button>
     

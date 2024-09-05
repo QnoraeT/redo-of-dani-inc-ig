@@ -7,7 +7,10 @@ import Game_Options from './components/Game/Game_Options/Game_Options.vue'
 import Game_Stats from './components/Game/Game_Stats/Game_Stats.vue';
 import Game_Achievements from './components/Game/Game_Achievements/Game_Achievements.vue'
 import Game_Kuaraniai from './components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai.vue'
+import Game_Colosseum from './components/Game/Game_Progress/Game_Colosseum/Game_Colosseum.vue'
+import Game_Taxation from './components/Game/Game_Progress/Game_Taxation/Game_Taxation.vue'
 import { popupList } from './popups'
+import { colorChange } from './calc'
 </script>
 
 <template>
@@ -18,27 +21,25 @@ import { popupList } from './popups'
       <div style="flex-grow: 1; flex-basis: 0; text-align: center; text-shadow: #ffff00 0vw 0vw 0.24vw;" class="mediumBigText yellowText fontVerdana">FPS: {{gameVars.displayedFPS}}</div>
       <div style="flex-grow: 1; flex-basis: 0; text-align: right; text-shadow: #ffffff 0vw 0vw 0.4vw;" class="bigText whiteText grayShadow fontVerdana">{{format(tmp.main.pps, 3)}}/s </div>
     </div>
+    <div>
+      <div class="popup-container">
+        <div>
+          <div v-for="item in popupList" class="popup fontVerdana" style="display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; align-content: center"
+            :key="item.id" v-on:click="() => {item.life = 0.2}" :style="{ 'background-color': item.color, 'opacity': item.opacity, color: colorChange(item.color, 0.5, 1.0) }">
+            <span style="font-size: 1.4vw; font-weight: bold; text-align: center">{{item.title}}</span>
+            <span style="font-size: 1.2vw; text-align: center" v-html="item.message"></span>
+          </div>
+        </div>
+      </div>
+    </div>
     <GameTabs />
     <Game_Main />
     <Game_Options />
     <Game_Stats />
     <Game_Achievements />
     <Game_Kuaraniai />
-    <!-- taken from TMT :3 -->
-    <div>
-      <div class="popup-container">
-        <transition-group name="fade">
-          <div v-for="(item, index) in popupList" :key="item.id" style="background-color: #ffffff; width: 300px; min-height: 60px; color: #000000; display: block;">
-            {{ index }} lmao
-          </div>
-          <!-- <div v-for="(item, index) in popupList" class="popup" style="color: #fff;" :class="popup.type"
-            :key="item.id" v-on:click="() => {popupList.splice(index, 1)}" :style="{ 'background-color': item.color }">
-            <h3>{{item.title}}</h3><br>
-            <h2 v-html="item.message"></h2>
-          </div> -->
-        </transition-group>
-      </div>
-    </div>
+    <Game_Colosseum />
+    <Game_Taxation />
   </div>
 </template>
 

@@ -1,4 +1,4 @@
-import { game, initPlayer, player, tmp, setPlayerFromSave, setGameFromSave, initGameBeforeSave } from './main'
+import { game, initPlayer, player, tmp, setPlayerFromSave, setGameFromSave, initGameBeforeSave, gameVars } from './main'
 
 export const saveID = "danidanijr_save_revamp_redo";
 export const SAVE_MODES = [
@@ -155,6 +155,7 @@ export const switchToSave = (id: number): void => {
     game.value.currentSave = id;
     player.value = game.value.list[game.value.currentSave].data
     localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
+    gameVars.value.lastSave = gameVars.value.sessionTime;
     tmp.value.gameIsRunning = false;
 }
 

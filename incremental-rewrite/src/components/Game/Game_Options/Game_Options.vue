@@ -5,7 +5,7 @@ import { tab, game, player, tmp, getEndgame, gameVars } from '@/main'
 import { format, formatTime } from '@/format'
 import { switchSubTab } from '../../MainTabs/MainTabs'
 import { saveTheFrickingGame, setAutosaveInterval, exportSaveList,  exportSave, importSave, importSaveList, resetTheWholeGame, switchToSave, duplicateSave, deleteSave, renameSave, createNewSave, SAVE_MODES, setTempModes, resetModes, displayModesNonOptArray, displayModes } from '@/saving'
-import { setTimeSpeed } from './Game_Options'
+import { NOTATION_LIST, setTimeSpeed, switchNotation } from './Game_Options'
 </script>
 <template>
     <div id="options" v-if="tab.currentTab === 1">
@@ -88,8 +88,8 @@ import { setTimeSpeed } from './Game_Options'
                                                 <span style="text-align: center; font-size: 1vw;" class="whiteText"><b>Endgame: {{format(getEndgame(item.data.gameProgress.main.points), 2)}}%</b></span>
                                                 <span style="text-align: center; font-size: 1vw;" class="whiteText">, Points: {{format(item.data.gameProgress.main.points, 2)}}</span>
                                                 <span style="text-align: center; font-size: 1vw;" class="whiteText">, PRai: {{format(item.data.gameProgress.main.prai.amount)}}</span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.main.prai.totals.ever, 10)" style="text-align: center; font-size: 1vw;" class="whiteText">, PR2: {{format(item.data.gameProgress.main.pr2.amount)}}</span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.main.pr2.best.ever, 10)" style="text-align: center; font-size: 1vw;" class="whiteText">, Kuaraniai: {{format(item.data.gameProgress.kua.amount)}}</span>
+                                                <span v-if="Decimal.gte(item.data.gameProgress.main.prai.totalEver, 10)" style="text-align: center; font-size: 1vw;" class="whiteText">, PR2: {{format(item.data.gameProgress.main.pr2.amount)}}</span>
+                                                <span v-if="Decimal.gte(item.data.gameProgress.main.pr2.bestEver, 10)" style="text-align: center; font-size: 1vw;" class="whiteText">, Kuaraniai: {{format(item.data.gameProgress.kua.amount)}}</span>
                                             </div>
                                         </div>
                                         <div style="position: relative; width: 100%; height: 25%; display: flex; align-items: flex-end">
@@ -158,6 +158,9 @@ import { setTimeSpeed } from './Game_Options'
             <div class="flex-container" style="flex-direction: row; justify-content: center;">
                 <button @click="setTimeSpeed()" class="whiteText fontVerdana generatorButton" style="margin: 0.5vw; border: 0.3vw solid #ff0000; height: 8vw; width: 16vw; font-size: 1vw; color: #ff0000">
                     Set Time Speed. Currently: {{ format(player.setTimeSpeed, 2) }}
+                </button>
+                <button @click="switchNotation()" class="whiteText fontVerdana generatorButton" style="margin: 0.5vw; border: 0.3vw solid #ffffff; height: 8vw; width: 16vw; font-size: 1vw;">
+                    Switch notation. Currently: {{ NOTATION_LIST[player.settings.notation] }}
                 </button>
             </div>
         </div>

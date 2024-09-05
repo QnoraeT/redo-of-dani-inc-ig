@@ -1,10 +1,11 @@
 import Decimal, { type DecimalSource } from 'break_eternity.js'
 import { format, formatPerc } from '@/format'
-import { tmp, player, type TmpMainUpgrade } from '@/main'
+import { tmp, player, type TmpMainUpgrade, updateAllTotal, updateAllBest } from '@/main'
 import { scale, D, smoothPoly, smoothExp, expQuadCostGrowth } from '@/calc'
 import { getSCSLAttribute, setSCSLEffectDisp, SCALE_ATTR, SOFT_ATTR, doAllScaling, type ScSlItems } from '@/softcapScaling'
 import { getAchievementEffect, ifAchievement } from '../../Game_Achievements/Game_Achievements'
 import { getKuaUpgrade, KUA_ENHANCERS, KUA_UPGRADES } from '../Game_Kuaraniai/Game_Kuaraniai'
+import { getColResEffect } from '../Game_Colosseum/Game_Colosseum'
 
 export const PR2_EFF = [
     {
@@ -86,15 +87,26 @@ export const buyGenUPG = (id: number): void => {
     }
 }
 
-export const MAIN_UPGS = [
+export type MainUpgrade = {
+    shown: boolean
+    freeExtra: Decimal
+    effective: (x: DecimalSource) => Decimal
+    effectBase: Decimal
+    effect: (x?: DecimalSource) => Decimal
+    calcEB: Decimal
+    autoUnlocked: boolean
+    display: string
+    totalDisp: string
+}
+
+export const MAIN_UPGS: Array<MainUpgrade> = [
     { // UPG1
         shown: true,
-        id: 0,
-        get freeExtra(): DecimalSource {
-            const i = 0;
+        get freeExtra() {
+            const i = D(0);
             return i;
         },
-        effective(x: DecimalSource): Decimal {
+        effective(x) {
             let i = D(x);
             i = i.add(this.freeExtra)
             if (ifAchievement(1, 5)) {
@@ -102,7 +114,7 @@ export const MAIN_UPGS = [
             }
             return i;
         },
-        get effectBase(): Decimal {
+        get effectBase() {
             let i = D(1.5);
             i = i.add(tmp.value.main.upgrades[2].effect ?? 0);
             i = i.add(tmp.value.main.upgrades[5].effect ?? 0);
@@ -115,7 +127,7 @@ export const MAIN_UPGS = [
             }
             return i;
         },
-        effect(x = player.value.gameProgress.main.upgrades[0].bought): Decimal {
+        effect(x = player.value.gameProgress.main.upgrades[0].bought) {
             if (!tmp.value.main.upgrades[0].active) {
                 return D(1);
             }
@@ -134,27 +146,26 @@ export const MAIN_UPGS = [
             setSCSLEffectDisp('upg1', false, 0, `^${format(eff.log(data.prevEff), 3)}`);
             return eff;
         },
-        get calcEB(): Decimal {
+        get calcEB() {
             if (Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 1e10)) {
                 return this.effectBase;
             } else {
                 return this.effect(Decimal.add(player.value.gameProgress.main.upgrades[0].bought, 1)).div(this.effect());
             }
         },
-        get autoUnlocked(): boolean {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best.tax, 2);
+        get autoUnlocked() {
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 2);
         },
-        get display(): string {
-            return `Increase point gain by ${format(this.calcEB, 3)}x`;
+        get display() {
+            return `Increase point gain by ${format(this.calcEB, 3)}×`;
         },
-        get totalDisp(): string {
-            return `Total: ${format(this.effect(), 2)}x to point gain`;
+        get totalDisp() {
+            return `Total: ${format(this.effect(), 2)}× to point gain`;
         }
     },
     { // UPG2
-        id: 1,
-        get freeExtra(): DecimalSource {
-            const i = 0;
+        get freeExtra() {
+            const i = D(0);
             return i;
         },
         get effectBase() {
@@ -177,12 +188,12 @@ export const MAIN_UPGS = [
             }
             return i;
         },
-        effective(x: DecimalSource) {
+        effective(x) {
             let i = D(x);
             i = i.add(this.freeExtra);
             return i;
         },
-        effect(x = player.value.gameProgress.main.upgrades[1].bought): Decimal {
+        effect(x = player.value.gameProgress.main.upgrades[1].bought) {
             if (!tmp.value.main.upgrades[1].active) {
                 return D(1);
             }
@@ -207,30 +218,29 @@ export const MAIN_UPGS = [
             setSCSLEffectDisp('upg2', false, 1, `/${format(data.prevEff.div(eff), 3)}`);
             return eff;
         },
-        get calcEB(): Decimal {
+        get calcEB() {
             if (Decimal.gte(player.value.gameProgress.main.upgrades[1].bought, 1e10)) {
                 return this.effectBase;
             } else {
                 return this.effect(Decimal.add(player.value.gameProgress.main.upgrades[1].bought, 1)).div(this.effect());
             }
         },
-        get shown(): boolean {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best.tax, 1);
+        get shown() {
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 1);
         },
-        get autoUnlocked(): boolean {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best.tax, 4);
+        get autoUnlocked() {
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 4);
         },
-        get display(): string {
-            return `Decreases Upgrade 1's cost by ${format(this.calcEB, 3)}x`;
+        get display() {
+            return `Decreases Upgrade 1's cost by /${format(this.calcEB, 3)}`;
         },
-        get totalDisp(): string {
+        get totalDisp() {
             return `Total: /${format(this.effect(), 2)} to Upgrade 1's cost`;
         }
     },
     { // UPG3
-        id: 2,
-        get freeExtra(): DecimalSource {
-            const i = 0;
+        get freeExtra() {
+            const i = D(0);
             return i;
         },
         get effectBase() {
@@ -241,7 +251,7 @@ export const MAIN_UPGS = [
             }
             return i;
         },
-        effective(x: DecimalSource) {
+        effective(x) {
             let i = D(x);
             i = i.add(this.freeExtra);
             if (getKuaUpgrade("p", 2)) {
@@ -252,7 +262,7 @@ export const MAIN_UPGS = [
             }
             return i;
         },
-        effect(x = player.value.gameProgress.main.upgrades[2].bought): Decimal {
+        effect(x = player.value.gameProgress.main.upgrades[2].bought) {
             if (!tmp.value.main.upgrades[2].active) {
                 return D(0);
             }
@@ -268,40 +278,39 @@ export const MAIN_UPGS = [
             setSCSLEffectDisp('upg3', false, 0, `/${format(data.prevEff.div(eff), 3)}`);
             return eff;
         },
-        get calcEB(): Decimal {
+        get calcEB() {
             if (Decimal.gte(player.value.gameProgress.main.upgrades[2].bought, 1e10)) {
                 return this.effectBase;
             } else {
                 return this.effect(Decimal.add(player.value.gameProgress.main.upgrades[2].bought, 1)).sub(this.effect());
             }
         },
-        get shown(): boolean {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best.tax, 5);
+        get shown() {
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 5);
         },
-        get autoUnlocked(): boolean {
+        get autoUnlocked() {
             return getKuaUpgrade('s', 5);
         },
-        get display(): string {
+        get display() {
             return `Increases Upgrade 1's base by +${format(this.calcEB, 3)}`;
         },
-        get totalDisp(): string {
+        get totalDisp() {
             return `Total: +${format(this.effect(), 3)} to Upgrade 1's base`;
         }
     },
     { // UPG4
-        id: 3,
-        get freeExtra(): DecimalSource {
-            const i = 0;
+        get freeExtra() {
+            const i = D(0);
             return i;
         },
         get effectBase() {
-            let i = tmp.value.kua.kuaEffects.up4;
+            let i = tmp.value.kua.effects.up4;
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
             }
             return i;
         },
-        effective(x: DecimalSource) {
+        effective(x) {
             let i = D(x);
             i = i.add(this.freeExtra);
             return i;
@@ -323,40 +332,39 @@ export const MAIN_UPGS = [
             setSCSLEffectDisp('upg4', false, 0, `^${format(eff.log(data.prevEff), 3)}`);
             return eff;
         },
-        get calcEB(): Decimal {
+        get calcEB() {
             if (Decimal.gte(player.value.gameProgress.main.upgrades[3].bought, 1e10)) {
                 return this.effectBase;
             } else {
                 return this.effect(Decimal.add(player.value.gameProgress.main.upgrades[3].bought, 1)).div(this.effect());
             }
         },
-        get shown(): boolean {
+        get shown() {
             return Decimal.gt(player.value.gameProgress.kua.amount, 0);
         },
-        get autoUnlocked(): boolean {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best.tax, 12);
+        get autoUnlocked() {
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 12);
         },
-        get display(): string {
-            return `Increase point gain by ${format(this.calcEB, 3)}x`;
+        get display() {
+            return `Increase point gain by ${format(this.calcEB, 3)}×`;
         },
-        get totalDisp(): string {
-            return `Total: ${format(this.effect(), 2)}x to point gain`;
+        get totalDisp() {
+            return `Total: ${format(this.effect(), 2)}× to point gain`;
         }
     },
     { // UPG5
-        id: 4,
         get freeExtra() {
-            const i = 0;
+            const i = D(0);
             return i;
         },
         get effectBase() {
-            let i = tmp.value.kua.kuaEffects.up5;
+            let i = tmp.value.kua.effects.up5;
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
             }
             return i;
         },
-        effective(x: DecimalSource) {
+        effective(x) {
             let i = D(x);
             i = i.add(this.freeExtra);
             return i;
@@ -377,40 +385,39 @@ export const MAIN_UPGS = [
             setSCSLEffectDisp('upg5', false, 0, `^${format(eff.log(data.prevEff), 3)}`);
             return eff;
         },
-        get calcEB(): Decimal {
+        get calcEB() {
             if (Decimal.gte(player.value.gameProgress.main.upgrades[4].bought, 1e10)) {
                 return this.effectBase;
             } else {
                 return this.effect(Decimal.add(player.value.gameProgress.main.upgrades[4].bought, 1)).div(this.effect());
             }
         },
-        get shown(): boolean {
+        get shown() {
             return Decimal.gte(player.value.gameProgress.kua.kshards.amount, 0.01);
         },
-        get autoUnlocked(): boolean {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best.tax, 14);
+        get autoUnlocked() {
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 14);
         },
-        get display(): string {
-            return `Decreases Upgrade 1's cost by ${format(this.calcEB, 3)}x`;
+        get display() {
+            return `Decreases Upgrade 1's cost by /${format(this.calcEB, 3)}`;
         },
-        get totalDisp(): string {
+        get totalDisp() {
             return `Total: /${format(this.effect(), 2)} to Upgrade 1's cost`;
         }
     },
     { // UPG6
-        id: 5,
         get freeExtra() {
-            const i = 0;
-            return i
+            const i = D(0);
+            return i;
         },
         get effectBase() {
-            let i = tmp.value.kua.kuaEffects.up6;
+            let i = tmp.value.kua.effects.up6;
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
             }
             return i;
         },
-        effective(x: DecimalSource) {
+        effective(x) {
             let i = D(x);
             i = i.add(this.freeExtra);
             return i
@@ -435,23 +442,23 @@ export const MAIN_UPGS = [
             setSCSLEffectDisp('upg6', false, 1, `/${format(data.prevEff.div(eff), 2)}`);
             return eff;
         },
-        get calcEB(): Decimal {
+        get calcEB() {
             if (Decimal.gte(player.value.gameProgress.main.upgrades[5].bought, 1e10)) {
                 return this.effectBase;
             } else {
                 return this.effect(Decimal.add(player.value.gameProgress.main.upgrades[5].bought, 1)).sub(this.effect());
             }
         },
-        get shown(): boolean {
+        get shown() {
             return Decimal.gte(player.value.gameProgress.kua.kpower.amount, 1);
         },
-        get autoUnlocked(): boolean {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best.tax, 18);
+        get autoUnlocked() {
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 18);
         },
-        get display(): string {
+        get display() {
             return `Increases Upgrade 1's base by +${format(this.calcEB, 3)}`;
         },
-        get totalDisp(): string {
+        get totalDisp() {
             return `Total: +${format(this.effect(), 3)} to Upgrade 1's base`;
         }
     },
@@ -535,7 +542,16 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                     scal = scal.div(10 / 9);
                 }
             }
-            
+            if (upgID === 3) {
+                scal = scal.div(KUA_ENHANCERS.enhances[3].effect())
+            }
+            if (upgID === 4) {
+                scal = scal.div(KUA_ENHANCERS.enhances[4].effect())
+            }
+            if (upgID === 5) {
+                scal = scal.div(KUA_ENHANCERS.enhances[5].effect())
+            }
+
             tmp.value.main.upgrades[upgID].cost = expQuadCostGrowth(scal, tmp.value.main.upgrades[upgID].costBase.scale[2], tmp.value.main.upgrades[upgID].costBase.scale[1], tmp.value.main.upgrades[upgID].costBase.scale[0], tmp.value.main.upgrades[upgID].costBase.exp, false);
 
             if (upgID === 0) {
@@ -553,6 +569,15 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
 
                 scal = expQuadCostGrowth(i, tmp.value.main.upgrades[upgID].costBase.scale[2], tmp.value.main.upgrades[upgID].costBase.scale[1], tmp.value.main.upgrades[upgID].costBase.scale[0], tmp.value.main.upgrades[upgID].costBase.exp, true);
 
+                if (upgID === 5) {
+                    scal = scal.mul(KUA_ENHANCERS.enhances[5].effect())
+                }
+                if (upgID === 4) {
+                    scal = scal.mul(KUA_ENHANCERS.enhances[4].effect())
+                }
+                if (upgID === 3) {
+                    scal = scal.mul(KUA_ENHANCERS.enhances[3].effect())
+                }
                 if (upgID === 2) {
                     if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 11)) {
                         scal = scal.mul(10 / 9);
@@ -617,38 +642,37 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 tmp.value.main.prai.gainExp = D(0.35);
             }
 
-            if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 1) && Decimal.gte(player.value.gameProgress.main.totals.prai, tmp.value.main.prai.req)) {
-                i = D(player.value.gameProgress.main.totals.prai);
+            if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 1) && Decimal.gte(player.value.gameProgress.main.totals[0]!, tmp.value.main.prai.req)) {
+                i = D(player.value.gameProgress.main.totals[0]!);
                 i = i.max(0).div(tmp.value.main.prai.req).pow(tmp.value.main.prai.gainExp).sub(1).mul(tmp.value.main.prai.gainExp).add(1).log10().pow(0.9).pow10();
                 i = i.mul(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1);
-                // if (ifAchievement(20)) {
-                //     i = i.mul(5);
-                // }
+                if (ifAchievement(2, 1)) {
+                    i = i.mul(5);
+                }
                 if (ifAchievement(1, 11)) {
                     i = i.mul(getAchievementEffect(1, 11));
                 }
                 if (getKuaUpgrade("s", 8)) {
                     i = i.mul(KUA_UPGRADES.KShards[7].eff!);
                 }
-                // i = i.mul(getColResEffect(1));
-                // i = i.mul(tmp.value.kua.kuaEffects.kshardPassive)
+                i = i.mul(getColResEffect(1));
+                i = i.mul(tmp.value.kua.effects.kshardPassive)
                 tmp.value.main.prai.pending = i.floor();
 
                 i = tmp.value.main.prai.pending.add(1).floor();
                 i = i.div(tmp.value.main.pr2.effect);
                 i = i.log10().root(0.9).pow10().sub(1).div(tmp.value.main.prai.gainExp).add(1).root(tmp.value.main.prai.gainExp).mul(tmp.value.main.prai.req);
-                tmp.value.main.prai.next = i.sub(player.value.gameProgress.main.totals.prai);
+                tmp.value.main.prai.next = i.sub(player.value.gameProgress.main.totals[0]!);
             } else {
-                tmp.value.main.prai.pending = Decimal.max(player.value.gameProgress.main.totals.prai, 1e6).div(1e6).log(1e2).add(1).min(10).floor(); // hidden thing, usually 1 but when ppl decide to go further, they should get rewarded somehow
-                tmp.value.main.prai.next = tmp.value.main.prai.req.sub(player.value.gameProgress.main.totals.prai).div(tmp.value.main.pps);
+                tmp.value.main.prai.pending = Decimal.max(player.value.gameProgress.main.totals[0]!, 1e6).div(1e6).log(1e2).add(1).min(10).floor(); // hidden thing, usually 1 but when ppl decide to go further, they should get rewarded somehow
+                tmp.value.main.prai.next = tmp.value.main.prai.req.sub(player.value.gameProgress.main.totals[0]!).div(tmp.value.main.pps);
             }
 
             if (player.value.gameProgress.main.prai.auto) { 
                 generate = tmp.value.main.prai.pending.mul(delta).mul(0.0001);
                 player.value.gameProgress.main.prai.amount = Decimal.add(player.value.gameProgress.main.prai.amount, generate);
-                for (const i in player.value.gameProgress.main.prai.totals) {
-                    player.value.gameProgress.main.prai.totals[i as 'pr2' | 'kua' | 'col' | 'tax' | 'ever'] = Decimal.add(player.value.gameProgress.main.prai.totals[i as 'pr2' | 'kua' | 'col' | 'tax' | 'ever'], generate)
-                }
+                updateAllTotal(player.value.gameProgress.main.prai.totals, generate);
+                player.value.gameProgress.main.prai.totalEver = Decimal.add(player.value.gameProgress.main.prai.totalEver, generate);
             }
 
             j = D(4);
@@ -682,13 +706,47 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
             tmp.value.main.prai.nextEffect = i;
 
-            for (const i in player.value.gameProgress.main.prai.best) {
-                player.value.gameProgress.main.prai.best[i as 'pr2' | 'kua' | 'col' | 'tax' | 'ever'] = Decimal.max(player.value.gameProgress.main.prai.best[i as 'pr2' | 'kua' | 'col' | 'tax' | 'ever'], player.value.gameProgress.main.prai.amount)
-            }
-            tmp.value.main.prai.canDo = Decimal.gte(player.value.gameProgress.main.totals.prai, tmp.value.main.prai.req);
+            updateAllBest(player.value.gameProgress.main.prai.best, player.value.gameProgress.main.prai.amount);
+            player.value.gameProgress.main.prai.bestEver = Decimal.max(player.value.gameProgress.main.prai.bestEver, player.value.gameProgress.main.prai.amount);
+            tmp.value.main.prai.canDo = Decimal.gte(player.value.gameProgress.main.totals[0]!, tmp.value.main.prai.req);
             break;
         case 1: // pr2
             tmp.value.main.pr2.effActive = true;
+
+            i = D(10);
+            if (ifAchievement(0, 15)) {
+                i = i.sub(1);
+            }
+
+            scal = D(player.value.gameProgress.main.pr2.amount);
+            scal = doAllScaling(scal, getSCSLAttribute('pr2', true), false);
+
+            scal = scal.div(KUA_ENHANCERS.enhances[6].effect())
+
+            tmp.value.main.pr2.cost = smoothExp(smoothPoly(scal, 2, 200, false), 1.03, false).add(1).pow_base(i);
+            if (ifAchievement(0, 8)) {
+                tmp.value.main.pr2.cost = tmp.value.main.pr2.cost.div(1.5);
+            }
+
+            if (Decimal.gte(player.value.gameProgress.main.prai.amount, 10)) {
+                scal = D(player.value.gameProgress.main.prai.amount)
+                if (ifAchievement(0, 8)) {
+                    scal = scal.mul(1.5);
+                }
+                scal = smoothPoly(smoothExp(scal.log(i).sub(1), 1.03, true), 2, 200, true);
+
+                scal = scal.mul(KUA_ENHANCERS.enhances[6].effect())
+
+                scal = doAllScaling(scal, getSCSLAttribute('pr2', true), true);
+
+                tmp.value.main.pr2.target = scal;
+            } else {
+                tmp.value.main.pr2.target = D(0);
+            }
+
+            if (player.value.gameProgress.main.pr2.auto) {
+                player.value.gameProgress.main.pr2.amount = Decimal.max(player.value.gameProgress.main.pr2.amount, tmp.value.main.pr2.target.add(1).floor());
+            }
 
             i = D(player.value.gameProgress.main.pr2.amount);
             tmp.value.main.pr2.effective = i;
@@ -704,33 +762,8 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
             tmp.value.main.pr2.effect = i;
 
-            i = D(10);
-            if (ifAchievement(0, 15)) {
-                i = i.sub(1);
-            }
-
-            scal = D(player.value.gameProgress.main.pr2.amount);
-            scal = doAllScaling(scal, getSCSLAttribute('pr2', true), false);
-            tmp.value.main.pr2.cost = smoothExp(smoothPoly(scal, 2, 200, false), 1.03, false).add(1).pow_base(i);
-            if (ifAchievement(0, 8)) {
-                tmp.value.main.pr2.cost = tmp.value.main.pr2.cost.div(1.5);
-            }
-
-            if (Decimal.gte(player.value.gameProgress.main.prai.amount, 10)) {
-                scal = D(player.value.gameProgress.main.prai.amount)
-                if (ifAchievement(0, 8)) {
-                    scal = scal.mul(1.5);
-                }
-                scal = smoothPoly(smoothExp(scal.log(i).sub(1), 1.03, true), 2, 200, true);
-                scal = doAllScaling(scal, getSCSLAttribute('pr2', true), true);
-                tmp.value.main.pr2.target = scal;
-            } else {
-                tmp.value.main.pr2.target = D(0);
-            }
-
-            for (const i in player.value.gameProgress.main.pr2.best) {
-                player.value.gameProgress.main.pr2.best[i as 'kua' | 'col' | 'tax' | 'ever'] = Decimal.max(player.value.gameProgress.main.pr2.best[i as 'kua' | 'col' | 'tax' | 'ever'], player.value.gameProgress.main.pr2.amount);
-            }
+            updateAllBest(player.value.gameProgress.main.pr2.best, player.value.gameProgress.main.pr2.amount);
+            player.value.gameProgress.main.pr2.bestEver = Decimal.max(player.value.gameProgress.main.pr2.bestEver, player.value.gameProgress.main.pr2.amount);
 
             tmp.value.main.pr2.canDo = Decimal.gte(player.value.gameProgress.main.prai.amount, Decimal.sub(tmp.value.main.pr2.cost, 0.5));
 
@@ -744,17 +777,14 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
 
             tmp.value.main.pr2.textEffect = {when: D(0), txt: ''};
             if (Decimal.lte(player.value.gameProgress.main.pr2.amount, PR2_EFF[PR2_EFF.length - 1].when)) {
-                for (i in PR2_EFF) {
+                // this feels cursed not putting a "let i"
+                for (i = 0; i < PR2_EFF.length; i++) {
                     // console.log(`${format(player.value.gameProgress.main.pr2.amount)} < ${PR2_EFF[i].when} & ${PR2_EFF[i].show}`)
                     if (Decimal.lt(player.value.gameProgress.main.pr2.amount, PR2_EFF[i].when) && PR2_EFF[i].show) {
                         tmp.value.main.pr2.textEffect = {when: PR2_EFF[i].when, txt: PR2_EFF[i].text};
                         break;
                     }
                 }
-            }
-
-            if (player.value.gameProgress.main.pr2.auto) {
-                player.value.gameProgress.main.pr2.amount = Decimal.max(player.value.gameProgress.main.pr2.amount, tmp.value.main.pr2.target.add(1).floor());
             }
             break;
         default:

@@ -22,7 +22,7 @@ export const STAGES = [
         id: 1,
         name: "Kuaraniai",
         get show() { return player.value.gameProgress.unlocks.kua; },
-        get progress() { return Decimal.add(player.value.gameProgress.kua.amount, tmp.value.kua.kuaPending).max(0.0001).mul(1e4).log(1e6) },
+        get progress() { return Decimal.add(player.value.gameProgress.kua.amount, tmp.value.kua.pending).max(0.0001).mul(1e4).log(1e6) },
         get colors() { 
             return {
                 border: "#ab00df",

@@ -3,6 +3,7 @@ import { tmp, player, gameVars } from './main'
 import { D, gRC, colorChange, scale } from './calc'
 import { format } from './format'
 import { getAchievementEffect, ifAchievement } from './components/Game/Game_Achievements/Game_Achievements'
+import { getKuaUpgrade, KUA_UPGRADES } from './components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai'
 
 export const SCALE_ATTR = [
     { pow: 2,   type: 0, name: "Scaled",        color: `#3080FF` },
@@ -33,90 +34,40 @@ type ScSlData = {
 export type ScSlItems = "points" | "upg1" | "upg2" | "upg3" | "upg4" | "upg5" | "upg6" | "pr2"
 const ScSlItemsList: Array<ScSlItems> = ["points", "upg1", "upg2", "upg3", "upg4", "upg5", "upg6", "pr2"]
 
+type DataofScSlCategory = {
+    id: number
+    scale: Array<ScSlData>
+    soft: Array<ScSlData>
+}
+
 type ListOfScSl = {
-    points: {
-        id: number,
-        scale: Array<ScSlData>
-        soft: Array<ScSlData>
-    }
-    upg1: {
-        id: number,
-        scale: Array<ScSlData>
-        soft: Array<ScSlData>
-    }
-    upg2: {
-        id: number,
-        scale: Array<ScSlData>
-        soft: Array<ScSlData>
-    }
-    upg3: {
-        id: number
-        scale: Array<ScSlData>
-        soft: Array<ScSlData>
-    }
-    upg4: {
-        id: number
-        scale: Array<ScSlData>
-        soft: Array<ScSlData>
-    }
-    upg5: {
-        id: number
-        scale: Array<ScSlData>
-        soft: Array<ScSlData>
-    }
-    upg6: {
-        id: number
-        scale: Array<ScSlData>
-        soft: Array<ScSlData>
-    }
-    pr2: {
-        id: number
-        scale: Array<ScSlData>
-        soft: Array<ScSlData>
+    points: DataofScSlCategory
+    upg1: DataofScSlCategory
+    upg2: DataofScSlCategory
+    upg3: DataofScSlCategory
+    upg4: DataofScSlCategory
+    upg5: DataofScSlCategory
+    upg6: DataofScSlCategory
+    pr2: DataofScSlCategory
+}
+
+export const makeDataofScSl = (id: number): DataofScSlCategory => {
+    return {
+        id: id,
+        scale: [],
+        soft: []
     }
 }
 
 export const LIST_OF_SCSL: ListOfScSl = {
-    points: {
-        id: 0,
-        scale: [],
-        soft: []
-    },
-    upg1: {
-        id: 1,
-        scale: [],
-        soft: []
-    },
-    upg2: {
-        id: 2,
-        scale: [],
-        soft: []
-    },
-    upg3: {
-        id: 3,
-        scale: [],
-        soft: []
-    },
-    upg4: {
-        id: 4,
-        scale: [],
-        soft: []
-    },
-    upg5: {
-        id: 5,
-        scale: [],
-        soft: []
-    },
-    upg6: {
-        id: 6,
-        scale: [],
-        soft: []
-    },
-    pr2: {
-        id: 7,
-        scale: [],
-        soft: [],
-    },
+    points: makeDataofScSl(0),
+    upg1: makeDataofScSl(1),
+    upg2: makeDataofScSl(2),
+    upg3: makeDataofScSl(3),
+    upg4: makeDataofScSl(4),
+    upg5: makeDataofScSl(5),
+    upg6: makeDataofScSl(6),
+    pr2: makeDataofScSl(7),
 }
 
 export const setSCSLEffectDisp = (type: ScSlItems, isScaling: boolean, index: number, toWhat: string): void => {
@@ -170,25 +121,25 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         data[0].power = data[0].power.div(10 / 9);
                     }
         
-                    // data[0].power = data[0].power.div(tmp.value.kuaEffects.upg1Scaling);
+                    data[0].power = data[0].power.div(tmp.value.kua.effects.upg1Scaling);
         
-                    // if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) && Decimal.gte(player.value.kua.amount, 10)) {
-                    //     data[0].start = data[0].start.add(15);
-                    //     data[1].start = data[1].start.add(15);
-                    // }
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) && Decimal.gte(player.value.gameProgress.kua.amount, 10)) {
+                        data[0].start = data[0].start.add(15);
+                        data[1].start = data[1].start.add(15);
+                    }
         
-                    // if (getKuaUpgrade("s", 4)) {
-                    //     data[0].start = data[0].start.add(5);
-                    //     data[0].power = data[0].power.mul(0.9);
-                    //     data[1].start = data[1].start.add(2);
-                    //     data[1].power = data[1].power.mul(0.95);
-                    // }
+                    if (getKuaUpgrade("s", 4)) {
+                        data[0].start = data[0].start.add(5);
+                        data[0].power = data[0].power.mul(0.9);
+                        data[1].start = data[1].start.add(2);
+                        data[1].power = data[1].power.mul(0.95);
+                    }
         
-                    // data[1].power = data[1].power.div(tmp.value.kuaEffects.upg1SuperScaling);
+                    data[1].power = data[1].power.div(tmp.value.kua.effects.upg1SuperScaling);
         
-                    // if (getKuaUpgrade("p", 9)) {
-                    //     data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff);
-                    // }
+                    if (getKuaUpgrade("p", 9)) {
+                        data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff!);
+                    }
                     break;
                 case 'upg2':
                     data.push({
@@ -210,30 +161,30 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         displayedEffect: ""
                     });
 
-                    // if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 15)) {
-                    //     data[1].power = data[1].power.mul(0.875);
-                    // }
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 15)) {
+                        data[1].power = data[1].power.mul(0.875);
+                    }
         
-                    // if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) && Decimal.gte(player.value.kua.amount, 10)) {
-                    //     data[0].start = data[0].start.add(15);
-                    //     data[1].start = data[1].start.add(15);
-                    // }
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) && Decimal.gte(player.value.gameProgress.kua.amount, 10)) {
+                        data[0].start = data[0].start.add(15);
+                        data[1].start = data[1].start.add(15);
+                    }
         
-                    // if (getKuaUpgrade("s", 3)) {
-                    //     data[0].power = data[0].power.div(KUA_UPGRADES.KShards[2].eff)
-                    // }
+                    if (getKuaUpgrade("s", 3)) {
+                        data[0].power = data[0].power.div(KUA_UPGRADES.KShards[2].eff!)
+                    }
         
-                    // if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 15)) {
-                    //     data[1].power = data[1].power.mul(0.875);
-                    // }
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 15)) {
+                        data[1].power = data[1].power.mul(0.875);
+                    }
         
-                    // if (getKuaUpgrade("s", 6)) {
-                    //     data[1].power = data[1].power.div(1.5);
-                    // }
+                    if (getKuaUpgrade("s", 6)) {
+                        data[1].power = data[1].power.div(1.5);
+                    }
         
-                    // if (getKuaUpgrade("p", 9)) {
-                    //     data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff);
-                    // }
+                    if (getKuaUpgrade("p", 9)) {
+                        data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff!);
+                    }
                     break;
                 case 'upg3':
                     data.push({
@@ -305,20 +256,20 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         displayedEffect: ""
                     });
 
-                    // if (getKuaUpgrade("p", 4)) {
-                    //     data[0].start = data[0].start.mul(KUA_UPGRADES.KPower[3].eff);
-                    //     data[0].power = data[0].power.mul(0.6);
-                    // }
+                    if (getKuaUpgrade("p", 4)) {
+                        data[0].start = data[0].start.mul(KUA_UPGRADES.KPower[3].eff!);
+                        data[0].power = data[0].power.mul(0.6);
+                    }
         
-                    // if (getKuaUpgrade("s", 6)) {
-                    //     data[0].power = data[0].power.div(1.5);
-                    // }
+                    if (getKuaUpgrade("s", 6)) {
+                        data[0].power = data[0].power.div(1.5);
+                    }
         
-                    // if (ifAchievement(18)) {
-                    //     data[0].power = data[0].power.mul(0.95);
-                    // }
+                    if (ifAchievement(1, 7)) {
+                        data[0].power = data[0].power.mul(0.95);
+                    }
         
-                    // data[0].start = data[0].start.mul(tmp.value.kuaEffects.upg2Softcap);
+                    data[0].start = data[0].start.mul(tmp.value.kua.effects.upg2Softcap);
                     break;
                 case 'upg3':
                     data.push({
@@ -330,7 +281,7 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                     break;
                 case 'upg4':
                     data.push({
-                        start: D(8.5),
+                        start: D(1e100),
                         basePow: D(0.5),
                         power: D(1),
                         displayedEffect: ""
@@ -338,7 +289,7 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                     break;
                 case 'upg5':
                     data.push({
-                        start: D(8.5),
+                        start: D("e1000"),
                         basePow: D(0.5),
                         power: D(1),
                         displayedEffect: ""

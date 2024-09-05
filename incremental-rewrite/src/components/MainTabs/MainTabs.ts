@@ -77,6 +77,6 @@ export const TABS_LIST = [
         textColor: "#ffffff",
         outlineColor: "#d5c000",
         highlightColor: "#ffff7f",
-        get if() { return Decimal.gte(player.value.gameProgress.main.best.ever, Number.MAX_VALUE) }
+        get if() { return Decimal.gte(player.value.gameProgress.main.bestEver, Number.MAX_VALUE) }
     },
 ]

@@ -55,7 +55,7 @@ import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
                     <div class="flex-container" style="flex-direction: column;">
                         <button style="text-align: center; font-size: 1.0667vw" 
                         :class="{ nope: !tmp.main.prai.canDo, ok: tmp.main.prai.canDo }"
-                        class="whiteText largeButton fontVerdana generatorButton" id="prai" @click="reset('prai')">
+                        class="whiteText largeButton fontVerdana generatorButton" id="prai" @click="reset(0)">
                         <h3 style="font-size: 1.25vw">PRai: {{format(player.gameProgress.main.prai.amount)}}</h3>
                             {{`Reset your progress to gain ${Decimal.gte(player.gameProgress.main.pr2.amount, 1) ? format(tmp.main.prai.pending) + " " : ""}PRai.`}}
                             <br>{{
@@ -80,7 +80,7 @@ import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
                     <div class="flex-container" style="flex-direction: column;">
                         <button style="text-align: center; font-size: 1.0667vw" 
                         :class="{ nope: !tmp.main.pr2.canDo, ok: tmp.main.pr2.canDo }"
-                        class="whiteText largeButton fontVerdana generatorButton" id="pr2" v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)" @click="reset('pr2')">
+                        class="whiteText largeButton fontVerdana generatorButton" id="pr2" v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)" @click="reset(1)">
                             <h3 style="font-size: 1.25vw">PR2: {{format(player.gameProgress.main.pr2.amount)}}</h3>
                             Reset all of your previous progress to for a PR2 reset.
                             <br><span :style="{ color: tmp.main.pr2.costTextColor }">{{

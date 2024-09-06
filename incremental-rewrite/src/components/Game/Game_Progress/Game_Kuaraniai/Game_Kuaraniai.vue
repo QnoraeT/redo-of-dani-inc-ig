@@ -16,7 +16,7 @@ import { KUA_UPGRADES, KUA_ENHANCERS, kuaEnhReset, kuaEnh, buyKShardUpg, buyKPow
         <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: column; justify-content: center;" v-if="tab.tabList[tab.currentTab][0] === 0">
             <button style="text-align: center; margin-top: 0.96vw; margin-left: auto; margin-right: auto; font-size: 1.0667vw" 
             v-bind:class="{ nope: !tmp.kua.canDo, ok: tmp.kua.canDo }"
-            class="whiteText thinlargeButton fontVerdana kuaButton" id="kuaGain" @click="reset('kua')">
+            class="whiteText thinlargeButton fontVerdana kuaButton" id="kuaGain" @click="reset(2)">
                 <h3 style="font-size: 1.25vw">Kuaraniai: {{format(player.gameProgress.kua.amount, 3)}}</h3>
                 Convert your {{format(tmp.kua.effectivePrai)}} PRai into {{format(tmp.kua.pending, 4)}} Kuaraniai
                 <br>{{
@@ -28,7 +28,7 @@ import { KUA_UPGRADES, KUA_ENHANCERS, kuaEnhReset, kuaEnh, buyKShardUpg, buyKPow
                 <div v-if="tmp.kua.active.effects">
                     <li>Reduces Upgrade 1's scaling strength by {{formatPerc(tmp.kua.effects.upg1Scaling, 3)}}</li> 
                     <li v-if="player.gameProgress.kua.kpower.upgrades >= 6">Reduces Upgrade 1's super scaling strength by {{formatPerc(tmp.kua.effects.upg1SuperScaling, 3)}}</li>
-                    <li v-if="Decimal.gt(player.gameProgress.kua.amount, 0)"> Adds Upgrade 4, and makes it's base ×{{format(tmp.kua.effects.up4, 4)}}/bought. </li>
+                    <li v-if="Decimal.gt(player.gameProgress.kua.amount, 0)">Adds Upgrade 4, and makes it's base ×{{format(tmp.kua.effects.up4, 4)}}/bought. </li>
                     <li v-if="player.gameProgress.kua.kpower.upgrades >= 3">Raises Points gain to ^{{format(tmp.kua.effects.ptPower, 4)}}</li>
                     <li v-if="player.gameProgress.kua.kpower.upgrades >= 6">Delays Upgrade 2's softcap by {{format(tmp.kua.effects.upg2Softcap, 2)}}×</li>
                     <li v-if="player.gameProgress.kua.kshards.upgrades >= 7">Multiplies Point gain by {{format(tmp.kua.effects.pts, 2)}}×</li>

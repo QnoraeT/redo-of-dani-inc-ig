@@ -12,7 +12,7 @@ import { allocColResearch, challengeToggle, COL_CHALLENGES, COL_RESEARCH, comple
             <button @click="switchSubTab(0, 0)" class="colButtonTab smallColBorder colButton fontVerdana">Challenges</button>
             <button @click="switchSubTab(1, 0)" class="colButtonTab smallColBorder colButton fontVerdana">Research</button>
         </div>
-        <div class="flex-container" style="flex-direction: column; justify-content: center; margin-bottom: 1vw;">
+        <div class="flex-container fontVerdana" style="flex-direction: column; justify-content: center; margin-bottom: 1vw;">
             <span style="color: #f40; text-align: center; font-size: 1.6vw;">You have <span style="font-size: 1.92vw;"><b>{{format(player.gameProgress.col.power, 2)}}</b></span> Colosseum Power. <span style="font-size: 1.2vw;">({{format(tmp.col.powGen, 2)}}/s)</span></span>
             <span style="text-align: center; font-size: 1.6vw;" v-bind:style="{ color: player.gameProgress.col.completedAll ? '#0080FF' : '#FF4000' }">This will give you about <span style="font-size: 1.92vw;"><b>{{formatTime(player.gameProgress.col.maxTime, 3)}}</b></span> within challenges.</span>
         </div>

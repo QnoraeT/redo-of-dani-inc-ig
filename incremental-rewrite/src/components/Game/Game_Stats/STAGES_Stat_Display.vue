@@ -4,6 +4,7 @@ import { tab, player, tmp } from '@/main'
 import { format, formatTime } from '@/format'
 import { STAGES } from './Game_Stats'
 import { MAIN_UPGS } from '../Game_Progress/Game_Main/Game_Main'
+import { timesCompleted } from '../Game_Progress/Game_Colosseum/Game_Colosseum'
 
 defineProps<{
     id: number
@@ -16,7 +17,7 @@ defineProps<{
                 Total Points: {{format(player.gameProgress.main.totalEver, 2)}}<br>
                 {{`<--- Upgrades --- >`}}<br>
             </span>
-            <span v-for="(item, index) of MAIN_UPGS" :key='item.id'>
+            <span v-for="(item, index) of MAIN_UPGS" :key='index'>
                 <span v-if="item.shown">
                     Best Upgrade {{ index + 1 }}: {{format(player.gameProgress.main.upgrades[index].best)}}<br>
                 </span>
@@ -62,10 +63,19 @@ defineProps<{
             </span>
         </div>
         <div v-if="id === 2" class="statText fontVerdana">
-            <!-- stuff here -->
+            <span>
+                Total Colosseum Power: {{ format(player.gameProgress.col.totalEver, 2) }}<br>
+                Best Colosseum Power: {{ format(player.gameProgress.col.bestEver, 2) }}<br>
+                <!-- ! TODO: make this not hardcoded -->
+                Total Challenge Completions: {{ format(timesCompleted('nk')) }}<br>
+            </span>
         </div>
         <div v-if="id === 3" class="statText fontVerdana">
-            <!-- stuff here -->
+            <span>
+                Total Taxed Coins: {{ format(player.gameProgress.tax.totalEver, 2) }}<br>
+                Best Taxed Coins: {{ format(player.gameProgress.tax.bestEver, 2) }}<br>
+                Taxation Resets: {{ format(player.gameProgress.tax.times) }}<br>
+            </span>
         </div>
     </div>
 </template>

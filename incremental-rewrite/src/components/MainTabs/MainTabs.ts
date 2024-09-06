@@ -1,9 +1,8 @@
-import Decimal from 'break_eternity.js'
-import { tab } from '@/main'
-import { player } from '@/main'
+import { tab, player } from '@/main'
 
 export const switchTab = (where: number) => {
     tab.value.currentTab = where;
+    console.log(player)
 }
 
 export const switchSubTab = (where: number, index: number) => {
@@ -77,6 +76,6 @@ export const TABS_LIST = [
         textColor: "#ffffff",
         outlineColor: "#d5c000",
         highlightColor: "#ffff7f",
-        get if() { return Decimal.gte(player.value.gameProgress.main.bestEver, Number.MAX_VALUE) }
+        get if() { return player.value.gameProgress.unlocks.tax }
     },
 ]

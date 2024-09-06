@@ -213,6 +213,7 @@ export const inverseQuad = (x: DecimalSource, a: DecimalSource, b: DecimalSource
             : Decimal.sub(x, c).mul(a).mul(4).add(Decimal.pow(b, 2)).sqrt().sub(b).div(Decimal.mul(a, 2))
 }
 
+// ! don't use this smh
 export const inverseCube = (x: DecimalSource, a: DecimalSource, b: DecimalSource, c: DecimalSource, d: DecimalSource, tol = 1e-10) => { // inverse of ax^3+bx^2+cx+d
     x = new Decimal(x);
     a = new Decimal(a);
@@ -236,8 +237,8 @@ export const inverseCube = (x: DecimalSource, a: DecimalSource, b: DecimalSource
 
 
 export const inverseFact = (x: DecimalSource) => {
-    if (Decimal.gte(x, 'ee18')) return Decimal.log10(x);
-    if (Decimal.gte(x, 'e10000')) return Decimal.log10(x).div(Decimal.log10(x).log10());
+    if (Decimal.gte(x, 'ee18')) { return Decimal.log10(x); }
+    if (Decimal.gte(x, 'e10000')) { return Decimal.log10(x).div(Decimal.log10(x).log10()); }
     return Decimal.div(x, 2.5066282746310002).ln().div(Math.E).lambertw().add(1).exp().sub(0.5);
 }
 

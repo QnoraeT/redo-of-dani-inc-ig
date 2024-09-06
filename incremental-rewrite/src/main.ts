@@ -12,7 +12,8 @@ import { updateAllStart, updateStart, initAllMainUpgrades } from './components/G
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from './components/Game/Game_Achievements/Game_Achievements'
 import { getKuaUpgrade, updateAllKua } from './components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai'
 import { diePopupsDie } from './popups'
-import { type challengeIDList, type colChallengesSavedData } from './components/Game/Game_Progress/Game_Colosseum/Game_Colosseum'
+import { getColResEffect, updateAllCol, type challengeIDList, type colChallengesSavedData } from './components/Game/Game_Progress/Game_Colosseum/Game_Colosseum'
+import { updateAllTax } from './components/Game/Game_Progress/Game_Taxation/Game_Taxation'
 
 export const NEXT_UNLOCKS = [
     {
@@ -97,6 +98,7 @@ type Player = {
                     bought: DecimalSource
                     best: DecimalSource
                     auto: boolean
+                    boughtInReset: Array<DecimalSource> // prai, pr2, kua, col, tax
                 }
             >
             prai: {
@@ -213,7 +215,8 @@ export const initPlayer = (set = false): Player => {
         mainUpgrades.push({
             bought: D(0),
             best: D(0),
-            auto: false
+            auto: false,
+            boughtInReset: [D(0), D(0), D(0), D(0), D(0)]
         });
     }
     const data = {
@@ -841,9 +844,27 @@ export const updatePlayerData = (player: Player): Player => {
 //     }
 // }
 
-export const reset = (layer: string, override = false) => {
+export const resetTotalBestArray = (array: Array<null | DecimalSource>, defaultt: Decimal, clear: number) => {
+    if (clear > array.length) {
+        console.warn(`[resetTotalBestArray]: Clear (${clear}) is larger than the array (${array.length})!`);
+        console.warn(array);
+    }
+    if (array[clear] !== null) {
+        array[clear] = defaultt;
+    }
+}
+
+export const reset = (layer: number, override = false) => {
+    if (layer <= -1) {
+        return;
+    }
+
+    for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
+        player.value.gameProgress.main.upgrades[i].boughtInReset[layer] = D(0);
+    }
+    
     switch (layer) {
-        case "prai":
+        case 0:
             if (tmp.value.main.prai.canDo || override) {
                 if (!override) {
                     player.value.gameProgress.main.prai.amount = Decimal.add(player.value.gameProgress.main.prai.amount, tmp.value.main.prai.pending);
@@ -856,35 +877,31 @@ export const reset = (layer: string, override = false) => {
 
                 for (let i = 0; i < 2; i++) {
                     player.value.gameProgress.main.prai.timeInPRai = D(0);
-                    player.value.gameProgress.main.upgrades[0].bought = D(0);
-                    player.value.gameProgress.main.upgrades[1].bought = D(0);
-                    player.value.gameProgress.main.upgrades[2].bought = D(0);
+                    player.value.gameProgress.main.points = D(0);
+
+                    for (let i = 0; i < 3; i++) {
+                        player.value.gameProgress.main.upgrades[i].bought = D(0);
+                    }
+
                     updateStart(0, 0);
                     updateStart(-3, 0);
                     updateStart(-2, 0);
                     updateStart(-1, 0);
-                    player.value.gameProgress.main.points = D(0);
-                    player.value.gameProgress.main.totals[0] = D(0);
-                    player.value.gameProgress.main.best[0] = D(0);
                 }
             }
             break;
-        case "pr2":
+        case 1:
             if (tmp.value.main.pr2.canDo || override) {
                 if (!override) {
                     player.value.gameProgress.main.pr2.amount = Decimal.add(player.value.gameProgress.main.pr2.amount, 1);
                 }
 
-                player.value.gameProgress.main.totals[1] = D(0);
-                player.value.gameProgress.main.best[1] = D(0);
                 player.value.gameProgress.main.prai.amount = Decimal.min(10, player.value.gameProgress.main.pr2.amount);
-                player.value.gameProgress.main.prai.totals[1] = Decimal.min(10, player.value.gameProgress.main.pr2.amount);
-                player.value.gameProgress.main.prai.best[1] = Decimal.min(10, player.value.gameProgress.main.pr2.amount);
+
                 updateStart(1, 0);
-                reset("prai", true);
             }
             break;
-        case "kua":
+        case 2:
             if (tmp.value.kua.canDo || override) {
                 if (!override) {
                     setAchievement(1, 4, ACHIEVEMENT_DATA[1].list[4].cond);
@@ -900,41 +917,32 @@ export const reset = (layer: string, override = false) => {
                     player.value.gameProgress.kua.times = Decimal.add(player.value.gameProgress.kua.times, 1);
                 }
 
-                player.value.gameProgress.main.totals[2] = D(0);
-                player.value.gameProgress.main.best[2] = D(0);
-                player.value.gameProgress.main.prai.best[2] = D(0);
-                player.value.gameProgress.main.prai.totals[2] = D(0);
                 player.value.gameProgress.main.prai.times = D(0);
                 player.value.gameProgress.main.prai.amount = D(0);
                 player.value.gameProgress.kua.timeInKua = D(0);
-                updateAllKua("kua")
-                reset("pr2", true);
+
+                updateAllKua(0)
             }
             break;
-        case "col":
+        case 3:
             player.value.gameProgress.kua.amount = D(0);
-            player.value.gameProgress.kua.best[3] = D(0);
-            player.value.gameProgress.kua.totals[3] = D(0);
             player.value.gameProgress.kua.times = D(0);
             player.value.gameProgress.kua.timeInKua = D(0);
             player.value.gameProgress.kua.kshards.amount = D(0);
-            player.value.gameProgress.kua.kshards.best[3] = D(0);
-            player.value.gameProgress.kua.kshards.totals[3] = D(0);
             player.value.gameProgress.kua.kshards.upgrades = 0;
             player.value.gameProgress.kua.kpower.amount = D(0);
-            player.value.gameProgress.kua.kpower.best[3] = D(0);
-            player.value.gameProgress.kua.kpower.totals[3] = D(0);
             player.value.gameProgress.kua.kpower.upgrades = 0;
+            player.value.gameProgress.main.pr2.amount = D(0);
             for (let i = 0; i < 6; i++) {
                 player.value.gameProgress.main.upgrades[i].auto = false;
             }
             player.value.gameProgress.main.prai.auto = false;
-            player.value.gameProgress.main.upgrades[3].bought = D(0);
-            player.value.gameProgress.main.upgrades[4].bought = D(0);
-            player.value.gameProgress.main.upgrades[5].bought = D(0);
-            player.value.gameProgress.main.pr2.best[3] = D(0);
-            player.value.gameProgress.main.pr2.amount = D(0);
-            player.value.gameProgress.main.best[3] = D(0);
+
+            for (let i = 0; i < 6; i++) {
+                player.value.gameProgress.main.upgrades[i].bought = D(0);
+                player.value.gameProgress.main.upgrades[i].boughtInReset[3] = D(0);
+            }
+
             player.value.gameProgress.kua.enhancers.sources = [D(0), D(0), D(0)],
             player.value.gameProgress.kua.enhancers.enhancers = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
             player.value.gameProgress.kua.enhancers.enhanceXP = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
@@ -943,12 +951,35 @@ export const reset = (layer: string, override = false) => {
             player.value.gameProgress.kua.enhancers.inExtraction = 0,
             player.value.gameProgress.kua.enhancers.extractionXP = [D(0), D(0), D(0)],
             player.value.gameProgress.kua.enhancers.upgrades = []
-            updateAllKua("kua");
-            reset("kua", true);
+            updateAllKua(0);
+            break;
+        case 4:
+            if (tmp.value.tax.canDo || override) {
+                if (!override) {
+                    player.value.gameProgress.tax.amount = Decimal.add(player.value.gameProgress.tax.amount, tmp.value.tax.pending);
+                    player.value.gameProgress.tax.times = Decimal.add(player.value.gameProgress.tax.times, 1);
+                }
+
+                updateAllCol(0);
+            }
             break;
         default:
             throw new Error(`uhh i don't think ${layer} is resettable`)
     }
+
+    resetTotalBestArray(player.value.gameProgress.main.totals, D(0), layer);
+    resetTotalBestArray(player.value.gameProgress.main.best, D(0), layer);
+    resetTotalBestArray(player.value.gameProgress.main.prai.totals, Decimal.min(10, player.value.gameProgress.main.pr2.amount), layer);
+    resetTotalBestArray(player.value.gameProgress.main.prai.best, Decimal.min(10, player.value.gameProgress.main.pr2.amount), layer);
+    resetTotalBestArray(player.value.gameProgress.main.pr2.best, D(0), layer)
+    resetTotalBestArray(player.value.gameProgress.kua.kpower.best, D(0), layer)
+    resetTotalBestArray(player.value.gameProgress.kua.kpower.totals, D(0), layer)
+    resetTotalBestArray(player.value.gameProgress.kua.kshards.best, D(0), layer)
+    resetTotalBestArray(player.value.gameProgress.kua.kshards.totals, D(0), layer)
+    resetTotalBestArray(player.value.gameProgress.kua.best, D(0), layer)
+    resetTotalBestArray(player.value.gameProgress.kua.totals, D(0), layer)
+    
+    reset(layer - 1, true);
 }
 
 function calcPPS(): Decimal {
@@ -980,8 +1011,8 @@ function calcPPS(): Decimal {
         pps = pps.mul(tmp.value.kua.effects.pts);
     } 
 
-    // pps = pps.mul(getColResEffect(0));
-    // pps = pps.mul(tmp.value.taxPtsEff);
+    pps = pps.mul(getColResEffect(0));
+    pps = pps.mul(tmp.value.tax.ptsEff);
     pps = pps.mul(tmp.value.kua.effects.kpowerPassive)
     return pps;
 }
@@ -1019,6 +1050,8 @@ function gameLoop(): void {
         player.value.totalRealTime += gameVars.value.delta;
 
         updateAllSCSL();
+        updateAllTax(gameDelta);
+        updateAllCol(gameDelta);
         updateAllKua(gameDelta);
         updateAllStart(gameDelta);
 

@@ -257,7 +257,6 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 }
             }
             break;
-
         case 0:
             if (Decimal.lte(player.value.gameProgress.col.time, 0) && player.value.gameProgress.col.inAChallenge) {
                 for (let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1; i >= 0; i--) {
@@ -276,6 +275,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 updateAllTotal(player.value.gameProgress.col.totals, generate);
                 player.value.gameProgress.col.totalEver = Decimal.add(player.value.gameProgress.col.totalEver, generate);
                 updateAllBest(player.value.gameProgress.col.best, player.value.gameProgress.col.power);
+                player.value.gameProgress.col.bestEver = Decimal.max(player.value.gameProgress.col.bestEver, player.value.gameProgress.col.power);
 
                 i = Decimal.max(player.value.gameProgress.col.power, 1e2).log10().mul(20);
                 player.value.gameProgress.col.maxTime = i;
@@ -404,7 +404,7 @@ export const challengeToggle = (id: challengeIDList) => {
         player.value.gameProgress.col.saved[id] = obj;
         player.value.gameProgress.col.challengeOrder.chalID.push(COL_CHALLENGES[id].id);
         player.value.gameProgress.col.challengeOrder.layer.push(COL_CHALLENGES[id].layer);
-        reset("col", true)
+        reset(3, true)
     } else {
         if (COL_CHALLENGES[id].canComplete) {
             player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);

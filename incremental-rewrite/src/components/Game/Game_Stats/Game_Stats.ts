@@ -1,5 +1,7 @@
 import Decimal from 'break_eternity.js'
 import { player, tmp } from '@/main'
+import { COL_CHALLENGES, inChallenge, timesCompleted } from '../Game_Progress/Game_Colosseum/Game_Colosseum';
+import { D } from '@/calc';
 
 // TODO: remove list()
 export const STAGES = [
@@ -33,48 +35,34 @@ export const STAGES = [
             } 
         }
     },
-    // {
-    //     id: 2,
-    //     name: "Colosseum",
-    //     get show() { return player.value.col.unlocked; },
-    //     get progress() { return timesCompleted("nk") ? 1 : (inChallenge("nk") ? COL_CHALLENGES.nk.progress : 0); },
-    //     get colors() { 
-    //         return {
-    //             border: "#ff4000",
-    //             name: "#661f00",
-    //             progress: "#882300",
-    //             progressBarBase: "#742500",
-    //             progressBarFill: "#ff5822"
-    //         } 
-    //     },
-    //     get list() {
-    //         let arr = [];
-    //         arr.push(`Total Colosseum Power: ${format(player.value.col.totalPower, 4)}`);
-    //         arr.push(`Best Colosseum Power: ${format(player.value.col.bestPower, 4)}`);
-    //         arr.push(`Total Challenge Completions: ${format(Decimal.add(timesCompleted("nk"), 0))}`);
-    //         return arr;
-    //     }
-    // },
-    // {
-    //     id: 3,
-    //     name: "Taxation",
-    //     get show() { return player.value.tax.unlocked; },
-    //     get progress() { return Decimal.add(tmp.value.taxPending, player.value.tax.taxed).div(20); },
-    //     get colors() { 
-    //         return {
-    //             border: "#c7b500",
-    //             name: "#5a4700",
-    //             progress: "#705f00",
-    //             progressBarBase: "#453c00",
-    //             progressBarFill: "#ffd600"
-    //         } 
-    //     },
-    //     get list() {
-    //         let arr = [];
-    //         arr.push(`Total Taxed Coins: ${format(player.value.tax.totalTax, 3)}`);
-    //         arr.push(`Best Taxed Coins: ${format(player.value.tax.bestTax, 3)}`);
-    //         arr.push(`Taxation Resets: ${format(player.value.tax.times)}`);
-    //         return arr;
-    //     }
-    // },
+    {
+        id: 2,
+        name: "Colosseum",
+        get show() { return player.value.gameProgress.unlocks.col; },
+        get progress() { return timesCompleted("nk") ? D(1) : (inChallenge("nk") ? COL_CHALLENGES.nk.progress : D(0)); },
+        get colors() { 
+            return {
+                border: "#ff4000",
+                name: "#661f00",
+                progress: "#882300",
+                progressBarBase: "#742500",
+                progressBarFill: "#ff5822"
+            } 
+        },
+    },
+    {
+        id: 3,
+        name: "Taxation",
+        get show() { return player.value.gameProgress.unlocks.tax; },
+        get progress() { return Decimal.add(tmp.value.tax.pending, player.value.gameProgress.tax.amount).div(20); },
+        get colors() { 
+            return {
+                border: "#c7b500",
+                name: "#5a4700",
+                progress: "#705f00",
+                progressBarBase: "#453c00",
+                progressBarFill: "#ffd600"
+            } 
+        },
+    },
 ]

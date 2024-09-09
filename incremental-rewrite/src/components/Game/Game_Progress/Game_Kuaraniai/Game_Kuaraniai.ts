@@ -3,6 +3,7 @@ import { player, tmp, updateAllBest, updateAllTotal } from '@/main'
 import { format, formatPerc } from '@/format'
 import { D, smoothExp, smoothPoly } from '@/calc'
 import { ACHIEVEMENT_DATA } from '../../Game_Achievements/Game_Achievements'
+import { inChallenge } from '../Game_Colosseum/Game_Colosseum'
 
 // use get show if it can change in the mean time, currently unused as a placeholder
 // costs will get the same treatment later
@@ -353,7 +354,7 @@ export const KUA_ENHANCERS = {
             color: "#ffffff",
             get desc() { return `Increase UP2's base by +${format(this.effect(), 4)}`; },
             effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[1], pow = tmp.value.kua.trueEnhPower[1]) {
-                const effect = Decimal.max(xp, 0).mul(0.00025).add(1).root(10).sub(1).mul(10).mul(pow)
+                const effect = Decimal.max(xp, 0).mul(0.00025).add(1).root(10).sub(1).mul(10).add(1).pow(pow).sub(1)
                 return effect;
             }
         },
@@ -361,7 +362,7 @@ export const KUA_ENHANCERS = {
             color: "#ffffff",
             get desc() { return `Increase UP3's base by +${format(this.effect(), 4)}`; },
             effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[2], pow = tmp.value.kua.trueEnhPower[2]) {
-                const effect = Decimal.max(xp, 0).mul(0.001).add(1).ln().mul(0.0025).add(1).pow(pow).sub(1)
+                const effect = Decimal.max(xp, 0).mul(0.0025).add(1).ln().mul(0.001).add(1).pow(pow).sub(1)
                 return effect;
             }
         },
@@ -419,6 +420,18 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.active.spUpgrades = true;
             tmp.value.kua.active.effects = true;
             tmp.value.kua.active.gain = true;
+
+            if (inChallenge("nk")) {
+                tmp.value.kua.active.kpower.upgrades = false;
+                tmp.value.kua.active.kpower.effects = false;
+                tmp.value.kua.active.kpower.gain = false;
+                tmp.value.kua.active.kshards.upgrades = false;
+                tmp.value.kua.active.kshards.effects = false;
+                tmp.value.kua.active.kshards.gain = false;
+                tmp.value.kua.active.spUpgrades = false;
+                tmp.value.kua.active.effects = false;
+                tmp.value.kua.active.gain = false;
+            }
             break;
         case 1:
             tmp.value.kua.sourcesCanBuy = [false, false, false];

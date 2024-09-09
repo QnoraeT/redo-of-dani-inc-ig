@@ -73,10 +73,10 @@ import { allocColResearch, challengeToggle, COL_CHALLENGES, COL_RESEARCH, comple
             </div>
             <div style="display: flex; justify-content: center; flex-direction: row; border: 0.24vw solid #ff4000; height: 40vw; width: 50%">
                 <div style="width: 100%; height: 100%;">
-                    <div class="whiteText" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 20%; font-size: 2.4vw;">
+                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 20%; font-size: 2.4vw;">
                         <span class="centered-text" style="height: 100%;">{{COL_RESEARCH[tab.tabList[tab.currentTab][1]].name}}</span>
                     </div>
-                    <div class="whiteText" style="display: flex; justify-content: center; background-color: #521400; position: relative; width: 100%; height: 15%; font-size: 1.6vw">
+                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #521400; position: relative; width: 100%; height: 15%; font-size: 1.6vw">
                         <span class="centered-text" style="top: 4%">Level: {{format(getColResLevel(tab.tabList[tab.currentTab][1]).floor(), 0)}}</span>
                         <!-- i wish i made this better instead of having to do an extremely long formula T_T -->
                         <span v-if="getColResLevel(tab.tabList[tab.currentTab][1]).lt(1e12)" class="centered-text" style="top: 33.333%">XP: {{format(Decimal.sub(player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor())), 0)}} / {{format(COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor().add(1)).sub(COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor())), 0)}}</span>
@@ -86,14 +86,14 @@ import { allocColResearch, challengeToggle, COL_CHALLENGES, COL_RESEARCH, comple
                             <div v-bind:style="{ backgroundColor: player.gameProgress.col.research.enabled[tab.tabList[tab.currentTab][1]] ? '#ffc000' : '#ff4000', width: `${getColResLevel(tab.tabList[tab.currentTab][1]).gte(1e12) ? 100 : Decimal.div(Decimal.sub(player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor())), COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor().add(1)).sub(COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor()))).min(1).mul(100).toNumber()}%` }" style="position: absolute; top: 0; left: 0; border: 0.24vw solid #882200; height: 100%;"></div>
                         </div>
                     </div>
-                    <div class="whiteText" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 44%; font-size: 1.2vw">
+                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 44%; font-size: 1.2vw">
                         <span class="centered-text" style="top: 0.5vw">{{COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDesc(getColResLevel(tab.tabList[tab.currentTab][1]).floor())}}</span>
                         <span class="centered-text" style="top: 2vw">{{COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDescLevel(getColResLevel(tab.tabList[tab.currentTab][1]).floor())}}</span>
                     </div>
-                    <div class="whiteText" style="display: flex; justify-content: center; background-color: #521400; position: relative; width: 100%; height: 6%; font-size: 1.44vw">
+                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #521400; position: relative; width: 100%; height: 6%; font-size: 1.44vw">
                         <span class="centered-text" style="top: 10%">You currently have allocated {{tmp.col.researchesAllocated}} / {{tmp.col.researchesAtOnce}} researches.</span>
                     </div>
-                    <div class="whiteText" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 15%;">
+                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 15%;">
                         <button @click="allocColResearch(tab.tabList[tab.currentTab][1])" class="smallColBorder colButton fontVerdana whiteText" style="width: 50%; height: 80%; top: 10%; font-size: 1vw; position: relative">
                             {{player.gameProgress.col.research.enabled[tab.tabList[tab.currentTab][1]] ? 'Stop' : 'Start'}} researching {{COL_RESEARCH[tab.tabList[tab.currentTab][1]].name}}.
                             <br>{{tmp.col.researchesAtOnce - tmp.col.researchesAllocated <= 0 ? `You can't allocate anymore researches.` : `You can allocate ${tmp.col.researchesAtOnce - tmp.col.researchesAllocated} more ${tmp.col.researchesAtOnce - tmp.col.researchesAllocated === 1 ? 'research' : 'researches'}.`}}

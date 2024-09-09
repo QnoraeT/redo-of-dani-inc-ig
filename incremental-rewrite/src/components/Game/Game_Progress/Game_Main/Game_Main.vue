@@ -6,21 +6,23 @@ import { format, formatTime } from '@/format'
 import { getSCSLAttribute } from '@/softcapScaling'
 import { MAIN_UPGS, buyGenUPG } from './Game_Main'
 import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
+import { COL_CHALLENGES } from '../Game_Colosseum/Game_Colosseum'
+import { gRC } from '@/calc'
 </script>
 <template>
     <div id="generators" v-if="tab.currentTab === 0">
-        <div class="flex-container" style="flex-direction: column; justify-content: center; margin-top: 1vw; margin-bottom: 1vw;">
+        <div class="flex-container fontVerdana" style="flex-direction: column; justify-content: center; margin-top: 1vw; margin-bottom: 1vw;">
             <span v-if="Decimal.gte(player.gameProgress.main.points, getSCSLAttribute('points', false)[0].start)" style="text-align: center; font-size: 1.2vw; color:#f44">
                 Your points past {{format(getSCSLAttribute('points', false)[0].start)}} is taxed by {{getSCSLAttribute('points', false)[0].displayedEffect}}!
             </span>
-            <!-- <span v-if="player.col.inAChallenge" style="text-align: center; font-size: 1.6vw;" :style="{ color: player.col.completedAll ? '#0080FF' : '#FF4000' }">
-                You have <b>{{formatTime(player.col.time, 3)}}</b> left within these challenges:
+            <span v-if="player.gameProgress.col.inAChallenge" style="text-align: center; font-size: 1.6vw;" :style="{ color: player.gameProgress.col.completedAll ? '#0080FF' : '#FF4000' }">
+                You have <b>{{formatTime(player.gameProgress.col.time, 3)}}</b> left within these challenges:
             </span>
-            <div v-for="(item, index) in player.inChallenge" style="text-align: center;" :style="{ color: gRC(2 * COL_CHALLENGES[index].progress.toNumber() + (COL_CHALLENGES[index].canComplete ? 1.5 : 0.0), 1.0, 1.0) }">
-                <span v-if="player.inChallenge[index].overall">
-                    {{item.name + (player.inChallenge[index].depth.gt(1) ? ` x${format(player.inChallenge[index].depth)}` : '')}}{{player.inChallenge[index].overall ? `: ${COL_CHALLENGES[index].progDisplay}` : ''}}
+            <div v-for="(item, index) in player.gameProgress.inChallenge" :key='item.id' style="text-align: center;" :style="{ color: gRC(2 * COL_CHALLENGES[index].progress.toNumber() + (COL_CHALLENGES[index].canComplete ? 1.5 : 0.0), 1.0, 1.0) }">
+                <span v-if="player.gameProgress.inChallenge[index].overall" class="fontVerdana">
+                    {{item.name + (Decimal.gt(player.gameProgress.inChallenge[index].depths, 1) ? ` x${format(player.gameProgress.inChallenge[index].depths)}` : '')}}{{player.gameProgress.inChallenge[index].overall ? `: ${COL_CHALLENGES[index].progDisplay}` : ''}}
                 </span>
-            </div> -->
+            </div>
         </div>
         <div class="flex-container" style="flex-direction: column; align-items: center; margin-top: 1vw; margin-bottom: 1vw;">
             <div v-for="(item, index) in NEXT_UNLOCKS" :key='index' :style="{ color: item.color }">

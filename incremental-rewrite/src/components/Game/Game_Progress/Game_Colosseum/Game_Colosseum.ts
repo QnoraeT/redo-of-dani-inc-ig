@@ -155,8 +155,11 @@ export const challengeDepth = (id: challengeIDList) => {
 }
 
 export const makeColChallengeSaveData = (): colChallengesSavedData => {
-    return {
+    const obj: colChallengesSavedData = {
+        points: player.value.gameProgress.main.points,
         upgradesBought: [],
+        upgradesAuto: [],
+        upgradesResetHistory: [],
         pointBest: [player.value.gameProgress.main.best[0], player.value.gameProgress.main.best[1], player.value.gameProgress.main.best[2]],
         pointTotals: [player.value.gameProgress.main.totals[0], player.value.gameProgress.main.totals[1], player.value.gameProgress.main.totals[2]],
         kua: {
@@ -185,8 +188,19 @@ export const makeColChallengeSaveData = (): colChallengesSavedData => {
             timeInPRai: player.value.gameProgress.main.prai.timeInPRai,
             best: [null, player.value.gameProgress.main.prai.best[1], player.value.gameProgress.main.prai.best[2]],
             totals: [null, player.value.gameProgress.main.prai.totals[1], player.value.gameProgress.main.prai.totals[2]],
+            times: player.value.gameProgress.main.prai.times
         }
     }
+    for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
+        obj.upgradesBought.push(player.value.gameProgress.main.upgrades[i].bought);
+        obj.upgradesAuto.push(player.value.gameProgress.main.upgrades[i].auto);
+        const arr: Array<DecimalSource> = [];
+        for (let j = 0; j < player.value.gameProgress.main.upgrades[i].boughtInReset.length; j++) {
+            arr.push(player.value.gameProgress.main.upgrades[i].boughtInReset[j]);
+        }
+        obj.upgradesResetHistory.push(arr);
+    }
+    return obj;
 }
 
 export const exitChallenge = (id: challengeIDList) => {
@@ -201,7 +215,12 @@ export const exitChallenge = (id: challengeIDList) => {
     const savedColData = player.value.gameProgress.col.saved[id]!;
     for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
         player.value.gameProgress.main.upgrades[i].bought = savedColData.upgradesBought[i];
+        player.value.gameProgress.main.upgrades[i].auto = savedColData.upgradesAuto[i];
+        for (let j = 0; j < player.value.gameProgress.main.upgrades[i].boughtInReset.length; j++) {
+            player.value.gameProgress.main.upgrades[i].boughtInReset[j] = savedColData.upgradesResetHistory[i][j];
+        }
     }
+    player.value.gameProgress.main.points = savedColData.points;
     player.value.gameProgress.main.best[0] = savedColData.pointBest[0];
     player.value.gameProgress.main.best[1] = savedColData.pointBest[1];
     player.value.gameProgress.main.best[2] = savedColData.pointBest[2];
@@ -216,6 +235,7 @@ export const exitChallenge = (id: challengeIDList) => {
 
     player.value.gameProgress.main.prai.auto = savedColData.prai.auto;
     player.value.gameProgress.main.prai.amount = savedColData.prai.amount;
+    player.value.gameProgress.main.prai.times = savedColData.prai.times;
     player.value.gameProgress.main.prai.timeInPRai = savedColData.prai.timeInPRai;
     player.value.gameProgress.main.prai.best[2] = savedColData.prai.best[2];
     player.value.gameProgress.main.prai.best[1] = savedColData.prai.best[1];
@@ -312,8 +332,6 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             } else {
                 player.value.gameProgress.col.time = player.value.gameProgress.col.maxTime;
             }
-
-            // setAchievement(2, 14, Decimal.gte(timesCompleted("nk"), 1));
             break;
         default:
             throw new Error(`Colosseum area of the game does not contain ${type}`);
@@ -323,7 +341,10 @@ export const updateCol = (type: number, delta: DecimalSource) => {
 // SAVE ALL PROGRESS FROM EVERYTHING EARLIER THAN COLOSSEUM
 // we have to do this because js passes objects by reference and stuff
 export type colChallengesSavedData = {
+    points: DecimalSource
     upgradesBought: Array<DecimalSource>
+    upgradesAuto: Array<boolean>
+    upgradesResetHistory: Array<Array<DecimalSource>>
     pointBest: Array<DecimalSource | null>
     pointTotals: Array<DecimalSource | null>
     kua: {
@@ -352,6 +373,7 @@ export type colChallengesSavedData = {
         timeInPRai: DecimalSource
         best: Array<DecimalSource | null>
         totals: Array<DecimalSource | null>
+        times: DecimalSource
     }
 }
 
@@ -365,41 +387,7 @@ export const challengeToggle = (id: challengeIDList) => {
         player.value.gameProgress.inChallenge[id].goalDesc = COL_CHALLENGES[id].goalDesc;
         player.value.gameProgress.inChallenge[id].entered = true;
 
-        const obj: colChallengesSavedData = {
-            upgradesBought: [],
-            pointBest: [player.value.gameProgress.main.best[0], player.value.gameProgress.main.best[1], player.value.gameProgress.main.best[2]],
-            pointTotals: [player.value.gameProgress.main.totals[0], player.value.gameProgress.main.totals[1], player.value.gameProgress.main.totals[2]],
-            kua: {
-                auto: player.value.gameProgress.kua.auto,
-                amount: player.value.gameProgress.kua.amount,
-                timeInKua: player.value.gameProgress.kua.timeInKua,
-                times: player.value.gameProgress.kua.times,
-                kshards: {
-                    amount: player.value.gameProgress.kua.kshards.amount,
-                    upgrades: player.value.gameProgress.kua.kshards.upgrades
-                },
-                kpower: {
-                    amount: player.value.gameProgress.kua.kpower.amount,
-                    upgrades: player.value.gameProgress.kua.kpower.upgrades
-                }
-            },
-            pr2: {
-                auto: player.value.gameProgress.main.pr2.auto,
-                amount: player.value.gameProgress.main.pr2.amount,
-                timeInPR2: player.value.gameProgress.main.pr2.timeInPR2,
-                best: [null, null, player.value.gameProgress.main.pr2.best[2]]
-            },
-            prai: {
-                auto: player.value.gameProgress.main.prai.auto,
-                amount: player.value.gameProgress.main.prai.amount,
-                timeInPRai: player.value.gameProgress.main.prai.timeInPRai,
-                best: [null, player.value.gameProgress.main.prai.best[1], player.value.gameProgress.main.prai.best[2]],
-                totals: [null, player.value.gameProgress.main.prai.totals[1], player.value.gameProgress.main.prai.totals[2]],
-            }
-        }
-        for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
-            obj.upgradesBought.push(player.value.gameProgress.main.upgrades[i].bought);
-        }
+        const obj: colChallengesSavedData = makeColChallengeSaveData();
 
         player.value.gameProgress.col.saved[id] = obj;
         player.value.gameProgress.col.challengeOrder.chalID.push(COL_CHALLENGES[id].id);

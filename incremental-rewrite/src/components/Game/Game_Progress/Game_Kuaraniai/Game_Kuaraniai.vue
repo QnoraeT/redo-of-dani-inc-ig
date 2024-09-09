@@ -11,6 +11,7 @@ import { KUA_UPGRADES, KUA_ENHANCERS, kuaEnhReset, kuaEnh, buyKShardUpg, buyKPow
     <div id="kuaraniai" v-if="tab.currentTab === 4">
         <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;" v-if="player.gameProgress.unlocks.kuaEnhancers">
             <button @click="switchSubTab(0, 0)" style="margin-left: 0.16vw; margin-right: 0.16vw; width: 10vw; height: 3vw; font-size: 1vw" class="kuaButton2 fontVerdana whiteText">Main</button>
+            <!-- disable this for now, seems unbalanced -->
             <button @click="switchSubTab(1, 0)" style="margin-left: 0.16vw; margin-right: 0.16vw; width: 10vw; height: 3vw; font-size: 1vw" class="kuaButton2 fontVerdana whiteText">Enhancers</button>
         </div>
         <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: column; justify-content: center;" v-if="tab.tabList[tab.currentTab][0] === 0">

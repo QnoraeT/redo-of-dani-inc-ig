@@ -2,7 +2,6 @@ import { tab, player } from '@/main'
 
 export const switchTab = (where: number) => {
     tab.value.currentTab = where;
-    console.log(player)
 }
 
 export const switchSubTab = (where: number, index: number) => {

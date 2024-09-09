@@ -157,7 +157,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             }
         },
         get autoUnlocked() {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 2);
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 2);
         },
         get display() {
             return `Increase point gain by ${format(this.calcEB, 3)}×`;
@@ -229,10 +229,10 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             }
         },
         get shown() {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 1);
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 1);
         },
         get autoUnlocked() {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 4);
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 4);
         },
         get display() {
             return `Decreases Upgrade 1's cost by /${format(this.calcEB, 3)}`;
@@ -289,7 +289,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             }
         },
         get shown() {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 5);
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 5);
         },
         get autoUnlocked() {
             return getKuaUpgrade('s', 5);
@@ -346,7 +346,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             return Decimal.gt(player.value.gameProgress.kua.amount, 0);
         },
         get autoUnlocked() {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 12);
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 12);
         },
         get display() {
             return `Increase point gain by ${format(this.calcEB, 3)}×`;
@@ -399,7 +399,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             return Decimal.gte(player.value.gameProgress.kua.kshards.amount, 0.01);
         },
         get autoUnlocked() {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 14);
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 14);
         },
         get display() {
             return `Decreases Upgrade 1's cost by /${format(this.calcEB, 3)}`;
@@ -456,7 +456,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             return Decimal.gte(player.value.gameProgress.kua.kpower.amount, 1);
         },
         get autoUnlocked() {
-            return Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 18);
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 18);
         },
         get display() {
             return `Increases Upgrade 1's base by +${format(this.calcEB, 3)}`;

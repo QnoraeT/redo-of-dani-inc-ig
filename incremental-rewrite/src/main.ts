@@ -242,6 +242,7 @@ export const initPlayer = (set = false): Player => {
             achievements: [],
             inChallenge: {
                 nk: {
+                    id: 0,
                     name: '',
                     goalDesc: '',
                     entered: false,
@@ -372,6 +373,7 @@ export type Challenge = {
 }
 
 export type ChallengeData = {
+    id: number
     name: string
     goalDesc: string
     entered: boolean
@@ -858,14 +860,12 @@ export const reset = (layer: number, override = false) => {
     if (layer <= -1) {
         return;
     }
-
-    for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
-        player.value.gameProgress.main.upgrades[i].boughtInReset[layer] = D(0);
-    }
     
+    let resetSuccessful = false;
     switch (layer) {
         case 0:
             if (tmp.value.main.prai.canDo || override) {
+                resetSuccessful = true;
                 if (!override) {
                     player.value.gameProgress.main.prai.amount = Decimal.add(player.value.gameProgress.main.prai.amount, tmp.value.main.prai.pending);
                     updateAllTotal(player.value.gameProgress.main.prai.totals, tmp.value.main.prai.pending);
@@ -892,6 +892,7 @@ export const reset = (layer: number, override = false) => {
             break;
         case 1:
             if (tmp.value.main.pr2.canDo || override) {
+                resetSuccessful = true;
                 if (!override) {
                     player.value.gameProgress.main.pr2.amount = Decimal.add(player.value.gameProgress.main.pr2.amount, 1);
                 }
@@ -903,6 +904,7 @@ export const reset = (layer: number, override = false) => {
             break;
         case 2:
             if (tmp.value.kua.canDo || override) {
+                resetSuccessful = true;
                 if (!override) {
                     setAchievement(1, 4, ACHIEVEMENT_DATA[1].list[4].cond);
                     setAchievement(1, 6, ACHIEVEMENT_DATA[1].list[6].cond);
@@ -925,6 +927,7 @@ export const reset = (layer: number, override = false) => {
             }
             break;
         case 3:
+            resetSuccessful = true;
             player.value.gameProgress.kua.amount = D(0);
             player.value.gameProgress.kua.times = D(0);
             player.value.gameProgress.kua.timeInKua = D(0);
@@ -955,6 +958,7 @@ export const reset = (layer: number, override = false) => {
             break;
         case 4:
             if (tmp.value.tax.canDo || override) {
+                resetSuccessful = true;
                 if (!override) {
                     player.value.gameProgress.tax.amount = Decimal.add(player.value.gameProgress.tax.amount, tmp.value.tax.pending);
                     player.value.gameProgress.tax.times = Decimal.add(player.value.gameProgress.tax.times, 1);
@@ -967,19 +971,25 @@ export const reset = (layer: number, override = false) => {
             throw new Error(`uhh i don't think ${layer} is resettable`)
     }
 
-    resetTotalBestArray(player.value.gameProgress.main.totals, D(0), layer);
-    resetTotalBestArray(player.value.gameProgress.main.best, D(0), layer);
-    resetTotalBestArray(player.value.gameProgress.main.prai.totals, Decimal.min(10, player.value.gameProgress.main.pr2.amount), layer);
-    resetTotalBestArray(player.value.gameProgress.main.prai.best, Decimal.min(10, player.value.gameProgress.main.pr2.amount), layer);
-    resetTotalBestArray(player.value.gameProgress.main.pr2.best, D(0), layer)
-    resetTotalBestArray(player.value.gameProgress.kua.kpower.best, D(0), layer)
-    resetTotalBestArray(player.value.gameProgress.kua.kpower.totals, D(0), layer)
-    resetTotalBestArray(player.value.gameProgress.kua.kshards.best, D(0), layer)
-    resetTotalBestArray(player.value.gameProgress.kua.kshards.totals, D(0), layer)
-    resetTotalBestArray(player.value.gameProgress.kua.best, D(0), layer)
-    resetTotalBestArray(player.value.gameProgress.kua.totals, D(0), layer)
+    if (resetSuccessful) {
+        for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
+            player.value.gameProgress.main.upgrades[i].boughtInReset[layer] = D(0);
+        }
     
-    reset(layer - 1, true);
+        resetTotalBestArray(player.value.gameProgress.main.totals, D(0), layer);
+        resetTotalBestArray(player.value.gameProgress.main.best, D(0), layer);
+        resetTotalBestArray(player.value.gameProgress.main.prai.totals, Decimal.min(10, player.value.gameProgress.main.pr2.amount), layer);
+        resetTotalBestArray(player.value.gameProgress.main.prai.best, Decimal.min(10, player.value.gameProgress.main.pr2.amount), layer);
+        resetTotalBestArray(player.value.gameProgress.main.pr2.best, D(0), layer)
+        resetTotalBestArray(player.value.gameProgress.kua.kpower.best, D(0), layer)
+        resetTotalBestArray(player.value.gameProgress.kua.kpower.totals, D(0), layer)
+        resetTotalBestArray(player.value.gameProgress.kua.kshards.best, D(0), layer)
+        resetTotalBestArray(player.value.gameProgress.kua.kshards.totals, D(0), layer)
+        resetTotalBestArray(player.value.gameProgress.kua.best, D(0), layer)
+        resetTotalBestArray(player.value.gameProgress.kua.totals, D(0), layer)
+    
+        reset(layer - 1, true);
+    }
 }
 
 function calcPPS(): Decimal {
@@ -1014,6 +1024,10 @@ function calcPPS(): Decimal {
     pps = pps.mul(getColResEffect(0));
     pps = pps.mul(tmp.value.tax.ptsEff);
     pps = pps.mul(tmp.value.kua.effects.kpowerPassive)
+    if (player.value.gameProgress.col.inAChallenge) {
+        pps = pps.pow(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime))).add(1));
+    }
+
     return pps;
 }
 

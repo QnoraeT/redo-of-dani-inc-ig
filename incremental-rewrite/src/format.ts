@@ -54,7 +54,8 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
         switch (player.value.settings.notation) {
             case 0:
                 if (Decimal.lt(number, 0.001)) {
-                    return `1 / ${format(Decimal.recip(number), dec, expdec)}`;
+                    const exp = Decimal.log10(number).mul(1.00000000001).floor();
+                    return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
                 } else if (Decimal.lt(number, 1e6)) {
                     return numberWithCommas(new Decimal(number).toNumber().toFixed(dec));
                 } else if (Decimal.lt(number, abbExp)) {
@@ -70,7 +71,8 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
                 }
             case 1:
                 if (Decimal.lt(number, 0.001)) {
-                    return `1 / ${format(Decimal.recip(number), dec, expdec)}`;
+                    const exp = Decimal.log10(number).mul(1.00000000001).floor();
+                    return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
                 } else if (Decimal.lt(number, 1e6)) {
                     return numberWithCommas(new Decimal(number).toNumber().toFixed(dec));
                 } else if (Decimal.lt(number, "ee6")) {
@@ -83,7 +85,8 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
                 }
             case 2:
                 if (Decimal.lt(number, 0.001)) {
-                    return `1 / ${format(Decimal.recip(number), dec, expdec)}`;
+                    const exp = Decimal.log10(number).mul(1.00000000001).floor();
+                    return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
                 } else if (Decimal.lt(number, 1e3)) {
                     return new Decimal(number).toNumber().toFixed(dec);
                 } else if (Decimal.lt(number, "ee9")) {

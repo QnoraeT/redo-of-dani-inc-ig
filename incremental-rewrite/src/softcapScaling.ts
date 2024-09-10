@@ -109,10 +109,6 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         displayedEffect: ""
                     });
 
-                    if (ifAchievement(0, 3)) {
-                        data[0].start = data[0].start.add(1);
-                    }
-
                     if (ifAchievement(0, 7)) {
                         data[0].power = data[0].power.div(getAchievementEffect(0, 7));
                     }

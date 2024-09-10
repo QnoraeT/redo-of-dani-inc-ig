@@ -8,10 +8,10 @@ import { tab } from '@/main'
             <div v-for="item in TABS_LIST" :key='item.staticName'>
                 <button :style="{
                     color: item.textColor, 
-                    marginRight: `0.24vw`, 
-                    marginLeft: `0.24vw`, 
+                    marginRight: `0.18vw`, 
+                    marginLeft: `0.18vw`, 
                     backgroundColor: item.backgroundColor, 
-                    border: `0.24vw solid ${tab.currentTab === item.staticName ? item.highlightColor : item.outlineColor}` 
+                    border: `0.18vw solid ${tab.currentTab === item.staticName ? item.highlightColor : item.outlineColor}` 
                 }"
                 v-if="item.if" class="mediumText fontTrebuchetMS" @click="switchTab(item.staticName)">{{item.name}}</button>
             </div>

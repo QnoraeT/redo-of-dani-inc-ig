@@ -10,16 +10,20 @@ import { KUA_UPGRADES, KUA_ENHANCERS, kuaEnhReset, kuaEnh, buyKShardUpg, buyKPow
 <template>
     <div id="kuaraniai" v-if="tab.currentTab === 4">
         <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;" v-if="player.gameProgress.unlocks.kuaEnhancers">
+            <button @click="switchSubTab(-1, 0)" style="margin-left: 0.16vw; margin-right: 0.16vw; width: 10vw; height: 3vw; font-size: 1vw" class="kuaButton2 fontVerdana whiteText">Bought Upgrades</button>
             <button @click="switchSubTab(0, 0)" style="margin-left: 0.16vw; margin-right: 0.16vw; width: 10vw; height: 3vw; font-size: 1vw" class="kuaButton2 fontVerdana whiteText">Main</button>
             <!-- disable this for now, seems unbalanced -->
-            <button @click="switchSubTab(1, 0)" style="margin-left: 0.16vw; margin-right: 0.16vw; width: 10vw; height: 3vw; font-size: 1vw" class="kuaButton2 fontVerdana whiteText">Enhancers</button>
+            <!-- <button @click="switchSubTab(1, 0)" style="margin-left: 0.16vw; margin-right: 0.16vw; width: 10vw; height: 3vw; font-size: 1vw" class="kuaButton2 fontVerdana whiteText">Enhancers</button> -->
+        </div>
+        <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: column; justify-content: center;" v-if="tab.tabList[tab.currentTab][0] === -1">
+
         </div>
         <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: column; justify-content: center;" v-if="tab.tabList[tab.currentTab][0] === 0">
             <button style="text-align: center; margin-top: 0.96vw; margin-left: auto; margin-right: auto; font-size: 1.0667vw" 
             v-bind:class="{ nope: !tmp.kua.canDo, ok: tmp.kua.canDo }"
             class="whiteText thinlargeButton fontVerdana kuaButton" id="kuaGain" @click="reset(2)">
                 <h3 style="font-size: 1.25vw">Kuaraniai: {{format(player.gameProgress.kua.amount, 3)}}</h3>
-                Convert your {{format(tmp.kua.effectivePrai)}} PRai into {{format(tmp.kua.pending, 4)}} Kuaraniai
+                Convert your {{format(tmp.kua.effectivePrai)}} PRai into {{format(tmp.kua.pending, 4)}} Kuaraniai.
                 <br>{{
                     tmp.kua.canDo
                         ? `You can convert PRai to Kuaraniai! (${format(tmp.kua.effectivePrai)} / ${format(tmp.kua.req)} PRai)`

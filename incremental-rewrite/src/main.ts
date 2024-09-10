@@ -75,6 +75,7 @@ type Player = {
     displayVersion: string
     settings: {
         notation: number
+        scaleSoftColors: boolean
     }
 
     gameProgress: {
@@ -228,7 +229,8 @@ export const initPlayer = (set = false): Player => {
         version: 0,
         displayVersion: "v1.0.0",
         settings: {
-            notation: 0
+            notation: 0,
+            scaleSoftColors: false
         },
     
         gameProgress: {
@@ -690,9 +692,9 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 0;
     }
     if (player.version === 0) {
-
+        player.settings.scaleSoftColors = false
         // player.displayVersion = '1.0.0'
-        // player.version = 0;
+        player.version = 1;
     }
     if (player.version === 1) {
 
@@ -999,7 +1001,7 @@ function calcPPS(): Decimal {
     pps = pps.mul(tmp.value.main.upgrades[3].effect);
     pps = pps.mul(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1);
     pps = pps.mul(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1);
-    if (ifAchievement(0, 4)) {
+    if (ifAchievement(0, 3)) {
         pps = pps.mul(1.2);
     }
     if (ifAchievement(1, 0)) {
@@ -1031,8 +1033,8 @@ function calcPPS(): Decimal {
     return pps;
 }
 
-export const getEndgame = (x = player.value.gameProgress.main.points) => {
-    return Decimal.max(x, 0).add(1).log10().div(400).root(1.75).min(1).mul(100);
+export const getEndgame = () => {
+    return D(0);
 }
 
 function gameLoop(): void {
@@ -1173,5 +1175,19 @@ document.onkeyup = function (e) {
     shiftDown = e.shiftKey;
     ctrlDown = e.ctrlKey;
 }
+
+declare global {
+    interface Window {
+        player: typeof player;
+        game: typeof game;
+        tmp: typeof tmp;
+        Decimal: typeof Decimal;
+    }
+}
+
+window.player = player;
+window.game = game;
+window.tmp = tmp;
+window.Decimal = Decimal;
 
 createApp(App).mount('#app');

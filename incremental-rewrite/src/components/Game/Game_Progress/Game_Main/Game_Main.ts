@@ -612,19 +612,23 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             tmp.value.main.upgrades[upgID].calculatedEB = MAIN_UPGS[upgID].calcEB;
 
             tmp.value.main.upgrades[upgID].effectTextColor = `#FFFFFF`;
-            for (let i = getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, false).length - 1; i >= 0; i--) {
-                if (Decimal.gte(tmp.value.main.upgrades[upgID].effect, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, false)[i].start)) {
-                    tmp.value.main.upgrades[upgID].effectTextColor = SOFT_ATTR[i].color;
-                    break;
+            if (player.value.settings.scaleSoftColors) {
+                for (let i = getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, false).length - 1; i >= 0; i--) {
+                    if (Decimal.gte(tmp.value.main.upgrades[upgID].effect, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, false)[i].start)) {
+                        tmp.value.main.upgrades[upgID].effectTextColor = SOFT_ATTR[i].color;
+                        break;
+                    }
                 }
             }
 
             tmp.value.main.upgrades[upgID].costTextColor = `#FFFFFF`;
-            for (let i = getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true).length - 1; i >= 0; i--) {
-                if (Decimal.gte(player.value.gameProgress.main.upgrades[upgID].bought, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true)[i].start)) {
-                    tmp.value.main.upgrades[upgID].costTextColor = SCALE_ATTR[i].color;
-                    break;
-                }
+            if (player.value.settings.scaleSoftColors) {
+                for (let i = getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true).length - 1; i >= 0; i--) {
+                    if (Decimal.gte(player.value.gameProgress.main.upgrades[upgID].bought, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true)[i].start)) {
+                        tmp.value.main.upgrades[upgID].costTextColor = SCALE_ATTR[i].color;
+                        break;
+                    }
+                } 
             }
 
             if (player.value.gameProgress.main.upgrades[upgID].auto) {
@@ -775,10 +779,12 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             tmp.value.main.pr2.canDo = Decimal.gte(player.value.gameProgress.main.prai.amount, Decimal.sub(tmp.value.main.pr2.cost, 0.5));
 
             tmp.value.main.pr2.costTextColor = `#FFFFFF`
-            for (let i = getSCSLAttribute('pr2', true).length - 1; i >= 0; i--) {
-                if (Decimal.gte(player.value.gameProgress.main.pr2.amount, getSCSLAttribute('pr2', true)[i].start)) {
-                    tmp.value.main.pr2.costTextColor = SCALE_ATTR[i].color;
-                    break;
+            if (player.value.settings.scaleSoftColors) {
+                for (let i = getSCSLAttribute('pr2', true).length - 1; i >= 0; i--) {
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, getSCSLAttribute('pr2', true)[i].start)) {
+                        tmp.value.main.pr2.costTextColor = SCALE_ATTR[i].color;
+                        break;
+                    }
                 }
             }
 

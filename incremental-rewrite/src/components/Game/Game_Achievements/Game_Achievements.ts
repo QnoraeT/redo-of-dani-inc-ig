@@ -93,19 +93,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             {
                 id: 3,
                 get name() { return `Are you rich now?`; },
-                get desc() { return `Have at least ${format(5)} PRai.`; },
-                get cond() { return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 5) },
-                get reward() { return `UP1's scaling starts ${format(1, 1)} later.`; },
-                show: true,
-                status: true
-            },
-            {
-                id: 4,
-                get name() { return `this is stupid cuz its redundant lol`; },
-                get desc() { return `Do a PR2 reset once.`; },
-                get cond() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 1) },
+                get desc() { return `Have at least ${format(10)} PRai.`; },
+                get cond() { return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 10) },
                 get reward() { return `Increase your number generation by ${format(20)}%.`; },
-                get show() { return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 9.5); },
+                show: true,
                 status: true
             },
             {
@@ -260,6 +251,17 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get show() { return ifAchievement(0, 16); },
                 status: true
             },
+            // dummy achievement
+            {
+                id: 4,
+                get name() { return `You are not supposed to see this.`; },
+                get desc() { return `f`; },
+                autoComplete: false,
+                get cond() { return false; },
+                reward: ``,
+                get show() { return false; },
+                status: true
+            }
         ],
         get rewAll() { return `Point gain is increased by ${format(this.eff.sub(1).mul(100), 2)}%. (×1.1 per main achievement)`; },
         get eff() {

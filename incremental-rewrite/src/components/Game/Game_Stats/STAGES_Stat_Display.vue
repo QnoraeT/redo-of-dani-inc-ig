@@ -11,7 +11,7 @@ defineProps<{
 }>()
 </script>
 <template>
-    <div v-if="tab.tabList[tab.currentTab][1] === id" :style="{ border: `0.24vw solid ${STAGES[id].colors.border}`, backgroundColor: STAGES[id].colors.name }" style="display: flex; justify-content: center; flex-direction: column; align-items: center; justify-content: center; height: 36.1vw; width: 39.2vw; font-size: 1vw" class="whiteText">
+    <div v-if="tab.tabList[tab.currentTab][1] === id" :style="{ border: `0.18vw solid ${STAGES[id].colors.border}`, backgroundColor: STAGES[id].colors.name }" style="display: flex; justify-content: center; flex-direction: column; align-items: center; justify-content: center; height: 26vw; width: 29vw; font-size: 0.75vw" class="whiteText">
         <div v-if="id === 0" class="statText fontVerdana">
             <span>
                 Total Points: {{format(player.gameProgress.main.totalEver, 2)}}<br>

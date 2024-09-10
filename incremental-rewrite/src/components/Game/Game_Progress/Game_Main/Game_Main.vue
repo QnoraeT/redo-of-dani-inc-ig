@@ -11,8 +11,8 @@ import { gRC } from '@/calc'
 </script>
 <template>
     <div id="generators" v-if="tab.currentTab === 0">
-        <div class="flex-container fontVerdana" style="flex-direction: column; justify-content: center; margin-top: 1vw; margin-bottom: 1vw;">
-            <span v-if="Decimal.gte(player.gameProgress.main.points, getSCSLAttribute('points', false)[0].start)" style="text-align: center; font-size: 1.2vw; color:#f44">
+        <div class="flex-container fontVerdana" style="flex-direction: column; justify-content: center; margin-top: 0.75vw; margin-bottom: 0.75vw;">
+            <span v-if="Decimal.gte(player.gameProgress.main.points, getSCSLAttribute('points', false)[0].start)" style="text-align: center; font-size: 0.8vw; color:#f44">
                 Your points past {{format(getSCSLAttribute('points', false)[0].start)}} is taxed by {{getSCSLAttribute('points', false)[0].displayedEffect}}!
             </span>
             <span v-if="player.gameProgress.col.inAChallenge" style="text-align: center; font-size: 1.6vw;" :style="{ color: player.gameProgress.col.completedAll ? '#0080FF' : '#FF4000' }">
@@ -24,26 +24,26 @@ import { gRC } from '@/calc'
                 </span>
             </div>
         </div>
-        <div class="flex-container" style="flex-direction: column; align-items: center; margin-top: 1vw; margin-bottom: 1vw;">
+        <div class="flex-container" style="flex-direction: column; align-items: center; margin-top: 0.5vw; margin-bottom: 0.5vw;">
             <div v-for="(item, index) in NEXT_UNLOCKS" :key='index' :style="{ color: item.color }">
-                <span v-if="item.shown && !item.done" style="font-size: 1.6vw; text-align: center;" class="fontVerdana">
-                    You must reach <span style="font-size: 2vw;"><b>{{item.dispPart1}}</b></span> {{item.dispPart2}}
+                <span v-if="item.shown && !item.done" style="font-size: 1.2vw; text-align: center;" class="fontVerdana">
+                    You must reach <span style="font-size: 1.6vw;"><b>{{item.dispPart1}}</b></span> {{item.dispPart2}}
                 </span>
             </div>
         </div>
-        <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 1vw; margin-bottom: 1vw; width: 50vw; align-content: center;">
+        <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 0.5vw; margin-bottom: 0.5vw; width: 50vw; align-content: center;">
             <div v-for="(item, index) in MAIN_UPGS" :key='index'>
                 <div class="flex-container" style="flex-direction: column; margin: 0.2vw;" v-if="tmp.main.upgrades[index].active && item.shown">
-                    <button style="text-align: center; font-size: 1.0667vw" 
+                    <button style="text-align: center; font-size: 0.7vw" 
                     :class="{ nope: !tmp.main.upgrades[index].canBuy, ok: tmp.main.upgrades[index].canBuy }"
                     class="whiteText mediumButton fontVerdana generatorButton" @click="buyGenUPG(index)">
-                        <h3 style="margin-top: 0.5vw; font-size: 1.25vw">Upgrade {{index + 1}}: {{format(player.gameProgress.main.upgrades[index].bought)}}{{Decimal.gt(tmp.main.upgrades[index].freeExtra, 0) ? ` (+${format(tmp.main.upgrades[index].freeExtra)})`:""}}</h3>
+                        <h3 style="margin-top: 0.35vw; font-size: 0.9vw">Upgrade {{index + 1}}: {{format(player.gameProgress.main.upgrades[index].bought)}}{{Decimal.gt(tmp.main.upgrades[index].freeExtra, 0) ? ` (+${format(tmp.main.upgrades[index].freeExtra)})`:""}}</h3>
                         {{MAIN_UPGS[index].display}}
                         <br><span :style="{ color: tmp.main.upgrades[index].effectTextColor }">{{MAIN_UPGS[index].totalDisp}}</span>
                         <br><span :style="{ color: tmp.main.upgrades[index].costTextColor }">Cost: {{format(tmp.main.upgrades[index].cost)}} points</span>
                     </button>
     
-                    <button style="text-align: center; font-size: 1.0667vw" 
+                    <button style="text-align: center; font-size: 0.7vw" 
                     :class="{ nopeFill: !player.gameProgress.main.upgrades[index].auto, okFill: player.gameProgress.main.upgrades[index].auto }"
                     class="whiteText thinMediumButton fontVerdana genAutoButton" v-if="item.autoUnlocked" @click="player.gameProgress.main.upgrades[index].auto = !player.gameProgress.main.upgrades[index].auto">
                         <b>Upgrade {{index + 1}} Autobuyer: {{player.gameProgress.main.upgrades[index].auto?"On":"Off"}}</b>
@@ -55,23 +55,24 @@ import { gRC } from '@/calc'
             <tr>
                 <td> 
                     <div class="flex-container" style="flex-direction: column;">
-                        <button style="text-align: center; font-size: 1.0667vw" 
+                        <button style="text-align: center; font-size: 0.7vw" 
                         :class="{ nope: !tmp.main.prai.canDo, ok: tmp.main.prai.canDo }"
                         class="whiteText largeButton fontVerdana generatorButton" id="prai" @click="reset(0)">
-                        <h3 style="font-size: 1.25vw">PRai: {{format(player.gameProgress.main.prai.amount)}}</h3>
-                            {{`Reset your progress to gain ${Decimal.gte(player.gameProgress.main.pr2.amount, 1) ? format(tmp.main.prai.pending) + " " : ""}PRai.`}}
+                        <h3 style="font-size: 1vw">PRai: {{format(player.gameProgress.main.prai.amount)}}</h3>
+                            Reset your progress to gain {{`${Decimal.gte(player.gameProgress.main.pr2.amount, 1) ? format(tmp.main.prai.pending) + " " : ""}`}}PRai.<br>
+                            Gain at least {{ format(tmp.main.prai.req) }} points to do a PRai reset.
                             <br>{{
                                 tmp.main.prai.canDo
-                                    ? tmp.main.prai.pending.lt(1e6) && Decimal.gte(player.gameProgress.main.pr2.amount, 1)
+                                    ? tmp.main.prai.pending.lt(100) && Decimal.gte(player.gameProgress.main.pr2.amount, 1)
                                         ? `Next in ${format(tmp.main.prai.next)} points. (${format(Decimal.div(tmp.main.prai.pending, player.gameProgress.main.prai.timeInPRai), 2)}/s)`
                                         : `(${format(Decimal.div(tmp.main.prai.pending, player.gameProgress.main.prai.timeInPRai), 2)}/s)`
                                     : `You can PRai reset in ${formatTime(tmp.main.prai.next)}`
-                            }}
+                            }}<br>
                             <br>You have {{format(player.gameProgress.main.prai.amount)}} PRai, which boosts your points by {{format(tmp.main.prai.effect, 2)}}×.
-                            <br>{{tmp.main.prai.canDo ? `Resetting now, PRai will boost your points by ${format(tmp.main.prai.nextEffect, 2)}×` : ""}}
+                            <br>{{tmp.main.prai.canDo ? `Resetting now will boost your points by ${format(Decimal.div(tmp.main.prai.nextEffect, tmp.main.prai.effect), 2)}×` : ""}}
                         </button>
 
-                        <button style="text-align: center; width: 24vw; height: 4vw; font-size: 1.0667vw" 
+                        <button style="text-align: center; width: 18vw; height: 3vw; font-size: 0.7vw" 
                         :class="{ nopeFill: !player.gameProgress.main.prai.auto, okFill: player.gameProgress.main.prai.auto }"
                         class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPRai" v-if="getKuaUpgrade('s', 1)" @click="player.gameProgress.main.prai.auto = !player.gameProgress.main.prai.auto">
                             <b>PRai Generator: {{player.gameProgress.main.prai.auto?"On":"Off"}}</b>
@@ -80,10 +81,10 @@ import { gRC } from '@/calc'
                 </td>
                 <td>
                     <div class="flex-container" style="flex-direction: column;">
-                        <button style="text-align: center; font-size: 1.0667vw" 
+                        <button style="text-align: center; font-size: 0.7vw" 
                         :class="{ nope: !tmp.main.pr2.canDo, ok: tmp.main.pr2.canDo }"
                         class="whiteText largeButton fontVerdana generatorButton" id="pr2" v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)" @click="reset(1)">
-                            <h3 style="font-size: 1.25vw">PR2: {{format(player.gameProgress.main.pr2.amount)}}</h3>
+                            <h3 style="font-size: 1vw">PR2: {{format(player.gameProgress.main.pr2.amount)}}</h3>
                             Reset all of your previous progress to for a PR2 reset.
                             <br><span :style="{ color: tmp.main.pr2.costTextColor }">{{
                                 tmp.main.pr2.canDo
@@ -96,7 +97,7 @@ import { gRC } from '@/calc'
                             <br>{{tmp.main.pr2.textEffect.txt===""?"":`At ${format(tmp.main.pr2.textEffect.when)} PR2 reset${tmp.main.pr2.textEffect.when.eq(1)?"":"s"}, ${tmp.main.pr2.textEffect.txt}`}}
                         </button>
     
-                        <button style="text-align: center; width: 24vw; height: 4vw; font-size: 1.0667vw" 
+                        <button style="text-align: center; width: 18vw; height: 3vw; font-size: 0.7vw" 
                         :class="{ nopeFill: !player.gameProgress.main.pr2.auto, okFill: player.gameProgress.main.pr2.auto }"
                         class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPR2" v-if="false" @click="player.gameProgress.main.pr2.auto = !player.gameProgress.main.pr2.auto">
                             <b>PR2 Autobuyer: {{player.gameProgress.main.pr2.auto?"On":"Off"}}</b>

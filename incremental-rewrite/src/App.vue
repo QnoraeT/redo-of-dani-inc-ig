@@ -16,18 +16,21 @@ import { colorChange } from './calc'
 <template>
   <div>
     <canvas ref="canvas" id="canvas" style="height: 100vh; width: 100vw; position: absolute; top: 0vw; left: 0vw; z-index: -2;"></canvas>
-    <div class="flex-container" style="background-color: #ffffff20;">
-      <div style="flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.4vw;" class="bigText whiteText grayShadow fontVerdana"> {{format(player.gameProgress.main.points, 3)}}</div>
-      <div style="flex-grow: 1; flex-basis: 0; text-align: center; text-shadow: #ffff00 0vw 0vw 0.24vw;" class="mediumBigText yellowText fontVerdana">FPS: {{gameVars.displayedFPS}}</div>
-      <div style="flex-grow: 1; flex-basis: 0; text-align: right; text-shadow: #ffffff 0vw 0vw 0.4vw;" class="bigText whiteText grayShadow fontVerdana">{{format(tmp.main.pps, 3)}}/s </div>
+    <div class="flex-container" style="background-color: #ffffff20;" v-if="tmp.gameIsRunning">
+      <div style="flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana"> {{format(player.gameProgress.main.points)}} Points</div>
+      <div style="flex-grow: 1; flex-basis: 0; text-align: center; text-shadow: #ffff00 0vw 0vw 0.18vw;" class="mediumBigText yellowText fontVerdana">FPS: {{gameVars.displayedFPS}}</div>
+      <div style="flex-grow: 1; flex-basis: 0; text-align: right; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana">{{format(tmp.main.pps, 1)}}/s </div>
+    </div>
+    <div class="flex-container" style="background-color: #ffffff20;" v-if="!tmp.gameIsRunning">
+      <div style="flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana">Loading...</div>
     </div>
     <div>
       <div class="popup-container">
         <div>
           <div v-for="item in popupList" class="popup fontVerdana" style="display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; align-content: center"
             :key="item.id" v-on:click="() => {item.life = 0.2}" :style="{ 'background-color': item.color, 'opacity': item.opacity, color: colorChange(item.color, 0.5, 1.0) }">
-            <span style="font-size: 1.4vw; font-weight: bold; text-align: center">{{item.title}}</span>
-            <span style="font-size: 1.2vw; text-align: center" v-html="item.message"></span>
+            <span style="font-size: 0.5vw; font-weight: bold; text-align: center">{{item.title}}</span>
+            <span style="font-size: 0.75vw; text-align: center" v-html="item.message"></span>
           </div>
         </div>
       </div>

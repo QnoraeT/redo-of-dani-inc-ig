@@ -46,7 +46,7 @@ body {
 }
 
 .grayShadow {
-  text-shadow: 0.16vw 0.16vw grey;
+  text-shadow: 0.12vw 0.12vw grey;
 }
 
 .fontVerdana {
@@ -70,15 +70,15 @@ body {
 }
 
 .mediumText {
-  font-size: 1.92vw;
+  font-size: 1.2vw;
 }
 
 .mediumBigText {
-  font-size: 1.92vw;
+  font-size: 1.6vw;
 }
 
 .bigText {
-  font-size: 3.2vw;
+  font-size: 2.4vw;
 }
 
 .text {
@@ -86,23 +86,23 @@ body {
 }
 
 .mediumButton {
-  width: 16vw;
-  height: 12vw;
+  width: 12vw;
+  height: 9vw;
 }
 
 .thinMediumButton {
-  width: 16vw;
-  height: 4vw;
+  width: 12vw;
+  height: 3vw;
 }
 
 .largeButton {
-  width: 24vw;
-  height: 16vw;
+  width: 18vw;
+  height: 12vw;
 }
 
 .thinLargeButton {
-  width: 24vw;
-  height: 6vw;
+  width: 18vw;
+  height: 4vw;
 }
 
 .autoButton {
@@ -127,11 +127,11 @@ body {
 }
 
 .smallColBorder {
-  border: 0.2vw solid #ff4000;
+  border: 0.15vw solid #ff4000;
 }
 
 .smallColBorder:hover {
-  border: 0.2vw solid #ff9775;
+  border: 0.15vw solid #ff9775;
 }
 
 .normColBorder {
@@ -143,11 +143,11 @@ body {
 }
 
 .smallTaxBorder {
-  border: 0.2vw solid #ffd900;
+  border: 0.15vw solid #ffd900;
 }
 
 .smallTaxBorder:hover {
-  border: 0.2vw solid #fff2a7;
+  border: 0.15vw solid #fff2a7;
 }
 
 .normTaxBorder {
@@ -192,7 +192,7 @@ body {
 .colButtonProg {
   transition-duration: 0.2s;
   background-color: #616300;
-  box-shadow: 0 0 0.8vw 0.24vw rgb(66, 54, 0);
+  box-shadow: 0 0 0.6vw 0.24vw rgb(66, 54, 0);
 }
 
 .colButtonHeaderProg {
@@ -213,7 +213,7 @@ body {
 .colButtonComp {
   transition-duration: 0.2s;
   background-color: #006319;
-  box-shadow: 0 0 0.8vw 0.24vw rgb(0, 66, 6);
+  box-shadow: 0 0 0.6vw 0.24vw rgb(0, 66, 6);
 }
 
 .colButtonHeaderComp {
@@ -232,8 +232,8 @@ body {
 }
 
 .main-container {
-  width: 19.2vw; 
-  height: 28.8vw; 
+  width: 16vw; 
+  height: 20vw; 
 }
 
 .first-cont, .second-cont, .third-cont {
@@ -255,8 +255,8 @@ body {
 }
 
 .colButtonTab {
-  margin-left: 0.16vw; 
-  margin-right: 0.16vw; 
+  margin-left: 0.12vw; 
+  margin-right: 0.12vw; 
   width: 10vw; 
   height: 3vw; 
   color: #f40; 
@@ -271,19 +271,19 @@ body {
 
 .colButton:hover {
   background-color: #7a1f00;
-  box-shadow: 0 0 1.2vw 0.4vw #8f2400;
+  box-shadow: 0 0 1.5vw 0.24vw #8f2400;
   cursor: pointer;
 }
 
 .colButtonProg:hover {
   background-color: #7a6e00;
-  box-shadow: 0 0 1.2vw 0.4vw #8f6e00;
+  box-shadow: 0 0 1.5vw 0.24vw #8f6e00;
   cursor: pointer;
 }
 
 .colButtonComp:hover {
   background-color: #187a00;
-  box-shadow: 0 0 1.2vw 0.4vw #188f00;
+  box-shadow: 0 0 1.5vw 0.24vw #188f00;
   cursor: pointer;
 }
 
@@ -295,7 +295,7 @@ body {
 
 .taxButton:hover {
   background-color: #7a6800;
-  box-shadow: 0 0 1.2vw 0.4vw #8f7a00;
+  box-shadow: 0 0 1.5vw 0.24vw #8f7a00;
   cursor: pointer;
 }
 
@@ -305,31 +305,31 @@ body {
 
 .genAutoButton {
   transition-duration: 0.2s;
-  border: 0.4vw solid #384048;
+  border: 0.24vw solid #384048;
 }
 
 .genAutoButton:hover {
-  border: 0.4vw solid #515c68;
+  border: 0.24vw solid #515c68;
 }
 
 .nope {
-  border: 0.4vw solid #400;
+  border: 0.24vw solid #400;
 }
 
 .nope:hover {
-  border: 0.4vw solid #600;
-  box-shadow: 0 0 1.2vw 0.4vw #300000;
+  border: 0.24vw solid #600;
+  box-shadow: 0 0 1.5vw 0.24vw #300000;
   cursor: not-allowed;
 }
 
 .ok {
-  border: 0.4vw solid #040;
-  box-shadow: 0 0 1.2vw 0.4vw #002000;
+  border: 0.24vw solid #040;
+  box-shadow: 0 0 1.5vw 0.24vw #002000;
 }
 
 .ok:hover {
-  border: 0.4vw solid #0f0;
-  box-shadow: 0 0 2vw 0.8vw #008000;
+  border: 0.24vw solid #0f0;
+  box-shadow: 0 0 1.5vw 0.8vw #008000;
 }
 
 .nopeFill {
@@ -350,12 +350,12 @@ body {
 
 .kuaButton2 {
   transition-duration: 0.2s; 
-  border: 0.32vw solid #b900ff; 
+  border: 0.24vw solid #b900ff; 
   background-color: #4d008b;
 }
 
 .kuaButton2:hover {
-  border: 0.32vw solid #ca37ff; 
+  border: 0.24vw solid #ca37ff; 
   background-color: #5f00ad;
 }
 
@@ -363,25 +363,25 @@ body {
 .tooltip {
   position: relative;
   display: inline-block;
-  border-bottom: 0.08vw dotted black; /* If you want dots under the hoverable text */
+  border-bottom: 0.06vw dotted black; /* If you want dots under the hoverable text */
 }
 
 /* Tooltip text */
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 40vw;
+  width: 30vw;
   background-color: #222;
   color: #fff;
   text-align: center;
-  padding: 0.4vw 0;
-  border: 0.16vw solid #fff;
+  padding: 0.24vw 0;
+  border: 0.12vw solid #fff;
 
   /* Position the tooltip text */
   position: absolute;
   z-index: 1;
   bottom: 125%;
   left: 50%;
-  margin-left: -20vw;
+  margin-left: -15vw;
 
   /* Fade in tooltip */
   opacity: 0;
@@ -394,8 +394,8 @@ body {
   position: absolute;
   top: 100%;
   left: 50%;
-  margin-left: -0.4vw;
-  border-width: 0.4vw;
+  margin-left: -0.24vw;
+  border-width: 0.24vw;
   border-style: solid;
   border-color: #222 transparent transparent transparent;
 }
@@ -415,7 +415,7 @@ body {
   -webkit-appearance: none;  /* Override default CSS styles */
   appearance: none;
   width: 100%; /* Full-width */
-  height: 0.6667vw; /* Specified height */
+  height: 0.5vw; /* Specified height */
   background: #d3d3d3; /* Grey background */
   outline: none; /* Remove outline */
   opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
@@ -432,35 +432,35 @@ body {
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none; /* Override default look */
   appearance: none;
-  width: 2vw; /* Set a specific slider handle width */
-  height: 2vw; /* Slider handle height */
+  width: 1.5vw; /* Set a specific slider handle width */
+  height: 1.5vw; /* Slider handle height */
   background: #04AA6D; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
 .slider::-moz-range-thumb {
-  width: 2vw; /* Set a specific slider handle width */
-  height: 2vw; /* Slider handle height */
+  width: 1.5vw; /* Set a specific slider handle width */
+  height: 1.5vw; /* Slider handle height */
   background: #04AA6D; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
 /* taken from TMT ig */
 .popup {
-	border: 0.333vw solid;
-	width: 24vw;
-	min-height: 5vw;
+	border: 0.2vw solid;
+	width: 18vw;
+	min-height: 3vw;
 	color: #000000;
 	display: block;
-	margin-top: 2vw;
+	margin-top: 1.2vw;
 	border-color: rgba(0, 0, 0, 0.25);
 }
 
 .popup-container {
 	position: absolute;
 	z-index: 9999999999999999999999999999999999;
-	right: 2.4vw;
-	width: 24vw;
+	right: 1.8vw;
+	width: 18vw;
 }
 
 .fade-enter-active, .fade-leave-active {

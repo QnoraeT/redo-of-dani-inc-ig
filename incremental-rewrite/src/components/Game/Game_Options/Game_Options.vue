@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Decimal from 'break_eternity.js'
-import { gRC } from '@/calc'
+import { colorChange, gRC } from '@/calc'
 import { tab, game, player, tmp, gameVars } from '@/main'
 import { format, formatTime } from '@/format'
 import { switchSubTab } from '../../MainTabs/MainTabs'
@@ -109,9 +109,9 @@ import { NOTATION_LIST, setTimeSpeed, switchNotation } from './Game_Options'
                         </button>
                     </div>
                     <div class="flex-container" style="flex-direction: row; justify-content: center;">
-                        <div style="display: flex; width: 25vw; flex-wrap: wrap; justify-content: center">
+                        <div style="display: flex; width: 60vw; flex-wrap: wrap; justify-content: center">
                             <div v-for="(item, index) in SAVE_MODES" :key="item.id" class="flex-container">
-                                <button @click="setTempModes(index)" class="whiteText fontVerdana tooltip" v-bind:style="{ color: item.textColor, border: `0.18vw solid ${tmp.saveModes[index] ? item.borderSelectedColor : item.borderColor}`, backgroundColor: item.bgColor }" style="margin: 0.5vw; height: 4vw; width: 12vw; font-size: 1.0vw;">
+                                <button @click="setTempModes(index)" class="whiteText fontVerdana tooltip" v-bind:style="{ color: item.textColor, border: `0.12vw solid ${tmp.saveModes[index] ? item.borderSelectedColor : item.borderColor}`, backgroundColor: colorChange(item.bgColor, tmp.saveModes[index] ? 2.0 : 1.0, 1.0) }" style="margin: 0.2vw; height: 2.5vw; width: 8vw; font-size: 0.8vw;">
                                     {{item.name}}
                                     <span class="tooltiptext">
                                         <span style="font-size: 0.6vw">{{item.desc}}</span>

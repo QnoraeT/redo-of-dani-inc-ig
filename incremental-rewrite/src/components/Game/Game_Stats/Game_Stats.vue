@@ -9,8 +9,8 @@ import STAGES_StatDisplay from './STAGES_Stat_Display.vue'
 <template>
     <div id="stats" v-if="tab.currentTab === 2">
         <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.5vw;">
-            <button @click="switchSubTab(0, 0)" style="margin-left: 0.12vw; margin-right: 0.12vw; width: 7.5vw; height: 2vw; font-size: 0.75vw; border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana">Progress</button>
-            <button @click="switchSubTab(1, 0)" style="margin-left: 0.12vw; margin-right: 0.12vw; width: 10vw; height: 2vw; font-size: 0.75vw; border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana">Scaling / Softcaps</button>
+            <button @click="switchSubTab(0, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Progress</button>
+            <button @click="switchSubTab(1, 0)" style="width: 10vw;border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Scaling / Softcaps</button>
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 0">
             <div class="flex-container" style="flex-direction: column; justify-content: center;">

@@ -51,7 +51,7 @@ defineProps<{
                 Total Kuaraniai: {{ format(player.gameProgress.kua.totalEver, 4) }}<br>
                 Best Kuaraniai: {{ format(player.gameProgress.kua.bestEver, 4) }}<br>
                 Kuaraniai Resets: {{ format(player.gameProgress.kua.times) }}<br>
-                Time in Kua reset: {{ format(player.gameProgress.kua.timeInKua) }}<br>
+                Time in Kua reset: {{ formatTime(player.gameProgress.kua.timeInKua, 2) }}<br>
                 {{`<--- Kuaraniai Shards --- >`}}<br>
                 Total KShards: {{ format(player.gameProgress.kua.kshards.totalEver, 3)}}<br>
                 Best KShards: {{ format(player.gameProgress.kua.kshards.bestEver, 3)}}<br>

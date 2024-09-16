@@ -4,6 +4,7 @@ import { D, gRC, colorChange, scale } from './calc'
 import { format } from './format'
 import { getAchievementEffect, ifAchievement } from './components/Game/Game_Achievements/Game_Achievements'
 import { getKuaUpgrade, KUA_UPGRADES } from './components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai'
+import { MAIN_ONE_UPGS } from './components/Game/Game_Progress/Game_Main/Game_Main'
 
 export const SCALE_ATTR = [
     { pow: 2,   type: 0, name: "Scaled",        color: `#3080FF` },
@@ -113,6 +114,10 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         data[0].power = data[0].power.div(getAchievementEffect(0, 7));
                     }
 
+                    if (player.value.gameProgress.main.oneUpgrades[2]) {
+                        data[0].start = data[0].start.add(MAIN_ONE_UPGS[2].effect!);
+                    }
+
                     if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 7)) {
                         data[0].power = data[0].power.div(10 / 9);
                     }
@@ -161,7 +166,7 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         data[1].power = data[1].power.mul(0.875);
                     }
         
-                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) && Decimal.gte(player.value.gameProgress.kua.amount, 10)) {
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25)) {
                         data[0].start = data[0].start.add(15);
                         data[1].start = data[1].start.add(15);
                     }
@@ -170,8 +175,8 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         data[0].power = data[0].power.div(KUA_UPGRADES.KShards[2].eff!)
                     }
         
-                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 15)) {
-                        data[1].power = data[1].power.mul(0.875);
+                    if (player.value.gameProgress.main.oneUpgrades[7]) {
+                        data[0].start = data[0].start.add(MAIN_ONE_UPGS[7].effect!);
                     }
         
                     if (getKuaUpgrade("s", 6)) {

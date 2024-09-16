@@ -18,12 +18,12 @@ export const getKuaUpgrade = (sp: 's' | 'p', id: number): boolean => {
     throw new Error(`${sp} is not a valid kua upgrade type!`)
 }
 
-type Kua_Upgrade_List = {
+export type Kua_Upgrade_List = {
     KShards: Array<Kua_Upgrade>
     KPower: Array<Kua_Upgrade>
 }
 
-type Kua_Upgrade = {
+export type Kua_Upgrade = {
     desc: string
     cost: DecimalSource
     show: boolean
@@ -86,7 +86,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         },
         { // 5
             get desc() {
-                return `PR2's effect exponent increases twice as fast, UP2's base is increased from ${format(4 / 3, 3)} to ${format(1.5, 3)}, and unlock UP3's autobuyer.`;
+                return `PR2's effect exponent increases twice as fast, UP2's base is increased from ${format(4 / 3, 3)} to ${format(1.5, 3)}.`;
             },
             get cost() {
                 return 400;
@@ -254,7 +254,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         },
         { // 7
             get desc() {
-                return `Upgrade 2's effect is cubed after it's softcap, but it's other effects are not boosted.`;
+                return `Upgrade 2's effect is cubed, but it's other effects are not boosted.`;
             },
             get cost() {
                 return 1e8;
@@ -548,7 +548,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     : D(1)
                 
                 tmp.value.kua.effects.ptPower = getKuaUpgrade("p", 3)
-                    ? Decimal.max(k, 0).add(1).log2().sqrt().mul(0.02).add(1) // 1 = ^1, 2 = ^1.02, 16 = ^1.04, 256 = ^1.06, 65,536 = ^1.08 ...
+                    ? Decimal.max(k, 0).add(1).log2().sqrt().mul(0.01).add(1) // 1 = ^1, 2 = ^1.01, 16 = ^1.02, 256 = ^1.03, 65,536 = ^1.04 ...
                     : D(1)
 
                 tmp.value.kua.effects.upg2Softcap = getKuaUpgrade("s", 6)

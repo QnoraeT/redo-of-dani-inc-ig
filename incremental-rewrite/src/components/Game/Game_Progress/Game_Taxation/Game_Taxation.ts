@@ -7,7 +7,17 @@ export const getTaxUpgrade = (id: number) => {
     return player.value.gameProgress.tax.upgrades[id] ?? D(0);
 }
 
-export const TAX_UPGRADES = [
+export type TaxUpgrade = {
+    type: number
+    implemented: boolean
+    cost: (x?: DecimalSource) => Decimal
+    target?: (x: DecimalSource) => Decimal
+    effect?: (x: DecimalSource) => Decimal
+    desc: string
+    show: boolean
+}
+
+export const TAX_UPGRADES: Array<TaxUpgrade> = [
     {
         type: 0,
         implemented: false,
@@ -37,7 +47,7 @@ export const TAX_UPGRADES = [
             const effect = Decimal.mul(level, 0.025);
             return effect;
         },
-        get desc() { return `Increase PR2's reward exponent from ${format(1.1, 3)}^ to ${format(this.effect(getTaxUpgrade(2)).add(1.1), 3)}^.`; },
+        get desc() { return `Increase PR2's reward exponent from ${format(1.1, 3)}^ to ${format(this.effect!(getTaxUpgrade(2)).add(1.1), 3)}^.`; },
         show: true
     },
     {
@@ -55,7 +65,7 @@ export const TAX_UPGRADES = [
             const effect = Decimal.pow(1.25, level);
             return effect;
         },
-        get desc() { return `Increase Kuaraniai, KShards, and KPower gain by x${format(this.effect(getTaxUpgrade(3)), 2)}.`; },
+        get desc() { return `Increase Kuaraniai, KShards, and KPower gain by x${format(this.effect!(getTaxUpgrade(3)), 2)}.`; },
         show: true
     },
     {
@@ -83,12 +93,12 @@ export const updateTax = (type: number, delta: DecimalSource) => {
     switch (type) {
         case 0:
             for (let i = 0; i < TAX_UPGRADES.length; i++) {
-                if (player.value.gameProgress.tax.upgrades[i] === undefined) { player.value.gameProgress.tax.upgrades[i] = 0; }
+                if (player.value.gameProgress.tax.upgrades[i] === undefined) { player.value.gameProgress.tax.upgrades[i] = D(0); }
             }
 
             tmp.value.tax.req = D(Number.MAX_VALUE);
             tmp.value.tax.canDo = Decimal.gte(player.value.gameProgress.main.totals[4]!, Number.MAX_VALUE);
-            tmp.value.tax.pending = tmp.value.tax.canDo ? Decimal.pow(100, Decimal.log(player.value.gameProgress.main.totals[4]!, Number.MAX_VALUE).sqrt().sub(1)) : D(0);
+            tmp.value.tax.pending = tmp.value.tax.canDo ? Decimal.pow(100, Decimal.log(player.value.gameProgress.main.totals[4]!, "e500").sqrt().sub(1)) : D(0);
 
             if (player.value.gameProgress.tax.auto) {
                 generate = tmp.value.tax.pending.mul(delta);

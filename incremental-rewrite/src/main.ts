@@ -8,11 +8,11 @@ import { D, scale } from './calc'
 import { format } from './format'
 import { saveID, SAVE_MODES, saveTheFrickingGame } from './saving'
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from './softcapScaling'
-import { updateAllStart, updateStart, initAllMainUpgrades } from './components/Game/Game_Progress/Game_Main/Game_Main'
+import { updateAllStart, updateStart, initAllMainUpgrades, initAllMainOneUpgrades, MAIN_ONE_UPGS } from './components/Game/Game_Progress/Game_Main/Game_Main'
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from './components/Game/Game_Achievements/Game_Achievements'
 import { getKuaUpgrade, updateAllKua } from './components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai'
 import { diePopupsDie } from './popups'
-import { getColResEffect, updateAllCol, type challengeIDList, type colChallengesSavedData } from './components/Game/Game_Progress/Game_Colosseum/Game_Colosseum'
+import { getColResEffect, makeColChallengeSaveData, updateAllCol, type challengeIDList, type colChallengesSavedData } from './components/Game/Game_Progress/Game_Colosseum/Game_Colosseum'
 import { updateAllTax } from './components/Game/Game_Progress/Game_Taxation/Game_Taxation'
 
 export const NEXT_UNLOCKS = [
@@ -30,13 +30,13 @@ export const NEXT_UNLOCKS = [
         dispPart2: `PR2 to unlock the next layer.`,
         color: "#7958ff"
     },
-    {
-        get shown() { return player.value.gameProgress.kua.kpower.upgrades >= 2; },
-        get done() { return player.value.gameProgress.unlocks.kuaEnhancers; },
-        get dispPart1() { return `${format(player.value.gameProgress.kua.amount, 3)} / ${format(0.01, 2)}`; },
-        dispPart2: `Kuaraniai to unlock the next feature.`,
-        color: "#a040ff"
-    },
+    // {
+    //     get shown() { return player.value.gameProgress.kua.kpower.upgrades >= 2; },
+    //     get done() { return player.value.gameProgress.unlocks.kuaEnhancers; },
+    //     get dispPart1() { return `${format(player.value.gameProgress.kua.amount, 3)} / ${format(0.01, 2)}`; },
+    //     dispPart2: `Kuaraniai to unlock the next feature.`,
+    //     color: "#a040ff"
+    // },
     {
         get shown() { return player.value.gameProgress.kua.kpower.upgrades >= 2; },
         get done() { return player.value.gameProgress.unlocks.col; },
@@ -45,9 +45,9 @@ export const NEXT_UNLOCKS = [
         color: "#ff6000"
     },
     {
-        get shown() { return Decimal.gte(player.value.gameProgress.main.points, 1e250); },
+        get shown() { return Decimal.gte(player.value.gameProgress.main.points, "e400"); },
         get done() { return player.value.gameProgress.unlocks.tax; },
-        get dispPart1() { return `${format(player.value.gameProgress.main.points)} / ${format(Number.MAX_VALUE)}`; },
+        get dispPart1() { return `${format(player.value.gameProgress.main.points)} / ${format("e500")}`; },
         dispPart2: `Points to unlock the next layer.`,
         color: "#f0d000"
     },
@@ -102,6 +102,7 @@ type Player = {
                     boughtInReset: Array<DecimalSource> // prai, pr2, kua, col, tax
                 }
             >
+            oneUpgrades: Array<boolean>
             prai: {
                 totals: Array<null | DecimalSource> // null, pr2, kua, col, tax
                 best: Array<null | DecimalSource> // null, pr2, kua, col, tax
@@ -161,11 +162,13 @@ type Player = {
             inAChallenge: boolean
             completed: {
                 nk: DecimalSource
+                su: DecimalSource
             }
             challengeOrder: {chalID: Array<challengeIDList>, layer: Array<number>}
             completedAll: boolean
             saved: {
                 nk: colChallengesSavedData | null
+                su: colChallengesSavedData | null
             }
             power: DecimalSource
             totals: Array<null | DecimalSource> // null, null, null, null, tax
@@ -187,7 +190,7 @@ type Player = {
             totalEver: DecimalSource
             bestEver: DecimalSource
             times: DecimalSource,
-            upgrades: Array<number>
+            upgrades: Array<DecimalSource>
         }
     }
 }
@@ -251,7 +254,16 @@ export const initPlayer = (set = false): Player => {
                     trapped: false,
                     overall: false,
                     depths: D(0)
-                }
+                },
+                su: {
+                    id: 0,
+                    name: '',
+                    goalDesc: '',
+                    entered: false,
+                    trapped: false,
+                    overall: false,
+                    depths: D(0)
+                },
             },
             main: {
                 points: D(0),
@@ -260,6 +272,7 @@ export const initPlayer = (set = false): Player => {
                 totalEver: D(0),
                 bestEver: D(0),
                 upgrades: mainUpgrades,
+                oneUpgrades: [],
                 prai: {
                     totals: [null, D(0), D(0), D(0), D(0)],
                     best: [null, D(0), D(0), D(0), D(0)],
@@ -318,12 +331,14 @@ export const initPlayer = (set = false): Player => {
             col: {
                 inAChallenge: false,
                 completed: {
-                    nk: D(0)
+                    nk: D(0),
+                    su: D(0)
                 },
                 challengeOrder: {chalID: [], layer: []},
                 completedAll: false,
                 saved: {
-                    nk: null
+                    nk: null,
+                    su: null
                 },
                 power: D(0),
                 totals: [null, null, null, null, D(0)],
@@ -372,6 +387,7 @@ export const setGameFromSave = (save: string): void => {
 
 export type Challenge = {
     nk: ChallengeData
+    su: ChallengeData
 }
 
 export type ChallengeData = {
@@ -406,6 +422,9 @@ type Tmp = {
     main: {
         pps: Decimal
         upgrades: Array<TmpMainUpgrade>
+        oneUpgrades: Array<{
+            canBuy: boolean
+        }>
         prai: {
             canDo: boolean
             pending: Decimal
@@ -564,6 +583,7 @@ function initTemp(): Tmp {
         main: {
             pps: D(0),
             upgrades: initAllMainUpgrades(),
+            oneUpgrades: initAllMainOneUpgrades(),
             prai: {
                 canDo: false,
                 pending: D(0),
@@ -692,17 +712,27 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 0;
     }
     if (player.version === 0) {
-        player.settings.scaleSoftColors = false
+        player.settings.scaleSoftColors = false;
         // player.displayVersion = '1.0.0'
         player.version = 1;
     }
     if (player.version === 1) {
-
-        // player.version = 2;
+        player.gameProgress.main.oneUpgrades = [];
+        player.version = 2;
     }
     if (player.version === 2) {
-
-        // player.version = 3;
+        player.gameProgress.inChallenge.su = {
+            id: 0,
+            name: '',
+            goalDesc: '',
+            entered: false,
+            trapped: false,
+            overall: false,
+            depths: D(0)
+        }
+        player.gameProgress.col.completed.su = D(0)
+        player.gameProgress.col.saved.su = makeColChallengeSaveData();
+        player.version = 3;
     }
     if (player.version === 3) {
 
@@ -873,9 +903,8 @@ export const reset = (layer: number, override = false) => {
                     updateAllTotal(player.value.gameProgress.main.prai.totals, tmp.value.main.prai.pending);
                     player.value.gameProgress.main.prai.totalEver = Decimal.add(player.value.gameProgress.main.prai.totalEver, tmp.value.main.prai.pending);
                     player.value.gameProgress.main.prai.times = Decimal.add(player.value.gameProgress.main.prai.times, 1);
+                    setAchievement(0, 8, ACHIEVEMENT_DATA[0].list[8].cond);
                 }
-
-                setAchievement(0, 8, ACHIEVEMENT_DATA[0].list[8].cond);
 
                 for (let i = 0; i < 2; i++) {
                     player.value.gameProgress.main.prai.timeInPRai = D(0);
@@ -924,8 +953,12 @@ export const reset = (layer: number, override = false) => {
                 player.value.gameProgress.main.prai.times = D(0);
                 player.value.gameProgress.main.prai.amount = D(0);
                 player.value.gameProgress.kua.timeInKua = D(0);
+                if (Decimal.lt(player.value.gameProgress.main.pr2.amount, 25)) {
+                    player.value.gameProgress.main.oneUpgrades = [];
+                }
 
-                updateAllKua(0)
+                updateAllKua(0);
+                updateAllStart(0);
             }
             break;
         case 3:
@@ -948,14 +981,14 @@ export const reset = (layer: number, override = false) => {
                 player.value.gameProgress.main.upgrades[i].boughtInReset[3] = D(0);
             }
 
-            player.value.gameProgress.kua.enhancers.sources = [D(0), D(0), D(0)],
-            player.value.gameProgress.kua.enhancers.enhancers = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
-            player.value.gameProgress.kua.enhancers.enhanceXP = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
-            player.value.gameProgress.kua.enhancers.enhancePow = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
-            player.value.gameProgress.kua.enhancers.xpSpread = D(1),
-            player.value.gameProgress.kua.enhancers.inExtraction = 0,
-            player.value.gameProgress.kua.enhancers.extractionXP = [D(0), D(0), D(0)],
-            player.value.gameProgress.kua.enhancers.upgrades = []
+            player.value.gameProgress.kua.enhancers.sources = [D(0), D(0), D(0)];
+            player.value.gameProgress.kua.enhancers.enhancers = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)];
+            player.value.gameProgress.kua.enhancers.enhanceXP = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)];
+            player.value.gameProgress.kua.enhancers.enhancePow = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)];
+            player.value.gameProgress.kua.enhancers.xpSpread = D(1);
+            player.value.gameProgress.kua.enhancers.inExtraction = 0;
+            player.value.gameProgress.kua.enhancers.extractionXP = [D(0), D(0), D(0)];
+            player.value.gameProgress.kua.enhancers.upgrades = [];
             updateAllKua(0);
             break;
         case 4:
@@ -1016,16 +1049,22 @@ function calcPPS(): Decimal {
     if (ifAchievement(1, 13)) {
         pps = pps.mul(getAchievementEffect(1, 13));
     }
-    if (getKuaUpgrade("p", 3)) {
-        pps = pps.pow(tmp.value.kua.effects.ptPower);
-    } 
+    pps = pps.mul(tmp.value.kua.effects.kpowerPassive)
+
     if (getKuaUpgrade("s", 7)) {
         pps = pps.mul(tmp.value.kua.effects.pts);
     } 
+    if (player.value.gameProgress.main.oneUpgrades[9]) {
+        pps = pps.mul(MAIN_ONE_UPGS[9].effect!);
+    }
 
     pps = pps.mul(getColResEffect(0));
     pps = pps.mul(tmp.value.tax.ptsEff);
-    pps = pps.mul(tmp.value.kua.effects.kpowerPassive)
+
+    if (getKuaUpgrade("p", 3)) {
+        pps = pps.pow(tmp.value.kua.effects.ptPower);
+    } 
+
     if (player.value.gameProgress.col.inAChallenge) {
         pps = pps.pow(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime))).add(1));
     }
@@ -1109,7 +1148,7 @@ function gameLoop(): void {
         player.value.gameProgress.unlocks.kua = player.value.gameProgress.unlocks.kua || Decimal.gte(player.value.gameProgress.main.pr2.amount, 10);
         player.value.gameProgress.unlocks.kuaEnhancers = player.value.gameProgress.unlocks.kuaEnhancers || Decimal.gte(player.value.gameProgress.kua.amount, 0.0095);
         player.value.gameProgress.unlocks.col = player.value.gameProgress.unlocks.col || (player.value.gameProgress.kua.kpower.upgrades >= 2 && Decimal.gte(player.value.gameProgress.kua.amount, 100));
-        player.value.gameProgress.unlocks.tax = player.value.gameProgress.unlocks.tax || Decimal.gte(player.value.gameProgress.main.points, Number.MAX_VALUE);
+        player.value.gameProgress.unlocks.tax = player.value.gameProgress.unlocks.tax || Decimal.gte(player.value.gameProgress.main.points, "e500");
 
         for (let i = 0; i < ACHIEVEMENT_DATA.length; i++) {
             for (let j = 0; j < ACHIEVEMENT_DATA[i].list.length; j++) {

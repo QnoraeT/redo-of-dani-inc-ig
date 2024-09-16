@@ -23,14 +23,12 @@ body {
   display: flex;
 }
 
-.flexJustifyCenter {
-  display: flex;
-  justify-content: center;
-}
-
-.flexJCSB {
-  display: flex;
-  justify-content: space-between;
+.normalTabButton {
+  margin-left: 0.12vw; 
+  margin-right: 0.12vw; 
+  width: 7.5vw; 
+  height: 2vw; 
+  font-size: 0.75vw;
 }
 
 .whiteText {
@@ -135,11 +133,11 @@ body {
 }
 
 .normColBorder {
-  border: 0.48vw solid #ff4000;
+  border: 0.36vw solid #ff4000;
 }
 
 .normColBorder:hover {
-  border: 0.48vw solid #ff9775;
+  border: 0.36vw solid #ff9775;
 }
 
 .smallTaxBorder {
@@ -151,27 +149,27 @@ body {
 }
 
 .normTaxBorder {
-  border: 0.48vw solid #ffd900;
+  border: 0.36vw solid #ffd900;
 }
 
 .normTaxBorder:hover {
-  border: 0.48vw solid #fff2a7;
+  border: 0.36vw solid #fff2a7;
 }
 
 .normColBorderProg {
-  border: 0.48vw solid #fffb00;
+  border: 0.36vw solid #fffb00;
 }
 
 .normColBorderProg:hover {
-  border: 0.48vw solid #fffd75;
+  border: 0.36vw solid #fffd75;
 }
 
 .normColBorderComp {
-  border: 0.48vw solid #00ff0d;
+  border: 0.36vw solid #00ff0d;
 }
 
 .normColBorderComp:hover {
-  border: 0.48vw solid #8cff75;
+  border: 0.36vw solid #8cff75;
 }
 
 .colButtonHeader {
@@ -232,8 +230,8 @@ body {
 }
 
 .main-container {
-  width: 16vw; 
-  height: 20vw; 
+  width: 15vw; 
+  height: 22vw; 
 }
 
 .first-cont, .second-cont, .third-cont {
@@ -252,15 +250,6 @@ body {
   justify-content: center; 
   align-items: center; 
   width: 100%;
-}
-
-.colButtonTab {
-  margin-left: 0.12vw; 
-  margin-right: 0.12vw; 
-  width: 10vw; 
-  height: 3vw; 
-  color: #f40; 
-  font-size: 1.2vw;
 }
 
 .colButton {
@@ -305,15 +294,15 @@ body {
 
 .genAutoButton {
   transition-duration: 0.2s;
-  border: 0.24vw solid #384048;
+  border: 0.18vw solid #384048;
 }
 
 .genAutoButton:hover {
-  border: 0.24vw solid #515c68;
+  border: 0.18vw solid #515c68;
 }
 
 .nope {
-  border: 0.24vw solid #400;
+  border: 0.18vw solid #400;
 }
 
 .nope:hover {
@@ -330,6 +319,16 @@ body {
 .ok:hover {
   border: 0.24vw solid #0f0;
   box-shadow: 0 0 1.5vw 0.8vw #008000;
+}
+
+.done {
+  border: 0.24vw solid #008;
+  box-shadow: 0 0 1.5vw 0.36vw #000040;
+}
+
+.done:hover {
+  border: 0.24vw solid #00f;
+  box-shadow: 0 0 1.5vw 0.48vw #000080;
 }
 
 .nopeFill {

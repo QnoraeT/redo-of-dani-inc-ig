@@ -135,7 +135,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 autoComplete: false,
                 get reward() { return `PR2 requirement is reduced by ${formatPerc(1.5)}.`; },
                 show: true,
-                get status() { return tmp.value.main.prai.pending.gte(1e3) ? true : `${format(tmp.value.main.prai.pending)} / ${format(1e3)} PRai pending` }
+                status: true
             },
             {
                 id: 9,
@@ -336,18 +336,18 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get cond() { return Decimal.gte(player.value.gameProgress.main.points, 1e80) && Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0); },
                 get reward() { return `Upgrade 3 gets a small ${format(1, 2)}% boost to effectiveness.`; },
                 get show() { return player.value.gameProgress.unlocks.kua; },
-                get status() { return Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0) ? (Decimal.gte(player.value.gameProgress.main.best[2]!, 1e80) ? true : `${format(player.value.gameProgress.main.best[2]!)} / ${format(1e80)}`) : `Failed due to having Upgrade 3.`; },
+                get status() { return Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0) ? true : `Failed due to having Upgrade 3.`; },
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             { 
                 id: 5,
                 get name() { return `Quite interesting`; },
                 get desc() { return `Get ${format(1e2)} Upgrade 1 without having over ${format(10)} PRai.`; },
-                get cond() { return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100) && Decimal.lte(player.value.gameProgress.main.prai.amount, 10); },
+                get cond() { return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100) && Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10); },
                 get reward() { return `Upgrade 1's effectiveness is slightly increased based off of your PRai. Currently: ${format(this.eff!.sub(1).mul(1e2), 3)}%`; },
                 get eff() { 
                     let eff = D(player.value.gameProgress.main.prai.amount)
-                    eff = eff.max(10).log10().cbrt().sub(1).div(200).add(1)
+                    eff = eff.max(10).log10().cbrt().sub(1).div(500).add(1)
                     return eff;
                 },
                 get show() { return player.value.gameProgress.unlocks.kua; },
@@ -359,16 +359,16 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get desc() { return `Reach ${format(1e20)} PRai without Upgrades 1, 2, and 3 in the current Kuaraniai run.`; },
                 autoComplete: false,
                 get cond() { return Decimal.gte(player.value.gameProgress.main.prai.best[2]!, 1e20) && Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0); },
-                get reward() { return `All upgrades' cost scaling (after scaling) is slightly slowed down based off of your time in this PRai reset. Currently: ${formatPerc(this.eff!, 3)} slower`; },
+                get reward() { return `All upgrades' cost scaling is slightly slowed down based off of your time in this PRai reset. Currently: ${formatPerc(this.eff!, 3)} slower`; },
                 get eff() { 
                     let eff = Decimal.div(player.value.gameProgress.main.prai.timeInPRai, 60);
-                    eff = eff.div(eff.mul(9).add(1)).add(1)
+                    eff = eff.div(eff.mul(198).add(1)).add(1)
                     return eff;
                 },
                 get show() { return player.value.gameProgress.unlocks.kua; },
                 get status() { 
                     if (Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)) {
-                        return Decimal.gte(player.value.gameProgress.main.best[2]!, 1e20) ? true : `${format(player.value.gameProgress.main.best[2]!)} / ${format(1e80)}`;
+                        return true;
                     }
                     const fail: Array<number> = [];
                     for (let i = 0; i < 3; i++) {
@@ -430,7 +430,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get show() { return player.value.gameProgress.unlocks.kua; },
                 get status() { 
                     if (Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)) {
-                        return Decimal.gte(player.value.gameProgress.main.best[2]!, 1e80) ? true : `${format(player.value.gameProgress.main.best[2]!)} / ${format(1e80)}`;
+                        return true;
                     }
                     const fail: Array<number> = [];
                     for (let i = 0; i < 3; i++) {
@@ -467,7 +467,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return eff;
                 },
                 get show() { return player.value.gameProgress.unlocks.kua; },
-                get status() { return Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) ? Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 300) ? true : `${format(player.value.gameProgress.main.upgrades[0].bought)} / ${format(300)}` : `Failed due to having Upgrade 2.`; },
+                get status() { return Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) ? true : `Failed due to having Upgrade 2.`; },
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             { 
@@ -480,7 +480,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get show() { return player.value.gameProgress.unlocks.kua; },
                 get status() { 
                     if (Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)) {
-                        return false;
+                        return true;
                     }
                     const fail = [!Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0), !Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)]
                     let txt = `Failed due to having Upgrade `

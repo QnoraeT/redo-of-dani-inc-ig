@@ -10,20 +10,20 @@ import { NOTATION_LIST, setTimeSpeed, switchNotation } from './Game_Options'
 <template>
     <div id="options" v-if="tab.currentTab === 1">
         <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.3vw;">
-            <button @click="switchSubTab(0, 0)" style="margin-left: 0.12vw; margin-right: 0.12vw; width: 7.5vw; height: 2vw; font-size: 0.75vw; border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana">Saving</button>
-            <button @click="switchSubTab(1, 0)" style="margin-left: 0.12vw; margin-right: 0.12vw; width: 7.5vw; height: 2vw; font-size: 0.75vw; border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana">Other Options</button>
+            <button @click="switchSubTab(0, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Saving</button>
+            <button @click="switchSubTab(1, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Other Options</button>
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 0">
             <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.3vw;">
-                <button @click="switchSubTab(0, 1)" style="margin-left: 0.12vw; margin-right: 0.12vw; width: 7.5vw; height: 2vw; font-size: 0.75vw; border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana">Save List</button>
-                <button @click="switchSubTab(1, 1)" style="margin-left: 0.12vw; margin-right: 0.12vw; width: 7.5vw; height: 2vw; font-size: 0.75vw; border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana">Creating Saves</button>
+                <button @click="switchSubTab(0, 1)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Save List</button>
+                <button @click="switchSubTab(1, 1)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Creating Saves</button>
             </div>
             <div v-if="tab.tabList[tab.currentTab][1] === 0">
                 <div class="flex-container" style="flex-direction: row; justify-content: center;">
                     <button @click="saveTheFrickingGame()" class="whiteText fontVerdana generatorButton" style="margin: 0.5vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
                         Save manually.
                     </button>
-                    <button @click="setAutosaveInterval();" v-bind:class="{ nope: game.autoSaveInterval >= 1e10, ok: game.autoSaveInterval < 1e10 }" class="whiteText fontVerdana generatorButton" style="margin: 0.5vw; height: 5vw; width: 12vw; font-size: 0.75vw; cursor: pointer;">
+                    <button @click="setAutosaveInterval();" :class="{ nope: game.autoSaveInterval >= 1e10, ok: game.autoSaveInterval < 1e10 }" class="whiteText fontVerdana generatorButton" style="margin: 0.5vw; height: 5vw; width: 12vw; font-size: 0.75vw; cursor: pointer;">
                         Autosave Interval: {{formatTime(game.autoSaveInterval >= 1e10 ? Infinity : game.autoSaveInterval, 3)}}
                     </button>
                     <button @click="exportSaveList()" class="whiteText fontVerdana generatorButton" style="margin: 0.5vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
@@ -38,11 +38,11 @@ import { NOTATION_LIST, setTimeSpeed, switchNotation } from './Game_Options'
                 </div>
                 <div class="flex-container" style="align-items: center; flex-direction: column; margin-left: auto; margin-right: auto; border: 0.36vw solid #788088; background-color: #101418; width: 60vw; height: 40vw">
                     <div class="flex-container" style="overflow: auto; overflow-y: scroll; align-items: center; flex-direction: column; border: 0.24vw solid #788088; height: 78%; width: 98%; margin-bottom: auto; margin-top: 1%">
-                        <div v-for="(item, index) in game.list" :key="item.id" v-bind:style="{ border: `0.24vw solid ${gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, game.currentSave === index ? 1 : 0.5, game.currentSave === index ? 1 : 0.125)}` }" style="position: relative; min-height: 19%; height: 19%; width: 98%; margin-top: 1%;">
+                        <div v-for="(item, index) in game.list" :key="item.id" :style="{ border: `0.24vw solid ${gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, game.currentSave === index ? 1 : 0.5, game.currentSave === index ? 1 : 0.125)}` }" style="position: relative; min-height: 19%; height: 19%; width: 98%; margin-top: 1%;">
                             <div v-if="item !== undefined && item !== null" style="height: 100%; width: 100%;">
                                 <div style="height: 100%; width: 100%; position: relative;">
-                                    <div v-bind:style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.1, game.currentSave === index ? 1 : 0.125) }" style="position: absolute; top: 0; left: 0; height: 100%; width: 100%"></div>
-                                    <!-- <div v-bind:style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.25, game.currentSave === index ? 1 : 0.125), width: `${getEndgame(item.data.gameProgress.main.points).toNumber()}%` }" style="position: absolute; top: 0; left: 0; height: 100%;"></div> -->
+                                    <div :style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.1, game.currentSave === index ? 1 : 0.125) }" style="position: absolute; top: 0; left: 0; height: 100%; width: 100%"></div>
+                                    <!-- <div :style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.25, game.currentSave === index ? 1 : 0.125), width: `${getEndgame(item.data.gameProgress.main.points).toNumber()}%` }" style="position: absolute; top: 0; left: 0; height: 100%;"></div> -->
                                 </div>
                                 <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%">
                                     <div style="margin: 0.3vw; margin-top: 0.15vw;">
@@ -69,22 +69,22 @@ import { NOTATION_LIST, setTimeSpeed, switchNotation } from './Game_Options'
                                                 <span style="font-size: 0.75vw" class="whiteText">Offline Time: {{formatTime(item.data.offlineTime / 1000, 0, 3, 4)}}</span>
                                             </div>
                                             <div style="flex-grow: 1; flex-basis: 0; text-align: right; font-size: 1.2vw;" class="whiteText">
-                                                <button @click="switchToSave(index)" class="whiteText fontVerdana generatorButton" v-bind:style="{ cursor: game.currentSave !== index ? 'pointer' : 'not-allowed', border: `0.12vw solid ${gRC(game.currentSave !== index ? gameVars.sessionTime : 4.0, game.currentSave !== index ? 1 : 0.5, game.currentSave !== index ? 1 : 0.125)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
+                                                <button @click="switchToSave(index)" class="whiteText fontVerdana generatorButton" :style="{ cursor: game.currentSave !== index ? 'pointer' : 'not-allowed', border: `0.12vw solid ${gRC(game.currentSave !== index ? gameVars.sessionTime : 4.0, game.currentSave !== index ? 1 : 0.5, game.currentSave !== index ? 1 : 0.125)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
                                                     Load Save
                                                 </button>
-                                                <button @click="duplicateSave(index)" class="whiteText fontVerdana generatorButton" v-bind:style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
+                                                <button @click="duplicateSave(index)" class="whiteText fontVerdana generatorButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
                                                     Duplicate Save
                                                 </button>
-                                                <button @click="deleteSave(index)" class="whiteText fontVerdana generatorButton" v-bind:style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
+                                                <button @click="deleteSave(index)" class="whiteText fontVerdana generatorButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
                                                     Delete Save
                                                 </button>
-                                                <button @click="renameSave(index)" class="whiteText fontVerdana generatorButton" v-bind:style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
+                                                <button @click="renameSave(index)" class="whiteText fontVerdana generatorButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
                                                     Rename Save
                                                 </button>
-                                                <button @click="importSave(index)" class="whiteText fontVerdana generatorButton" v-bind:style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
+                                                <button @click="importSave(index)" class="whiteText fontVerdana generatorButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
                                                     Import Save
                                                 </button>
-                                                <button @click="exportSave(index)" class="whiteText fontVerdana generatorButton" v-bind:style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
+                                                <button @click="exportSave(index)" class="whiteText fontVerdana generatorButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }" style="padding-left: 0.18vw; padding-right: 0.18vw; padding-top: 0.03vw; padding-bottom: 0.03vw; font-size: 0.75vw; margin: 0.24vw;">
                                                     Export Save
                                                 </button>
                                             </div>
@@ -111,7 +111,7 @@ import { NOTATION_LIST, setTimeSpeed, switchNotation } from './Game_Options'
                     <div class="flex-container" style="flex-direction: row; justify-content: center;">
                         <div style="display: flex; width: 60vw; flex-wrap: wrap; justify-content: center">
                             <div v-for="(item, index) in SAVE_MODES" :key="item.id" class="flex-container">
-                                <button @click="setTempModes(index)" class="whiteText fontVerdana tooltip" v-bind:style="{ color: item.textColor, border: `0.12vw solid ${tmp.saveModes[index] ? item.borderSelectedColor : item.borderColor}`, backgroundColor: colorChange(item.bgColor, tmp.saveModes[index] ? 2.0 : 1.0, 1.0) }" style="margin: 0.2vw; height: 2.5vw; width: 8vw; font-size: 0.8vw;">
+                                <button @click="setTempModes(index)" class="whiteText fontVerdana tooltip" :style="{ color: item.textColor, border: `0.12vw solid ${tmp.saveModes[index] ? item.borderSelectedColor : item.borderColor}`, backgroundColor: colorChange(item.bgColor, tmp.saveModes[index] ? 2.0 : 1.0, 1.0) }" style="margin: 0.2vw; height: 2.5vw; width: 8vw; font-size: 0.8vw;">
                                     {{item.name}}
                                     <span class="tooltiptext">
                                         <span style="font-size: 0.6vw">{{item.desc}}</span>

@@ -9,7 +9,7 @@ import { switchSubTab } from '@/components/MainTabs/MainTabs'
 </script>
 <template>
     <div id="generators" v-if="tab.currentTab === 0">
-        <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.3vw;">
+        <div v-if="Decimal.gte(player.gameProgress.main.pr2.bestEver, 6)" class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.3vw;">
             <button @click="switchSubTab(0, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Main</button>
             <button @click="switchSubTab(1, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">One-Upgrades</button>
         </div>

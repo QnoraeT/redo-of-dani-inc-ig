@@ -62,7 +62,17 @@ export const COL_CHALLENGES: colChallenges = {
         name: `Sabotaged Upgrades`,
         get goal() { 
             return [
-                D(1e25),
+                D(1e60),
+                D(1e55),
+                D(1e52),
+                D(1e55),
+                D(1e60),
+                D(1e70),
+                D(1e95),
+                D(1e120),
+                D(1e165),
+                D(1e200),
+                D(Infinity),
             ][new Decimal(timesCompleted('su')).toNumber()] },
         get goalDesc() { return `Reach ${format(this.goal)} Points.`; },
         get desc() { 
@@ -75,7 +85,9 @@ export const COL_CHALLENGES: colChallenges = {
                 `All upgrades scale ${format(4.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e40)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
                 `All upgrades scale ${format(5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e50)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
                 `All upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e60)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
-                `All upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai.`,
+                `All upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
+                `All upgrades scale ${format(15, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e90)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
+                `winner you complete it all`,
             ][new Decimal(timesCompleted('su')).toNumber()];
         },
         get reward() { 

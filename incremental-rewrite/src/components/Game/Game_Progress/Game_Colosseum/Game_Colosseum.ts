@@ -92,7 +92,7 @@ export const COL_CHALLENGES: colChallenges = {
         },
         get reward() { 
             return [
-                `Colosseum Power nerfs`,
+                ``,
             ][new Decimal(timesCompleted('su')).toNumber()];
         },
         cap: 10,

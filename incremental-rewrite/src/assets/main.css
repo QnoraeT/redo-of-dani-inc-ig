@@ -294,15 +294,15 @@ body {
 
 .genAutoButton {
   transition-duration: 0.2s;
-  border: 0.18vw solid #384048;
+  border: 0.24vw solid #384048;
 }
 
 .genAutoButton:hover {
-  border: 0.18vw solid #515c68;
+  border: 0.24vw solid #515c68;
 }
 
 .nope {
-  border: 0.18vw solid #400;
+  border: 0.24vw solid #400;
 }
 
 .nope:hover {

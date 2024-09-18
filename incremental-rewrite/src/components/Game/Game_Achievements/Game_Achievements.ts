@@ -42,7 +42,7 @@ type Ach_Data = Array<{
     type: Ach_Types
     show: boolean
     list: Array<{
-        id: number
+        id: string
         name: string
         desc: string
         cond: boolean
@@ -64,7 +64,8 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
         show: true,
         list: [
             {
-                id: 0,
+                // use any kind of string id, just anything that will not mess up the ordering if you were to change or remove an achievement
+                id: "sto",
                 get name() { return `Starting off?`; },
                 get desc() { return `Get ${format(1)} UP1.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 1) },
@@ -73,7 +74,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 1,
+                id: "cru",
                 get name() { return `Let me show you how cruel I was with this...`; },
                 get desc() { return `Get ${format(20)} UP1.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 20) },
@@ -82,7 +83,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 2,
+                id: "nop",
                 get name() { return `Not my progress!`; },
                 get desc() { return `Do your first PRai reset.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 1) },
@@ -91,7 +92,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 3,
+                id: "ric",
                 get name() { return `Are you rich now?`; },
                 get desc() { return `Have at least ${format(10)} PRai.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 10) },
@@ -100,7 +101,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 5,
+                id: "scp",
                 get name() { return `No! Not again! This is not Distance Incremental!`; },
                 get desc() { return `Get your first softcap.`; },
                 get cond() { return Decimal.gte(tmp.value.main.upgrades[1].effect, 10) },
@@ -109,7 +110,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 6,
+                id: "was",
                 get name() { return `All that time wasted...`; },
                 get desc() { return `Have ${format(1e18)} points without doing a PRai reset.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e18); },
@@ -118,7 +119,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 7,
+                id: "end",
                 get name() { return `This cannot be endgame.`; },
                 get desc() { return `Do a PR2 reset twice.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 2) },
@@ -128,7 +129,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 8,
+                id: "ins",
                 get name() { return `Instant gratification.`; },
                 get desc() { return `Receive ${format(1e3)} PRai in a single PRai reset.`; },
                 get cond() { return Decimal.gte(tmp.value.main.prai.pending, 1e3); },
@@ -138,7 +139,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 9,
+                id: "cln",
                 get name() { return `This really is a clone of Distance Incremental!`; },
                 get desc() { return `Have at least ${format(100)} UP1.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100) },
@@ -147,7 +148,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 10,
+                id: "byg",
                 get name() { return `What once was part of a bygone era...`; },
                 get desc() { return `Do a PR2 reset ${format(4)} times in total.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 4); },
@@ -156,7 +157,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 11,
+                id: "fur",
                 get name() { return `Going even further beyond!`; },
                 get desc() { return `Do a PR2 reset ${format(11)} times.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 11); },
@@ -165,7 +166,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 12,
+                id: "pr1",
                 get name() { return `A prelude 1`; },
                 get desc() { return `Have ${format(1e18)} points without buying Upgrade 3.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e18) && Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0); },
@@ -174,7 +175,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get status() { return Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0) ? true : `Failed due to having Upgrade 3`; }
             },
             {
-                id: 13,
+                id: "pr2",
                 get name() { return `A prelude 2`; },
                 get desc() { return `Have ${format(1e25)} points without buying Upgrade 2 and 3.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e25) && Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) && Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0); },
@@ -196,7 +197,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 }
             },
             {
-                id: 14,
+                id: "pr3",
                 get name() { return `A prelude 3`; },
                 get desc() { return `Have ${format(1e20)} points without buying Upgrades 1, 2, and 3 in the current PRai run.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e20) && Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) && Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) && Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0); },
@@ -225,7 +226,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 }
             },
             {
-                id: 15,
+                id: "eh1",
                 get name() { return `Enhancing 1`; },
                 get desc() { return `Make Upgrade 1's base reach ×${format(1.6, 3)}`; },
                 get cond() { return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 1.6); },
@@ -234,7 +235,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 16,
+                id: "eh2",
                 get name() { return `Enhancing 2`; },
                 get desc() { return `Make Upgrade 1's base reach ×${format(2, 3)}`; },
                 get cond() { return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 2); },
@@ -243,7 +244,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 17,
+                id: "eh3",
                 get name() { return `Enhancing 3`; },
                 get desc() { return `Make Upgrade 1's base reach ×${format(3, 3)}`; },
                 get cond() { return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 3); },
@@ -253,7 +254,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             // dummy achievement
             {
-                id: 4,
+                id: "Don't",
                 get name() { return `You are not supposed to see this.`; },
                 get desc() { return `f`; },
                 autoComplete: false,
@@ -276,7 +277,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
         get show() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 10); },
         list: [
             {
-                id: 0,
+                id: "why",
                 get name() { return `What even is this thing? Why do I have so little of it?`; },
                 get desc() { return `Convert all of your PRai to Kuaraniai.`; },
                 get cond() { return Decimal.gt(player.value.gameProgress.kua.amount, 0); },
@@ -285,7 +286,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 1,
+                id: "sto",
                 get name() { return `Stockpiler`; },
                 get desc() { return `Save up ${format(1e12)} PRai on a Kuaraniai run.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e12); },
@@ -310,7 +311,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             { 
-                id: 2,
+                id: "pie",
                 get name() { return `Gathering Pieces Together`; },
                 get desc() { return `Have ${format(0.01, 3)} Kuaraniai.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.kua.amount, 0.01); },
@@ -319,7 +320,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 3,
+                id: "byk",
                 get name() { return `You like making progress, don't you?`; },
                 get desc() { return `Have ${format(0.1, 2)} Kuaraniai.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.kua.amount, 0.095); },
@@ -329,7 +330,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             { 
-                id: 4,
+                id: "unn",
                 get name() { return `This upgrade was unnecessary`; },
                 get desc() { return `Have ${format(1e80)} points without Upgrade 3 in the current Kuaraniai run.`; },
                 autoComplete: false,
@@ -340,7 +341,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             { 
-                id: 5,
+                id: "int",
                 get name() { return `Quite interesting`; },
                 get desc() { return `Get ${format(1e2)} Upgrade 1 without having over ${format(10)} PRai.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100) && Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10); },
@@ -354,7 +355,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get status() { return Decimal.lte(player.value.gameProgress.main.prai.amount, 10) ? true : `Failed due to having more than ${format(10)} PRai.`; },
             },
             { 
-                id: 6,
+                id: "use",
                 get name() { return `Actually, these are useless!`; },
                 get desc() { return `Reach ${format(1e20)} PRai without Upgrades 1, 2, and 3 in the current Kuaraniai run.`; },
                 autoComplete: false,
@@ -390,7 +391,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             { 
-                id: 7,
+                id: "scp",
                 get name() { return `This softcap won't hurt me!`; },
                 get desc() { return `Upgrade 2's effect must reach /${format(1e17)}.`; }, 
                 get cond() { return Decimal.gte(tmp.value.main.upgrades[1].effect, 1e17); },
@@ -399,7 +400,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 8,
+                id: "ob1",
                 get name() { return `Make this obsolete, I dare you. >:3`; },
                 get desc() { return `Gain ${format(2.5, 2)} Kuaraniai without doing a single PRai reset.`; },
                 get cond() { return Decimal.gte(tmp.value.kua.pending, 2.5) && Decimal.lte(player.value.gameProgress.main.prai.times, 0); },
@@ -410,7 +411,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             { 
-                id: 9,
+                id: "ob2",
                 get name() { return `oh we might make this obsolete`; },
                 get desc() { return `Have ${format(300)} Upgrade 1 without having more than ${format(10)} PRai.`; },
                 autoComplete: false,
@@ -421,7 +422,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
-                id: 10,
+                id: "ntg",
                 get name() { return `"End-game" pass filter`; },
                 get desc() { return `Reach ${format(1e80)} points without buying Upgrades 1, 2, and 3 in the current Kuaraniai run.`; },
                 autoComplete: false,
@@ -452,7 +453,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             { 
-                id: 11,
+                id: "mch",
                 get name() { return `I don't think this does much`; },
                 get desc() { return `Reach ${format(300)} Upgrade 1 without Upgrade 2 in the current Kuaraniai run.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 300) && Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0); },
@@ -471,7 +472,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             { 
-                id: 12,
+                id: "chn",
                 get name() { return `What if the upgrades didn't chain boost each other and instead also directly boosted the thing`; },
                 get desc() { return `Get ${format(1e35)} points without Upgrades 1 and 2 in the current Kuaraniai run.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.best[2]!, 1e35) && Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0); },
@@ -495,7 +496,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             { 
-                id: 13,
+                id: "run",
                 get name() { return `speedrun? :o`; },
                 get desc() { return `Reach ${format(1e260)} points in the first ${format(5, 2)} seconds in a Kuaraniai run.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.points, 1e260) && Decimal.lte(player.value.gameProgress.kua.timeInKua, 5); },
@@ -509,7 +510,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get status() { return Decimal.lte(player.value.gameProgress.kua.timeInKua, 5) ? true : `Failed due to taking ${formatTime(player.value.gameProgress.kua.timeInKua)} / ${formatTime(5)} in the current Kuaraniai run.`; }
             },
             { 
-                id: 14,
+                id: "tie",
                 get name() { return `imagine PR3 as "tiers" if PR2 is "ranks"`; },
                 get desc() { return `Reach ${format(25)} PR2.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 25); },
@@ -518,7 +519,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             { 
-                id: 15,
+                id: "sp2",
                 get name() { return `Stockpiler 2`; },
                 get desc() { return `Save up ${format(1e85)} PRai on a Kuaraniai run.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 1e85); },
@@ -527,7 +528,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             { 
-                id: 16,
+                id: "sck",
                 get name() { return `:softcapkisser:`; },
                 get desc() { return `Get ${format(1e7)} Kuaraniai.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.kua.amount, 1e7); },
@@ -550,7 +551,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
         get show() { return player.value.gameProgress.unlocks.col; },
         list: [
             {
-                id: 0,
+                id: "cnk",
                 get name() { return `Does every incremental game need to have a challenge like this? Probably.`; },
                 get desc() { return `Complete Colosseum Challenge 'No Kuaraniai.'`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.col.completed.nk, 1); },
@@ -559,7 +560,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                id: 1,
+                id: "tim",
                 get name() { return `In a time crunch.`; },
                 get desc() { return `Fully complete a challenge with less than ${formatTime(10)} to spare.`; },
                 get cond() { return Decimal.lte(player.value.gameProgress.col.time, 10); },
@@ -569,7 +570,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             { // ! Unable
-                id: 2,
+                id: "har",
                 get name() { return `this challenge is only gonna get more difficult`; },
                 get desc() { return `Complete "Sabotaged Upgrades" 5 times.`; },
                 get cond() { return false; },
@@ -578,7 +579,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             { // ! Unable
-                id: 3,
+                id: "npt",
                 get name() { return `Ruining the point`; },
                 get desc() { return `Complete "Sabotaged Upgrades" on difficulty 1 without buying any upgrade.`; },
                 get cond() { return false; },
@@ -591,7 +592,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             { 
-                id: 4,
+                id: "nop",
                 get name() { return `There wasn't any point in doing that.`; },
                 get desc() { return `Reach ${format(1e100)} points in No Kuaraniai.`; },
                 get cond() { return player.value.gameProgress.inChallenge.nk.overall && Decimal.gte(player.value.gameProgress.main.best[3]!, 1e100); },
@@ -600,7 +601,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             { 
-                id: 5,
+                id: "smr",
                 get name() { return `smort`; },
                 get desc() { return `Reach Level ${format(1e2)} in Dotgenous.`; },
                 get cond() { return Decimal.gte(getColResLevel(0), 100); },

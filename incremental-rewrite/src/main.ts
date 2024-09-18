@@ -9,7 +9,7 @@ import { format } from './format'
 import { saveID, SAVE_MODES, saveTheFrickingGame } from './saving'
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from './softcapScaling'
 import { updateAllStart, updateStart, initAllMainUpgrades, initAllMainOneUpgrades, MAIN_ONE_UPGS } from './components/Game/Game_Progress/Game_Main/Game_Main'
-import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from './components/Game/Game_Achievements/Game_Achievements'
+import { ACHIEVEMENT_DATA, getAchievementEffect, ifAchievement, setAchievement } from './components/Game/Game_Achievements/Game_Achievements'
 import { getKuaUpgrade, updateAllKua } from './components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai'
 import { diePopupsDie } from './popups'
 import { getColResEffect, makeColChallengeSaveData, updateAllCol, type challengeIDList, type colChallengesSavedData } from './components/Game/Game_Progress/Game_Colosseum/Game_Colosseum'
@@ -79,7 +79,7 @@ type Player = {
     }
 
     gameProgress: {
-        achievements: Array<Array<number>>
+        achievements: Array<Array<string>>
         inChallenge: Challenge
         unlocks: {
             pr2: boolean
@@ -699,7 +699,6 @@ function loadGame(): void {
     }
 
     // initTmp part 2
-    fixAchievements();
 
     player.value.offlineTime += Math.max(0, Date.now() - player.value.lastUpdated);
     gameVars.value.sessionStart = Date.now()

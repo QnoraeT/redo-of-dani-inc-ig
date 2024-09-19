@@ -903,7 +903,7 @@ export const reset = (layer: number, override = false) => {
                     updateAllTotal(player.value.gameProgress.main.prai.totals, tmp.value.main.prai.pending);
                     player.value.gameProgress.main.prai.totalEver = Decimal.add(player.value.gameProgress.main.prai.totalEver, tmp.value.main.prai.pending);
                     player.value.gameProgress.main.prai.times = Decimal.add(player.value.gameProgress.main.prai.times, 1);
-                    setAchievement(0, 8, ACHIEVEMENT_DATA[0].list[8].cond);
+                    console.log(setAchievement(0, 8));
                 }
 
                 for (let i = 0; i < 2; i++) {
@@ -937,13 +937,14 @@ export const reset = (layer: number, override = false) => {
             if (tmp.value.kua.canDo || override) {
                 resetSuccessful = true;
                 if (!override) {
-                    setAchievement(1, 4, ACHIEVEMENT_DATA[1].list[4].cond);
-                    setAchievement(1, 6, ACHIEVEMENT_DATA[1].list[6].cond);
-                    setAchievement(1, 8, ACHIEVEMENT_DATA[1].list[8].cond);
-                    setAchievement(1, 9, ACHIEVEMENT_DATA[1].list[9].cond);
-                    setAchievement(1, 10, ACHIEVEMENT_DATA[1].list[10].cond);
-                    setAchievement(1, 11, ACHIEVEMENT_DATA[1].list[11].cond);
-                    setAchievement(1, 12, ACHIEVEMENT_DATA[1].list[12].cond);
+                    console.log(setAchievement(0, 4));
+                    setAchievement(1, 4);
+                    setAchievement(1, 6);
+                    setAchievement(1, 8);
+                    setAchievement(1, 9);
+                    setAchievement(1, 10);
+                    setAchievement(1, 11);
+                    setAchievement(1, 12);
                     player.value.gameProgress.kua.amount = Decimal.add(player.value.gameProgress.kua.amount, tmp.value.kua.pending);
                     updateAllTotal(player.value.gameProgress.kua.totals, tmp.value.kua.pending);
                     player.value.gameProgress.kua.totalEver = Decimal.add(player.value.gameProgress.kua.totalEver, tmp.value.kua.pending);
@@ -1066,7 +1067,7 @@ function calcPPS(): Decimal {
     } 
 
     if (player.value.gameProgress.col.inAChallenge) {
-        pps = pps.pow(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime))).add(1));
+        pps = pps.pow(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1));
     }
 
     return pps;
@@ -1155,7 +1156,7 @@ function gameLoop(): void {
                 if (ACHIEVEMENT_DATA[i].list[j].autoComplete === false) {
                     continue;
                 }
-                setAchievement(i, j, ACHIEVEMENT_DATA[i].list[j].cond);
+                setAchievement(i, j);
             }
         }
 
@@ -1221,6 +1222,7 @@ declare global {
         game: typeof game;
         tmp: typeof tmp;
         Decimal: typeof Decimal;
+        ACHIEVEMENT_DATA: typeof ACHIEVEMENT_DATA;
     }
 }
 
@@ -1228,5 +1230,6 @@ window.player = player;
 window.game = game;
 window.tmp = tmp;
 window.Decimal = Decimal;
+window.ACHIEVEMENT_DATA = ACHIEVEMENT_DATA;
 
 createApp(App).mount('#app');

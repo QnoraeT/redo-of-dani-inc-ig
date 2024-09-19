@@ -53,7 +53,9 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
     try {
         switch (player.value.settings.notation) {
             case 0:
-                if (Decimal.lt(number, 0.001)) {
+                if (Decimal.lt(number, "e-1e9")) {
+                    return `e${format(Decimal.log10(number), 0, expdec)}`;
+                } else if (Decimal.lt(number, 0.001)) {
                     const exp = Decimal.log10(number).mul(1.00000000001).floor();
                     return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
                 } else if (Decimal.lt(number, 1e6)) {
@@ -70,7 +72,9 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
                     return `F${format(Decimal.slog(number), Math.max(dec, 3), expdec)}`;
                 }
             case 1:
-                if (Decimal.lt(number, 0.001)) {
+                if (Decimal.lt(number, "e-1e9")) {
+                    return `e${format(Decimal.log10(number), 0, expdec)}`;
+                } else if (Decimal.lt(number, 0.001)) {
                     const exp = Decimal.log10(number).mul(1.00000000001).floor();
                     return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
                 } else if (Decimal.lt(number, 1e6)) {
@@ -84,7 +88,9 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
                     return `F${format(Decimal.slog(number), Math.max(dec, 3), expdec)}`;
                 }
             case 2:
-                if (Decimal.lt(number, 0.001)) {
+                if (Decimal.lt(number, "e-1e9")) {
+                    return `e${format(Decimal.log10(number), 0, expdec)}`;
+                } else if (Decimal.lt(number, 0.001)) {
                     const exp = Decimal.log10(number).mul(1.00000000001).floor();
                     return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
                 } else if (Decimal.lt(number, 1e3)) {
@@ -102,8 +108,11 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
         }
     } catch {
         console.warn(`There was an error trying to get player.settings.notation! Falling back to Mixed Scientific...\n\nIf you have an object that has an item that uses format() without it being a get or function, this will occurr on load!`)
-        if (Decimal.lt(number, 0.001)) {
-            return `1 / ${format(Decimal.recip(number), dec, expdec)}`;
+        if (Decimal.lt(number, "e-1e9")) {
+            return `e${format(Decimal.log10(number), 0, expdec)}`;
+        } else if (Decimal.lt(number, 0.001)) {
+            const exp = Decimal.log10(number).mul(1.00000000001).floor();
+            return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
         } else if (Decimal.lt(number, 1e6)) {
             return numberWithCommas(new Decimal(number).toNumber().toFixed(dec));
         } else if (Decimal.lt(number, abbExp)) {

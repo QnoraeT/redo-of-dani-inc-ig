@@ -32,9 +32,9 @@ import { allocColResearch, challengeToggle, COL_CHALLENGES, COL_RESEARCH, comple
                         class="first-cont" 
                         style="height: 16.667%;"
                     >
-                        <span class="generic-text" style="left: 0.3vw; top: 0.3vw; font-size: 0.7vw">{{['One-Time', 'Multiple (' + 'format(player.gameProgress.col.completed[index] ?? new Decimal(0))' + '/' + 'format(item.cap)' + ')', 'Continuous'][item.type]}}</span> 
+                        <span class="generic-text" style="left: 0.3vw; top: 0.3vw; font-size: 0.7vw">{{['One-Time', `Multiple (${format(player.gameProgress.col.completed[item.id])} / ${format(item.cap)})`, 'Continuous'][item.type]}}</span> 
                         <span class="generic-text" style="right: 0.3vw; top: 0.3vw; font-size: 0.7vw">#{{item.num}}</span>
-                        <span class="centered-text" style="bottom: 0.8vw; font-size: 1.24vw"><b>{{item.name}}</b></span>
+                        <span class="centered-text" style="bottom: 0.8vw; font-size: 1vw"><b>{{item.name}}</b></span>
                     </div>
                     <div v-bind:class="{ colButtonDesc: !completedChallenge(item.id) && !inChallenge(item.id), colButtonDescProg: completedChallenge(item.id) ? false : inChallenge(item.id), colButtonDescComp: completedChallenge(item.id) }" 
                         class="second-cont" 

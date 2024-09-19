@@ -22,7 +22,7 @@ export const TAX_UPGRADES: Array<TaxUpgrade> = [
         type: 0,
         implemented: false,
         cost() { return D(1); },
-        get desc() { return `Increase PRai's gain exponent from ^${format(0.35, 3)} to ^${format(0.375, 3)}.`; },
+        get desc() { return `Increase PRai's gain exponent by +^${format(0.025, 3)}.`; },
         show: true
     },
     {

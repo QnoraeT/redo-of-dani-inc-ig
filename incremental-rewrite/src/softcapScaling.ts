@@ -29,6 +29,7 @@ type ScSlData = {
     start: Decimal
     basePow: Decimal
     power: Decimal
+    newType?: number
     displayedEffect: string
 }
 
@@ -109,6 +110,12 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         power: D(1),
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(1000),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
 
                     if (ifAchievement(0, 7)) {
                         data[0].power = data[0].power.div(getAchievementEffect(0, 7));
@@ -161,6 +168,12 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         power: D(1),
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(1000),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
 
                     if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 15)) {
                         data[1].power = data[1].power.mul(0.875);
@@ -194,12 +207,25 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         power: D(1),
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(200),
+                        basePow: D(3),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
                     break;
                 case 'upg4':
                     data.push({
                         start: D(2000),
                         basePow: D(2),
                         power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(25000),
+                        basePow: D(2),
+                        power: D(1),
+                        newType: 2,
                         displayedEffect: ""
                     });
                     break;
@@ -210,12 +236,26 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         power: D(1),
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(25000),
+                        basePow: D(2),
+                        power: D(1),
+                        newType: 2,
+                        displayedEffect: ""
+                    });
                     break;
                 case 'upg6':
                     data.push({
                         start: D(2000),
                         basePow: D(2),
                         power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(25000),
+                        basePow: D(2),
+                        power: D(1),
+                        newType: 2,
                         displayedEffect: ""
                     });
                     break;

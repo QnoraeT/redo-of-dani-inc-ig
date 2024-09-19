@@ -44,7 +44,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
         get effect() { 
             let i = Decimal.min(player.value.gameProgress.main.prai.timeInPRai, 300).div(3000);
             if (player.value.gameProgress.main.oneUpgrades[5]) {
-                i = i.pow(MAIN_ONE_UPGS[5].effect!);
+                i = i.mul(MAIN_ONE_UPGS[5].effect!);
             }
             return i;
         },
@@ -215,9 +215,14 @@ export const PR2_EFF = [
         get text() { return `keep One-Upgrades, and Upgrade 1 and 2's scaling and super scaling starts ${format(15, 1)} later.`}
     },
     {
-        get show() { return getKuaUpgrade("s", 11) },
-        when: D(31),
+        get show() { return getKuaUpgrade("s", 11); },
+        when: D(45),
         get text() { return `boosts Kuaraniai effects based on how much PR2 you have.`}
+    },
+    {
+        get show() { return Decimal.gt(player.value.gameProgress.kua.amount, 0.0001); },
+        when: D(75),
+        get text() { return `unlock the Kuaraniai generator (works by ${format(0.01, 2)}%/s).`}
     },
 ]
 
@@ -829,7 +834,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             tmp.value.main.prai.req = D(1e6);
             tmp.value.main.prai.gainExp = D(1 / 3);
             if (ifAchievement(1, 8)) {
-                tmp.value.main.prai.gainExp = D(0.35);
+                tmp.value.main.prai.gainExp = D(0.34);
             }
 
             if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 1) && Decimal.gte(player.value.gameProgress.main.totals[0]!, tmp.value.main.prai.req)) {

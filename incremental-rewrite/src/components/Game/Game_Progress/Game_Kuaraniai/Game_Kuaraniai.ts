@@ -3,7 +3,7 @@ import { player, tmp, updateAllBest, updateAllTotal } from '@/main'
 import { format, formatPerc } from '@/format'
 import { D, smoothExp, smoothPoly } from '@/calc'
 import { ACHIEVEMENT_DATA } from '../../Game_Achievements/Game_Achievements'
-import { inChallenge } from '../Game_Colosseum/Game_Colosseum'
+import { getColResEffect, inChallenge } from '../Game_Colosseum/Game_Colosseum'
 
 // use get show if it can change in the mean time, currently unused as a placeholder
 // costs will get the same treatment later
@@ -34,7 +34,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
     KShards: [
         { // 1
             get desc() {
-                return `Gain ${format(0.01, 3)}% of your pending PRai per second, and Kuaraniai Gain is multiplied by ${format(1.5, 2)}x`;
+                return `Gain ${format(0.01, 2)}% of your pending PRai per second, and Kuaraniai Gain is multiplied by ${format(1.5, 2)}x`;
             },
             get cost() {
                 return D(0.1);
@@ -153,11 +153,11 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         },
         { // 11
             get desc() {
-                return `PR2 above ${format(30)} boosts Kuaraniai effects. Currently: ^${format(this.eff!, 4)}`;
+                return `PR2 above or equal to ${format(45)} boosts Kuaraniai effects. Currently: ^${format(this.eff!, 4)}`;
             },
             get eff() {
-                let i = Decimal.max(player.value.gameProgress.main.pr2.amount, 30).sub(30);
-                i = i.mul(0.025).add(1).sqrt().sub(1).mul(2).add(1);
+                let i = Decimal.max(player.value.gameProgress.main.pr2.amount, 45).sub(45);
+                i = i.mul(0.01).add(1).sqrt().sub(1).mul(2).add(1);
                 return i;
             },
             get cost() {
@@ -473,7 +473,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.mult = D(0.0001);
             tmp.value.kua.exp = D(3);
 
-            // tmp.value.kua.kuaExp = tmp.value.kua.kuaExp.add(getColResEffect(2));
+            tmp.value.kua.exp = tmp.value.kua.exp.add(getColResEffect(2));
 
             if (getKuaUpgrade("s", 1)) {
                 tmp.value.kua.mult = tmp.value.kua.mult.mul(1.5);
@@ -488,7 +488,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.pending = tmp.value.kua.canDo ? tmp.value.kua.effectivePrai.log(tmp.value.kua.req).ln().mul(1.5).div(tmp.value.kua.exp).add(1).pow(tmp.value.kua.exp).sub(1).pow10().mul(tmp.value.kua.mult) : D(0);
 
             if (player.value.gameProgress.kua.auto) {
-                generate = tmp.value.kua.pending.mul(delta);
+                generate = tmp.value.kua.pending.mul(delta).mul(0.0001);
                 player.value.gameProgress.kua.amount = Decimal.add(player.value.gameProgress.kua.amount, generate);
                 updateAllTotal(player.value.gameProgress.kua.totals, generate);
                 player.value.gameProgress.kua.totalEver = Decimal.add(player.value.gameProgress.kua.totalEver, generate);

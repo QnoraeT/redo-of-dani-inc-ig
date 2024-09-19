@@ -63,6 +63,11 @@ import Kua_Upgrade from './KUA_Kua_Upgrades.vue'
                     <li v-if="player.gameProgress.kua.kshards.upgrades >= 10">Boosts KPower gain by ×{{format(tmp.kua.effects.kpower, 2)}}</li>
                 </div>
             </button>
+            <button style="text-align: center; width: 35vw; height: 3vw; font-size: 0.7vw" 
+            :class="{ nopeFill: !player.gameProgress.kua.auto, okFill: player.gameProgress.kua.auto }"
+            class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoKua" v-if="Decimal.gte(player.gameProgress.main.pr2.amount, 75)" @click="player.gameProgress.kua.auto = !player.gameProgress.kua.auto">
+                <b>Kuaraniai Generator: {{player.gameProgress.kua.auto?"On":"Off"}}</b>
+            </button>
             <div class="flex-container" style="flex-direction: column; justify-content: center;" :style="{ backgroundColor: gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI * 0.5) / 8, 0.2, 1.0), border: `0.18vw solid ${gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI * 0.5) / 8, 0.5, 1.0)}` }">
                 <div class="flex-container" style="flex-direction: column" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime) / 4, 1.0, 1.0), border: `0.18vw solid ${gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI * 0.5) / 8, 0.5, 1.0)}`  }">
                     <div style="text-align: center; font-size: 1vw;" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime) / 4, 1.0, 1.0) }" class="fontVerdana">

@@ -53,7 +53,7 @@ import { ACHIEVEMENT_DATA, ACH_DEF_COLORS, Ach_Types_List, ifAchievement } from 
                                 </div>
                                 <span class="tooltiptext">
                                     <span v-if="!shiftDown" style="font-size: 0.6vw">#({{ index2 + 1 }}, {{ index + 1 }})  </span>
-                                    <span v-if="shiftDown" style="font-size: 0.6vw">ID: ({{ item2.id }}, {{ item.id }})  </span>
+                                    <span v-if="shiftDown" style="font-size: 0.6vw">ID: ({{ item.id }}, {{ item2.id }})  </span>
                                     <span style="font-size: 1.0vw">{{item2.name}}</span>
                                     <br><br>{{item2.desc}}
                                     <br>{{item2.reward===''?'':`Reward: ${item2.reward}`}}

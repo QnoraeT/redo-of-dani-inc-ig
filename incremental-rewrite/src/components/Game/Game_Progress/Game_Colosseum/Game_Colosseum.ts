@@ -2,7 +2,7 @@ import Decimal, { type DecimalSource } from "break_eternity.js";
 import { format } from "@/format";
 import { player, reset, tmp, updateAllBest, updateAllTotal } from "@/main"
 import { D, linearAdd, sumHarmonicSeries } from "@/calc"
-import { ACHIEVEMENT_DATA, setAchievement } from "../../Game_Achievements/Game_Achievements";
+import { setAchievement } from "../../Game_Achievements/Game_Achievements";
 
 export type challengeIDList = "nk" | "su"
 export const challengeIDListArr: Array<challengeIDList> = ["nk", "su"]
@@ -77,22 +77,32 @@ export const COL_CHALLENGES: colChallenges = {
         get goalDesc() { return `Reach ${format(this.goal)} Points.`; },
         get desc() { 
             return [
-                `All upgrades scale ${format(2, 1)}× faster.`,
-                `All upgrades scale ${format(2.5, 1)}× faster and Upgrade 1's softcap starts earlier by ×${format(1e20)}.`,
-                `All upgrades scale ${format(3, 1)}× faster and Upgrade 1's softcap starts earlier by ×${format(1e25)}.`,
-                `All upgrades scale ${format(3.5, 1)}× faster and Upgrade 1's softcap starts earlier by ×${format(1e30)}.`,
-                `All upgrades scale ${format(4, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e35)}, and Upgrade 2's effect is dilated to the ^${format(0.95, 2)}.`,
-                `All upgrades scale ${format(4.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e40)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
-                `All upgrades scale ${format(5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e50)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
-                `All upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e60)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
-                `All upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
-                `All upgrades scale ${format(15, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e90)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2 and all upgrades scale ${format(2, 1)}× faster.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(2.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e20)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(3, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e25)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(3.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e30)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(4, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e35)}, and Upgrade 2's effect is dilated to the ^${format(0.95, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e40)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e50)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e60)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(15, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(25, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e90)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
                 `winner you complete it all`,
             ][new Decimal(timesCompleted('su')).toNumber()];
         },
         get reward() { 
             return [
-                ``,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(2.5, 1)}%)`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(5, 1)}%)`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(7.5, 1)}%)`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(10, 1)}%)`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(15, 1)}%)`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(25, 1)}%) and Upgrade 1's Hyper scaling is ${format(3)}% weaker.`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(35, 1)}%) and Upgrade 1's Hyper scaling is ${format(6)}% weaker.`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(50, 1)}%) and Upgrade 1's Hyper scaling is ${format(10)}% weaker.`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(65, 1)}%), Upgrade 1's Hyper scaling is ${format(13)}% weaker, and Upgrade 2's base is increased by +${format(1.5, 1)}%.`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(80, 1)}%), Upgrade 1's Hyper scaling is ${format(15)}% weaker, and Upgrade 2's base is increased by +${format(3, 1)}%.`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(100, 1)}%), Upgrade 1's Hyper scaling is ${format(20)}% weaker, Upgrade 2's base is increased by +${format(5, 1)}%, and Point taxation starts ${format(1e6)}× later.`
             ][new Decimal(timesCompleted('su')).toNumber()];
         },
         cap: 10,
@@ -484,7 +494,7 @@ export const challengeToggle = (id: challengeIDList) => {
     } else {
         if (COL_CHALLENGES[id].canComplete) {
             player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);
-            setAchievement(2, 1, ACHIEVEMENT_DATA[2].list[1].cond);
+            setAchievement(2, 1);
         }
 
         const layerExited = player.value.gameProgress.col.challengeOrder.layer[player.value.gameProgress.col.challengeOrder.chalID.indexOf(id)];

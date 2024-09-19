@@ -59,8 +59,8 @@ import { switchSubTab } from '@/components/MainTabs/MainTabs'
                             class="whiteText largeButton fontVerdana generatorButton" id="prai" @click="reset(0)">
                             <h3 style="font-size: 1vw">PRai: {{format(player.gameProgress.main.prai.amount)}}</h3>
                                 Reset your progress to gain {{`${Decimal.gte(player.gameProgress.main.pr2.amount, 1) ? format(tmp.main.prai.pending) + " " : ""}`}}PRai.<br>
-                                Gain at least {{ format(tmp.main.prai.req) }} points to do a PRai reset.
-                                <br>{{
+                                <span v-if="tmp.main.prai.pending.lt(100)">Gain at least {{ format(tmp.main.prai.req) }} points to do a PRai reset.<br></span>
+                                {{
                                     tmp.main.prai.canDo
                                         ? tmp.main.prai.pending.lt(100) && Decimal.gte(player.gameProgress.main.pr2.amount, 1)
                                             ? `Next in ${format(tmp.main.prai.next)} points. (${format(Decimal.div(tmp.main.prai.pending, player.gameProgress.main.prai.timeInPRai), 2)}/s)`

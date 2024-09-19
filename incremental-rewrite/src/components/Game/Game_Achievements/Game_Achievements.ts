@@ -251,16 +251,40 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get show() { return ifAchievement(0, 16); },
                 status: true
             },
-            // dummy achievement
-            {
+            { // ! Unable
                 id: 4,
-                get name() { return `You are not supposed to see this.`; },
-                get desc() { return `f`; },
+                get name() { return `Apparently Upgrades 4-6 are all you need.`; },
+                get desc() { return `Get ${format(1e75, 3)} points without having Upgrades 1-3 and without more than ${format(10)} PRai for this Kuaraniai run.`; },
                 autoComplete: false,
                 get cond() { return false; },
-                reward: ``,
-                get show() { return false; },
-                status: true
+                get reward() { return `PRai's effect is slightly boosted by ×${format(this.eff!, 2)} based off your time in PRai.`; },
+                get eff() { return Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 1).sqrt().pow_base(1.5).min(10); },
+                get show() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 10); },
+                get status() { 
+                    if (Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) && Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)) {
+                        return Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10) ? true : `Failed due to having more than ${format(10)} PRai.`;
+                    }
+                    const fail: Array<number> = [];
+                    for (let i = 0; i < 3; i++) {
+                        if (!Decimal.lte(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
+                            fail.push(i);
+                        }
+                    }
+                    let txt = `Failed due to having Upgrade `;
+                    for (let i = 0; i < fail.length - 1; i++) {
+                        txt += `${fail[i] + 1}, `;
+                    }
+                    if (fail.length > 1) {
+                        txt += ` and ${fail[fail.length - 1] + 1}.`;
+                    } else {
+                        txt += `${fail[0] + 1}.`;
+                    }
+                    if (Decimal.gt(player.value.gameProgress.main.prai.totals[2]!, 10)) {
+                        txt += ` Failed due to having more than ${format(10)} PRai.`;
+                    }
+                    return txt;
+                },
+                extra: `You must do a Kuaraniai reset to earn this achievement!`
             }
         ],
         get rewAll() { return `Point gain is increased by ${format(this.eff.sub(1).mul(100), 2)}%. (×1.1 per main achievement)`; },
@@ -404,7 +428,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get desc() { return `Gain ${format(2.5, 2)} Kuaraniai without doing a single PRai reset.`; },
                 get cond() { return Decimal.gte(tmp.value.kua.pending, 2.5) && Decimal.lte(player.value.gameProgress.main.prai.times, 0); },
                 autoComplete: false,
-                get reward() { return `Increase PRai's gain exponent from ^${format(1 / 3, 3)} to ^${format(0.35, 3)}`; },
+                get reward() { return `Increase PRai's gain exponent from ^${format(1 / 3, 3)} to ^${format(0.34, 3)}`; },
                 get show() { return player.value.gameProgress.unlocks.kua; },
                 get status() { return Decimal.lte(player.value.gameProgress.main.prai.times, 0) ? true : `Failed due to having reset PRai ${format(player.value.gameProgress.main.prai.times)} times.`; },
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
@@ -618,11 +642,12 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
     },
 ]
 
-export const setAchievement = (type: number, id: number, bool: boolean) => {
-    if (!ifAchievement(type, id) && bool) {
+export const setAchievement = (type: number, id: number) => {
+    if (!ifAchievement(type, id) && ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].cond) {
         player.value.gameProgress.achievements[type].push(tmp.value.achievementList[type][id]);
         spawnPopup(0, ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].desc, ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].name, 3, `#FFFF00`)
     }
+    return [ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].cond, ifAchievement(type, id), tmp.value.achievementList[type][id], player.value.gameProgress.achievements[type]]
 }
 
 export const fixAchievements = () => {

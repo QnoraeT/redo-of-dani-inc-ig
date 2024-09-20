@@ -18,11 +18,11 @@ import { ACHIEVEMENT_DATA, ACH_DEF_COLORS, Ach_Types_List, ifAchievement } from 
                     </div>
                     <div style="display: flex; flex-wrap: wrap; margin-top: 0.75vw; width: 35vw; justify-content: center">
                         <div v-for="(item2, index2) in item.list" :key="index2">
-                            <div v-if="item2.show || ifAchievement(index, index2)" v-bind:style="{ 
+                            <div v-if="item2.show || ifAchievement(index, item2.id)" v-bind:style="{ 
                                 backgroundColor: 
                                     ACH_DEF_COLORS
                                     [Ach_Types_List[index]]
-                                    [ifAchievement(index, index2)
+                                    [ifAchievement(index, item2.id)
                                         ? 'complete'
                                         : (item2.status === true
                                             ? 'canComplete'
@@ -30,7 +30,7 @@ import { ACHIEVEMENT_DATA, ACH_DEF_COLORS, Ach_Types_List, ifAchievement } from 
                                 border: `0.18vw solid ${
                                     colorChange(ACH_DEF_COLORS
                                     [Ach_Types_List[index]]
-                                    [ifAchievement(index, index2)
+                                    [ifAchievement(index, item2.id)
                                         ? 'complete'
                                         : (item2.status === true
                                             ? 'canComplete'
@@ -43,7 +43,7 @@ import { ACHIEVEMENT_DATA, ACH_DEF_COLORS, Ach_Types_List, ifAchievement } from 
                                 <div class="flex-container" style="justify-content: space-around; align-items: center;">
                                     <span style="text-align: center" :style=" { color: colorChange(ACH_DEF_COLORS
                                         [Ach_Types_List[index]]
-                                        [ifAchievement(index, index2)
+                                        [ifAchievement(index, item2.id)
                                             ? 'complete'
                                             : (item2.status === true
                                                 ? 'canComplete'

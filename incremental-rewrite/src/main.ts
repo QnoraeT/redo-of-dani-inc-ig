@@ -183,6 +183,7 @@ type Player = {
             }
         }
         tax: {
+            timeInTax: DecimalSource
             auto: boolean
             amount: DecimalSource,
             totals: Array<null | DecimalSource> // null, null, null, null, null
@@ -353,6 +354,7 @@ export const initPlayer = (set = false): Player => {
                 }
             },
             tax: {
+                timeInTax: D(0),
                 auto: false,
                 unlocked: false,
                 amount: D(0),
@@ -402,6 +404,7 @@ export type ChallengeData = {
 
 export type TmpMainUpgrade = {
     effect: Decimal
+    effective: Decimal
     cost: Decimal
     target: Decimal
     canBuy: boolean
@@ -517,6 +520,9 @@ type Tmp = {
         upg5: string
         upg6: string
         pr2: string
+        kuaupg4base: string
+        kuaupg5base: string
+        kuaupg6base: string
     }
     scaleList: Array<{
         id: number
@@ -620,7 +626,7 @@ function initTemp(): Tmp {
                 upg2Softcap: D(1), 
                 kshardPrai: D(1), 
                 kpower: D(1), 
-                pts: D(1) 
+                pts: D(1)
             },
             req: D(1e10),
             mult: D(0.0001),
@@ -667,7 +673,19 @@ function initTemp(): Tmp {
         },
         gameIsRunning: true,
         saveModes: Array(SAVE_MODES.length).fill(false),
-        scaleSoftcapNames: { points: "Points", upg1: "Upgrade 1", upg2: "Upgrade 2", upg3: "Upgrade 3", upg4: "Upgrade 4", upg5: "Upgrade 5", upg6: "Upgrade 6", pr2: "PR2" },
+        scaleSoftcapNames: { 
+            points: "Points", 
+            upg1: "Upgrade 1", 
+            upg2: "Upgrade 2", 
+            upg3: "Upgrade 3", 
+            upg4: "Upgrade 4", 
+            upg5: "Upgrade 5", 
+            upg6: "Upgrade 6", 
+            pr2: "PR2", 
+            kuaupg4base: "Upgrade 4's Base",
+            kuaupg5base: "Upgrade 5's Base",
+            kuaupg6base: "Upgrade 6's Base"
+        },
         scaleList: emptyScaleList,
         softList: emptySoftList,
         achievementList: [],
@@ -735,8 +753,8 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 3;
     }
     if (player.version === 3) {
-
-        // player.version = 4;
+        player.gameProgress.tax.timeInTax = D(0);
+        player.version = 4;
     }
     if (player.version === 4) {
 

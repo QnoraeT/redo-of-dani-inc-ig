@@ -110,6 +110,8 @@ export const updateTax = (type: number, delta: DecimalSource) => {
             updateAllBest(player.value.gameProgress.tax.best, player.value.gameProgress.tax.amount);
             player.value.gameProgress.tax.bestEver = Decimal.max(player.value.gameProgress.tax.bestEver, player.value.gameProgress.tax.amount);
 
+            player.value.gameProgress.tax.timeInTax = Decimal.add(player.value.gameProgress.tax.timeInTax, delta);
+
             // TODO: upon next layer, make this totals[5] instead of totalEver
             tmp.value.tax.ptsEff = Decimal.max(player.value.gameProgress.tax.totalEver, 0).add(10).log10().pow(2).pow10().sub(9).pow(2);
             break;

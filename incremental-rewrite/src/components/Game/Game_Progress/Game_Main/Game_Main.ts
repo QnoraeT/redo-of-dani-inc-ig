@@ -84,7 +84,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
         implemented: true,
         cost: D(1e15),
         get effect() { 
-            let i = Decimal.max(player.value.gameProgress.main.points, 10).log10().root(2).div(10).add(1);
+            let i = Decimal.max(player.value.gameProgress.main.points, 10).log10().div(10).add(1).log10().add(1);
             if (player.value.gameProgress.main.oneUpgrades[5]) {
                 i = i.pow(MAIN_ONE_UPGS[5].effect!);
             }
@@ -133,6 +133,86 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
         get desc() { return `Multiply points gain based off of Upgrade 3 and 6's effect.`; },
         get effectDesc() { return `${format(this.effect!, 3)}×`; },
         get show() { return Decimal.gt(player.value.gameProgress.kua.amount, 0.0001); }
+    },
+    {
+        implemented: false,
+        cost: D(1e135),
+        get effect() { return Decimal.max(1e3, player.value.gameProgress.col.power).log10().mul(0.1).add(0.7) },
+        get desc() { return `Make all previous One-Upgrades stronger based off of your Colosseum Power.`; },
+        get effectDesc() { return `+${format(this.effect!.sub(1).mul(100), 2)}%`; },
+        get show() { return player.value.gameProgress.unlocks.col; }
+    },
+    {
+        implemented: false,
+        cost: D(1e180),
+        get effect() { return Decimal.max(player.value.gameProgress.tax.timeInTax, 1).log(60).mul(0.01).add(1) },
+        get desc() { return `Gradually increase Upgrade 3’s effectiveness over time in this Colosseum reset.`; },
+        get effectDesc() { return `+${format(this.effect!.sub(1).mul(100), 2)}%`; },
+        get show() { return player.value.gameProgress.unlocks.col; }
+    },
+    {
+        implemented: false,
+        cost: D(1e240),
+        get effect() { return D(10) },
+        get desc() { return `Delay Upgrade 3’s scaling by a little bit.`; },
+        get effectDesc() { return `+${format(this.effect!, 3)}`; },
+        get show() { return player.value.gameProgress.unlocks.col; }
+    },
+    {
+        implemented: false,
+        cost: D(1e300),
+        get effect() { return D(1) },
+        get desc() { return `One-Upgrades #4 and #9 are better.`; },
+        get effectDesc() { return `---`; },
+        get show() { return player.value.gameProgress.unlocks.col; }
+    },
+    {
+        implemented: false,
+        cost: D("e400"),
+        get effect() { return D(10/9) },
+        get desc() { return `Weaken Upgrade 1’s hyper scaling by a good amount.`; },
+        get effectDesc() { return `-${formatPerc(this.effect!, 3)}`; },
+        get show() { return player.value.gameProgress.unlocks.col; }
+    },
+    {
+        implemented: false,
+        cost: D("e500"),
+        get effect() { return Decimal.add(player.value.gameProgress.tax.amount, 1).log2().sqrt().mul(0.01).add(1) },
+        get desc() { return `Make all previous One-Upgrades stronger based off of your Taxed Coins.`; },
+        get effectDesc() { return `+${format(this.effect!.sub(1).mul(100), 2)}%`; },
+        get show() { return player.value.gameProgress.unlocks.tax; }
+    },
+    {
+        implemented: false,
+        cost: D("e750"),
+        get effect() { return D(1.005) },
+        get desc() { return `Raise Upgrade 4-6’s effective amount.`; },
+        get effectDesc() { return `^${format(this.effect!, 3)}`; },
+        get show() { return player.value.gameProgress.unlocks.tax; }
+    },
+    {
+        implemented: false,
+        cost: D("ee3"),
+        get effect() { return D(1) },
+        get desc() { return `Remove Upgrade 4-6’s Linear scaling.`; },
+        get effectDesc() { return `${format(Decimal.sub(1, this.effect!), 3)}×`; },
+        get show() { return player.value.gameProgress.unlocks.tax; }
+    },
+    {
+        implemented: false,
+        cost: D("e1500"),
+        get effect() { return Decimal.mul(player.value.gameProgress.tax.times, 0.1).add(1).ln().mul(0.01).add(1) },
+        get desc() { return `Increase Kua’s gain exponent based on how many times you taxed.`; },
+        get effectDesc() { return `+${format(this.effect!, 3)}×`; },
+        get show() { return player.value.gameProgress.unlocks.tax; }
+    },
+    {
+        implemented: false,
+        cost: D("e2000"),
+        get effect() { return Decimal.add(tmp.value.main.upgrades[0].effective, 1).ln().mul(Decimal.ln(tmp.value.main.upgrades[0].effectBase).mul(0.001)).add(1) },
+        get desc() { return `Upgrade 1 also raises point gain.`; },
+        get effectDesc() { return `^${format(this.effect!, 3)}×`; },
+        get show() { return player.value.gameProgress.unlocks.tax; }
     },
 ]
 
@@ -463,6 +543,14 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
             }
+
+            const data = {
+                prevEff: i,
+                scal: getSCSLAttribute('kuaupg4base', false)
+            }
+
+            i = scale(i, 0, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
+            setSCSLEffectDisp('kuaupg4base', false, 0, `^${format(data.prevEff.div(i), 3)}`);
             return i;
         },
         effective(x) {
@@ -483,7 +571,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 scal: getSCSLAttribute('upg4', false)
             }
 
-            eff = scale(eff, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
+            eff = scale(eff, 1.3, true, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
             setSCSLEffectDisp('upg4', false, 0, `^${format(eff.log(data.prevEff), 3)}`);
             return eff;
         },
@@ -517,6 +605,14 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
             }
+
+            const data = {
+                prevEff: i,
+                scal: getSCSLAttribute('kuaupg5base', false)
+            }
+
+            i = scale(i, 0, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
+            setSCSLEffectDisp('kuaupg5base', false, 0, `^${format(data.prevEff.div(i), 3)}`);
             return i;
         },
         effective(x) {
@@ -570,6 +666,14 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
             }
+
+            const data = {
+                prevEff: i,
+                scal: getSCSLAttribute('kuaupg6base', false)
+            }
+
+            i = scale(i, 0, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
+            setSCSLEffectDisp('kuaupg6base', false, 0, `^${format(data.prevEff.div(i), 3)}`);
             return i;
         },
         effective(x) {
@@ -637,6 +741,7 @@ export const initAllMainUpgrades = (): Array<TmpMainUpgrade> => {
         arr.push(
             {
                 effect: D(1),
+                effective: D(0),
                 cost: D(Infinity),
                 target: D(0),
                 canBuy: false,
@@ -791,6 +896,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
 
             tmp.value.main.upgrades[upgID].effect = MAIN_UPGS[upgID].effect();
+            tmp.value.main.upgrades[upgID].effective = MAIN_UPGS[upgID].effective(player.value.gameProgress.main.upgrades[upgID].bought);
             tmp.value.main.upgrades[upgID].freeExtra = MAIN_UPGS[upgID].freeExtra;
             tmp.value.main.upgrades[upgID].effectBase = MAIN_UPGS[upgID].effectBase;
             tmp.value.main.upgrades[upgID].calculatedEB = MAIN_UPGS[upgID].calcEB;

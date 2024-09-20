@@ -33,8 +33,8 @@ type ScSlData = {
     displayedEffect: string
 }
 
-export type ScSlItems = "points" | "upg1" | "upg2" | "upg3" | "upg4" | "upg5" | "upg6" | "pr2"
-const ScSlItemsList: Array<ScSlItems> = ["points", "upg1", "upg2", "upg3", "upg4", "upg5", "upg6", "pr2"]
+export type ScSlItems = "points" | "upg1" | "upg2" | "upg3" | "upg4" | "upg5" | "upg6" | "pr2" | "kuaupg4base" | "kuaupg5base" | "kuaupg6base"
+const ScSlItemsList: Array<ScSlItems> = ["points", "upg1", "upg2", "upg3", "upg4", "upg5", "upg6", "pr2", "kuaupg4base", "kuaupg5base", "kuaupg6base"]
 
 type DataofScSlCategory = {
     id: number
@@ -51,6 +51,9 @@ type ListOfScSl = {
     upg5: DataofScSlCategory
     upg6: DataofScSlCategory
     pr2: DataofScSlCategory
+    kuaupg4base: DataofScSlCategory
+    kuaupg5base: DataofScSlCategory
+    kuaupg6base: DataofScSlCategory
 }
 
 export const makeDataofScSl = (id: number): DataofScSlCategory => {
@@ -70,6 +73,9 @@ export const LIST_OF_SCSL: ListOfScSl = {
     upg5: makeDataofScSl(5),
     upg6: makeDataofScSl(6),
     pr2: makeDataofScSl(7),
+    kuaupg4base: makeDataofScSl(8),
+    kuaupg5base: makeDataofScSl(9),
+    kuaupg6base: makeDataofScSl(10)
 }
 
 export const setSCSLEffectDisp = (type: ScSlItems, isScaling: boolean, index: number, toWhat: string): void => {
@@ -228,6 +234,12 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         newType: 2,
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(1e6),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
                     break;
                 case 'upg5':
                     data.push({
@@ -241,6 +253,12 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         basePow: D(2),
                         power: D(1),
                         newType: 2,
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e6),
+                        basePow: D(4),
+                        power: D(1),
                         displayedEffect: ""
                     });
                     break;
@@ -258,8 +276,23 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                         newType: 2,
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(1e6),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
                     break;
                 case 'pr2':
+                    // empty
+                    break;
+                case 'kuaupg4base':
+                    // empty
+                    break;
+                case 'kuaupg5base':
+                    // empty
+                    break;
+                case 'kuaupg6base':
                     // empty
                     break;
                 default:
@@ -353,6 +386,30 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                 case 'pr2':
                     // empty
                     break;
+                case 'kuaupg4base':
+                    data.push({
+                        start: D(10),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'kuaupg5base':
+                    data.push({
+                        start: D(100),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case 'kuaupg6base':
+                    data.push({
+                        start: D(1),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
                 default:
                     throw new Error(`softcap item ${type} doesn't exist!`);
             }
@@ -387,7 +444,7 @@ export const compileScalSoftList = () => {
     }
 
     for (let i = 0; i < ScSlItemsList.length; i++) {
-        const item = LIST_OF_SCSL[ScSlItemsList[i]]
+        const item = LIST_OF_SCSL[ScSlItemsList[i]];
         for (let j = 0; j < item.scale.length; j++) {
             if (Decimal.gte(SCAL_VALUES[ScSlItemsList[i]], item.scale[j].start)) {
                 tmp.value.scaleList[j].list.push({
@@ -434,6 +491,15 @@ const SOFT_VALUES = {
     },
     get pr2() {
         return tmp.value.main.pr2.effect;
+    },
+    get kuaupg4base() {
+        return tmp.value.kua.effects.up4;
+    },
+    get kuaupg5base() {
+        return tmp.value.kua.effects.up5;
+    },
+    get kuaupg6base() {
+        return tmp.value.kua.effects.up6;
     }
 }
 
@@ -461,5 +527,14 @@ const SCAL_VALUES = {
     },
     get pr2() {
         return player.value.gameProgress.main.pr2.amount;
+    },
+    get kuaupg4base() {
+        return D(0);
+    },
+    get kuaupg5base() {
+        return D(0);
+    },
+    get kuaupg6base() {
+        return D(0);
     }
 }

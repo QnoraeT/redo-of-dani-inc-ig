@@ -19,7 +19,7 @@ import { COL_CHALLENGES } from './components/Game/Game_Progress/Game_Colosseum/G
 <template>
     <div>
         <canvas ref="canvas" id="canvas" style="height: 100vh; width: 100vw; position: absolute; top: 0vw; left: 0vw; z-index: -2;"></canvas>
-            <div class="flex-container" style="background-color: #ffffff20;" v-if="tmp.gameIsRunning">
+        <div class="flex-container" style="background-color: #ffffff20;" v-if="tmp.gameIsRunning">
             <div style="flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana"> {{format(player.gameProgress.main.points)}} Points</div>
             <div style="flex-grow: 1; flex-basis: 0; text-align: center; text-shadow: #ffff00 0vw 0vw 0.18vw;" class="mediumBigText yellowText fontVerdana">FPS: {{gameVars.displayedFPS}}</div>
             <div style="flex-grow: 1; flex-basis: 0; text-align: right; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana">{{format(tmp.main.pps, 1)}}/s </div>

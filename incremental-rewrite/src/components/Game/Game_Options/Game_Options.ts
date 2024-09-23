@@ -1,4 +1,5 @@
 import { player } from "@/main";
+import Decimal from "break_eternity.js";
 
 export const NOTATION_LIST = ["Mixed Scientific", "Scientific", "Letters"]
 
@@ -17,9 +18,9 @@ export const switchNotation = () => {
 export const setTimeSpeed = () => {
     const i = prompt('What speed would you like to set this game to? (Input blank to keep the current timespeed.)'); 
     if (!(i === '' || i === null)) { 
-        const numI = Number(i)
+        const numI = new Decimal(i)
 
-        if (isNaN(numI)) { 
+        if (Decimal.isNaN(numI)) { 
             alert('Your set time speed is not a number...');
             return;
         } 

@@ -24,7 +24,7 @@ import Kua_Upgrade from './KUA_Kua_Upgrades.vue'
                     </div>
                     <div class="flex-container" style="flex-direction: row; flex-wrap: wrap; justify-content: center; width: 60vw;">
                         <div v-for="(item, index) in KUA_UPGRADES.KShards" :key="index">
-                            <Kua_Upgrade v-if="index < player.gameProgress.kua.kshards.upgrades" :item="item" :index="index" />
+                            <Kua_Upgrade v-if="index < player.gameProgress.kua.kshards.upgrades" :item="item" :index="index" :type="'KShards'" />
                         </div>
                     </div>
                 </div>
@@ -34,7 +34,7 @@ import Kua_Upgrade from './KUA_Kua_Upgrades.vue'
                     </div>
                     <div class="flex-container" style="flex-direction: row; flex-wrap: wrap; justify-content: center; width: 60vw;">
                         <div v-for="(item, index) in KUA_UPGRADES.KPower" :key="index">
-                            <Kua_Upgrade v-if="index < player.gameProgress.kua.kpower.upgrades" :item="item" :index="index" />
+                            <Kua_Upgrade v-if="index < player.gameProgress.kua.kpower.upgrades" :item="item" :index="index" :type="'KPower'" />
                         </div>
                     </div>
                 </div>
@@ -83,7 +83,7 @@ import Kua_Upgrade from './KUA_Kua_Upgrades.vue'
                     </div>
                     <div class="flex-container" style="flex-direction: row; justify-content: center;">
                         <div v-for="(item, index) in KUA_UPGRADES.KShards" :key="index">
-                            <Kua_Upgrade @click="buyKShardUpg(index)" :style="{ opacity: 0.5 ** (index - player.gameProgress.kua.kshards.upgrades) }" v-if="index >= player.gameProgress.kua.kshards.upgrades && index < player.gameProgress.kua.kshards.upgrades + 5 && item.show" :item="item" :index="index" />
+                            <Kua_Upgrade @click="buyKShardUpg(index)" :style="{ opacity: 0.5 ** (index - player.gameProgress.kua.kshards.upgrades) }" v-if="index >= player.gameProgress.kua.kshards.upgrades && index < player.gameProgress.kua.kshards.upgrades + 5 && item.show" :item="item" :index="index" :type="'KShards'"/>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@ import Kua_Upgrade from './KUA_Kua_Upgrades.vue'
                     </div>
                     <div class="flex-container" style="flex-direction: row; justify-content: center;">
                         <div v-for="(item, index) in KUA_UPGRADES.KPower" :key="index">
-                            <Kua_Upgrade @click="buyKPowerUpg(index)" :style="{ opacity: 0.5 ** (index - player.gameProgress.kua.kpower.upgrades) }" v-if="index >= player.gameProgress.kua.kpower.upgrades && index < player.gameProgress.kua.kpower.upgrades + 5 && item.show" :item="item" :index="index" />
+                            <Kua_Upgrade @click="buyKPowerUpg(index)" :style="{ opacity: 0.5 ** (index - player.gameProgress.kua.kpower.upgrades) }" v-if="index >= player.gameProgress.kua.kpower.upgrades && index < player.gameProgress.kua.kpower.upgrades + 5 && item.show" :item="item" :index="index" :type="'KPower'" />
                         </div>
                     </div>
                 </div>

@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { tab, tmp, getEndgame } from '@/main'
 import { format } from '@/format'
-import { STAGES } from './Game_Stats'
+import { ALL_FACTORS, STAGES } from './Game_Stats'
 import { switchSubTab } from '../../MainTabs/MainTabs'
 import { SOFT_ATTR, SCALE_ATTR } from '@/softcapScaling'
 import STAGES_StatDisplay from './STAGES_Stat_Display.vue'
+import Tab_Button from '@/components/MainTabs/DefaultTabButton.vue'
 </script>
 <template>
     <div id="stats" v-if="tab.currentTab === 2">
         <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.5vw;">
-            <button @click="switchSubTab(0, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Progress</button>
-            <button @click="switchSubTab(1, 0)" style="width: 10vw;border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Scaling / Softcaps</button>
+            <Tab_Button @click="switchSubTab(0, 0)" :selected="tab.tabList[tab.currentTab][0] === 0" :name="'Progress'" />
+            <Tab_Button @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :width="10" :name="'Scaling / Softcaps'" />
+            <Tab_Button @click="switchSubTab(2, 0)" :selected="tab.tabList[tab.currentTab][0] === 2" :name="'All Factors'" />
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 0">
             <div class="flex-container" style="flex-direction: column; justify-content: center;">
@@ -92,6 +94,81 @@ import STAGES_StatDisplay from './STAGES_Stat_Display.vue'
                                 <br>
                             </span>
                         </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ! i'm pretty sure there is a much better way to do this but this is what i can think of so oh well -->
+        <div v-if="tab.tabList[tab.currentTab][0] === 2">
+            <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.5vw;">
+                <div v-for="(item, index) in ALL_FACTORS" :key="item.name">
+                    <Tab_Button v-if="item.show" @click="switchSubTab(index, 1)" :selected="tab.tabList[tab.currentTab][1] === index" :name="item.name" />
+                </div>
+            </div>
+            <div v-for="(item, index) in ALL_FACTORS" :key="item.name">
+                <!-- ! factors === null and subTabs === null should be mutually exclusive ! -->
+                <div v-if="tab.tabList[tab.currentTab][1] === index && item.factors !== null">
+                    <div class="flex-container" style="align-items: center; flex-direction: column; margin-left: auto; margin-right: auto; border: 0.24vw solid #788088; background-color: #101418; width: 60vw; height: 40vw">
+                        <div class="flex-container" style="overflow: auto; overflow-y: scroll; align-items: center; flex-direction: column; border: 0.18vw solid #788088; height: 96%; width: 98%; margin-bottom: auto; margin-top: 1%">
+                            <div v-for="(item2, index2) in item.factors" :key="index2" style="display: contents; margin-top: 0.4vw">
+                                <div v-if="item2 !== undefined" class="flex-container fontVerdana" style="background-color: #ffffff20; height: 3%; width: 98%; font-size: 0.85vw" :style="{ color: item2.color }">
+                                    <span style="flex-grow: 0.5; flex-basis: 0; text-align: left;">{{ item2.name }}</span>
+                                    <span style="flex-grow: 1; flex-basis: 0; text-align: center;">{{ item2.effect }}</span>
+                                    <span style="flex-grow: 0.5; flex-basis: 0; text-align: right;">{{ item2.now }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="tab.tabList[tab.currentTab][1] === index && item.subTabs !== null">
+                    <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.5vw;">
+                        <div v-for="(item2, index2) in item.subTabs" :key="item2.name">
+                            <Tab_Button v-if="item2.show" @click="switchSubTab(index2, 2)" :selected="tab.tabList[tab.currentTab][2] === index2" :name="item2.name" />
+                        </div>
+                    </div>
+                    <div v-for="(item2, index2) in item.subTabs" :key="item2.name">
+                        <div v-if="tab.tabList[tab.currentTab][2] === index2 && item2.factors !== null">
+                            <div class="flex-container" style="align-items: center; flex-direction: column; margin-left: auto; margin-right: auto; border: 0.24vw solid #788088; background-color: #101418; width: 60vw; height: 40vw">
+                                <div class="flex-container" style="overflow: auto; overflow-y: scroll; align-items: center; flex-direction: column; border: 0.18vw solid #788088; height: 96%; width: 98%; margin-bottom: auto; margin-top: 1%">
+                                    <div v-for="(item3, index3) in item2.factors" :key="index3" style="display: contents; margin-top: 0.4vw">
+                                        <div v-if="item3 !== undefined" class="flex-container fontVerdana" style="background-color: #ffffff20; height: 3%; width: 98%; font-size: 0.85vw" :style="{ color: item3.color }">
+                                            <span style="flex-grow: 0.5; flex-basis: 0; text-align: left;">{{ item3.name }}</span>
+                                            <span style="flex-grow: 1; flex-basis: 0; text-align: center;">{{ item3.effect }}</span>
+                                            <span style="flex-grow: 0.5; flex-basis: 0; text-align: right;">{{ item3.now }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="tab.tabList[tab.currentTab][2] === index2 && item2.subTabs !== null">
+                            <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.5vw;">
+                                <div v-for="(item3, index3) in item2.subTabs" :key="item3.name">
+                                    <Tab_Button v-if="item3.show" @click="switchSubTab(index3, 3)" :selected="tab.tabList[tab.currentTab][3] === index3" :name="item3.name" />
+                                </div>
+                            </div>
+                            <div v-for="(item3, index3) in item2.subTabs" :key="item3.name">
+                                <div v-if="tab.tabList[tab.currentTab][3] === index3 && item3.factors !== null">
+                                    <div class="flex-container" style="align-items: center; flex-direction: column; margin-left: auto; margin-right: auto; border: 0.24vw solid #788088; background-color: #101418; width: 60vw; height: 40vw">
+                                        <div class="flex-container" style="overflow: auto; overflow-y: scroll; align-items: center; flex-direction: column; border: 0.18vw solid #788088; height: 96%; width: 98%; margin-bottom: auto; margin-top: 1%">
+                                            <div v-for="(item4, index4) in item3.factors" :key="index4" style="display: contents; margin-top: 0.4vw">
+                                                <div v-if="item4 !== undefined" class="flex-container fontVerdana" style="background-color: #ffffff20; height: 3%; width: 98%; font-size: 0.85vw" :style="{ color: item4.color }">
+                                                    <span style="flex-grow: 0.5; flex-basis: 0; text-align: left;">{{ item4.name }}</span>
+                                                    <span style="flex-grow: 1; flex-basis: 0; text-align: center;">{{ item4.effect }}</span>
+                                                    <span style="flex-grow: 0.5; flex-basis: 0; text-align: right;">{{ item4.now }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div v-if="tab.tabList[tab.currentTab][3] === index3 && item3.subTabs !== null">
+                                    <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.5vw;">
+                                        <div v-for="(item4, index4) in item3.subTabs" :key="item4.name">
+                                            <Tab_Button v-if="item4.show" @click="switchSubTab(index4, 4)" :selected="tab.tabList[tab.currentTab][3] === index4" :name="item4.name" />
+                                        </div>
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

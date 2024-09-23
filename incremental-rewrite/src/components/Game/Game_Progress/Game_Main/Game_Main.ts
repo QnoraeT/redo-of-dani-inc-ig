@@ -5,7 +5,8 @@ import { scale, D, smoothPoly, smoothExp, expQuadCostGrowth } from '@/calc'
 import { getSCSLAttribute, setSCSLEffectDisp, SCALE_ATTR, SOFT_ATTR, doAllScaling, type ScSlItems } from '@/softcapScaling'
 import { getAchievementEffect, ifAchievement } from '../../Game_Achievements/Game_Achievements'
 import { getKuaUpgrade, KUA_ENHANCERS, KUA_UPGRADES } from '../Game_Kuaraniai/Game_Kuaraniai'
-import { getColResEffect } from '../Game_Colosseum/Game_Colosseum'
+import { getColResEffect, timesCompleted } from '../Game_Colosseum/Game_Colosseum'
+import { setFactor } from '../../Game_Stats/Game_Stats'
 
 export type MainOneUpg = {
     implemented: boolean
@@ -345,17 +346,31 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         },
         get effectBase() {
             let i = D(1.5);
-            i = i.add(tmp.value.main.upgrades[2].effect ?? 0);
+            setFactor(1, "Base", `${format(1.5, 3)}`, `${format(i, 3)}`, 0, '#FFFFFF', 0, 2);
+
+            if (Decimal.gte(player.value.gameProgress.main.upgrades[2].bought, 1)) {
+                i = i.add(tmp.value.main.upgrades[2].effect ?? 0);
+                setFactor(1, "Upgrade 3", `+${format(tmp.value.main.upgrades[2].effect, 3)}`, `${format(i, 3)}`, 1, '#FFFFFF', 0, 2);
+            }
+            if (Decimal.gte(player.value.gameProgress.main.upgrades[5].bought, 1)) {
+                i = i.add(tmp.value.main.upgrades[5].effect ?? 0);
+                setFactor(1, "Upgrade 6", `+${format(tmp.value.main.upgrades[5].effect, 3)}`, `${format(i, 3)}`, 2, '#FFFFFF', 0, 2);
+            }
+
             if (player.value.gameProgress.main.oneUpgrades[1]) {
                 i = i.add(MAIN_ONE_UPGS[1].effect!);
+                setFactor(1, "One-Upgrade 2", `+${format(MAIN_ONE_UPGS[1].effect!, 3)}`, `${format(i, 3)}`, 3, '#FFFFFF', 0, 2);
             }
+
             if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 9)) {
                 i = i.add(0.05);
+                setFactor(1, "PR2 9", `+${format(0.05, 3)}`, `${format(i, 3)}`, 4, '#FFFFFF', 0, 2);
             }
-            i = i.add(tmp.value.main.upgrades[5].effect ?? 0);
+
             i = i.add(KUA_ENHANCERS.enhances[0].effect());
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
+                setFactor(1, "Achievement ID (1, 10)", `×${format(1.01, 3)}`, `${format(i, 3)}`, 5, '#FFFFFF', 0, 2);
             }
             return i;
         },
@@ -364,11 +379,16 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 return D(1);
             }
             let eff = this.effective(x);
+            setFactor(1, "Base", `${format(eff, 3)}`, `${format(eff)} effective`, 0, '#FFFFFF', 0, 0);
 
+            setFactor(1, "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.pow(eff))}`, 1, '#FFFFFF', 0, 0);
             eff = this.effectBase.pow(eff);
+
             if (getKuaUpgrade("p", 8)) {
                 eff = eff.max(1).log10().pow(1.01).pow10();
+                setFactor(1, "KPower Upgrade 8", `dilate ^1.01`, `×${format(eff)}`, 2, '#FFFFFF', 0, 0);
             }
+
             const data = {
                 prevEff: eff,
                 scal: getSCSLAttribute('upg1', false)
@@ -376,6 +396,9 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
 
             eff = scale(eff, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
             setSCSLEffectDisp('upg1', false, 0, `^${format(eff.log(data.prevEff), 3)}`);
+            if (eff.gte(data.scal[0].start)) {
+                setFactor(1, "Softcap", `softcap(${format(data.prevEff)})`, `×${format(eff)}`, 3, '#FFFFFF', 0, 0);
+            }
             return eff;
         },
         get calcEB() {
@@ -402,21 +425,33 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         },
         get effectBase() {
             let i = D(1.2);
+            setFactor(1, "Base", `${format(1.2, 3)}`, `${format(i, 3)}`, 0, '#FFFFFF', 1, 2);
+
             if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 4)) {
                 i = i.add(0.1);
+                setFactor(1, "PR2 4", `+${format(0.1, 3)}`, `${format(i, 3)}`, 0, '#FFFFFF', 1, 2);
             }
-            if (ifAchievement(0, 13)) {
+
+            if (ifAchievement(0, 12)) {
                 i = i.add(0.05);
+                setFactor(1, "Achievement ID (0, 12)", `+${format(0.05, 3)}`, `${format(i, 3)}`, 0, '#FFFFFF', 1, 2);
             }
+
             if (getKuaUpgrade("s", 5)) {
                 i = i.mul(1.125);
+                setFactor(1, "KShard Upgrade 5", `×${format(1.125, 3)}`, `${format(i, 3)}`, 0, '#FFFFFF', 1, 2);
             }
+
             if (getKuaUpgrade("p", 1)) {
                 i = i.add(KUA_UPGRADES.KPower[0].eff!);
+                setFactor(1, "KPower Upgrade 1", `+${format(KUA_UPGRADES.KPower[0].eff!, 3)}`, `${format(i, 3)}`, 0, '#FFFFFF', 1, 2);
             }
+
             i = i.add(KUA_ENHANCERS.enhances[1].effect());
+
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
+                setFactor(1, "Achievement ID (1, 10)", `×${format(1.01, 3)}`, `${format(i, 3)}`, 5, '#FFFFFF', 1, 2);
             }
             return i;
         },
@@ -433,7 +468,9 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 return D(1);
             }
             let eff = this.effective(x)
+            setFactor(1, "Base", `${format(eff, 3)}`, `${format(eff)} effective`, 0, '#FFFFFF', 1, 0);
 
+            setFactor(1, "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `/${format(this.effectBase.pow(eff))}`, 1, '#FFFFFF', 1, 0);
             eff = this.effectBase.pow(eff);
             const data = {
                 prevEff: eff,
@@ -442,15 +479,22 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
 
             eff = scale(eff, 0, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
             setSCSLEffectDisp('upg2', false, 0, `/${format(data.prevEff.div(eff), 3)}`);
+            if (eff.gte(data.scal[0].start)) {
+                setFactor(1, "Softcap", `softcap(${format(data.prevEff)})`, `/${format(eff)}`, 3, '#FFFFFF', 1, 0);
+            }
 
             if (getKuaUpgrade("p", 7)) {
                 eff = eff.pow(3);
+                setFactor(1, "KPower Upgrade 7", `^${format(3)}`, `/${format(eff)}`, 3, '#FFFFFF', 1, 0);
             }
 
             data.prevEff = eff
 
             eff = scale(eff, 2.1, false, data.scal[1].start, data.scal[1].power, data.scal[1].basePow);
             setSCSLEffectDisp('upg2', false, 1, `/${format(data.prevEff.div(eff), 3)}`);
+            if (eff.gte(data.scal[1].start)) {
+                setFactor(1, "Supersoftcap", `supersoftcap(${format(data.prevEff)})`, `/${format(eff)}`, 3, '#FFFFFF', 1, 0);
+            }
             return eff;
         },
         get calcEB() {
@@ -483,6 +527,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             i = i.add(KUA_ENHANCERS.enhances[2].effect());
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
+                setFactor(1, "Achievement ID (1, 10)", `×${format(1.01, 3)}`, `${format(i, 3)}`, 5, '#FFFFFF', 2, 2);
             }
             return i;
         },
@@ -542,6 +587,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let i = tmp.value.kua.effects.up4;
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
+                setFactor(1, "Achievement ID (1, 10)", `×${format(1.01, 3)}`, `${format(i, 3)}`, 5, '#FFFFFF', 3, 2);
             }
 
             const data = {
@@ -604,6 +650,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let i = tmp.value.kua.effects.up5;
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
+                setFactor(1, "Achievement ID (1, 10)", `×${format(1.01, 3)}`, `${format(i, 3)}`, 5, '#FFFFFF', 4, 2);
             }
 
             const data = {
@@ -665,6 +712,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let i = tmp.value.kua.effects.up6;
             if (ifAchievement(1, 10)) {
                 i = i.mul(1.01);
+                setFactor(1, "Achievement ID (1, 10)", `×${format(1.01, 3)}`, `${format(i, 3)}`, 5, '#FFFFFF', 5, 2);
             }
 
             const data = {
@@ -799,27 +847,36 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
 
             scal = D(player.value.gameProgress.main.upgrades[upgID].bought);
+            setFactor(1, "Base", `${format(scal)}`, `${format(scal)} effective`, 0, '#FFFFFF', upgID, 1);
+
             if (ifAchievement(1, 6)) {
                 scal = scal.div(getAchievementEffect(1, 6));
+                setFactor(1, "Achievement ID: (1, 6)", `/${format(getAchievementEffect(1, 6), 2)}`, `${format(scal)} effective`, 1, '#FFFFFF', upgID, 1);
             }
 
             scal = doAllScaling(scal, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true), false);
+            setFactor(1, "Scaling", `---`, `${format(scal)} effective`, 2, '#FFFFFF', upgID, 1);
+
             if (upgID === 0) {
                 if (getKuaUpgrade("p", 10)) {
                     scal = scal.div(KUA_UPGRADES.KPower[9].eff!)
+                    setFactor(1, "KPower Upgrade 10", `/${format(KUA_UPGRADES.KPower[9].eff!, 2)}`, `${format(scal)} effective`, 3, '#FFFFFF', upgID, 1);
                 }
             }
             if (upgID === 1) {
                 if (getKuaUpgrade("s", 9)) {
                     scal = scal.sub(KUA_UPGRADES.KShards[8].eff!);
+                    setFactor(1, "KShard Upgrade 9", `/${format(KUA_UPGRADES.KShards[8].eff!, 2)}`, `${format(scal)} effective`, 4, '#FFFFFF', upgID, 1);
                 }
                 if (getKuaUpgrade("p", 10)) {
                     scal = scal.div(KUA_UPGRADES.KPower[9].eff!)
+                    setFactor(1, "KPower Upgrade 10", `/${format(KUA_UPGRADES.KPower[9].eff!, 2)}`, `${format(scal)} effective`, 5, '#FFFFFF', upgID, 1);
                 }
             }
             if (upgID === 2) {
                 if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 11)) {
                     scal = scal.div(10 / 9);
+                    setFactor(1, "PR2 11", `/${format(10 / 9, 2)}`, `${format(scal)} effective`, 6, '#FFFFFF', upgID, 1);
                 }
             }
             if (upgID === 3) {
@@ -833,18 +890,27 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
 
             tmp.value.main.upgrades[upgID].cost = expQuadCostGrowth(scal, tmp.value.main.upgrades[upgID].costBase.scale[2], tmp.value.main.upgrades[upgID].costBase.scale[1], tmp.value.main.upgrades[upgID].costBase.scale[0], tmp.value.main.upgrades[upgID].costBase.exp, false);
+            setFactor(1, "Resulting Cost", `${format(tmp.value.main.upgrades[upgID].costBase.scale[2], 3)}^(${format(scal)})²×${format(tmp.value.main.upgrades[upgID].costBase.scale[1], 2)}^(${format(scal)})×${format(tmp.value.main.upgrades[upgID].costBase.scale[0])}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, 7, '#FFFFFF', upgID, 1);
 
             if (upgID === 0) {
-                tmp.value.main.upgrades[upgID].cost = tmp.value.main.upgrades[upgID].cost.div(tmp.value.main.upgrades[1].effect ?? 1);
-                tmp.value.main.upgrades[upgID].cost = tmp.value.main.upgrades[upgID].cost.div(tmp.value.main.upgrades[4].effect ?? 1);
+                if (Decimal.gte(player.value.gameProgress.main.upgrades[1].bought, 1)) {
+                    tmp.value.main.upgrades[upgID].cost = tmp.value.main.upgrades[upgID].cost.div(tmp.value.main.upgrades[1].effect ?? 1);
+                    setFactor(1, "Upgrade 2", `/${format(tmp.value.main.upgrades[1].effect ?? 1, 2)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, 8, '#FFFFFF', 0, 1);
+                }
+                if (Decimal.gte(player.value.gameProgress.main.upgrades[4].bought, 1)) {
+                    tmp.value.main.upgrades[upgID].cost = tmp.value.main.upgrades[upgID].cost.div(tmp.value.main.upgrades[4].effect ?? 1);
+                    setFactor(1, "Upgrade 5", `/${format(tmp.value.main.upgrades[4].effect ?? 1, 2)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, 9, '#FFFFFF', 0, 1);
+                }
             }
             if (upgID === 1) {
                 if (player.value.gameProgress.main.oneUpgrades[0]) {
                     tmp.value.main.upgrades[upgID].cost = tmp.value.main.upgrades[upgID].cost.div(MAIN_ONE_UPGS[0].effect!);
+                    setFactor(1, "One-Upgrade #1", `/${format(MAIN_ONE_UPGS[0].effect!, 2)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, 10, '#FFFFFF', 1, 1);
                 }
             }
 
             tmp.value.main.upgrades[upgID].target = D(0);
+
             if (Decimal.gte(player.value.gameProgress.main.points, tmp.value.main.upgrades[upgID].costBase.scale[0])) {
                 i = D(player.value.gameProgress.main.points);
                 if (upgID === 1) {
@@ -939,29 +1005,52 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
 
             tmp.value.main.prai.req = D(1e6);
             tmp.value.main.prai.gainExp = D(1 / 3);
+            setFactor(2, "Base", `${format(tmp.value.main.prai.gainExp, 3)}`, `^${format(tmp.value.main.prai.gainExp, 3)}`, 0, '#FFFFFF', 2);
             if (ifAchievement(1, 8)) {
                 tmp.value.main.prai.gainExp = D(0.34);
+                setFactor(2, "Achievement ID: (1, 8)", `+${format(2/300, 3)}`, `^${format(tmp.value.main.prai.gainExp, 3)}`, 1, '#FFFFFF', 2);
             }
 
             if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 1) && Decimal.gte(player.value.gameProgress.main.totals[0]!, tmp.value.main.prai.req)) {
                 i = D(player.value.gameProgress.main.totals[0]!);
                 i = i.max(0).div(tmp.value.main.prai.req).pow(tmp.value.main.prai.gainExp).sub(1).mul(tmp.value.main.prai.gainExp).add(1).log10().pow(0.9).pow10();
+                setFactor(2, "Base", `(1+${format(tmp.value.main.prai.gainExp, 3)}(${format(player.value.gameProgress.main.totals[0]!)}/${format(tmp.value.main.prai.req)})^${format(tmp.value.main.prai.gainExp, 3)}-1) dilate ${format(0.9, 2)}`, `${format(i, 2)}`, 0, '#FFFFFF', 0);
 
-                i = i.mul(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1);
+                if (player.value.gameProgress.unlocks.pr2) {
+                    i = i.mul(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1);
+                    setFactor(2, "PR2", `×${format(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1, 2)}`, `${format(i)}`, 1, '#FFFFFF', 0);
+                }
+
                 if (player.value.gameProgress.main.oneUpgrades[3]) {
                     i = i.mul(MAIN_ONE_UPGS[3].effect!);
+                    setFactor(2, "One Upgrade #4", `×${format(MAIN_ONE_UPGS[3].effect!, 2)}`, `${format(i)}`, 2, '#FFFFFF', 0);
                 }
-                i = i.mul(tmp.value.kua.effects.kshardPassive)
+
+                if (Decimal.gt(player.value.gameProgress.kua.kshards.amount, 0)) {
+                    i = i.mul(tmp.value.kua.effects.kshardPassive);
+                    setFactor(2, "KShard Base Effect", `×${format(tmp.value.kua.effects.kshardPassive, 2)}`, `${format(i)}`, 3, '#FFFFFF', 0);
+                }
+
                 if (getKuaUpgrade("s", 8)) {
                     i = i.mul(KUA_UPGRADES.KShards[7].eff!);
+                    setFactor(2, "KShard Upgrade 8", `×${format(KUA_UPGRADES.KShards[7].eff!, 2)}`, `${format(i)}`, 4, '#FFFFFF', 0);
                 }
+
                 if (ifAchievement(1, 11)) {
                     i = i.mul(getAchievementEffect(1, 11));
+                    setFactor(2, "Achievement ID (1, 11)", `×${format(getAchievementEffect(1, 11), 2)}`, `${format(i)}`, 5, '#FFFFFF', 0);
                 }
+
                 if (ifAchievement(2, 1)) {
                     i = i.mul(5);
+                    setFactor(2, "Achievement ID (2, 1)", `×${format(5, 2)}`, `${format(i)}`, 6, '#FFFFFF', 0);
                 }
-                i = i.mul(getColResEffect(1));
+
+                if (Decimal.gte(timesCompleted('nk'), 1)) {
+                    i = i.mul(getColResEffect(1));
+                    setFactor(2, "Firsterious", `×${format(getColResEffect(1), 2)}`, `${format(i)}`, 7, '#FFFFFF', 0);
+                }
+
                 tmp.value.main.prai.pending = i.floor();
 
                 i = tmp.value.main.prai.pending.add(1).floor();
@@ -981,26 +1070,35 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
 
             j = D(4);
-            if (ifAchievement(0, 6)) {
+            if (ifAchievement(0, 5)) {
                 j = j.mul(1.25);
             }
 
             i = D(player.value.gameProgress.main.prai.amount);
+            setFactor(2, "Base", `${format(player.value.gameProgress.main.prai.amount)}`, `${format(i, 2)}`, 0, '#FFFFFF', 1);
+
             i = i.mul(j).add(1).log10().pow(0.975).pow10();
-            if (ifAchievement(0, 10)) {
+            setFactor(2, "Base Mult", `${format(player.value.gameProgress.main.prai.amount)} × ${format(j)} dilate ${format(0.975, 3)}`, `${format(i, 2)}`, 1, '#FFFFFF', 1);
+
+            if (ifAchievement(0, 9)) {
                 i = i.mul(2);
+                setFactor(2, "Achievement ID: (0, 9)", `×${format(2)}`, `${format(i, 2)}`, 2, '#FFFFFF', 1);
             }
-            if (getKuaUpgrade("p", 2)) {
+
+            if (getKuaUpgrade("s", 2)) {
                 i = i.mul(KUA_UPGRADES.KShards[1].eff!);
-            } 
+                setFactor(2, "KShard Upgrade 2", `×${format(KUA_UPGRADES.KShards[1].eff!)}`, `${format(i, 2)}`, 3, '#FFFFFF', 1);
+            }
+
             if (getKuaUpgrade("p", 5)) {
                 i = i.pow(KUA_UPGRADES.KPower[4].eff!);
+                setFactor(2, "KPower Upgrade 5", `^${format(KUA_UPGRADES.KPower[4].eff!)}`, `${format(i, 2)}`, 4, '#FFFFFF', 1);
             }
             tmp.value.main.prai.effect = i;
 
             i = Decimal.add(player.value.gameProgress.main.prai.amount, tmp.value.main.prai.pending);
             i = i.mul(j).add(1).log10().pow(0.975).pow10();
-            if (ifAchievement(0, 10)) {
+            if (ifAchievement(0, 9)) {
                 i = i.mul(2);
             }
             if (getKuaUpgrade("p", 2)) {
@@ -1019,23 +1117,29 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             tmp.value.main.pr2.effActive = true;
 
             i = D(10);
-            if (ifAchievement(0, 15)) {
+            setFactor(3, "Base", `${format(10, 2)}`, `${format(i, 2)}^`, 0, '#FFFFFF', 1);
+            if (ifAchievement(0, 14)) {
                 i = i.sub(1);
+                setFactor(3, "Achievement ID: (0, 14)", `-${format(1, 2)}`, `${format(i, 2)}^`, 1, '#FFFFFF', 1);
             }
 
             scal = D(player.value.gameProgress.main.pr2.amount);
+            setFactor(3, "Base", `${format(scal)}`, `${format(scal)} effective`, 0, '#FFFFFF', 0);
             scal = doAllScaling(scal, getSCSLAttribute('pr2', true), false);
+            setFactor(3, "Scaling", `---`, `${format(scal)} effective`, 1, '#FFFFFF', 0);
 
             scal = scal.div(KUA_ENHANCERS.enhances[6].effect())
 
             tmp.value.main.pr2.cost = smoothExp(smoothPoly(scal, 2, 200, false), 1.03, false).add(1).pow_base(i);
-            if (ifAchievement(0, 8)) {
+            setFactor(3, "Resulting Requirement", `${format(i, 2)} ^ (${format(scal)} × 1.03 ^ (${format(scal)}) ^ 2) (approximation)`, `${format(tmp.value.main.pr2.cost)}`, 2, '#FFFFFF', 0);
+            if (ifAchievement(0, 7)) {
                 tmp.value.main.pr2.cost = tmp.value.main.pr2.cost.div(1.5);
+                setFactor(3, "Achievement ID: (0, 7)", `/${format(1.5, 2)}`, `${format(tmp.value.main.pr2.cost)}`, 3, '#FFFFFF', 0);
             }
 
             if (Decimal.gte(player.value.gameProgress.main.prai.amount, 10)) {
                 scal = D(player.value.gameProgress.main.prai.amount)
-                if (ifAchievement(0, 8)) {
+                if (ifAchievement(0, 7)) {
                     scal = scal.mul(1.5);
                 }
                 scal = smoothPoly(smoothExp(scal.log(i).sub(1), 1.03, true), 2, 200, true);
@@ -1053,20 +1157,26 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 player.value.gameProgress.main.pr2.amount = Decimal.max(player.value.gameProgress.main.pr2.amount, tmp.value.main.pr2.target.add(1).floor());
             }
 
+            j = D(0.05);
+            setFactor(3, "Base", `${format(0.05, 2)}`, `${format(j, 2)}`, 0, '#FFFFFF', 3);
+            if (getKuaUpgrade("s", 5)) {
+                j = j.mul(2);
+                setFactor(3, "KShard Upgrade 5", `×${format(2, 2)}`, `${format(j, 2)}`, 1, '#FFFFFF', 3);
+            }
+
             i = D(player.value.gameProgress.main.pr2.amount);
+            setFactor(3, "Base", `${format(player.value.gameProgress.main.pr2.amount, 2)}`, `${format(i, 2)} effective`, 0, '#FFFFFF', 2);
             if (player.value.gameProgress.main.oneUpgrades[8]) {
                 i = i.add(MAIN_ONE_UPGS[8].effect!);
+                setFactor(3, "One Upgrade #9", `+${format(MAIN_ONE_UPGS[8].effect!, 2)}`, `${format(i, 2)} effective`, 1, '#FFFFFF', 2);
             }
             tmp.value.main.pr2.effective = i;
 
-            j = D(0.05);
-            if (getKuaUpgrade("s", 5)) {
-                j = j.mul(2);
-            }
-
             i = tmp.value.main.pr2.effective.max(0).add(1).pow(tmp.value.main.pr2.effective.mul(j).add(1).ln().add(1));
+            setFactor(3, "Resulting Effect", `(${format(tmp.value.main.pr2.effective)} + 1) ^ (1 + ln(1 + (${format(j, 2)})(${format(tmp.value.main.pr2.effective)})))`, `${format(i, 2)}`, 2, '#FFFFFF', 2);
             if (getKuaUpgrade("p", 8)) {
-                i = Decimal.pow(j.add(1).pow(5), tmp.value.main.pr2.effective).max(i)
+                i = Decimal.pow(j.add(1).pow(5), tmp.value.main.pr2.effective).add(i);
+                setFactor(3, "KPower Upgrade 8", `+${format(Decimal.pow(j.add(1).pow(5), tmp.value.main.pr2.effective), 2)}`, `${format(i, 2)}`, 3, '#FFFFFF', 2);
             }
             tmp.value.main.pr2.effect = i;
 

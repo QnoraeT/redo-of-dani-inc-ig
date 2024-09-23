@@ -6,12 +6,13 @@ import { format, formatTime } from '@/format'
 import { MAIN_ONE_UPGS, MAIN_UPGS, PR2_EFF, buyGenUPG, buyOneMainUpg, getOMUpgrade } from './Game_Main'
 import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
 import { switchSubTab } from '@/components/MainTabs/MainTabs'
+import Tab_Button from '@/components/MainTabs/DefaultTabButton.vue'
 </script>
 <template>
     <div id="generators" v-if="tab.currentTab === 0">
         <div v-if="Decimal.gte(player.gameProgress.main.pr2.bestEver, 6)" class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.3vw;">
-            <button @click="switchSubTab(0, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Main</button>
-            <button @click="switchSubTab(1, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">One-Upgrades</button>
+            <Tab_Button @click="switchSubTab(0, 0)" :selected="tab.tabList[tab.currentTab][0] === 0" :name="'Main'" />
+            <Tab_Button @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :name="'One-Upgrades'" />
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 1">
             <div class="flex-container" style="flex-wrap: wrap; align-content: flex-start; margin-top: 1vw; margin-left: auto; margin-right: auto; display: flex; justify-content: center; flex-direction: row; padding: 0.6vw; height: 45vw; width: 65vw;">

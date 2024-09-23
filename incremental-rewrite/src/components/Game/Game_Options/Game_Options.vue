@@ -6,17 +6,18 @@ import { format, formatTime } from '@/format'
 import { switchSubTab } from '../../MainTabs/MainTabs'
 import { saveTheFrickingGame, setAutosaveInterval, exportSaveList,  exportSave, importSave, importSaveList, resetTheWholeGame, switchToSave, duplicateSave, deleteSave, renameSave, createNewSave, SAVE_MODES, setTempModes, resetModes, displayModesNonOptArray, displayModes } from '@/saving'
 import { NOTATION_LIST, setTimeSpeed, switchNotation } from './Game_Options'
+import Tab_Button from '@/components/MainTabs/DefaultTabButton.vue'
 </script>
 <template>
     <div id="options" v-if="tab.currentTab === 1">
         <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.3vw;">
-            <button @click="switchSubTab(0, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Saving</button>
-            <button @click="switchSubTab(1, 0)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Other Options</button>
+            <Tab_Button @click="switchSubTab(0, 0)" :selected="tab.tabList[tab.currentTab][0] === 0" :name="'Saving'" />
+            <Tab_Button @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :name="'Other Options'" />
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 0">
             <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.3vw;">
-                <button @click="switchSubTab(0, 1)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Save List</button>
-                <button @click="switchSubTab(1, 1)" style="border: 0.2vw solid #ffffff;" class="whiteText generatorButton fontVerdana normalTabButton">Creating Saves</button>
+                <Tab_Button @click="switchSubTab(0, 1)" :selected="tab.tabList[tab.currentTab][1] === 0" :name="'Save List'" />
+                <Tab_Button @click="switchSubTab(1, 1)" :selected="tab.tabList[tab.currentTab][1] === 1" :name="'Creating Saves'" />
             </div>
             <div v-if="tab.tabList[tab.currentTab][1] === 0">
                 <div class="flex-container" style="flex-direction: row; justify-content: center;">
@@ -130,6 +131,9 @@ import { NOTATION_LIST, setTimeSpeed, switchNotation } from './Game_Options'
                 </button>
                 <button @click="switchNotation()" class="whiteText fontVerdana generatorButton" style="margin: 0.5vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
                     Switch notation. Currently: {{ NOTATION_LIST[player.settings.notation] }}
+                </button>
+                <button @click="player.settings.scaleSoftColors = !player.settings.scaleSoftColors" class="whiteText fontVerdana generatorButton" style="margin: 0.5vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
+                    Show scaling/softcap colors. Currently: {{ player.settings.scaleSoftColors }}
                 </button>
             </div>
         </div>

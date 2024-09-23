@@ -4,7 +4,7 @@ import { createApp, ref, type Ref } from 'vue'
 import App from './App.vue'
 import Decimal, { type DecimalSource } from 'break_eternity.js'
 import { type Tab } from './components/MainTabs/MainTabs'
-import { D, scale } from './calc'
+import { D, expQuadCostGrowth, scale } from './calc'
 import { format } from './format'
 import { saveID, SAVE_MODES, saveTheFrickingGame } from './saving'
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from './softcapScaling'
@@ -14,6 +14,7 @@ import { getKuaUpgrade, updateAllKua } from './components/Game/Game_Progress/Gam
 import { diePopupsDie } from './popups'
 import { getColResEffect, makeColChallengeSaveData, updateAllCol, type challengeIDList, type colChallengesSavedData } from './components/Game/Game_Progress/Game_Colosseum/Game_Colosseum'
 import { updateAllTax } from './components/Game/Game_Progress/Game_Taxation/Game_Taxation'
+import { ALL_FACTORS, initStatsFactors, setFactor } from './components/Game/Game_Stats/Game_Stats'
 
 export const NEXT_UNLOCKS = [
     {
@@ -570,7 +571,7 @@ export const gameVars: Ref<gameVars> = ref({
 export const tab: Ref<Tab> = ref({
     currentTab: 0,
     // fill this with values
-    tabList: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+    tabList: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 });
 
 const gameReviver = setInterval(gameAlive, 1000);
@@ -718,6 +719,7 @@ function loadGame(): void {
 
     // initTmp part 2
     fixAchievements();
+    initStatsFactors();
 
     player.value.offlineTime += Math.max(0, Date.now() - player.value.lastUpdated);
     gameVars.value.sessionStart = Date.now()
@@ -921,7 +923,7 @@ export const reset = (layer: number, override = false) => {
                     updateAllTotal(player.value.gameProgress.main.prai.totals, tmp.value.main.prai.pending);
                     player.value.gameProgress.main.prai.totalEver = Decimal.add(player.value.gameProgress.main.prai.totalEver, tmp.value.main.prai.pending);
                     player.value.gameProgress.main.prai.times = Decimal.add(player.value.gameProgress.main.prai.times, 1);
-                    console.log(setAchievement(0, 8));
+                    console.log(setAchievement(0, 7));
                 }
 
                 for (let i = 0; i < 2; i++) {
@@ -955,7 +957,7 @@ export const reset = (layer: number, override = false) => {
             if (tmp.value.kua.canDo || override) {
                 resetSuccessful = true;
                 if (!override) {
-                    console.log(setAchievement(0, 4));
+                    setAchievement(0, 3);
                     setAchievement(1, 4);
                     setAchievement(1, 6);
                     setAchievement(1, 8);
@@ -1048,44 +1050,81 @@ export const reset = (layer: number, override = false) => {
 
 function calcPPS(): Decimal {
     let pps = D(1);
+    setFactor(0, "Base", "1.0", `${format(pps, 1)}`, 0);
+
     pps = pps.mul(tmp.value.main.upgrades[0].effect);
+    setFactor(0, "Upgrade 1", `×${format(tmp.value.main.upgrades[0].effect, 2)}`, `${format(pps, 1)}`, 1);
+
     pps = pps.mul(ACHIEVEMENT_DATA[0].eff)
-    pps = pps.mul(tmp.value.main.upgrades[3].effect);
+    setFactor(0, "Achievement Tier 1", `×${format(ACHIEVEMENT_DATA[0].eff, 2)}`, `${format(pps, 1)}`, 2);
+
+    if (Decimal.gte(player.value.gameProgress.main.upgrades[3].bought, 1)) {
+        pps = pps.mul(tmp.value.main.upgrades[3].effect);
+        setFactor(0, "Upgrade 4", `×${format(tmp.value.main.upgrades[3].effect, 2)}`, `${format(pps, 1)}`, 3);
+    }
+
     pps = pps.mul(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1);
-    pps = pps.mul(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1);
+    setFactor(0, "PRai", `×${format(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1, 2)}`, `${format(pps, 1)}`, 4);
+
+    if (player.value.gameProgress.unlocks.pr2) {
+        pps = pps.mul(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1);
+        setFactor(0, "PR2", `×${format(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1, 2)}`, `${format(pps, 1)}`, 5);
+    }
+
     if (ifAchievement(0, 3)) {
         pps = pps.mul(1.2);
+        setFactor(0, "Achievement ID (0, 3)", `×${format(1.2, 2)}`, `${format(pps, 1)}`, 6);
     }
     if (ifAchievement(1, 0)) {
         pps = pps.mul(2);
+        setFactor(0, "Achievement ID (1, 0)", `×${format(2, 2)}`, `${format(pps, 1)}`, 7);
     }
     if (ifAchievement(1, 1)) {
         pps = pps.mul(getAchievementEffect(1, 1));
+        setFactor(0, "Achievement ID (1, 1)", `×${format(getAchievementEffect(1, 1), 2)}`, `${format(pps, 1)}`, 8);
     }
     if (ifAchievement(1, 3)) {
         pps = pps.mul(getAchievementEffect(1, 3));
+        setFactor(0, "Achievement ID (1, 3)", `×${format(getAchievementEffect(1, 3), 2)}`, `${format(pps, 1)}`, 9);
     }
     if (ifAchievement(1, 13)) {
         pps = pps.mul(getAchievementEffect(1, 13));
+        setFactor(0, "Achievement ID (1, 13)", `×${format(getAchievementEffect(1, 13), 2)}`, `${format(pps, 1)}`, 10);
     }
-    pps = pps.mul(tmp.value.kua.effects.kpowerPassive)
+
+    if (player.value.gameProgress.unlocks.kua) {
+        pps = pps.mul(tmp.value.kua.effects.kpowerPassive)
+        setFactor(0, "KPower Base Effect", `×${format(tmp.value.kua.effects.kpowerPassive, 2)}`, `${format(pps, 1)}`, 11);
+    }
 
     if (getKuaUpgrade("s", 7)) {
         pps = pps.mul(tmp.value.kua.effects.pts);
+        setFactor(0, "KShard Upgrade 7", `×${format(tmp.value.kua.effects.pts, 2)}`, `${format(pps, 1)}`, 12);
     } 
+
     if (player.value.gameProgress.main.oneUpgrades[9]) {
         pps = pps.mul(MAIN_ONE_UPGS[9].effect!);
+        setFactor(0, "One-Upgrade #10", `×${format(MAIN_ONE_UPGS[9].effect!, 2)}`, `${format(pps, 1)}`, 13);
     }
 
-    pps = pps.mul(getColResEffect(0));
-    pps = pps.mul(tmp.value.tax.ptsEff);
+    if (player.value.gameProgress.unlocks.col) {
+        pps = pps.mul(getColResEffect(0));
+        setFactor(0, "Dotgenous", `×${format(getColResEffect(0), 2)}`, `${format(pps, 1)}`, 14);
+    }
+
+    if (player.value.gameProgress.unlocks.tax) {
+        pps = pps.mul(tmp.value.tax.ptsEff);
+        setFactor(0, "Taxed Coins", `×${format(tmp.value.tax.ptsEff, 2)}`, `${format(pps, 1)}`, 15);
+    }
 
     if (getKuaUpgrade("p", 3)) {
         pps = pps.pow(tmp.value.kua.effects.ptPower);
+        setFactor(0, "KPower Upgrade 3", `^${format(tmp.value.kua.effects.ptPower, 3)}`, `${format(pps, 1)}`, 16);
     } 
 
     if (player.value.gameProgress.col.inAChallenge) {
         pps = pps.pow(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1));
+        setFactor(0, "Achievement Tier 3", `^${format(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1), 3)}`, `${format(pps, 1)}`, 17);
     }
 
     return pps;
@@ -1241,6 +1280,8 @@ declare global {
         tmp: typeof tmp;
         Decimal: typeof Decimal;
         ACHIEVEMENT_DATA: typeof ACHIEVEMENT_DATA;
+        expQuadCostGrowth: typeof expQuadCostGrowth;
+        ALL_FACTORS: typeof ALL_FACTORS;
     }
 }
 
@@ -1249,5 +1290,7 @@ window.game = game;
 window.tmp = tmp;
 window.Decimal = Decimal;
 window.ACHIEVEMENT_DATA = ACHIEVEMENT_DATA;
+window.expQuadCostGrowth = expQuadCostGrowth;
+window.ALL_FACTORS = ALL_FACTORS;
 
 createApp(App).mount('#app');

@@ -118,6 +118,16 @@ body {
   cursor: pointer;
 }
 
+.generatorButtonSelected {
+  transition-duration: 0.2s;
+  background-color: #404952;
+}
+
+.generatorButtonSelected:hover {
+  background-color: #5b6774;
+  cursor: pointer;
+}
+
 .kuaButton {
   transition-duration: 0.2s;
   background-color: #411853;

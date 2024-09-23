@@ -291,7 +291,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             },
             get eff() {
                 let eff = Decimal.max(player.value.gameProgress.main.points, 1e10);
-                eff = eff.log10().div(10).sqrt().sub(1).div(4).add(1);
+                eff = eff.log10().log10().sub(1).div(10).add(1).root(10);
                 return eff;
             },
             get cost() {

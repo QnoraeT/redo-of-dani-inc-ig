@@ -340,7 +340,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     if (ifAchievement(1, 15)) {
                         pow = pow.add(0.05);
                     }
-        
+
                     let eff = Decimal.max(tmp.value.main.upgrades[1].effect, 1);
                     if (getKuaUpgrade("p", 7)) {
                         eff = eff.root(3);

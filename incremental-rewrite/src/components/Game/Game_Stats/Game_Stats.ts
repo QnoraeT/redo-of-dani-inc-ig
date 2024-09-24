@@ -59,7 +59,7 @@ export const setFactor = (category: number, name: string, effect: string, now: s
             }
         } else {
             // ! sorry! i don't know how to fix this issue on page load, but it works after the first tick (?)
-            if (ALL_FACTORS[category].subTabs[subtab0].subTabs === null) {
+            if (ALL_FACTORS[category].subTabs![subtab0].subTabs! === null) {
                 throw new Error(`You can't go to a subtab to a factors only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`)
             }
 

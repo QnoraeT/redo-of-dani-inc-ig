@@ -19,42 +19,43 @@ export type FactorsStat = {
 // ! i could generalize this but currently i am the big stupid so i probably wont', might regret this later but oh well
 export const setFactor = (category: number, name: string, effect: string, now: string, id: number, color = "#FFFFFF", subtab0?: number, subtab1?: number, subtab2?: number) => {
     if (subtab0 === undefined) {
-        if (ALL_FACTORS[category].factors === null) {
+        // ! I HAVE TO SPAM ! ON THIS SO THAT GITHUB CAN ACTUALLY BUILD THE SITE BUT VSCODE ISN'T GIVING ME ANY ISSUES ??? WTF?
+        if (ALL_FACTORS[category].factors! === null) {
             throw new Error(`You can't add effects to a subTab only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`)
         }
-        if (ALL_FACTORS[category].factors[id] === undefined) {
-            ALL_FACTORS[category].factors[id] = {
+        if (ALL_FACTORS[category].factors![id] === undefined) {
+            ALL_FACTORS[category].factors![id] = {
                 name: name,
                 color: color,
                 effect: effect,
                 now: now
             }
         } else {
-            ALL_FACTORS[category].factors[id].name = name
-            ALL_FACTORS[category].factors[id].color = color
-            ALL_FACTORS[category].factors[id].effect = effect
-            ALL_FACTORS[category].factors[id].now = now
+            ALL_FACTORS[category].factors![id].name = name
+            ALL_FACTORS[category].factors![id].color = color
+            ALL_FACTORS[category].factors![id].effect = effect
+            ALL_FACTORS[category].factors![id].now = now
         }
     } else {
-        if (ALL_FACTORS[category].subTabs === null) {
+        if (ALL_FACTORS[category].subTabs! === null) {
             throw new Error(`You can't go to a subtab to a factors only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`)
         }
         if (subtab1 === undefined) {
-            if (ALL_FACTORS[category].subTabs[subtab0].factors === null) {
+            if (ALL_FACTORS[category].subTabs![subtab0].factors! === null) {
                 throw new Error(`You can't add effects to a subTab only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`)
             }
-            if (ALL_FACTORS[category].subTabs[subtab0].factors[id] === undefined) {
-                ALL_FACTORS[category].subTabs[subtab0].factors[id] = {
+            if (ALL_FACTORS[category].subTabs![subtab0].factors![id] === undefined) {
+                ALL_FACTORS[category].subTabs![subtab0].factors![id] = {
                     name: name,
                     color: color,
                     effect: effect,
                     now: now
                 }
             } else {
-                ALL_FACTORS[category].subTabs[subtab0].factors[id].name = name
-                ALL_FACTORS[category].subTabs[subtab0].factors[id].color = color
-                ALL_FACTORS[category].subTabs[subtab0].factors[id].effect = effect
-                ALL_FACTORS[category].subTabs[subtab0].factors[id].now = now
+                ALL_FACTORS[category].subTabs![subtab0].factors![id].name = name
+                ALL_FACTORS[category].subTabs![subtab0].factors![id].color = color
+                ALL_FACTORS[category].subTabs![subtab0].factors![id].effect = effect
+                ALL_FACTORS[category].subTabs![subtab0].factors![id].now = now
             }
         } else {
             // ! sorry! i don't know how to fix this issue on page load, but it works after the first tick (?)
@@ -63,21 +64,21 @@ export const setFactor = (category: number, name: string, effect: string, now: s
             }
 
             if (subtab2 === undefined) {
-                if (ALL_FACTORS[category].subTabs[subtab0].subTabs[subtab1].factors === null) {
+                if (ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors! === null) {
                     throw new Error(`You can't add effects to a subTab only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`)
                 }
-                if (ALL_FACTORS[category].subTabs[subtab0].subTabs[subtab1].factors[id] === undefined) {
-                    ALL_FACTORS[category].subTabs[subtab0].subTabs[subtab1].factors[id] = {
+                if (ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id] === undefined) {
+                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id] = {
                         name: name,
                         color: color,
                         effect: effect,
                         now: now
                     }
                 } else {
-                    ALL_FACTORS[category].subTabs[subtab0].subTabs[subtab1].factors[id].name = name
-                    ALL_FACTORS[category].subTabs[subtab0].subTabs[subtab1].factors[id].color = color
-                    ALL_FACTORS[category].subTabs[subtab0].subTabs[subtab1].factors[id].effect = effect
-                    ALL_FACTORS[category].subTabs[subtab0].subTabs[subtab1].factors[id].now = now
+                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id].name = name
+                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id].color = color
+                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id].effect = effect
+                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id].now = now
                 }
             } else {
                 throw new Error(`Unhandled exception! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`)

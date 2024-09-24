@@ -95,7 +95,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         },
         { // 6
             get desc() {
-                return `UP2's superscaling and softcap are ${format(33.333, 3)}% weaker.`;
+                return `UP2's superscaling and softcap are ${format(20, 3)}% weaker.`;
             },
             get cost() {
                 return 2500;

@@ -574,7 +574,7 @@ export const tab: Ref<Tab> = ref({
     tabList: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 });
 
-const gameReviver = setInterval(gameAlive, 1000);
+export const gameReviver = setInterval(gameAlive, 1000);
 
 function initTemp(): Tmp {
     const emptyScaleList = [];

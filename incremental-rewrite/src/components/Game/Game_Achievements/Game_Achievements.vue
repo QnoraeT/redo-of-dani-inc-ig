@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shiftDown, tab } from '@/main'
+import { shiftDown, tab, tmp } from '@/main'
 import { player } from '@/main'
 import { colorChange, mixColor } from '@/calc'
 import { ACHIEVEMENT_DATA, ACH_DEF_COLORS, Ach_Types_List, ifAchievement } from './Game_Achievements'
@@ -17,22 +17,22 @@ import { ACHIEVEMENT_DATA, ACH_DEF_COLORS, Ach_Types_List, ifAchievement } from 
                         <span style="font-size: 0.9vw; margin-top: 0.3vw; text-align: center" class="fontVerdana whiteText">{{ item.rewAll }}</span>
                     </div>
                     <div style="display: flex; flex-wrap: wrap; margin-top: 0.75vw; width: 35vw; justify-content: center">
-                        <div v-for="(item2, index2) in item.list" :key="index2">
-                            <div v-if="item2.show || ifAchievement(index, item2.id)" v-bind:style="{ 
+                        <div v-for="(item2, index2) in tmp.achievementList[index]" :key="index2">
+                            <div v-if="item.list[item2].show || ifAchievement(index, item2)" :style="{ 
                                 backgroundColor: 
                                     ACH_DEF_COLORS
                                     [Ach_Types_List[index]]
-                                    [ifAchievement(index, item2.id)
+                                    [ifAchievement(index, item2)
                                         ? 'complete'
-                                        : (item2.status === true
+                                        : (item.list[item2].status === true
                                             ? 'canComplete'
                                             : 'unable')],
                                 border: `0.18vw solid ${
                                     colorChange(ACH_DEF_COLORS
                                     [Ach_Types_List[index]]
-                                    [ifAchievement(index, item2.id)
+                                    [ifAchievement(index, item2)
                                         ? 'complete'
-                                        : (item2.status === true
+                                        : (item.list[item2].status === true
                                             ? 'canComplete'
                                             : 'unable')], 0.5, 1)}`,
                                 marginRight: `0.18vw`, 
@@ -43,9 +43,9 @@ import { ACHIEVEMENT_DATA, ACH_DEF_COLORS, Ach_Types_List, ifAchievement } from 
                                 <div class="flex-container" style="justify-content: space-around; align-items: center;">
                                     <span style="text-align: center" :style=" { color: colorChange(ACH_DEF_COLORS
                                         [Ach_Types_List[index]]
-                                        [ifAchievement(index, item2.id)
+                                        [ifAchievement(index, item2)
                                             ? 'complete'
-                                            : (item2.status === true
+                                            : (item.list[item2].status === true
                                                 ? 'canComplete'
                                                 : 'unable')], 0.25, 1) } ">
                                         <b>#{{ index2 + 1 }}</b>
@@ -53,12 +53,12 @@ import { ACHIEVEMENT_DATA, ACH_DEF_COLORS, Ach_Types_List, ifAchievement } from 
                                 </div>
                                 <span class="tooltiptext">
                                     <span v-if="!shiftDown" style="font-size: 0.6vw">#({{ index2 + 1 }}, {{ index + 1 }})  </span>
-                                    <span v-if="shiftDown" style="font-size: 0.6vw">ID: ({{ index }}, {{ item2.id }})  </span>
-                                    <span style="font-size: 1.0vw">{{item2.name}}</span>
-                                    <br><br>{{item2.desc}}
-                                    <br>{{item2.reward===''?'':`Reward: ${item2.reward}`}}
-                                    <span v-if="item2.status !== true && !ifAchievement(index, item2.id)"><br>{{ item2.status }}</span>
-                                    <span style="font-size: 0.6vw; color: #ccc" v-if="item2.extra"><br>{{ item2.extra }}</span>
+                                    <span v-if="shiftDown" style="font-size: 0.6vw">ID: ({{ index }}, {{ item2 }})  </span>
+                                    <span style="font-size: 1.0vw">{{item.list[item2].name}}</span>
+                                    <br><br>{{item.list[item2].desc}}
+                                    <br>{{item.list[item2].reward===''?'':`Reward: ${item.list[item2].reward}`}}
+                                    <span v-if="item.list[item2].status !== true && !ifAchievement(index, item2)"><br>{{ item.list[item2].status }}</span>
+                                    <span style="font-size: 0.6vw; color: #ccc" v-if="item.list[item2].extra"><br>{{ item.list[item2].extra }}</span>
                                 </span>
                             </div>
                         </div>

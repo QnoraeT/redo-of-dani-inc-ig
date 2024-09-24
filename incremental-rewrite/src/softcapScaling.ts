@@ -199,7 +199,7 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                     }
         
                     if (getKuaUpgrade("s", 6)) {
-                        data[1].power = data[1].power.div(1.5);
+                        data[1].power = data[1].power.mul(0.8);
                     }
         
                     if (getKuaUpgrade("p", 9)) {
@@ -336,7 +336,7 @@ export const getSCSLAttribute = (type: ScSlItems, isScaling: boolean, update = f
                     }
         
                     if (getKuaUpgrade("s", 6)) {
-                        data[0].power = data[0].power.div(1.5);
+                        data[0].power = data[0].power.mul(0.8);
                     }
         
                     if (ifAchievement(1, 7)) {

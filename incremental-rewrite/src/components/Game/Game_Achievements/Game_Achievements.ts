@@ -104,7 +104,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 4
-                ordering: 5,
+                ordering: 4,
                 get name() { return `No! Not again! This is not Distance Incremental!`; },
                 get desc() { return `Get your first softcap.`; },
                 get cond() { return Decimal.gte(tmp.value.main.upgrades[1].effect, 10) },
@@ -114,7 +114,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 5
-                ordering: 6,
+                ordering: 5,
                 get name() { return `All that time wasted...`; },
                 get desc() { return `Have ${format(1e18)} points without doing a PRai reset.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e18); },
@@ -124,7 +124,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 6
-                ordering: 7,
+                ordering: 6,
                 get name() { return `This cannot be endgame.`; },
                 get desc() { return `Do a PR2 reset twice.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 2) },
@@ -135,7 +135,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 7
-                ordering: 8,
+                ordering: 7,
                 get name() { return `Instant gratification.`; },
                 get desc() { return `Receive ${format(1e3)} PRai in a single PRai reset.`; },
                 get cond() { return Decimal.gte(tmp.value.main.prai.pending, 1e3); },
@@ -146,7 +146,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 8
-                ordering: 9,
+                ordering: 8,
                 get name() { return `This really is a clone of Distance Incremental!`; },
                 get desc() { return `Have at least ${format(100)} UP1.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100) },
@@ -156,7 +156,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 9
-                ordering: 10,
+                ordering: 9,
                 get name() { return `What once was part of a bygone era...`; },
                 get desc() { return `Do a PR2 reset ${format(4)} times in total.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 4); },
@@ -166,7 +166,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 10
-                ordering: 11,
+                ordering: 10,
                 get name() { return `Going even further beyond!`; },
                 get desc() { return `Do a PR2 reset ${format(11)} times.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 11); },
@@ -176,7 +176,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 11
-                ordering: 12,
+                ordering: 11,
                 get name() { return `A prelude 1`; },
                 get desc() { return `Have ${format(1e30)} points without buying Upgrade 3.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e30) && Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0); },
@@ -186,7 +186,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 12
-                ordering: 13,
+                ordering: 12,
                 get name() { return `A prelude 2`; },
                 get desc() { return `Have ${format(1e35)} points without buying Upgrade 2 and 3.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e35) && Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) && Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0); },
@@ -209,7 +209,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 13
-                ordering: 14,
+                ordering: 13,
                 get name() { return `A prelude 3`; },
                 get desc() { return `Have ${format(1e40)} points without buying Upgrades 1, 2, and 3 in the current PRai run.`; },
                 get cond() { return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e40) && Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) && Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) && Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0); },
@@ -239,7 +239,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 14
-                ordering: 15,
+                ordering: 14,
                 get name() { return `Enhancing 1`; },
                 get desc() { return `Make Upgrade 1's base reach ×${format(1.6, 3)}`; },
                 get cond() { return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 1.6); },
@@ -249,7 +249,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 15
-                ordering: 16,
+                ordering: 15,
                 get name() { return `Enhancing 2`; },
                 get desc() { return `Make Upgrade 1's base reach ×${format(2, 3)}`; },
                 get cond() { return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 2); },
@@ -259,7 +259,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             {
                 // id: 16
-                ordering: 17,
+                ordering: 16,
                 get name() { return `Enhancing 3`; },
                 get desc() { return `Make Upgrade 1's base reach ×${format(3, 3)}`; },
                 get cond() { return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 3); },
@@ -269,9 +269,9 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             },
             { // ! Unable
                 // id: 17
-                ordering: 4,
+                ordering: 17,
                 get name() { return `Apparently Upgrades 4-6 are all you need.`; },
-                get desc() { return `Get ${format(1e75, 3)} points without having Upgrades 1-3 and without more than ${format(10)} PRai for this Kuaraniai run.`; },
+                get desc() { return `Get ${format(1e30, 3)} points without having Upgrades 1-3 and without more than ${format(10)} PRai for this Kuaraniai run.`; },
                 autoComplete: false,
                 get cond() { return false; },
                 get reward() { return `PRai's effect is slightly boosted by ×${format(this.eff!, 2)} based off your time in PRai.`; },

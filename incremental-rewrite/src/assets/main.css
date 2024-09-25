@@ -1,485 +1,487 @@
 body {
-  background-color: #000;
+    background-color: #000;
 }
 
 ::-webkit-scrollbar {
-  width: 1.6vw;
+    width: 1.6vw;
 }
 
 ::-webkit-scrollbar-track {
-  background: #29343a;
+    background: #29343a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c0c4c8;
-
+    background: #c0c4c8;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e5eaf1;
+    background: #e5eaf1;
 }
 
 .flex-container {
-  display: flex;
+    display: flex;
 }
 
 .normalTabButton {
-  margin-left: 0.12vw; 
-  margin-right: 0.12vw; 
-  width: 7.5vw; 
-  height: 2vw; 
-  font-size: 0.75vw;
+    margin-left: 0.12vw;
+    margin-right: 0.12vw;
+    width: 7.5vw;
+    height: 2vw;
+    font-size: 0.75vw;
 }
 
 .whiteText {
-  color: #fff;
+    color: #fff;
 }
 
 .blackText {
-  color: #000;
+    color: #000;
 }
 
 .yellowText {
-  color: #ff0;
+    color: #ff0;
 }
 
 .grayShadow {
-  text-shadow: 0.12vw 0.12vw grey;
+    text-shadow: 0.12vw 0.12vw grey;
 }
 
 .fontVerdana {
-  font-family: "Verdana";
+    font-family: "Verdana";
 }
 
 .fontTrebuchetMS {
-  font-family: "Helvetica, sans-serif";
+    font-family: "Helvetica, sans-serif";
 }
 
 .alignLeft {
-  text-align: left;
+    text-align: left;
 }
 
 .alignCenter {
-  text-align: center;
+    text-align: center;
 }
 
 .alignRight {
-  text-align: right;
+    text-align: right;
 }
 
 .mediumText {
-  font-size: 1.2vw;
+    font-size: 1.2vw;
 }
 
 .mediumBigText {
-  font-size: 1.6vw;
+    font-size: 1.6vw;
 }
 
 .bigText {
-  font-size: 2.4vw;
+    font-size: 2.4vw;
 }
 
 .text {
-  display: inline;
+    display: inline;
 }
 
 .mediumButton {
-  width: 12vw;
-  height: 9vw;
+    width: 12vw;
+    height: 9vw;
 }
 
 .thinMediumButton {
-  width: 12vw;
-  height: 2.5vw;
+    width: 12vw;
+    height: 2.5vw;
 }
 
 .largeButton {
-  width: 18vw;
-  height: 12vw;
+    width: 18vw;
+    height: 12vw;
 }
 
 .thinLargeButton {
-  width: 18vw;
-  height: 4vw;
+    width: 18vw;
+    height: 4vw;
 }
 
 .autoButton {
-  transition-duration: 0.2s;
-  background-color: #1c2024;
+    transition-duration: 0.2s;
+    background-color: #1c2024;
 }
 
 .generatorButton {
-  transition-duration: 0.2s;
-  background-color: #1c2024;
+    transition-duration: 0.2s;
+    background-color: #1c2024;
 }
 
 .generatorButton:hover {
-  background-color: #384048;
-  cursor: pointer;
+    background-color: #384048;
+    cursor: pointer;
 }
 
 .generatorButtonSelected {
-  transition-duration: 0.2s;
-  background-color: #404952;
+    transition-duration: 0.2s;
+    background-color: #404952;
 }
 
 .generatorButtonSelected:hover {
-  background-color: #5b6774;
-  cursor: pointer;
+    background-color: #5b6774;
+    cursor: pointer;
 }
 
 .kuaButton {
-  transition-duration: 0.2s;
-  background-color: #411853;
-  cursor: pointer;
+    transition-duration: 0.2s;
+    background-color: #411853;
+    cursor: pointer;
 }
 
 .smallColBorder {
-  border: 0.15vw solid #ff4000;
+    border: 0.15vw solid #ff4000;
 }
 
 .smallColBorder:hover {
-  border: 0.15vw solid #ff9775;
+    border: 0.15vw solid #ff9775;
 }
 
 .normColBorder {
-  border: 0.36vw solid #ff4000;
+    border: 0.36vw solid #ff4000;
 }
 
 .normColBorder:hover {
-  border: 0.36vw solid #ff9775;
+    border: 0.36vw solid #ff9775;
 }
 
 .smallTaxBorder {
-  border: 0.15vw solid #ffd900;
+    border: 0.15vw solid #ffd900;
 }
 
 .smallTaxBorder:hover {
-  border: 0.15vw solid #fff2a7;
+    border: 0.15vw solid #fff2a7;
 }
 
 .normTaxBorder {
-  border: 0.36vw solid #ffd900;
+    border: 0.36vw solid #ffd900;
 }
 
 .normTaxBorder:hover {
-  border: 0.36vw solid #fff2a7;
+    border: 0.36vw solid #fff2a7;
 }
 
 .normColBorderProg {
-  border: 0.36vw solid #fffb00;
+    border: 0.36vw solid #fffb00;
 }
 
 .normColBorderProg:hover {
-  border: 0.36vw solid #fffd75;
+    border: 0.36vw solid #fffd75;
 }
 
 .normColBorderComp {
-  border: 0.36vw solid #00ff0d;
+    border: 0.36vw solid #00ff0d;
 }
 
 .normColBorderComp:hover {
-  border: 0.36vw solid #8cff75;
+    border: 0.36vw solid #8cff75;
 }
 
 .colButtonHeader {
-  transition-duration: 0.2s;
-  background-color: #521400;
+    transition-duration: 0.2s;
+    background-color: #521400;
 }
 
 .colButtonDesc {
-  transition-duration: 0.2s;
-  background-color: #631900;
+    transition-duration: 0.2s;
+    background-color: #631900;
 }
 
 .colButtonRew {
-  transition-duration: 0.2s;
-  background-color: #8d2300;
+    transition-duration: 0.2s;
+    background-color: #8d2300;
 }
 
 .colButtonProg {
-  transition-duration: 0.2s;
-  background-color: #616300;
-  box-shadow: 0 0 0.6vw 0.24vw rgb(66, 54, 0);
+    transition-duration: 0.2s;
+    background-color: #616300;
+    box-shadow: 0 0 0.6vw 0.24vw rgb(66, 54, 0);
 }
 
 .colButtonHeaderProg {
-  transition-duration: 0.2s;
-  background-color: #524300;
+    transition-duration: 0.2s;
+    background-color: #524300;
 }
 
 .colButtonDescProg {
-  transition-duration: 0.2s;
-  background-color: #634900;
+    transition-duration: 0.2s;
+    background-color: #634900;
 }
 
 .colButtonRewProg {
-  transition-duration: 0.2s;
-  background-color: #8d7800;
+    transition-duration: 0.2s;
+    background-color: #8d7800;
 }
 
 .colButtonComp {
-  transition-duration: 0.2s;
-  background-color: #006319;
-  box-shadow: 0 0 0.6vw 0.24vw rgb(0, 66, 6);
+    transition-duration: 0.2s;
+    background-color: #006319;
+    box-shadow: 0 0 0.6vw 0.24vw rgb(0, 66, 6);
 }
 
 .colButtonHeaderComp {
-  transition-duration: 0.2s;
-  background-color: #005204;
+    transition-duration: 0.2s;
+    background-color: #005204;
 }
 
 .colButtonDescComp {
-  transition-duration: 0.2s;
-  background-color: #006300;
+    transition-duration: 0.2s;
+    background-color: #006300;
 }
 
 .colButtonRewComp {
-  transition-duration: 0.2s;
-  background-color: #108d00;
+    transition-duration: 0.2s;
+    background-color: #108d00;
 }
 
 .main-container {
-  width: 15vw; 
-  height: 22vw; 
+    width: 15vw;
+    height: 22vw;
 }
 
-.first-cont, .second-cont, .third-cont {
-  position: relative;
-  width: 100%;
-  color: white
+.first-cont,
+.second-cont,
+.third-cont {
+    position: relative;
+    width: 100%;
+    color: white;
 }
 
 .generic-text {
-  position: absolute; 
+    position: absolute;
 }
 
 .centered-text {
-  position: absolute; 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  width: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .colButton {
-  transition-duration: 0.2s;
-  background-color: #631900;
-  box-shadow: 0 0 0.8vw 0.24vw rgb(66, 17, 0);
+    transition-duration: 0.2s;
+    background-color: #631900;
+    box-shadow: 0 0 0.8vw 0.24vw rgb(66, 17, 0);
 }
 
 .colButton:hover {
-  background-color: #7a1f00;
-  box-shadow: 0 0 1.5vw 0.24vw #8f2400;
-  cursor: pointer;
+    background-color: #7a1f00;
+    box-shadow: 0 0 1.5vw 0.24vw #8f2400;
+    cursor: pointer;
 }
 
 .colButtonProg:hover {
-  background-color: #7a6e00;
-  box-shadow: 0 0 1.5vw 0.24vw #8f6e00;
-  cursor: pointer;
+    background-color: #7a6e00;
+    box-shadow: 0 0 1.5vw 0.24vw #8f6e00;
+    cursor: pointer;
 }
 
 .colButtonComp:hover {
-  background-color: #187a00;
-  box-shadow: 0 0 1.5vw 0.24vw #188f00;
-  cursor: pointer;
+    background-color: #187a00;
+    box-shadow: 0 0 1.5vw 0.24vw #188f00;
+    cursor: pointer;
 }
 
 .taxButton {
-  transition-duration: 0.2s;
-  background-color: #634c00;
-  box-shadow: 0 0 0.8vw 0.24vw rgb(66, 54, 0);
+    transition-duration: 0.2s;
+    background-color: #634c00;
+    box-shadow: 0 0 0.8vw 0.24vw rgb(66, 54, 0);
 }
 
 .taxButton:hover {
-  background-color: #7a6800;
-  box-shadow: 0 0 1.5vw 0.24vw #8f7a00;
-  cursor: pointer;
+    background-color: #7a6800;
+    box-shadow: 0 0 1.5vw 0.24vw #8f7a00;
+    cursor: pointer;
 }
 
 .kuaButton:hover {
-  background-color: #610986;
+    background-color: #610986;
 }
 
 .genAutoButton {
-  transition-duration: 0.2s;
-  border: 0.18vw solid #384048;
+    transition-duration: 0.2s;
+    border: 0.18vw solid #384048;
 }
 
 .genAutoButton:hover {
-  border: 0.18vw solid #515c68;
+    border: 0.18vw solid #515c68;
 }
 
 .nope {
-  border: 0.24vw solid #400;
+    border: 0.24vw solid #400;
 }
 
 .nope:hover {
-  border: 0.24vw solid #600;
-  box-shadow: 0 0 1.5vw 0.24vw #300000;
-  cursor: not-allowed;
+    border: 0.24vw solid #600;
+    box-shadow: 0 0 1.5vw 0.24vw #300000;
+    cursor: not-allowed;
 }
 
 .ok {
-  border: 0.24vw solid #040;
-  box-shadow: 0 0 1.5vw 0.24vw #002000;
+    border: 0.24vw solid #040;
+    box-shadow: 0 0 1.5vw 0.24vw #002000;
 }
 
 .ok:hover {
-  border: 0.24vw solid #0f0;
-  box-shadow: 0 0 1.5vw 0.8vw #008000;
+    border: 0.24vw solid #0f0;
+    box-shadow: 0 0 1.5vw 0.8vw #008000;
 }
 
 .done {
-  border: 0.24vw solid #008;
-  box-shadow: 0 0 1.5vw 0.36vw #000040;
+    border: 0.24vw solid #008;
+    box-shadow: 0 0 1.5vw 0.36vw #000040;
 }
 
 .done:hover {
-  border: 0.24vw solid #00f;
-  box-shadow: 0 0 1.5vw 0.48vw #000080;
+    border: 0.24vw solid #00f;
+    box-shadow: 0 0 1.5vw 0.48vw #000080;
 }
 
 .nopeFill {
-  background-color: #400;
+    background-color: #400;
 }
 
 .nopeFill:hover {
-  background-color: #800;
+    background-color: #800;
 }
 
 .okFill {
-  background-color: #040;
+    background-color: #040;
 }
 
 .okFill:hover {
-  background-color: #080;
+    background-color: #080;
 }
 
 .kuaButton2 {
-  transition-duration: 0.2s; 
-  border: 0.24vw solid #b900ff; 
-  background-color: #4d008b;
+    transition-duration: 0.2s;
+    border: 0.24vw solid #b900ff;
+    background-color: #4d008b;
 }
 
 .kuaButton2:hover {
-  border: 0.24vw solid #ca37ff; 
-  background-color: #5f00ad;
+    border: 0.24vw solid #ca37ff;
+    background-color: #5f00ad;
 }
 
 /* Tooltip container */
 .tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 0.06vw dotted black; /* If you want dots under the hoverable text */
+    position: relative;
+    display: inline-block;
+    border-bottom: 0.06vw dotted black; /* If you want dots under the hoverable text */
 }
 
 /* Tooltip text */
 .tooltip .tooltiptext {
-  visibility: hidden;
-  width: 30vw;
-  background-color: #222;
-  color: #fff;
-  text-align: center;
-  padding: 0.24vw 0;
-  border: 0.12vw solid #fff;
+    visibility: hidden;
+    width: 30vw;
+    background-color: #222;
+    color: #fff;
+    text-align: center;
+    padding: 0.24vw 0;
+    border: 0.12vw solid #fff;
 
-  /* Position the tooltip text */
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -15vw;
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -15vw;
 
-  /* Fade in tooltip */
-  opacity: 0;
-  transition: opacity 0.3s;
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
 /* Tooltip arrow */
 .tooltip .tooltiptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -0.24vw;
-  border-width: 0.24vw;
-  border-style: solid;
-  border-color: #222 transparent transparent transparent;
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -0.24vw;
+    border-width: 0.24vw;
+    border-style: solid;
+    border-color: #222 transparent transparent transparent;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
-  visibility: visible;
-  opacity: 1;
+    visibility: visible;
+    opacity: 1;
 }
 
 .slidecontainer {
-  width: 100%; /* Width of the outside container */
+    width: 100%; /* Width of the outside container */
 }
 
 /* The slider itself */
 .slider {
-  -webkit-appearance: none;  /* Override default CSS styles */
-  appearance: none;
-  width: 100%; /* Full-width */
-  height: 0.5vw; /* Specified height */
-  background: #d3d3d3; /* Grey background */
-  outline: none; /* Remove outline */
-  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-  transition: opacity .2s;
+    -webkit-appearance: none; /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 0.5vw; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: 0.2s; /* 0.2 seconds transition on hover */
+    transition: opacity 0.2s;
 }
 
 /* Mouse-over effects */
 .slider:hover {
-  opacity: 1; /* Fully shown on mouse-over */
+    opacity: 1; /* Fully shown on mouse-over */
 }
 
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
 .slider::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Override default look */
-  appearance: none;
-  width: 1.5vw; /* Set a specific slider handle width */
-  height: 1.5vw; /* Slider handle height */
-  background: #04AA6D; /* Green background */
-  cursor: pointer; /* Cursor on hover */
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 1.5vw; /* Set a specific slider handle width */
+    height: 1.5vw; /* Slider handle height */
+    background: #04aa6d; /* Green background */
+    cursor: pointer; /* Cursor on hover */
 }
 
 .slider::-moz-range-thumb {
-  width: 1.5vw; /* Set a specific slider handle width */
-  height: 1.5vw; /* Slider handle height */
-  background: #04AA6D; /* Green background */
-  cursor: pointer; /* Cursor on hover */
+    width: 1.5vw; /* Set a specific slider handle width */
+    height: 1.5vw; /* Slider handle height */
+    background: #04aa6d; /* Green background */
+    cursor: pointer; /* Cursor on hover */
 }
 
 /* taken from TMT ig */
 .popup {
-	border: 0.2vw solid;
-	width: 18vw;
-	min-height: 3vw;
-	color: #000000;
-	display: block;
-	margin-top: 1.2vw;
-	border-color: rgba(0, 0, 0, 0.25);
+    border: 0.2vw solid;
+    width: 18vw;
+    min-height: 3vw;
+    color: #000000;
+    display: block;
+    margin-top: 1.2vw;
+    border-color: rgba(0, 0, 0, 0.25);
 }
 
 .popup-container {
-	position: absolute;
-	z-index: 9999999999999999999999999999999999;
-	right: 1.8vw;
-	width: 18vw;
+    position: absolute;
+    z-index: 9999999999999999999999999999999999;
+    right: 1.8vw;
+    width: 18vw;
 }
 
-.fade-enter-active, .fade-leave-active {
-	transition: opacity .3s
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s;
 }
 
 .fade-transition {
-	transition: opacity .3s
+    transition: opacity 0.3s;
 }
 
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-	opacity: 0
+    opacity: 0;
 }

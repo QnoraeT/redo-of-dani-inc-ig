@@ -1,4 +1,13 @@
-import { game, initPlayer, player, tmp, setPlayerFromSave, setGameFromSave, initGameBeforeSave, gameVars } from './main'
+import {
+    game,
+    initPlayer,
+    player,
+    tmp,
+    setPlayerFromSave,
+    setGameFromSave,
+    initGameBeforeSave,
+    gameVars
+} from "./main";
 
 export const saveID = "danidanijr_save_revamp_redo";
 export const SAVE_MODES = [
@@ -50,34 +59,38 @@ export const SAVE_MODES = [
     {
         id: 5,
         name: "Scaled Ruins",
-        desc: "This mode adds many, many scaling increases into the game. Is IM:R calling? This also includes scaling increases beyond the legendary \"Atomic\" scaling. There will be a few added mechanics to help you deal with these softcaps, but overall the game.value will be harder.",
+        desc: 'This mode adds many, many scaling increases into the game. Is IM:R calling? This also includes scaling increases beyond the legendary "Atomic" scaling. There will be a few added mechanics to help you deal with these softcaps, but overall the game.value will be harder.',
         borderColor: "#6040ff",
         borderSelectedColor: "#a080ff",
         bgColor: "#1f1a46",
         textColor: "#c8c0ff"
     }
-]
+];
 
 export const setTempModes = (id: number): void => {
     tmp.value.saveModes[id] = !tmp.value.saveModes[id];
-}
+};
 
 export const resetModes = (): void => {
     for (let i = 0; i < tmp.value.saveModes.length; i++) {
         tmp.value.saveModes[i] = false;
     }
-}
+};
 
 export const displayModes = (mode: Array<number>): string => {
     let txt = "";
-    if (mode.length === 0) { return "Normal"; }
-    if (mode.length === 1) { return SAVE_MODES[mode[0]].name; }
+    if (mode.length === 0) {
+        return "Normal";
+    }
+    if (mode.length === 1) {
+        return SAVE_MODES[mode[0]].name;
+    }
     for (let i = 0; i < mode.length - 1; i++) {
         txt += `${SAVE_MODES[mode[i]].name}, `;
     }
     txt += SAVE_MODES[mode[mode.length - 1]].name;
     return txt;
-}
+};
 
 export const displayModesNonOptArray = (modes: Array<boolean>): string => {
     const mode = [];
@@ -87,49 +100,61 @@ export const displayModesNonOptArray = (modes: Array<boolean>): string => {
             mode.push(i);
         }
     }
-    if (mode.length === 0) { return "Normal"; }
-    if (mode.length === 1) { return SAVE_MODES[mode[0]].name; }
+    if (mode.length === 0) {
+        return "Normal";
+    }
+    if (mode.length === 1) {
+        return SAVE_MODES[mode[0]].name;
+    }
     for (let i = 0; i < mode.length - 1; i++) {
         txt += `${SAVE_MODES[mode[i]].name}, `;
     }
     txt += SAVE_MODES[mode[mode.length - 1]].name;
     return txt;
-}
+};
 
 export const saveTheFrickingGame = (): void => {
     localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
-    console.log("Game was saved!")
-}
+    console.log("Game was saved!");
+};
 
 export const resetTheWholeGame = (prompt: boolean): void => {
     if (prompt) {
         if (!confirm("Are you sure you want to delete EVERY save?")) {
             return;
         }
-        if (!confirm("You cannot recover ANY of your save files unless if you have an exported backup! Are you still sure? [Final Warning]")) {
+        if (
+            !confirm(
+                "You cannot recover ANY of your save files unless if you have an exported backup! Are you still sure? [Final Warning]"
+            )
+        ) {
             return;
         }
     }
 
     game.value = initGameBeforeSave();
-    initPlayer(true)
-    saveTheFrickingGame()
+    initPlayer(true);
+    saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
-}
+};
 
 export const resetThisSave = (prompt: boolean): void => {
     if (prompt) {
         if (!confirm("Are you sure you want to delete this save?")) {
             return;
         }
-        if (!confirm("You cannot recover this save unless if you have an exported backup! Are you still sure? [Final Warning]")) {
+        if (
+            !confirm(
+                "You cannot recover this save unless if you have an exported backup! Are you still sure? [Final Warning]"
+            )
+        ) {
             return;
         }
     }
     initPlayer(true);
     saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
-}
+};
 
 export const createNewSave = (modes: Array<boolean>): void => {
     const mode = [];
@@ -143,47 +168,51 @@ export const createNewSave = (modes: Array<boolean>): void => {
         name: `Save #${game.value.list.length + 1}`,
         modes: mode,
         data: player.value
-    })
+    });
     game.value.idGen++;
     game.value.currentSave = game.value.list.length - 1;
     game.value.list[game.value.currentSave].data = initPlayer();
     localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
     tmp.value.gameIsRunning = false;
-}
+};
 
 export const switchToSave = (id: number): void => {
     game.value.currentSave = id;
-    player.value = game.value.list[game.value.currentSave].data
+    player.value = game.value.list[game.value.currentSave].data;
     localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
     gameVars.value.lastSave = gameVars.value.sessionTime;
     tmp.value.gameIsRunning = false;
-}
+};
 
 export const renameSave = (id: number): void => {
-    const i = prompt('What name would you like to give this save? (Input blank to keep the name.)'); 
-    if (!(i === '' || i === null)) { 
+    const i = prompt("What name would you like to give this save? (Input blank to keep the name.)");
+    if (!(i === "" || i === null)) {
         game.value.list[id].name = i;
     }
-}
+};
 
 export const duplicateSave = (id: number): void => {
     if (!confirm("Are you sure you want to duplicate this save?")) {
         return;
     }
     if (id < game.value.currentSave) {
-        game.value.currentSave++
+        game.value.currentSave++;
     }
     // i don't know how this doesn't bug out, this also copied the id for the save
     game.value.list.splice(id + 1, 0, game.value.list[id]);
     saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
-}
+};
 
 export const deleteSave = (id: number): void => {
     if (!confirm("Are you sure you want to delete this save?")) {
         return;
     }
-    if (!confirm("You cannot recover this save unless if you have an exported backup! Are you still sure? [Final Warning]")) {
+    if (
+        !confirm(
+            "You cannot recover this save unless if you have an exported backup! Are you still sure? [Final Warning]"
+        )
+    ) {
         return;
     }
     if (game.value.list.length === 1) {
@@ -197,21 +226,21 @@ export const deleteSave = (id: number): void => {
     if (id < game.value.currentSave) {
         game.value.currentSave--;
     }
-}
+};
 
 export const importSave = (id: number): void => {
     if (!confirm("Are you sure you want to do this? This will overwrite this save file!")) {
         return;
     }
-    const save = prompt('Paste your save file here.');
+    const save = prompt("Paste your save file here.");
 
-    if (save === '' || save === null) {
+    if (save === "" || save === null) {
         return;
     }
 
     try {
         JSON.parse(atob(save));
-    } catch(e) {
+    } catch (e) {
         alert(`Importing save file failed! ${e}`);
         return;
     }
@@ -222,42 +251,48 @@ export const importSave = (id: number): void => {
     } catch {
         isSaveList = false;
     }
-    
+
     if (isSaveList) {
-        alert("Importing save file failed because this is an export of a save list, and not a save file.");
+        alert(
+            "Importing save file failed because this is an export of a save list, and not a save file."
+        );
         return;
     }
 
-    setPlayerFromSave(save, id)
+    setPlayerFromSave(save, id);
     saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
-}
+};
 
 export const exportSave = (id: number): void => {
     const str = btoa(JSON.stringify(game.value.list[id]));
-	const el = document.createElement("textarea");
-	el.value = str;
-	document.body.appendChild(el);
-	el.select();
+    const el = document.createElement("textarea");
+    el.value = str;
+    document.body.appendChild(el);
+    el.select();
     el.setSelectionRange(0, 99999);
-	document.execCommand("copy");
-	document.body.removeChild(el);
-}
+    document.execCommand("copy");
+    document.body.removeChild(el);
+};
 
 export const importSaveList = (): void => {
-    if (!confirm("Are you sure you want to do this? This will overwrite EVERY save file in your save list!")) {
+    if (
+        !confirm(
+            "Are you sure you want to do this? This will overwrite EVERY save file in your save list!"
+        )
+    ) {
         return;
     }
 
-    const save = prompt('Paste your save list here.');
+    const save = prompt("Paste your save list here.");
 
-    if (save === '' || save === null) {
+    if (save === "" || save === null) {
         return;
     }
 
     try {
         JSON.parse(atob(save));
-    } catch(e) {
+    } catch (e) {
         alert(`Importing save list failed! ${e}`);
         return;
     }
@@ -271,43 +306,47 @@ export const importSaveList = (): void => {
     }
 
     if (isSaveFile) {
-        alert("Importing save list failed because either this is an export of a save file, and not a save list, or this save file is corrupted.");
+        alert(
+            "Importing save list failed because either this is an export of a save file, and not a save list, or this save file is corrupted."
+        );
         return;
     }
 
     setGameFromSave(save);
     saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
-}
+};
 
 export const exportSaveList = (): void => {
-	const str = btoa(JSON.stringify(game.value));
-	const el = document.createElement("textarea");
-	el.value = str;
-	document.body.appendChild(el);
-	el.select();
+    const str = btoa(JSON.stringify(game.value));
+    const el = document.createElement("textarea");
+    el.value = str;
+    document.body.appendChild(el);
+    el.select();
     el.setSelectionRange(0, 99999);
-	document.execCommand("copy");
-	document.body.removeChild(el);
-}
+    document.execCommand("copy");
+    document.body.removeChild(el);
+};
 
 export const setAutosaveInterval = (): void => {
-    const i = window.prompt('Set your new auto-saving interval in seconds. Set it to Infinity if you want to disable auto-saving.'); 
+    const i = window.prompt(
+        "Set your new auto-saving interval in seconds. Set it to Infinity if you want to disable auto-saving."
+    );
 
-    if (i === '') {
-        alert('Your set autosave interval is empty...');
+    if (i === "") {
+        alert("Your set autosave interval is empty...");
         return;
     }
 
-    let numI = Number(i)
+    let numI = Number(i);
 
-    if (isNaN(numI)) { 
-        alert('Your set autosave interval is not a number...');
+    if (isNaN(numI)) {
+        alert("Your set autosave interval is not a number...");
         return;
-    } 
+    }
 
-    if (numI < 1) { 
-        alert('Your set autosave interval is way too fast or negative...'); 
+    if (numI < 1) {
+        alert("Your set autosave interval is way too fast or negative...");
         return;
     }
 
@@ -316,6 +355,5 @@ export const setAutosaveInterval = (): void => {
         numI = 1e100;
     }
 
-    game.value.autoSaveInterval = numI; 
-}
-
+    game.value.autoSaveInterval = numI;
+};

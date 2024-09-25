@@ -1,39 +1,41 @@
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { format } from "@/format";
-import { player, reset, tmp, updateAllBest, updateAllTotal } from "@/main"
-import { D, linearAdd, sumHarmonicSeries } from "@/calc"
+import { player, reset, tmp, updateAllBest, updateAllTotal } from "@/main";
+import { D, linearAdd, sumHarmonicSeries } from "@/calc";
 import { setAchievement } from "../../Game_Achievements/Game_Achievements";
 
-export type challengeIDList = "nk" | "su"
-export const challengeIDListArr: Array<challengeIDList> = ["nk", "su"]
+export type challengeIDList = "nk" | "su" | "df" | "im";
+export const challengeIDListArr: Array<challengeIDList> = ["nk", "su", "df", "im"];
 
 export type colChallenges = {
-    nk: colChallengeData
-    su: colChallengeData
-}
+    nk: colChallengeData;
+    su: colChallengeData;
+    df: colChallengeData;
+    im: colChallengeData;
+};
 
 export type colChallengeData = {
-    type: number
-    num: number
-    id: challengeIDList
-    layer: number
-    name: string
-    goal: Decimal
-    goalDesc: string
-    desc: string
-    reward: string
-    cap: DecimalSource
-    show: boolean
-    canComplete: boolean
-    progress: Decimal
-    progDisplay: string
-}
+    type: number;
+    num: number;
+    id: challengeIDList;
+    layer: number;
+    name: string;
+    goal: Decimal;
+    goalDesc: string;
+    desc: string;
+    reward: string;
+    cap: DecimalSource;
+    show: boolean;
+    canComplete: boolean;
+    progress: Decimal;
+    progDisplay: string;
+};
 /**
  * type
  * 0 = One-Time only
  * 1 = Can complete multiple times (Decimal)
  * 2 = Continouous (Decimal, best)
- * 
+ *
  * layer
  * 0 = kua
  */
@@ -41,26 +43,37 @@ export const COL_CHALLENGES: colChallenges = {
     nk: {
         type: 0,
         num: 1,
-        id: 'nk',
+        id: "nk",
         layer: 0,
         name: `No Kuaraniai`,
         goal: D(1e25),
-        get goalDesc() { return `Reach ${format(this.goal)} Points.`},
+        get goalDesc() {
+            return `Reach ${format(this.goal)} Points.`;
+        },
         desc: `All Kuaraniai resources and upgrades are disabled.`,
-        reward: `Unlock another tab in Colosseum.`,
+        reward: `Unlock another tab in Colosseum, and unlock another challenge.`,
         cap: 1,
         show: true,
-        get canComplete() { return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal); },
-        get progress() { return Decimal.max(player.value.gameProgress.main.best[3]!, 1).log10().div(this.goal.log10()).min(1); },
-        get progDisplay() { return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`; }
+        get canComplete() {
+            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
+        },
+        get progress() {
+            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+                .log10()
+                .div(this.goal.log10())
+                .min(1);
+        },
+        get progDisplay() {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`;
+        }
     },
     su: {
         type: 1,
         num: 2,
-        id: 'su',
+        id: "su",
         layer: 0,
         name: `Sabotaged Upgrades`,
-        get goal() { 
+        get goal() {
             return [
                 D(1e60),
                 D(1e55),
@@ -72,10 +85,13 @@ export const COL_CHALLENGES: colChallenges = {
                 D(1e120),
                 D(1e165),
                 D(1e200),
-                D(Infinity),
-            ][new Decimal(timesCompleted('su')).toNumber()] },
-        get goalDesc() { return `Reach ${format(this.goal)} Points.`; },
-        get desc() { 
+                D(Infinity)
+            ][new Decimal(timesCompleted("su")).toNumber()];
+        },
+        get goalDesc() {
+            return `Reach ${format(this.goal)} Points.`;
+        },
+        get desc() {
             return [
                 `Your PPS is restricted to only Upgrades, PRai, and PR2 and all upgrades scale ${format(2, 1)}× faster.`,
                 `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(2.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e20)}.`,
@@ -87,12 +103,12 @@ export const COL_CHALLENGES: colChallenges = {
                 `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e60)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
                 `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(15, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
                 `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(25, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e90)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
-                `winner you complete it all`,
-            ][new Decimal(timesCompleted('su')).toNumber()];
+                `winner you complete it all`
+            ][new Decimal(timesCompleted("su")).toNumber()];
         },
-        get reward() { 
+        get reward() {
             return [
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(2.5, 1)}%)`,
+                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(2.5, 1)}%), and unlock a new challenge.`,
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(5, 1)}%)`,
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(7.5, 1)}%)`,
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(10, 1)}%)`,
@@ -103,23 +119,92 @@ export const COL_CHALLENGES: colChallenges = {
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(65, 1)}%), Upgrade 1's Hyper scaling is ${format(13)}% weaker, and Upgrade 2's base is increased by +${format(1.5, 1)}%.`,
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(80, 1)}%), Upgrade 1's Hyper scaling is ${format(15)}% weaker, and Upgrade 2's base is increased by +${format(3, 1)}%.`,
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(100, 1)}%), Upgrade 1's Hyper scaling is ${format(20)}% weaker, Upgrade 2's base is increased by +${format(5, 1)}%, and Point taxation starts ${format(1e6)}× later.`
-            ][new Decimal(timesCompleted('su')).toNumber()];
+            ][new Decimal(timesCompleted("su")).toNumber()];
         },
         cap: 10,
-        get show() { return Decimal.gte(timesCompleted('nk'), 1); },
-        get canComplete() { return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal); },
-        get progress() { return Decimal.max(player.value.gameProgress.main.best[3]!, 1).log10().div(this.goal.log10()).min(1); },
-        get progDisplay() { return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`; }
+        get show() {
+            return Decimal.gte(timesCompleted("nk"), 1);
+        },
+        get canComplete() {
+            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
+        },
+        get progress() {
+            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+                .log10()
+                .div(this.goal.log10())
+                .min(1);
+        },
+        get progDisplay() {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`;
+        }
+    },
+    df: {
+        type: 0,
+        num: 3,
+        id: "df",
+        layer: 0,
+        name: `Decaying Feeling`,
+        goal: D(1e225),
+        get goalDesc() {
+            return `Reach ${format(this.goal)} Points.`;
+        },
+        desc: `Points, PRai, and all Kuaraniai resources gain less the more you have.`,
+        reward: `insert something here and Unlock another challenge.`,
+        cap: 1,
+        get show() {
+            return Decimal.gte(timesCompleted("su"), 1);
+        },
+        get canComplete() {
+            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
+        },
+        get progress() {
+            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+                .log10()
+                .div(this.goal.log10())
+                .min(1);
+        },
+        get progDisplay() {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`;
+        }
+    },
+    im: {
+        type: 2,
+        num: 4,
+        id: "im",
+        layer: 0,
+        name: `Inverted Mechanics`,
+        goal: D(1e70),
+        get goalDesc() {
+            return `Reach ${format(this.goal)} Points.`;
+        },
+        desc: `All Upgrades can only be bought once, but One-Upgrades are repeatable (Upgrade 2 and 5 change to boosting point gain), PRai is a static resource while PR2's amount scales normally. Kuaraniai and above will not be affected.`,
+        reward: `Something here.`,
+        cap: 1,
+        get show() {
+            return Decimal.gte(timesCompleted("df"), 1);
+        },
+        get canComplete() {
+            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
+        },
+        get progress() {
+            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+                .log10()
+                .div(this.goal.log10())
+                .min(1);
+        },
+        get progDisplay() {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`;
+        }
     }
-}
+};
 
 export const getColResLevel = (id: number) => {
     return COL_RESEARCH[id].scoreToLevel(player.value.gameProgress.col.research.xpTotal[id]);
-}
+};
 
 export const getColResEffect = (id: number) => {
     return COL_RESEARCH[id].effect(getColResLevel(id).floor());
-}
+};
 
 export const allocColResearch = (id: number) => {
     if (player.value.gameProgress.col.research.enabled[id]) {
@@ -131,20 +216,26 @@ export const allocColResearch = (id: number) => {
             player.value.gameProgress.col.research.enabled[id] = true;
         }
     }
-}
+};
 
 export const COL_RESEARCH = [
     {
         unlocked: true,
         name: "Dotgenous",
-        effectDesc(level: DecimalSource) { return `Multiply point gain by ${format(this.effect(level), 2)}×.`; },
-        effectDescLevel(level: DecimalSource) { return `Multiply point gain by ${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)}× for this level.`; },
+        effectDesc(level: DecimalSource) {
+            return `Multiply point gain by ${format(this.effect(level), 2)}×.`;
+        },
+        effectDescLevel(level: DecimalSource) {
+            return `Multiply point gain by ${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)}× for this level.`;
+        },
         effect(level: DecimalSource) {
             const effect = Decimal.sqrt(level).pow10();
             return effect;
         },
         scoreToLevel(score: DecimalSource) {
-            if (Decimal.lt(score, 2)) { return D(0); }
+            if (Decimal.lt(score, 2)) {
+                return D(0);
+            }
             const level = linearAdd(score, 2, 2, true);
             return level;
         },
@@ -156,14 +247,20 @@ export const COL_RESEARCH = [
     {
         unlocked: true,
         name: "Firsterious",
-        effectDesc(level: DecimalSource) { return `Multiply PRai gain by ${format(this.effect(level), 2)}×.`; },
-        effectDescLevel(level: DecimalSource) { return `Multiply PRai gain by ${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)}× for this level.`; },
+        effectDesc(level: DecimalSource) {
+            return `Multiply PRai gain by ${format(this.effect(level), 2)}×.`;
+        },
+        effectDescLevel(level: DecimalSource) {
+            return `Multiply PRai gain by ${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)}× for this level.`;
+        },
         effect(level: DecimalSource) {
             const effect = Decimal.cbrt(level).pow_base(4);
             return effect;
         },
         scoreToLevel(score: DecimalSource) {
-            if (Decimal.lt(score, 10)) { return D(0); }
+            if (Decimal.lt(score, 10)) {
+                return D(0);
+            }
             const level = linearAdd(score, 10, 10, true);
             return level;
         },
@@ -175,14 +272,20 @@ export const COL_RESEARCH = [
     {
         unlocked: true,
         name: "Kyston",
-        effectDesc(level: DecimalSource) { return `Increase Kuaraniai gain exponent by +${format(this.effect(level), 3)}.`; },
-        effectDescLevel(level: DecimalSource) { return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 4)} Kuaraniai gain exponent for this level.`; },
+        effectDesc(level: DecimalSource) {
+            return `Increase Kuaraniai gain exponent by +${format(this.effect(level), 3)}.`;
+        },
+        effectDescLevel(level: DecimalSource) {
+            return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 4)} Kuaraniai gain exponent for this level.`;
+        },
         effect(level: DecimalSource) {
             const effect = sumHarmonicSeries(level).div(1e2);
             return effect;
         },
         scoreToLevel(score: DecimalSource) {
-            if (Decimal.lt(score, 1e2)) { return D(0); }
+            if (Decimal.lt(score, 1e2)) {
+                return D(0);
+            }
             const level = linearAdd(score, 1e2, 20, true);
             return level;
         },
@@ -190,27 +293,33 @@ export const COL_RESEARCH = [
             const score = linearAdd(level, 1e2, 20, false);
             return score;
         }
-    },
-]
+    }
+];
 
 export const timesCompleted = (id: challengeIDList): DecimalSource => {
-    if (player.value.gameProgress.col.completed[id] === undefined) { return D(0); }
+    if (player.value.gameProgress.col.completed[id] === undefined) {
+        return D(0);
+    }
     return player.value.gameProgress.col.completed[id];
-}
+};
 
 export const completedChallenge = (id: challengeIDList): boolean => {
-    if (player.value.gameProgress.col.completed[id] === undefined) { return false; }
+    if (player.value.gameProgress.col.completed[id] === undefined) {
+        return false;
+    }
     return Decimal.gte(player.value.gameProgress.col.completed[id], COL_CHALLENGES[id].cap);
-}
+};
 
 export const inChallenge = (id: challengeIDList): boolean => {
-    if (player.value.gameProgress.inChallenge[id] === undefined) { return false; }
+    if (player.value.gameProgress.inChallenge[id] === undefined) {
+        return false;
+    }
     return player.value.gameProgress.inChallenge[id].entered;
-}
+};
 
 export const challengeDepth = (id: challengeIDList): DecimalSource => {
     return player.value.gameProgress.inChallenge[id].depths;
-}
+};
 
 export const makeColChallengeSaveData = (): colChallengesSavedData => {
     const obj: colChallengesSavedData = {
@@ -219,8 +328,16 @@ export const makeColChallengeSaveData = (): colChallengesSavedData => {
         upgradesAuto: [],
         upgradesResetHistory: [],
         oneUpgrades: [],
-        pointBest: [player.value.gameProgress.main.best[0], player.value.gameProgress.main.best[1], player.value.gameProgress.main.best[2]],
-        pointTotals: [player.value.gameProgress.main.totals[0], player.value.gameProgress.main.totals[1], player.value.gameProgress.main.totals[2]],
+        pointBest: [
+            player.value.gameProgress.main.best[0],
+            player.value.gameProgress.main.best[1],
+            player.value.gameProgress.main.best[2]
+        ],
+        pointTotals: [
+            player.value.gameProgress.main.totals[0],
+            player.value.gameProgress.main.totals[1],
+            player.value.gameProgress.main.totals[2]
+        ],
         kua: {
             auto: player.value.gameProgress.kua.auto,
             amount: player.value.gameProgress.kua.amount,
@@ -249,11 +366,19 @@ export const makeColChallengeSaveData = (): colChallengesSavedData => {
             auto: player.value.gameProgress.main.prai.auto,
             amount: player.value.gameProgress.main.prai.amount,
             timeInPRai: player.value.gameProgress.main.prai.timeInPRai,
-            best: [null, player.value.gameProgress.main.prai.best[1], player.value.gameProgress.main.prai.best[2]],
-            totals: [null, player.value.gameProgress.main.prai.totals[1], player.value.gameProgress.main.prai.totals[2]],
+            best: [
+                null,
+                player.value.gameProgress.main.prai.best[1],
+                player.value.gameProgress.main.prai.best[2]
+            ],
+            totals: [
+                null,
+                player.value.gameProgress.main.prai.totals[1],
+                player.value.gameProgress.main.prai.totals[2]
+            ],
             times: player.value.gameProgress.main.prai.times
         }
-    }
+    };
     for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
         obj.upgradesBought.push(player.value.gameProgress.main.upgrades[i].bought);
         obj.upgradesAuto.push(player.value.gameProgress.main.upgrades[i].auto);
@@ -274,13 +399,15 @@ export const makeColChallengeSaveData = (): colChallengesSavedData => {
         obj.kua.kpower.best[i] = player.value.gameProgress.kua.kpower.best[i];
     }
     return obj;
-}
+};
 
 export const exitChallenge = (id: challengeIDList) => {
     const chalIdCheck = player.value.gameProgress.col.challengeOrder.chalID.pop();
-    if (chalIdCheck !== id) { 
+    if (chalIdCheck !== id) {
         player.value.gameProgress.col.challengeOrder.chalID.push(chalIdCheck!);
-        throw new Error("major error! check player.value.gameProgress.col.challengeOrder because challenge order is wrong!!");
+        throw new Error(
+            "major error! check player.value.gameProgress.col.challengeOrder because challenge order is wrong!!"
+        );
     }
     player.value.gameProgress.col.challengeOrder.layer.pop();
     player.value.gameProgress.inChallenge[id].entered = false;
@@ -290,7 +417,8 @@ export const exitChallenge = (id: challengeIDList) => {
         player.value.gameProgress.main.upgrades[i].bought = savedColData.upgradesBought[i];
         player.value.gameProgress.main.upgrades[i].auto = savedColData.upgradesAuto[i];
         for (let j = 0; j < player.value.gameProgress.main.upgrades[i].boughtInReset.length; j++) {
-            player.value.gameProgress.main.upgrades[i].boughtInReset[j] = savedColData.upgradesResetHistory[i][j];
+            player.value.gameProgress.main.upgrades[i].boughtInReset[j] =
+                savedColData.upgradesResetHistory[i][j];
         }
     }
 
@@ -343,12 +471,12 @@ export const exitChallenge = (id: challengeIDList) => {
     player.value.gameProgress.kua.kpower.totals[3] = savedColData.kua.kpower.totals[3];
     player.value.gameProgress.kua.kpower.best[3] = savedColData.kua.kpower.best[3];
     player.value.gameProgress.kua.kpower.upgrades = savedColData.kua.kpower.upgrades;
-}
+};
 
 export const updateAllCol = (delta: DecimalSource) => {
     updateCol(1, delta);
     updateCol(0, delta);
-}
+};
 
 export const updateCol = (type: number, delta: DecimalSource) => {
     let i, j, k, l, chalID, generate;
@@ -360,37 +488,61 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             tmp.value.col.researchSpeed = D(1);
 
             for (let i = 0; i < COL_RESEARCH.length; i++) {
-                if (player.value.gameProgress.col.research.enabled[i] === undefined) { player.value.gameProgress.col.research.enabled[i] = false; }
-                if (player.value.gameProgress.col.research.xpTotal[i] === undefined) { player.value.gameProgress.col.research.xpTotal[i] = 0; }
+                if (player.value.gameProgress.col.research.enabled[i] === undefined) {
+                    player.value.gameProgress.col.research.enabled[i] = false;
+                }
+                if (player.value.gameProgress.col.research.xpTotal[i] === undefined) {
+                    player.value.gameProgress.col.research.xpTotal[i] = 0;
+                }
 
                 if (player.value.gameProgress.col.research.enabled[i]) {
                     tmp.value.col.researchesAllocated++;
                     generate = tmp.value.col.researchSpeed.mul(delta);
-                    player.value.gameProgress.col.research.xpTotal[i] = Decimal.add(player.value.gameProgress.col.research.xpTotal[i], generate);
+                    player.value.gameProgress.col.research.xpTotal[i] = Decimal.add(
+                        player.value.gameProgress.col.research.xpTotal[i],
+                        generate
+                    );
                 }
             }
             break;
         case 0:
-            if (Decimal.lte(player.value.gameProgress.col.time, 0) && player.value.gameProgress.col.inAChallenge) {
-                for (let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1; i >= 0; i--) {
+            if (
+                Decimal.lte(player.value.gameProgress.col.time, 0) &&
+                player.value.gameProgress.col.inAChallenge
+            ) {
+                for (
+                    let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1;
+                    i >= 0;
+                    i--
+                ) {
                     exitChallenge(player.value.gameProgress.col.challengeOrder.chalID[i]);
                 }
             }
 
             if (player.value.gameProgress.unlocks.col) {
-                tmp.value.col.powGenExp = D(0.4);
-
-                i = Decimal.max(player.value.gameProgress.kua.best[4]!, 1e2).div(1e2).pow(tmp.value.col.powGenExp);
+                i = Decimal.max(player.value.gameProgress.kua.best[4]!, 1e2).div(1e2);
                 tmp.value.col.powGen = i;
 
                 generate = tmp.value.col.powGen.mul(delta);
-                player.value.gameProgress.col.power = Decimal.add(player.value.gameProgress.col.power, generate);
+                player.value.gameProgress.col.power = Decimal.add(
+                    player.value.gameProgress.col.power,
+                    generate
+                );
                 updateAllTotal(player.value.gameProgress.col.totals, generate);
-                player.value.gameProgress.col.totalEver = Decimal.add(player.value.gameProgress.col.totalEver, generate);
-                updateAllBest(player.value.gameProgress.col.best, player.value.gameProgress.col.power);
-                player.value.gameProgress.col.bestEver = Decimal.max(player.value.gameProgress.col.bestEver, player.value.gameProgress.col.power);
+                player.value.gameProgress.col.totalEver = Decimal.add(
+                    player.value.gameProgress.col.totalEver,
+                    generate
+                );
+                updateAllBest(
+                    player.value.gameProgress.col.best,
+                    player.value.gameProgress.col.power
+                );
+                player.value.gameProgress.col.bestEver = Decimal.max(
+                    player.value.gameProgress.col.bestEver,
+                    player.value.gameProgress.col.power
+                );
 
-                i = Decimal.max(player.value.gameProgress.col.power, 1e2).log10().mul(20);
+                i = Decimal.max(player.value.gameProgress.col.power, 1).log10().mul(10).add(40);
                 player.value.gameProgress.col.maxTime = i;
             }
 
@@ -404,24 +556,42 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 player.value.gameProgress.inChallenge[chalID].trapped = j;
 
                 j = false;
-                if (player.value.gameProgress.inChallenge[chalID].entered || player.value.gameProgress.inChallenge[chalID].trapped) { j = true; }
+                if (
+                    player.value.gameProgress.inChallenge[chalID].entered ||
+                    player.value.gameProgress.inChallenge[chalID].trapped
+                ) {
+                    j = true;
+                }
 
-                if (j) { 
-                    if (COL_CHALLENGES[chalID].canComplete) { k++; }
+                if (j) {
+                    if (COL_CHALLENGES[chalID].canComplete) {
+                        k++;
+                    }
                     l++;
-                    player.value.gameProgress.col.inAChallenge = true; 
+                    player.value.gameProgress.col.inAChallenge = true;
                 }
                 player.value.gameProgress.inChallenge[chalID].overall = j;
-                
+
                 j = 0;
-                if (player.value.gameProgress.inChallenge[chalID].entered || player.value.gameProgress.inChallenge[chalID].trapped) { j = 1; }
+                if (
+                    player.value.gameProgress.inChallenge[chalID].entered ||
+                    player.value.gameProgress.inChallenge[chalID].trapped
+                ) {
+                    j = 1;
+                }
                 player.value.gameProgress.inChallenge[chalID].depths = j;
             }
 
-            player.value.gameProgress.col.completedAll = k === l && player.value.gameProgress.col.inAChallenge;
+            player.value.gameProgress.col.completedAll =
+                k === l && player.value.gameProgress.col.inAChallenge;
 
             if (player.value.gameProgress.col.inAChallenge) {
-                if (!player.value.gameProgress.col.completedAll) { player.value.gameProgress.col.time = Decimal.sub(player.value.gameProgress.col.time, delta); }
+                if (!player.value.gameProgress.col.completedAll) {
+                    player.value.gameProgress.col.time = Decimal.sub(
+                        player.value.gameProgress.col.time,
+                        delta
+                    );
+                }
             } else {
                 player.value.gameProgress.col.time = player.value.gameProgress.col.maxTime;
             }
@@ -429,55 +599,59 @@ export const updateCol = (type: number, delta: DecimalSource) => {
         default:
             throw new Error(`Colosseum area of the game does not contain ${type}`);
     }
-}
+};
 
 // SAVE ALL PROGRESS FROM EVERYTHING EARLIER THAN COLOSSEUM
 // we have to do this because js passes objects by reference and stuff
 export type colChallengesSavedData = {
-    points: DecimalSource
-    upgradesBought: Array<DecimalSource>
-    upgradesAuto: Array<boolean>
-    upgradesResetHistory: Array<Array<DecimalSource>>
-    oneUpgrades: Array<boolean>
-    pointBest: Array<DecimalSource | null>
-    pointTotals: Array<DecimalSource | null>
+    points: DecimalSource;
+    upgradesBought: Array<DecimalSource>;
+    upgradesAuto: Array<boolean>;
+    upgradesResetHistory: Array<Array<DecimalSource>>;
+    oneUpgrades: Array<DecimalSource>;
+    pointBest: Array<DecimalSource | null>;
+    pointTotals: Array<DecimalSource | null>;
     kua: {
-        auto: boolean
-        amount: DecimalSource
-        timeInKua: DecimalSource
-        times: DecimalSource
+        auto: boolean;
+        amount: DecimalSource;
+        timeInKua: DecimalSource;
+        times: DecimalSource;
         kshards: {
-            amount: DecimalSource
-            totals: Array<null | DecimalSource>
-            best: Array<null | DecimalSource>
-            upgrades: number
-        },
+            amount: DecimalSource;
+            totals: Array<null | DecimalSource>;
+            best: Array<null | DecimalSource>;
+            upgrades: number;
+        };
         kpower: {
-            amount: DecimalSource
-            totals: Array<null | DecimalSource>
-            best: Array<null | DecimalSource>
-            upgrades: number
-        },
-    }
+            amount: DecimalSource;
+            totals: Array<null | DecimalSource>;
+            best: Array<null | DecimalSource>;
+            upgrades: number;
+        };
+    };
     pr2: {
-        auto: boolean
-        amount: DecimalSource
-        timeInPR2: DecimalSource
-        best: Array<DecimalSource | null>
-    }
+        auto: boolean;
+        amount: DecimalSource;
+        timeInPR2: DecimalSource;
+        best: Array<DecimalSource | null>;
+    };
     prai: {
-        auto: boolean
-        amount: DecimalSource
-        timeInPRai: DecimalSource
-        best: Array<DecimalSource | null>
-        totals: Array<DecimalSource | null>
-        times: DecimalSource
-    }
-}
+        auto: boolean;
+        amount: DecimalSource;
+        timeInPRai: DecimalSource;
+        best: Array<DecimalSource | null>;
+        totals: Array<DecimalSource | null>;
+        times: DecimalSource;
+    };
+};
 
 export const challengeToggle = (id: challengeIDList) => {
     if (!inChallenge(id)) {
-        if (player.value.gameProgress.col.challengeOrder.layer[player.value.gameProgress.col.challengeOrder.layer.length - 1] <= COL_CHALLENGES[id].layer) {
+        if (
+            player.value.gameProgress.col.challengeOrder.layer[
+                player.value.gameProgress.col.challengeOrder.layer.length - 1
+            ] <= COL_CHALLENGES[id].layer
+        ) {
             return;
         }
 
@@ -490,14 +664,20 @@ export const challengeToggle = (id: challengeIDList) => {
         player.value.gameProgress.col.saved[id] = obj;
         player.value.gameProgress.col.challengeOrder.chalID.push(COL_CHALLENGES[id].id);
         player.value.gameProgress.col.challengeOrder.layer.push(COL_CHALLENGES[id].layer);
-        reset(3, true)
+        reset(3, true);
     } else {
         if (COL_CHALLENGES[id].canComplete) {
-            player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);
+            player.value.gameProgress.col.completed[id] = Decimal.add(
+                player.value.gameProgress.col.completed[id],
+                1
+            ).min(COL_CHALLENGES[id].cap);
             setAchievement(2, 1);
         }
 
-        const layerExited = player.value.gameProgress.col.challengeOrder.layer[player.value.gameProgress.col.challengeOrder.chalID.indexOf(id)];
+        const layerExited =
+            player.value.gameProgress.col.challengeOrder.layer[
+                player.value.gameProgress.col.challengeOrder.chalID.indexOf(id)
+            ];
         for (let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1; i >= 0; i--) {
             if (player.value.gameProgress.col.challengeOrder.layer[i] > layerExited) {
                 break;
@@ -505,4 +685,4 @@ export const challengeToggle = (id: challengeIDList) => {
             exitChallenge(player.value.gameProgress.col.challengeOrder.chalID[i]);
         }
     }
-}
+};

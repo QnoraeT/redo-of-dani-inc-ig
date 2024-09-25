@@ -1,18 +1,17 @@
-import { tab, player } from '@/main'
+import { tab, player } from "@/main";
 
 export const switchTab = (where: number) => {
     tab.value.currentTab = where;
-}
+};
 
 export const switchSubTab = (where: number, index: number) => {
     tab.value.tabList[tab.value.currentTab][index] = where;
-    
-}
+};
 
 export type Tab = {
-    currentTab: number
-    tabList: Array<Array<number>>
-}
+    currentTab: number;
+    tabList: Array<Array<number>>;
+};
 
 export const TABS_LIST = [
     {
@@ -58,7 +57,9 @@ export const TABS_LIST = [
         textColor: "#ffffff",
         outlineColor: "#7958ff",
         highlightColor: "#ff81cb",
-        get if() { return player.value.gameProgress.unlocks.kua }
+        get if() {
+            return player.value.gameProgress.unlocks.kua;
+        }
     },
     {
         name: "Colosseum",
@@ -67,7 +68,9 @@ export const TABS_LIST = [
         textColor: "#ffffff",
         outlineColor: "#ff3600",
         highlightColor: "#ff9b7f",
-        get if() { return player.value.gameProgress.unlocks.col }
+        get if() {
+            return player.value.gameProgress.unlocks.col;
+        }
     },
     {
         name: "Taxation",
@@ -76,6 +79,8 @@ export const TABS_LIST = [
         textColor: "#ffffff",
         outlineColor: "#d5c000",
         highlightColor: "#ffff7f",
-        get if() { return player.value.gameProgress.unlocks.tax }
-    },
-]
+        get if() {
+            return player.value.gameProgress.unlocks.tax;
+        }
+    }
+];

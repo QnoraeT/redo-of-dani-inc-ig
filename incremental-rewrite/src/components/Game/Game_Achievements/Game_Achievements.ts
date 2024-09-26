@@ -612,11 +612,12 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 },
                 get eff() {
                     return Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0)
-                        .add(1)
                         .mul(8)
+                        .add(1)
                         .sqrt()
                         .sub(1)
-                        .div(2);
+                        .div(2)
+                        .add(1);
                 },
                 get show() {
                     return player.value.gameProgress.unlocks.kua;

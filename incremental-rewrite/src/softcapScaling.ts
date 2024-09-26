@@ -179,7 +179,7 @@ export const getSCSLAttribute = (
                         data[0].power = data[0].power.div(getAchievementEffect(0, 6));
                     }
 
-                    if (player.value.gameProgress.main.oneUpgrades[2]) {
+                    if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[2], 1)) {
                         data[0].start = data[0].start.add(MAIN_ONE_UPGS[2].effect!);
                     }
 
@@ -249,7 +249,7 @@ export const getSCSLAttribute = (
                         data[0].power = data[0].power.div(KUA_UPGRADES.KShards[2].eff!);
                     }
 
-                    if (player.value.gameProgress.main.oneUpgrades[7]) {
+                    if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[7], 1)) {
                         data[0].start = data[0].start.add(MAIN_ONE_UPGS[7].effect!);
                     }
 

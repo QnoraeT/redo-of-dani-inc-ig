@@ -16,104 +16,105 @@ export type FactorsStat = {
         name: string;
         color: string;
         effect: string;
+        show: boolean;
         now: string;
     }>;
 };
 
 // ! i could generalize this but currently i am the big stupid so i probably wont', might regret this later but oh well
 export const setFactor = (
-    category: number,
+    id: number,
+    where: Array<number>,
     name: string,
     effect: string,
     now: string,
-    id: number,
+    show: boolean,
     color = "#FFFFFF",
-    subtab0?: number,
-    subtab1?: number,
-    subtab2?: number
 ) => {
-    if (subtab0 === undefined) {
+    if (where[1] === undefined) {
         // ! I HAVE TO SPAM ! ON THIS SO THAT GITHUB CAN ACTUALLY BUILD THE SITE BUT VSCODE ISN'T GIVING ME ANY ISSUES ??? WTF?
-        if (ALL_FACTORS[category].factors! === null) {
+        if (ALL_FACTORS[where[0]].factors! === null) {
             throw new Error(
-                `You can't add effects to a subTab only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`
+                `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
             );
         }
-        if (ALL_FACTORS[category].factors![id] === undefined) {
-            ALL_FACTORS[category].factors![id] = {
+        if (ALL_FACTORS[where[0]].factors![id] === undefined) {
+            ALL_FACTORS[where[0]].factors![id] = {
                 name: name,
+                show: show,
                 color: color,
                 effect: effect,
                 now: now
             };
         } else {
-            ALL_FACTORS[category].factors![id].name = name;
-            ALL_FACTORS[category].factors![id].color = color;
-            ALL_FACTORS[category].factors![id].effect = effect;
-            ALL_FACTORS[category].factors![id].now = now;
+            ALL_FACTORS[where[0]].factors![id].name = name;
+            ALL_FACTORS[where[0]].factors![id].show = show;
+            ALL_FACTORS[where[0]].factors![id].color = color;
+            ALL_FACTORS[where[0]].factors![id].effect = effect;
+            ALL_FACTORS[where[0]].factors![id].now = now;
         }
     } else {
-        if (ALL_FACTORS[category].subTabs! === null) {
+        if (ALL_FACTORS[where[0]].subTabs! === null) {
             throw new Error(
-                `You can't go to a subtab to a factors only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`
+                `You can't go to a subtab to a factors only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
             );
         }
-        if (subtab1 === undefined) {
-            if (ALL_FACTORS[category].subTabs![subtab0].factors! === null) {
+        if (where[2] === undefined) {
+            if (ALL_FACTORS[where[0]].subTabs![where[1]].factors! === null) {
                 throw new Error(
-                    `You can't add effects to a subTab only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`
+                    `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
                 );
             }
-            if (ALL_FACTORS[category].subTabs![subtab0].factors![id] === undefined) {
-                ALL_FACTORS[category].subTabs![subtab0].factors![id] = {
+            if (ALL_FACTORS[where[0]].subTabs![where[1]].factors![id] === undefined) {
+                ALL_FACTORS[where[0]].subTabs![where[1]].factors![id] = {
                     name: name,
+                    show: show,
                     color: color,
                     effect: effect,
                     now: now
                 };
             } else {
-                ALL_FACTORS[category].subTabs![subtab0].factors![id].name = name;
-                ALL_FACTORS[category].subTabs![subtab0].factors![id].color = color;
-                ALL_FACTORS[category].subTabs![subtab0].factors![id].effect = effect;
-                ALL_FACTORS[category].subTabs![subtab0].factors![id].now = now;
+                ALL_FACTORS[where[0]].subTabs![where[1]].factors![id].name = name;
+                ALL_FACTORS[where[0]].subTabs![where[1]].factors![id].show = show;
+                ALL_FACTORS[where[0]].subTabs![where[1]].factors![id].color = color;
+                ALL_FACTORS[where[0]].subTabs![where[1]].factors![id].effect = effect;
+                ALL_FACTORS[where[0]].subTabs![where[1]].factors![id].now = now;
             }
         } else {
             // ! sorry! i don't know how to fix this issue on page load, but it works after the first tick (?)
-            if (ALL_FACTORS[category].subTabs![subtab0].subTabs! === null) {
+            if (ALL_FACTORS[where[0]].subTabs![where[1]].subTabs! === null) {
                 throw new Error(
-                    `You can't go to a subtab to a factors only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`
+                    `You can't go to a subtab to a factors only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
                 );
             }
 
-            if (subtab2 === undefined) {
-                if (ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors! === null) {
+            if (where[3] === undefined) {
+                if (ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors! === null) {
                     throw new Error(
-                        `You can't add effects to a subTab only stat! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`
+                        `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
                     );
                 }
                 if (
-                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id] ===
+                    ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id] ===
                     undefined
                 ) {
-                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id] = {
+                    ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id] = {
                         name: name,
+                        show: show,
                         color: color,
                         effect: effect,
                         now: now
                     };
                 } else {
-                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id].name =
-                        name;
-                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id].color =
-                        color;
-                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id].effect =
-                        effect;
-                    ALL_FACTORS[category].subTabs![subtab0].subTabs![subtab1].factors![id].now =
-                        now;
+                    ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id].name = name;
+                    ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id].show = show;
+                    ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id].color = color;
+                    ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id].effect = effect;
+                    ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id].now = now;
                 }
             } else {
                 throw new Error(
-                    `Unhandled exception! (Category: ${category}, Subtabs: [${subtab0}, ${subtab1}, ${subtab2}])`
+                    `Unhandled exception! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
                 );
             }
         }
@@ -266,7 +267,7 @@ export const STAGES = [
         name: "Main Tab",
         show: true,
         get progress() {
-            return Decimal.max(player.value.gameProgress.main.points, 1).log(4.6e43);
+            return Decimal.max(player.value.gameProgress.main.points, 1).log(  1e42);
         },
         get colors() {
             return {
@@ -310,8 +311,8 @@ export const STAGES = [
             return timesCompleted("nk")
                 ? D(1)
                 : inChallenge("nk")
-                  ? COL_CHALLENGES.nk.progress
-                  : D(0);
+                    ? COL_CHALLENGES.nk.progress
+                    : D(0);
         },
         get colors() {
             return {

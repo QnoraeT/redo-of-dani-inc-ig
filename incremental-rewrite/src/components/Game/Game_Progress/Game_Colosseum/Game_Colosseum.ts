@@ -64,7 +64,7 @@ export const COL_CHALLENGES: colChallenges = {
                 .min(1);
         },
         get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`;
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
         }
     },
     su: {
@@ -135,7 +135,7 @@ export const COL_CHALLENGES: colChallenges = {
                 .min(1);
         },
         get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`;
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
         }
     },
     df: {
@@ -144,7 +144,7 @@ export const COL_CHALLENGES: colChallenges = {
         id: "df",
         layer: 0,
         name: `Decaying Feeling`,
-        goal: D(1e225),
+        goal: D(10025),
         get goalDesc() {
             return `Reach ${format(this.goal)} Points.`;
         },
@@ -164,7 +164,7 @@ export const COL_CHALLENGES: colChallenges = {
                 .min(1);
         },
         get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`;
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
         }
     },
     im: {
@@ -193,10 +193,14 @@ export const COL_CHALLENGES: colChallenges = {
                 .min(1);
         },
         get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(1e2), 3)}%)`;
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
         }
     }
 };
+
+export const getColXPtoNext = (id: number) => {
+    return Decimal.sub(player.value.gameProgress.col.research.xpTotal[id], getColResLevel(id).floor());
+}
 
 export const getColResLevel = (id: number) => {
     return COL_RESEARCH[id].scoreToLevel(player.value.gameProgress.col.research.xpTotal[id]);
@@ -279,18 +283,18 @@ export const COL_RESEARCH = [
             return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 4)} Kuaraniai gain exponent for this level.`;
         },
         effect(level: DecimalSource) {
-            const effect = sumHarmonicSeries(level).div(1e2);
+            const effect = sumHarmonicSeries(level).div(100);
             return effect;
         },
         scoreToLevel(score: DecimalSource) {
-            if (Decimal.lt(score, 1e2)) {
+            if (Decimal.lt(score, 100)) {
                 return D(0);
             }
-            const level = linearAdd(score, 1e2, 20, true);
+            const level = linearAdd(score, 100, 20, true);
             return level;
         },
         levelToScore(level: DecimalSource) {
-            const score = linearAdd(level, 1e2, 20, false);
+            const score = linearAdd(level, 100, 20, false);
             return score;
         }
     }
@@ -520,18 +524,18 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             }
 
             if (player.value.gameProgress.unlocks.col) {
-                i = Decimal.max(player.value.gameProgress.kua.best[4]!, 1e2).div(1e2);
+                i = Decimal.max(player.value.gameProgress.kua.best[4]!, 100).div(100);
                 tmp.value.col.powGen = i;
 
                 generate = tmp.value.col.powGen.mul(delta);
-                player.value.gameProgress.col.power = Decimal.add(
-                    player.value.gameProgress.col.power,
-                    generate
-                );
+                i = player.value.gameProgress.col.power;
+                player.value.gameProgress.col.power = Decimal.cbrt(player.value.gameProgress.col.power).mul(0.6).pow10().add(generate).log10().div(0.6).pow(3);
+                tmp.value.col.truePowGen = Decimal.sub(player.value.gameProgress.col.power, i).div(delta);
+
                 updateAllTotal(player.value.gameProgress.col.totals, generate);
                 player.value.gameProgress.col.totalEver = Decimal.add(
                     player.value.gameProgress.col.totalEver,
-                    generate
+                    tmp.value.col.truePowGen
                 );
                 updateAllBest(
                     player.value.gameProgress.col.best,
@@ -542,7 +546,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                     player.value.gameProgress.col.power
                 );
 
-                i = Decimal.max(player.value.gameProgress.col.power, 1).log10().mul(10).add(40);
+                i = Decimal.max(player.value.gameProgress.col.power, 1).cbrt().mul(5).add(40);
                 player.value.gameProgress.col.maxTime = i;
             }
 
@@ -556,10 +560,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 player.value.gameProgress.inChallenge[chalID].trapped = j;
 
                 j = false;
-                if (
-                    player.value.gameProgress.inChallenge[chalID].entered ||
-                    player.value.gameProgress.inChallenge[chalID].trapped
-                ) {
+                if ( player.value.gameProgress.inChallenge[chalID].entered || player.value.gameProgress.inChallenge[chalID].trapped) {
                     j = true;
                 }
 
@@ -572,18 +573,14 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 }
                 player.value.gameProgress.inChallenge[chalID].overall = j;
 
-                j = 0;
-                if (
-                    player.value.gameProgress.inChallenge[chalID].entered ||
-                    player.value.gameProgress.inChallenge[chalID].trapped
-                ) {
-                    j = 1;
+                j = D(0);
+                if (player.value.gameProgress.inChallenge[chalID].entered || player.value.gameProgress.inChallenge[chalID].trapped) {
+                    j = D(1);
                 }
                 player.value.gameProgress.inChallenge[chalID].depths = j;
             }
 
-            player.value.gameProgress.col.completedAll =
-                k === l && player.value.gameProgress.col.inAChallenge;
+            player.value.gameProgress.col.completedAll = k === l && player.value.gameProgress.col.inAChallenge;
 
             if (player.value.gameProgress.col.inAChallenge) {
                 if (!player.value.gameProgress.col.completedAll) {
@@ -645,6 +642,7 @@ export type colChallengesSavedData = {
     };
 };
 
+// TODO: Make challenge depths be the difficulty of the challenge, and also make a prompt what difficulty 0 to compeleted
 export const challengeToggle = (id: challengeIDList) => {
     if (!inChallenge(id)) {
         if (

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { tab, tmp, getEndgame } from "@/main";
 import { format } from "@/format";
-import { ALL_FACTORS, STAGES } from "./Game_Stats";
+import { ALL_FACTORS, factorColors, STAGES } from "./Game_Stats";
 import { switchSubTab } from "../../MainTabs/MainTabs";
 import { SOFT_ATTR, SCALE_ATTR } from "@/softcapScaling";
 import STAGES_StatDisplay from "./STAGES_Stat_Display.vue";
@@ -272,15 +272,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
         </div>
         <!-- ! i'm pretty sure there is a much better way to do this but this is what i can think of so oh well -->
         <div v-if="tab.tabList[tab.currentTab][0] === 2">
-            <div
-                class="flex-container"
-                style="
-                    flex-direction: row;
-                    justify-content: center;
-                    font-size: 1vw;
-                    margin-bottom: 0.5vw;
-                "
-            >
+            <div class="flex-container subTabLayout">
                 <div v-for="(item, index) in ALL_FACTORS" :key="item.name">
                     <Tab_Button
                         v-if="item.show"
@@ -293,74 +285,28 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
             <div v-for="(item, index) in ALL_FACTORS" :key="item.name">
                 <!-- ! factors === null and subTabs === null should be mutually exclusive ! -->
                 <div v-if="tab.tabList[tab.currentTab][1] === index && item.factors !== null">
-                    <div
-                        class="flex-container"
-                        style="
-                            align-items: center;
-                            flex-direction: column;
-                            margin-left: auto;
-                            margin-right: auto;
-                            border: 0.24vw solid #788088;
-                            background-color: #101418;
-                            width: 60vw;
-                            height: 40vw;
-                        "
-                    >
-                        <div
-                            class="flex-container"
-                            style="
-                                overflow: auto;
-                                overflow-y: scroll;
-                                align-items: center;
-                                flex-direction: column;
-                                border: 0.18vw solid #788088;
-                                height: 96%;
-                                width: 98%;
-                                margin-bottom: auto;
-                                margin-top: 1%;
-                            "
-                        >
+                    <div class="flex-container cont1">
+                        <div class="flex-container cont2">
                             <div
                                 v-for="(item2, index2) in item.factors"
                                 :key="index2"
                                 style="display: contents; margin-top: 0.4vw"
                             >
                                 <div
-                                    v-if="item2 !== undefined"
-                                    class="flex-container fontVerdana"
-                                    style="
-                                        background-color: #ffffff20;
-                                        height: 3%;
-                                        width: 98%;
-                                        font-size: 0.85vw;
-                                    "
-                                    :style="{ color: item2.color }"
+                                    v-if="item2 !== undefined && item2.show"
+                                    class="flex-container fontVerdana factorLayout"
+                                    :style="{ color: factorColors[item2.color] }"
                                 >
-                                    <span style="flex-grow: 0.5; flex-basis: 0; text-align: left">{{
-                                        item2.name
-                                    }}</span>
-                                    <span style="flex-grow: 1; flex-basis: 0; text-align: center">{{
-                                        item2.effect
-                                    }}</span>
-                                    <span
-                                        style="flex-grow: 0.5; flex-basis: 0; text-align: right"
-                                        >{{ item2.now }}</span
-                                    >
+                                    <span class="leftF">{{ item2.name }}</span>
+                                    <span class="centerF">{{ item2.effect }}</span>
+                                    <span class="rightF">{{ item2.now }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div v-if="tab.tabList[tab.currentTab][1] === index && item.subTabs !== null">
-                    <div
-                        class="flex-container"
-                        style="
-                            flex-direction: row;
-                            justify-content: center;
-                            font-size: 1vw;
-                            margin-bottom: 0.5vw;
-                        "
-                    >
+                    <div class="flex-container subTabLayout">
                         <div v-for="(item2, index2) in item.subTabs" :key="item2.name">
                             <Tab_Button
                                 v-if="item2.show"
@@ -376,92 +322,28 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                 tab.tabList[tab.currentTab][2] === index2 && item2.factors !== null
                             "
                         >
-                            <div
-                                class="flex-container"
-                                style="
-                                    align-items: center;
-                                    flex-direction: column;
-                                    margin-left: auto;
-                                    margin-right: auto;
-                                    border: 0.24vw solid #788088;
-                                    background-color: #101418;
-                                    width: 60vw;
-                                    height: 40vw;
-                                "
-                            >
-                                <div
-                                    class="flex-container"
-                                    style="
-                                        overflow: auto;
-                                        overflow-y: scroll;
-                                        align-items: center;
-                                        flex-direction: column;
-                                        border: 0.18vw solid #788088;
-                                        height: 96%;
-                                        width: 98%;
-                                        margin-bottom: auto;
-                                        margin-top: 1%;
-                                    "
-                                >
+                            <div class="flex-container cont1">
+                                <div class="flex-container cont2">
                                     <div
                                         v-for="(item3, index3) in item2.factors"
                                         :key="index3"
                                         style="display: contents; margin-top: 0.4vw"
                                     >
                                         <div
-                                            v-if="item3 !== undefined"
-                                            class="flex-container fontVerdana"
-                                            style="
-                                                background-color: #ffffff20;
-                                                height: 3%;
-                                                width: 98%;
-                                                font-size: 0.85vw;
-                                            "
-                                            :style="{ color: item3.color }"
+                                            v-if="item3 !== undefined && item3.show"
+                                            class="flex-container fontVerdana factorLayout"
+                                            :style="{ color: factorColors[item3.color] }"
                                         >
-                                            <span
-                                                style="
-                                                    flex-grow: 0.5;
-                                                    flex-basis: 0;
-                                                    text-align: left;
-                                                "
-                                                >{{ item3.name }}</span
-                                            >
-                                            <span
-                                                style="
-                                                    flex-grow: 1;
-                                                    flex-basis: 0;
-                                                    text-align: center;
-                                                "
-                                                >{{ item3.effect }}</span
-                                            >
-                                            <span
-                                                style="
-                                                    flex-grow: 0.5;
-                                                    flex-basis: 0;
-                                                    text-align: right;
-                                                "
-                                                >{{ item3.now }}</span
-                                            >
+                                            <span class="leftF">{{ item3.name }}</span>
+                                            <span class="centerF">{{ item3.effect }}</span>
+                                            <span class="rightF">{{ item3.now }}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div
-                            v-if="
-                                tab.tabList[tab.currentTab][2] === index2 && item2.subTabs !== null
-                            "
-                        >
-                            <div
-                                class="flex-container"
-                                style="
-                                    flex-direction: row;
-                                    justify-content: center;
-                                    font-size: 1vw;
-                                    margin-bottom: 0.5vw;
-                                "
-                            >
+                        <div v-if=" tab.tabList[tab.currentTab][2] === index2 && item2.subTabs !== null">
+                            <div class="flex-container subTabLayout">
                                 <div v-for="(item3, index3) in item2.subTabs" :key="item3.name">
                                     <Tab_Button
                                         v-if="item3.show"
@@ -478,73 +360,21 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                         item3.factors !== null
                                     "
                                 >
-                                    <div
-                                        class="flex-container"
-                                        style="
-                                            align-items: center;
-                                            flex-direction: column;
-                                            margin-left: auto;
-                                            margin-right: auto;
-                                            border: 0.24vw solid #788088;
-                                            background-color: #101418;
-                                            width: 60vw;
-                                            height: 40vw;
-                                        "
-                                    >
-                                        <div
-                                            class="flex-container"
-                                            style="
-                                                overflow: auto;
-                                                overflow-y: scroll;
-                                                align-items: center;
-                                                flex-direction: column;
-                                                border: 0.18vw solid #788088;
-                                                height: 96%;
-                                                width: 98%;
-                                                margin-bottom: auto;
-                                                margin-top: 1%;
-                                            "
-                                        >
+                                    <div class="flex-container cont1">
+                                        <div class="flex-container cont2">
                                             <div
                                                 v-for="(item4, index4) in item3.factors"
                                                 :key="index4"
                                                 style="display: contents; margin-top: 0.4vw"
                                             >
                                                 <div
-                                                    v-if="item4 !== undefined"
-                                                    class="flex-container fontVerdana"
-                                                    style="
-                                                        background-color: #ffffff20;
-                                                        height: 3%;
-                                                        width: 98%;
-                                                        font-size: 0.85vw;
-                                                    "
-                                                    :style="{ color: item4.color }"
+                                                    v-if="item4 !== undefined && item4.show"
+                                                    class="flex-container fontVerdana factorLayout"
+                                                    :style="{ color: factorColors[item4.color] }"
                                                 >
-                                                    <span
-                                                        style="
-                                                            flex-grow: 0.5;
-                                                            flex-basis: 0;
-                                                            text-align: left;
-                                                        "
-                                                        >{{ item4.name }}</span
-                                                    >
-                                                    <span
-                                                        style="
-                                                            flex-grow: 1;
-                                                            flex-basis: 0;
-                                                            text-align: center;
-                                                        "
-                                                        >{{ item4.effect }}</span
-                                                    >
-                                                    <span
-                                                        style="
-                                                            flex-grow: 0.5;
-                                                            flex-basis: 0;
-                                                            text-align: right;
-                                                        "
-                                                        >{{ item4.now }}</span
-                                                    >
+                                                    <span class="leftF">{{ item4.name }}</span>
+                                                    <span class="centerF">{{ item4.effect }}</span>
+                                                    <span class="rightF">{{ item4.now }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -565,3 +395,53 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
         </div>
     </div>
 </template>
+<style scoped>
+.cont1 {
+    align-items: center;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    border: 0.24vw solid #788088;
+    background-color: #101418;
+    width: 60vw;
+    height: 40vw;
+}
+.cont2 {
+    overflow: auto;
+    overflow-y: scroll;
+    align-items: center;
+    flex-direction: column;
+    border: 0.18vw solid #788088;
+    height: 96%;
+    width: 98%;
+    margin-bottom: auto;
+    margin-top: 1%;
+}
+.subTabLayout {
+    flex-direction: row;
+    justify-content: center;
+    font-size: 1vw;
+    margin-bottom: 0.5vw;
+}
+.factorLayout {
+    background-color: #ffffff20;
+    height: 3%;
+    width: 98%;
+    font-size: 0.85vw;
+}
+.leftF {
+    flex-grow: 0.5;
+    flex-basis: 0;
+    text-align: left;
+}
+.centerF {
+    flex-grow: 1;
+    flex-basis: 0;
+    text-align: center;
+}
+.rightF {
+    flex-grow: 0.5;
+    flex-basis: 0;
+    text-align: right;
+}
+</style>

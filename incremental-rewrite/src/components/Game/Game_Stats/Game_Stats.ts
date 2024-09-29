@@ -8,13 +8,25 @@ import {
 import { D } from "@/calc";
 import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_Main";
 
+export type FactorColorID = "norm" | "ach" | "kua" | "col" | "tax" | "sc1" | "sc2"
+export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "col", "tax", "sc1", "sc2"]
+export const factorColors = {
+    norm: "#FFFFFF",
+    ach: "#FFFF80",
+    kua: "#B080FF",
+    col: "#FFA080",
+    tax: "#FFF080",
+    sc1: "#FFA0A0",
+    sc2: "#FFE0C0"
+}
+
 export type FactorsStat = {
     name: string;
     show: boolean;
     subTabs: null | Array<FactorsStat>;
     factors: null | Array<{
         name: string;
-        color: string;
+        color: FactorColorID;
         effect: string;
         show: boolean;
         now: string;
@@ -29,7 +41,7 @@ export const setFactor = (
     effect: string,
     now: string,
     show: boolean,
-    color = "#FFFFFF",
+    color = factorColorIDList[0],
 ) => {
     if (where[1] === undefined) {
         // ! I HAVE TO SPAM ! ON THIS SO THAT GITHUB CAN ACTUALLY BUILD THE SITE BUT VSCODE ISN'T GIVING ME ANY ISSUES ??? WTF?
@@ -200,13 +212,13 @@ export const ALL_FACTORS: Array<FactorsStat> = [
         },
         subTabs: [
             {
-                name: "Kuaraniai Effect Power",
+                name: "Kua Effect Power",
                 show: true,
                 subTabs: null,
                 factors: []
             },
             {
-                name: "Kuaraniai",
+                name: "Kuaraniai Gain",
                 show: true,
                 subTabs: null,
                 factors: []

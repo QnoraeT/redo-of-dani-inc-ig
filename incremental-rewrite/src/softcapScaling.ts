@@ -199,9 +199,9 @@ export const getSCSLAttribute = (
 
                     if (getKuaUpgrade("s", 4)) {
                         data[0].start = data[0].start.add(5);
-                        data[0].power = data[0].power.mul(0.9);
+                        data[0].power = data[0].power.mul(0.95);
                         data[1].start = data[1].start.add(2);
-                        data[1].power = data[1].power.mul(0.95);
+                        data[1].power = data[1].power.mul(0.98);
                     }
 
                     data[1].power = data[1].power.div(tmp.value.kua.effects.upg1SuperScaling);
@@ -434,7 +434,7 @@ export const getSCSLAttribute = (
                 case "upg6":
                     data.push({
                         start: D(2),
-                        basePow: D(0.25),
+                        basePow: D(1),
                         power: D(1),
                         displayedEffect: ""
                     });
@@ -549,13 +549,13 @@ const SOFT_VALUES = {
         return tmp.value.main.pr2.effect;
     },
     get kuaupg4base() {
-        return tmp.value.kua.effects.up4;
+        return tmp.value.kua.effects.upg4;
     },
     get kuaupg5base() {
-        return tmp.value.kua.effects.up5;
+        return tmp.value.kua.effects.upg5;
     },
     get kuaupg6base() {
-        return tmp.value.kua.effects.up6;
+        return tmp.value.kua.effects.upg6;
     }
 };
 

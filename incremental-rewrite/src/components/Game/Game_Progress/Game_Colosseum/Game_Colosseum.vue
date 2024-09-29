@@ -52,11 +52,11 @@ import {
                     ><b>{{ format(player.gameProgress.col.power, 2) }}</b></span
                 >
                 Colosseum Power.
-                <span style="font-size: 1vw">({{ format(tmp.col.powGen, 2) }}/s)</span></span
+                <span style="font-size: 1vw">({{ format(tmp.col.truePowGen, 2) }}/s)</span></span
             >
             <span
                 style="text-align: center; font-size: 1.2vw"
-                v-bind:style="{
+                :style="{
                     color: player.gameProgress.col.completedAll ? '#0080FF' : '#FF4000'
                 }"
                 >This will give you about
@@ -74,7 +74,7 @@ import {
             <div v-for="item in COL_CHALLENGES" class="flex-container" :key="item.id">
                 <button
                     v-if="item.show"
-                    v-bind:class="{
+                    :class="{
                         colButton: !completedChallenge(item.id) && !inChallenge(item.id),
                         colButtonProg: completedChallenge(item.id) ? false : inChallenge(item.id),
                         colButtonComp: completedChallenge(item.id),
@@ -90,7 +90,7 @@ import {
                     @click="challengeToggle(item.id)"
                 >
                     <div
-                        v-bind:class="{
+                        :class="{
                             colButtonHeader: !completedChallenge(item.id) && !inChallenge(item.id),
                             colButtonHeaderProg: completedChallenge(item.id)
                                 ? false
@@ -121,7 +121,7 @@ import {
                         >
                     </div>
                     <div
-                        v-bind:class="{
+                        :class="{
                             colButtonDesc: !completedChallenge(item.id) && !inChallenge(item.id),
                             colButtonDescProg: completedChallenge(item.id)
                                 ? false
@@ -135,7 +135,7 @@ import {
                         <span class="centered-text" style="top: 2vw">{{ item.desc }}</span>
                     </div>
                     <div
-                        v-bind:class="{
+                        :class="{
                             colButtonRew: !completedChallenge(item.id) && !inChallenge(item.id),
                             colButtonRewProg: completedChallenge(item.id)
                                 ? false
@@ -149,6 +149,7 @@ import {
                         <span class="centered-text" style="top: 4.4vw">{{ item.reward }}</span>
                     </div>
                 </button>
+                <!-- TODO: make slider for selecting challenge difficulty from 0 up to your challenges completed -->
             </div>
         </div>
         <div
@@ -218,19 +219,11 @@ import {
                                 font-size: 0.75vw;
                             "
                         >
-                            <span class="centered-text" style="height: 100%"
-                                >Level:
-                                {{
-                                    format(
-                                        item
-                                            .scoreToLevel(
-                                                player.gameProgress.col.research.xpTotal[index]
-                                            )
-                                            .floor(),
-                                        0
-                                    )
-                                }}</span
-                            >
+                        <span class="centered-text" style="height: 100%">
+                            Level: {{ 
+                                format(item.scoreToLevel(player.gameProgress.col.research.xpTotal[index]) .floor(), 0) 
+                            }}
+                        </span>
                         </div>
                         <div style="height: 15%; width: 100%; position: relative">
                             <div
@@ -244,7 +237,7 @@ import {
                                 "
                             ></div>
                             <div
-                                v-bind:style="{
+                                :style="{
                                     backgroundColor: player.gameProgress.col.research.enabled[index]
                                         ? '#ffc000'
                                         : '#ff4000',
@@ -252,27 +245,27 @@ import {
                                         getColResLevel(index).gte(1e12)
                                             ? 100
                                             : Decimal.div(
-                                                  Decimal.sub(
-                                                      player.gameProgress.col.research.xpTotal[
-                                                          index
-                                                      ],
-                                                      item.levelToScore(
-                                                          getColResLevel(index).floor()
-                                                      )
-                                                  ),
-                                                  item
-                                                      .levelToScore(
-                                                          getColResLevel(index).floor().add(1)
-                                                      )
-                                                      .sub(
-                                                          item.levelToScore(
-                                                              getColResLevel(index).floor()
-                                                          )
-                                                      )
-                                              )
-                                                  .min(1)
-                                                  .mul(100)
-                                                  .toNumber()
+                                                    Decimal.sub(
+                                                        player.gameProgress.col.research.xpTotal[
+                                                            index
+                                                        ],
+                                                        item.levelToScore(
+                                                            getColResLevel(index).floor()
+                                                        )
+                                                    ),
+                                                    item
+                                                        .levelToScore(
+                                                            getColResLevel(index).floor().add(1)
+                                                        )
+                                                        .sub(
+                                                            item.levelToScore(
+                                                                getColResLevel(index).floor()
+                                                            )
+                                                        )
+                                                )
+                                                    .min(1)
+                                                    .mul(100)
+                                                    .toNumber()
                                     }%`
                                 }"
                                 style="position: absolute; top: 0; left: 0; height: 100%"
@@ -327,60 +320,27 @@ import {
                             }}</span
                         >
                         <!-- i wish i made this better instead of having to do an extremely long formula T_T -->
-                        <span
-                            v-if="getColResLevel(tab.tabList[tab.currentTab][1]).lt(1e12)"
-                            class="centered-text"
-                            style="top: 33.333%"
-                            >XP:
-                            {{
+                        <span v-if="getColResLevel(tab.tabList[tab.currentTab][1]).lt(1e12)" class="centered-text" style="top: 33.333%">
+                            XP: {{ 
+                                format(Decimal.sub(
+                                    player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 
+                                    COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor())
+                                    )
+                                    , 0) }} 
+                            / {{ 
                                 format(
-                                    Decimal.sub(
-                                        player.gameProgress.col.research.xpTotal[
-                                            tab.tabList[tab.currentTab][1]
-                                        ],
+                                    COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
+                                        getColResLevel(tab.tabList[tab.currentTab][1]).floor().add(1)
+                                    ).sub(
                                         COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
                                             getColResLevel(tab.tabList[tab.currentTab][1]).floor()
-                                        )
-                                    ),
-                                    0
-                                )
-                            }}
-                            /
-                            {{
-                                format(
-                                    COL_RESEARCH[tab.tabList[tab.currentTab][1]]
-                                        .levelToScore(
-                                            getColResLevel(tab.tabList[tab.currentTab][1])
-                                                .floor()
-                                                .add(1)
-                                        )
-                                        .sub(
-                                            COL_RESEARCH[
-                                                tab.tabList[tab.currentTab][1]
-                                            ].levelToScore(
-                                                getColResLevel(
-                                                    tab.tabList[tab.currentTab][1]
-                                                ).floor()
                                             )
-                                        ),
-                                    0
-                                )
-                            }}</span
-                        >
-                        <span
-                            v-if="getColResLevel(tab.tabList[tab.currentTab][1]).gte(1e12)"
-                            class="centered-text"
-                            style="top: 33.333%"
-                            >Total XP:
-                            {{
-                                format(
-                                    player.gameProgress.col.research.xpTotal[
-                                        tab.tabList[tab.currentTab][1]
-                                    ],
-                                    0
-                                )
-                            }}</span
-                        >
+                                        )
+                                    , 0) }}
+                        </span>
+                        <span v-if="getColResLevel(tab.tabList[tab.currentTab][1]).gte(1e12)" class="centered-text" style="top: 33.333%" >
+                            Total XP: {{ format(player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 0) }}
+                        </span>
                         <div style="top: 68.5%; height: 0.75vw; width: 27.5vw; position: relative">
                             <div
                                 style="
@@ -394,7 +354,7 @@ import {
                                 "
                             ></div>
                             <div
-                                v-bind:style="{
+                                :style="{
                                     backgroundColor: player.gameProgress.col.research.enabled[
                                         tab.tabList[tab.currentTab][1]
                                     ]
@@ -404,39 +364,39 @@ import {
                                         getColResLevel(tab.tabList[tab.currentTab][1]).gte(1e12)
                                             ? 100
                                             : Decimal.div(
-                                                  Decimal.sub(
-                                                      player.gameProgress.col.research.xpTotal[
-                                                          tab.tabList[tab.currentTab][1]
-                                                      ],
-                                                      COL_RESEARCH[
-                                                          tab.tabList[tab.currentTab][1]
-                                                      ].levelToScore(
-                                                          getColResLevel(
-                                                              tab.tabList[tab.currentTab][1]
-                                                          ).floor()
-                                                      )
-                                                  ),
-                                                  COL_RESEARCH[tab.tabList[tab.currentTab][1]]
-                                                      .levelToScore(
-                                                          getColResLevel(
-                                                              tab.tabList[tab.currentTab][1]
-                                                          )
-                                                              .floor()
-                                                              .add(1)
-                                                      )
-                                                      .sub(
-                                                          COL_RESEARCH[
-                                                              tab.tabList[tab.currentTab][1]
-                                                          ].levelToScore(
-                                                              getColResLevel(
-                                                                  tab.tabList[tab.currentTab][1]
-                                                              ).floor()
-                                                          )
-                                                      )
-                                              )
-                                                  .min(1)
-                                                  .mul(100)
-                                                  .toNumber()
+                                                    Decimal.sub(
+                                                        player.gameProgress.col.research.xpTotal[
+                                                            tab.tabList[tab.currentTab][1]
+                                                        ],
+                                                        COL_RESEARCH[
+                                                            tab.tabList[tab.currentTab][1]
+                                                        ].levelToScore(
+                                                            getColResLevel(
+                                                                tab.tabList[tab.currentTab][1]
+                                                            ).floor()
+                                                        )
+                                                    ),
+                                                    COL_RESEARCH[tab.tabList[tab.currentTab][1]]
+                                                        .levelToScore(
+                                                            getColResLevel(
+                                                                tab.tabList[tab.currentTab][1]
+                                                            )
+                                                                .floor()
+                                                                .add(1)
+                                                        )
+                                                        .sub(
+                                                            COL_RESEARCH[
+                                                                tab.tabList[tab.currentTab][1]
+                                                            ].levelToScore(
+                                                                getColResLevel(
+                                                                    tab.tabList[tab.currentTab][1]
+                                                                ).floor()
+                                                            )
+                                                        )
+                                                )
+                                                    .min(1)
+                                                    .mul(100)
+                                                    .toNumber()
                                     }%`
                                 }"
                                 style="

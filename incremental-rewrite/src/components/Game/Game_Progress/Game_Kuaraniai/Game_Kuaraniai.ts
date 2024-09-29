@@ -4,6 +4,7 @@ import { format, formatPerc } from "@/format";
 import { D, smoothExp, smoothPoly } from "@/calc";
 import { ACHIEVEMENT_DATA } from "../../Game_Achievements/Game_Achievements";
 import { getColResEffect, inChallenge } from "../Game_Colosseum/Game_Colosseum";
+import { setFactor } from "../../Game_Stats/Game_Stats";
 
 // use get show if it can change in the mean time, currently unused as a placeholder
 // costs will get the same treatment later
@@ -95,7 +96,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 4
             get desc() {
-                return `UP1's scaling starts ${format(5)} later and is ${format(10, 3)}% weaker, and superscaling starts ${format(2)} later and is ${format(5, 3)}% weaker.`;
+                return `UP1's scaling starts ${format(5)} later and is ${format(5, 3)}% weaker, and superscaling starts ${format(2)} later and is ${format(2, 3)}% weaker.`;
             },
             get cost() {
                 return 10;
@@ -146,7 +147,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
                 return i;
             },
             get cost() {
-                return 1e9;
+                return 1e8;
             },
             show: true
         },
@@ -157,7 +158,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             },
             get eff() {
                 let i = Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 10);
-                i = i.log10().add(1).pow(3).div(8).ln().div(2).add(1).pow(2);
+                i = i.log10().add(1).pow(4).div(16).ln().div(2).add(1).pow(2);
                 return i;
             },
             get cost() {
@@ -328,7 +329,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
                 return `Upgrade 1 is dilated by ^${format(1.01, 2)}, and PR2's effect uses a better formula.`;
             },
             get cost() {
-                return 1e12;
+                return 1e11;
             },
             show: true
         },
@@ -674,7 +675,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                       .pow10()
                       .mul(tmp.value.kua.mult)
                 : D(0);
-
+            setFactor(0, [4, 1], "Base", `~${format(tmp.value.kua.mult, 4)}*10^(ln(log(${format(tmp.value.kua.effectivePrai)})))^${format(tmp.value.kua.exp, 2)}) (approx.)`, `${format(tmp.value.kua.pending, 4)}`, true);
+            
             if (player.value.gameProgress.kua.auto) {
                 generate = tmp.value.kua.pending.mul(delta).mul(0.0001);
                 player.value.gameProgress.kua.amount = Decimal.add(
@@ -697,9 +699,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.effects = {
                 kshardPassive: D(1),
                 kpowerPassive: D(1),
-                up4: D(1),
-                up5: D(1),
-                up6: D(0),
+                upg4: D(1),
+                upg5: D(1),
+                upg6: D(0),
                 upg1Scaling: D(1),
                 upg1SuperScaling: D(1),
                 ptPower: D(1),
@@ -710,10 +712,14 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             };
 
             k = Decimal.max(player.value.gameProgress.kua.amount, 0);
+            setFactor(0, [4, 0], "Base", `${format(player.value.gameProgress.kua.amount, 4)}`, `(${format(k, 4)} eff.) ${format(k.log(Decimal.max(player.value.gameProgress.kua.amount, 0)).mul(100), 2)}%`, true);
             k = k.add(1).pow(ACHIEVEMENT_DATA[1].eff).sub(1);
+            setFactor(1, [4, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].eff, 3)}`, `(${format(k, 4)} eff.) ${format(k.log(Decimal.max(player.value.gameProgress.kua.amount, 0)).mul(100), 2)}%`, true, "ach");
+
             if (getKuaUpgrade("s", 11)) {
                 k = k.pow(KUA_UPGRADES.KShards[10].eff!);
             }
+            setFactor(2, [4, 0], "KShard Upgrade 11", `^${format(KUA_UPGRADES.KShards[10].eff!, 3)}`, `(${format(k, 4)} eff.) ${format(k.log(Decimal.max(player.value.gameProgress.kua.amount, 0)).mul(100), 2)}%`, getKuaUpgrade("s", 11), "kua");
 
             if (tmp.value.kua.active.effects) {
                 // * theres probably a better way to do this
@@ -793,11 +799,11 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     .pow10()
                     .div(10);
 
-                tmp.value.kua.effects.up4 = Decimal.gt(k, 0)
+                tmp.value.kua.effects.upg4 = Decimal.gt(k, 0)
                     ? Decimal.log10(k).add(4).div(13).mul(7).add(1).cbrt().sub(4).pow10().add(1)
                     : D(1);
 
-                tmp.value.kua.effects.up5 = Decimal.gt(
+                tmp.value.kua.effects.upg5 = Decimal.gt(
                     player.value.gameProgress.kua.kshards.amount,
                     0
                 )
@@ -809,7 +815,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                           .add(1)
                     : D(1);
 
-                tmp.value.kua.effects.up6 = Decimal.gt(
+                tmp.value.kua.effects.upg6 = Decimal.gt(
                     player.value.gameProgress.kua.kpower.amount,
                     1
                 )
@@ -863,18 +869,22 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             i = D(0);
             if (tmp.value.kua.active.kshards.gain) {
                 i = D(player.value.gameProgress.kua.amount);
+                setFactor(0, [4, 2], "Base", `${format(player.value.gameProgress.kua.amount, 4)}`, `${format(i, 3)}`, true);
                 if (getKuaUpgrade("p", 1)) {
                     i = i.mul(2.5);
                 }
+                setFactor(1, [4, 2], "KPower Upgrade 1", `×${format(2.5, 2)}`, `${format(i, 3)}`, getKuaUpgrade("p", 1), "kua");
             }
             tmp.value.kua.shardGen = i;
 
             i = D(0);
             if (tmp.value.kua.active.kpower.gain) {
                 i = D(player.value.gameProgress.kua.kshards.amount);
+                setFactor(0, [4, 3], "Base", `${format(player.value.gameProgress.kua.kshards.amount, 4)}`, `${format(i, 3)}`, true);
                 if (getKuaUpgrade("s", 10)) {
                     i = i.mul(tmp.value.kua.effects.kpower);
                 }
+                setFactor(1, [4, 3], "KShard Upgrade 10", `×${format(tmp.value.kua.effects.kpower, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 10), "kua");
             }
             tmp.value.kua.powGen = i;
 

@@ -187,7 +187,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                     </li>
                     <li v-if="Decimal.gt(player.gameProgress.kua.amount, 0)">
                         Adds Upgrade 4, and makes it's base ×{{
-                            format(tmp.kua.effects.up4, 4)
+                            format(tmp.kua.effects.upg4, 4)
                         }}/bought.
                     </li>
                     <li v-if="player.gameProgress.kua.kpower.upgrades >= 3">
@@ -260,7 +260,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                             </li>
                             <li v-if="Decimal.gt(player.gameProgress.kua.kshards.amount, 0)">
                                 Adds Upgrade 5, and makes it's base ×{{
-                                    format(tmp.kua.effects.up5, 4)
+                                    format(tmp.kua.effects.upg5, 4)
                                 }}/bought.
                             </li>
                             <li v-if="player.gameProgress.kua.kshards.upgrades >= 2">
@@ -327,7 +327,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                             </li>
                             <li v-if="Decimal.gt(player.gameProgress.kua.kpower.amount, 1)">
                                 Adds Upgrade 6, and makes it's base +{{
-                                    format(tmp.kua.effects.up6, 5)
+                                    format(tmp.kua.effects.upg6, 5)
                                 }}/bought.
                             </li>
                             <li v-if="player.gameProgress.kua.kpower.upgrades >= 1">
@@ -397,105 +397,40 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
             >
                 <div v-for="(item, index) in KUA_ENHANCERS.sources" :key="index">
                     <div class="flex-container" style="flex-direction: column; margin: 0.2vw">
-                        <button
-                            style="text-align: center; font-size: 0.8vw"
-                            :class="{
-                                nope: !tmp.kua.sourcesCanBuy[index],
-                                ok: tmp.kua.sourcesCanBuy[index]
-                            }"
-                            class="whiteText mediumButton fontVerdana kuaButton"
-                            @click="buyKuaEnhSourceUPG(index)"
-                        >
+                        <button style="text-align: center; font-size: 0.8vw" :class="{ nope: !tmp.kua.sourcesCanBuy[index], ok: tmp.kua.sourcesCanBuy[index] }" class="whiteText mediumButton fontVerdana kuaButton" @click="buyKuaEnhSourceUPG(index)">
                             <h3 style="margin-top: 0.5vw; font-size: 1.15vw">
                                 Enhancer Source {{ index + 1 }}:
                                 {{ format(player.gameProgress.kua.enhancers.sources[index]) }}
                             </h3>
                             +1 Enhancer.
-                            <br /><span
-                                >Cost:
-                                {{
-                                    format(
-                                        KUA_ENHANCERS.sources[index].cost(
-                                            player.gameProgress.kua.enhancers.sources[index]
-                                        ),
-                                        2
-                                    )
-                                }}
-                                {{ KUA_ENHANCERS.sources[index].sourceName }}</span
-                            >
+                            <br><span>Cost: {{ format(KUA_ENHANCERS.sources[index].cost(player.gameProgress.kua.enhancers.sources[index]), 2) }} {{ KUA_ENHANCERS.sources[index].sourceName }}</span>
                         </button>
                     </div>
                 </div>
-                <button
-                    style="text-align: center; font-size: 0.8vw"
-                    :class="{
-                        nopeFill: !player.gameProgress.kua.enhancers.autoSources,
-                        okFill: player.gameProgress.kua.enhancers.autoSources
-                    }"
-                    class="whiteText thinMediumButton fontVerdana kuaButton2"
-                    v-if="false"
-                    @click="
-                        player.gameProgress.kua.enhancers.autoSources =
-                            !player.gameProgress.kua.enhancers.autoSources
-                    "
-                >
-                    <b
-                        >Enhancer Sources Autobuyer:
-                        {{ player.gameProgress.kua.enhancers.autoSources ? "On" : "Off" }}</b
-                    >
+                <button style="text-align: center; font-size: 0.8vw" :class="{ nopeFill: !player.gameProgress.kua.enhancers.autoSources, okFill: player.gameProgress.kua.enhancers.autoSources }" class="whiteText thinMediumButton fontVerdana kuaButton2" v-if="false" @click=" player.gameProgress.kua.enhancers.autoSources = !player.gameProgress.kua.enhancers.autoSources">
+                    <b>Enhancer Sources Autobuyer:{{ player.gameProgress.kua.enhancers.autoSources ? "On" : "Off" }}</b>
                 </button>
                 <div class="flex-container" style="flex-direction: column; align-items: center">
                     <div class="flex-container" style="flex-direction: column; align-items: center">
-                        <span
-                            style="font-size: 1.6vw; text-align: center"
-                            class="whiteText fontVerdana"
-                            >You have
-                            {{
-                                format(Decimal.sub(tmp.kua.totalEnhSources, tmp.kua.enhSourcesUsed))
-                            }}
-                            / {{ format(tmp.kua.totalEnhSources) }} Enhancers.</span
-                        >
-                        <span
-                            style="font-size: 1.6vw; text-align: center"
-                            class="whiteText fontVerdana"
-                            >You may only allocate a total
-                            {{
-                                format(
-                                    Decimal.mul(player.gameProgress.kua.enhancers.xpSpread, 100)
-                                )
-                            }}% of power to your enhancers.</span
-                        >
-                        <span
-                            style="font-size: 1.6vw; text-align: center"
-                            class="whiteText fontVerdana"
-                            v-if="tmp.kua.enhShowSlow"
-                            >The enhancer XP is slowing down! (Strength:
-                            {{ format(tmp.kua.enhSlowdown, 2) }}%)</span
-                        >
+                        <span style="font-size: 1.6vw; text-align: center" class="whiteText fontVerdana">
+                            You have {{ format(Decimal.sub(tmp.kua.totalEnhSources, tmp.kua.enhSourcesUsed)) }} / {{ format(tmp.kua.totalEnhSources) }} Enhancers.
+                        </span>
+                        <span style="font-size: 1.6vw; text-align: center" class="whiteText fontVerdana">
+                            You may only allocate a total {{ format(Decimal.mul(player.gameProgress.kua.enhancers.xpSpread, 100)) }}% of power to your enhancers.
+                        </span>
+                        <span style="font-size: 1.6vw; text-align: center" class="whiteText fontVerdana" v-if="tmp.kua.enhShowSlow">
+                            The enhancer XP is slowing down! (Strength: {{ format(tmp.kua.enhSlowdown, 2) }}%)
+                        </span>
                     </div>
-                    <button
-                        style="text-align: center; font-size: 0.8vw"
-                        class="whiteText thinMediumButton fontVerdana kuaButton2"
-                        @click="kuaEnhReset()"
-                    >
+                    <button style="text-align: center; font-size: 0.8vw" class="whiteText thinMediumButton fontVerdana kuaButton2" @click="kuaEnhReset()">
                         Unallocate every enhancer.
                     </button>
                 </div>
             </div>
             <div class="flex-container" style="flex-direction: column; align-items: center">
                 <div v-for="(item, index) in KUA_ENHANCERS.enhances" :key="index">
-                    <div
-                        class="flex-container"
-                        v-if="Decimal.gte(tmp.kua.totalEnhSources, index * 3)"
-                    >
-                        <div
-                            :style="{
-                                color: item.color,
-                                border: `0.3vw solid ${item.color}`,
-                                backgroundColor: `${colorChange(item.color, 0.25, 1.0)}`
-                            }"
-                            style="margin-top: -0.3vw; width: 50vw; height: 8vw; text-align: center"
-                        >
+                    <div class="flex-container" v-if="Decimal.gte(tmp.kua.totalEnhSources, index * 3)">
+                        <div :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" style="margin-top: -0.3vw; width: 50vw; height: 8vw; text-align: center">
                             <div
                                 class="flex-container"
                                 style="flex-direction: column; margin: 0.5vw; margin-top: 0vw"

@@ -33,9 +33,10 @@ import {
 } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { diePopupsDie } from "./popups";
 import {
+    challengeDepth,
     getColResEffect,
     getColXPtoNext,
-    makeColChallengeSaveData,
+    inChallenge,
     updateAllCol,
     type challengeIDList,
     type colChallengesSavedData
@@ -830,7 +831,7 @@ export const updatePlayerData = (player: Player): Player => {
     }
     if (player.version === 6) {
 
-        player.version = 0;
+        // player.version = 7;
     }
     if (player.version === 7) {
         // player.version = 8;
@@ -1111,33 +1112,9 @@ export const reset = (layer: number, override = false) => {
             }
 
             player.value.gameProgress.kua.enhancers.sources = [D(0), D(0), D(0)];
-            player.value.gameProgress.kua.enhancers.enhancers = [
-                D(0),
-                D(0),
-                D(0),
-                D(0),
-                D(0),
-                D(0),
-                D(0)
-            ];
-            player.value.gameProgress.kua.enhancers.enhanceXP = [
-                D(0),
-                D(0),
-                D(0),
-                D(0),
-                D(0),
-                D(0),
-                D(0)
-            ];
-            player.value.gameProgress.kua.enhancers.enhancePow = [
-                D(0),
-                D(0),
-                D(0),
-                D(0),
-                D(0),
-                D(0),
-                D(0)
-            ];
+            player.value.gameProgress.kua.enhancers.enhancers = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)];
+            player.value.gameProgress.kua.enhancers.enhanceXP = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)];
+            player.value.gameProgress.kua.enhancers.enhancePow = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)];
             player.value.gameProgress.kua.enhancers.xpSpread = D(1);
             player.value.gameProgress.kua.enhancers.inExtraction = 0;
             player.value.gameProgress.kua.enhancers.extractionXP = [D(0), D(0), D(0)];
@@ -1209,70 +1186,72 @@ function calcPPS(): Decimal {
     pps = pps.mul(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1);
     setFactor(3, [0], "PRai", `×${format(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1, 2)}`, `${format(pps, 1)}`, true);
 
-    if (player.value.gameProgress.unlocks.pr2) {
+    if (player.value.gameProgress.unlocks.pr2 && !inChallenge("su")) {
         pps = pps.mul(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1);
     }
-    setFactor(4, [0], "PR2", `×${format(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1, 2)}`, `${format(pps, 1)}`,  player.value.gameProgress.unlocks.pr2);
+    setFactor(4, [0], "PR2", `×${format(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1, 2)}`, `${format(pps, 1)}`,  player.value.gameProgress.unlocks.pr2 && !inChallenge("su"));
 
-    if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1)) {
+    if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1) && !inChallenge("su")) {
         pps = pps.mul(MAIN_ONE_UPGS[9].effect!);
     }
-    setFactor(5, [0], "One-Upgrade #10", `×${format(MAIN_ONE_UPGS[9].effect!, 2)}`, `${format(pps, 1)}`, Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1));
+    setFactor(5, [0], "One-Upgrade #10", `×${format(MAIN_ONE_UPGS[9].effect!, 2)}`, `${format(pps, 1)}`, Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1) && !inChallenge("su"));
     
-    if (ifAchievement(0, 3)) {
+    if (ifAchievement(0, 3) && !inChallenge("su")) {
         pps = pps.mul(1.2);
     }
-    setFactor(6, [0], "Achievement ID (0, 3)", `×${format(1.2, 2)}`, `${format(pps, 1)}`, ifAchievement(0, 3), "ach");
+    setFactor(6, [0], "Achievement ID (0, 3)", `×${format(1.2, 2)}`, `${format(pps, 1)}`, ifAchievement(0, 3) && !inChallenge("su"), "ach");
 
-    pps = pps.mul(ACHIEVEMENT_DATA[0].eff);
-    setFactor(7, [0], "Achievement Tier 1", `×${format(ACHIEVEMENT_DATA[0].eff, 2)}`, `${format(pps, 1)}`, true, "ach");
+    if (!inChallenge("su")) {
+        pps = pps.mul(ACHIEVEMENT_DATA[0].eff);
+    }
+    setFactor(7, [0], "Achievement Tier 1", `×${format(ACHIEVEMENT_DATA[0].eff, 2)}`, `${format(pps, 1)}`, !inChallenge("su"), "ach");
 
-    if (player.value.gameProgress.unlocks.kua) {
+    if (player.value.gameProgress.unlocks.kua && !inChallenge("su")) {
         pps = pps.mul(tmp.value.kua.effects.kpowerPassive);
     }
-    setFactor(8, [0], "KPower Base Effect", `×${format(tmp.value.kua.effects.kpowerPassive, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.kua, "kua");
+    setFactor(8, [0], "KPower Base Effect", `×${format(tmp.value.kua.effects.kpowerPassive, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.kua && !inChallenge("su"), "kua");
 
-    if (getKuaUpgrade("s", 7)) {
+    if (getKuaUpgrade("s", 7) && !inChallenge("su")) {
         pps = pps.mul(tmp.value.kua.effects.pts);
     }
-    setFactor(9, [0], "KShard Upgrade 7", `×${format(tmp.value.kua.effects.pts, 2)}`, `${format(pps, 1)}`, getKuaUpgrade("s", 7), "kua");
+    setFactor(9, [0], "KShard Upgrade 7", `×${format(tmp.value.kua.effects.pts, 2)}`, `${format(pps, 1)}`, getKuaUpgrade("s", 7) && !inChallenge("su"), "kua");
 
-    if (ifAchievement(1, 0)) {
+    if (ifAchievement(1, 0) && !inChallenge("su")) {
         pps = pps.mul(2);
     }
-    setFactor(10, [0], "Achievement ID (1, 0)", `×${format(2, 2)}`, `${format(pps, 1)}`, ifAchievement(1, 0), "ach");
+    setFactor(10, [0], "Achievement ID (1, 0)", `×${format(2, 2)}`, `${format(pps, 1)}`, ifAchievement(1, 0) && !inChallenge("su"), "ach");
 
-    if (ifAchievement(1, 1)) {
+    if (ifAchievement(1, 1) && !inChallenge("su")) {
         pps = pps.mul(getAchievementEffect(1, 1));
     }
-    setFactor(11, [0], "Achievement ID (1, 1)", `×${format(getAchievementEffect(1, 1), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 1), "ach");
+    setFactor(11, [0], "Achievement ID (1, 1)", `×${format(getAchievementEffect(1, 1), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 1) && !inChallenge("su"), "ach");
 
-    if (ifAchievement(1, 3)) {
+    if (ifAchievement(1, 3) && !inChallenge("su")) {
         pps = pps.mul(getAchievementEffect(1, 3));
     }
-    setFactor(12, [0], "Achievement ID (1, 3)", `×${format(getAchievementEffect(1, 3), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 3), "ach");
+    setFactor(12, [0], "Achievement ID (1, 3)", `×${format(getAchievementEffect(1, 3), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 3) && !inChallenge("su"), "ach");
 
-    if (ifAchievement(1, 13)) {
+    if (ifAchievement(1, 13) && !inChallenge("su")) {
         pps = pps.mul(getAchievementEffect(1, 13));
     }
-    setFactor(13, [0], "Achievement ID (1, 13)", `×${format(getAchievementEffect(1, 13), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 13), "ach");
+    setFactor(13, [0], "Achievement ID (1, 13)", `×${format(getAchievementEffect(1, 13), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 13) && !inChallenge("su"), "ach");
 
     if (player.value.gameProgress.unlocks.col) {
         pps = pps.mul(getColResEffect(0));
     }
     setFactor(14, [0], "Dotgenous", `×${format(getColResEffect(0), 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.col, "col");
 
-    if (player.value.gameProgress.unlocks.tax) {
+    if (player.value.gameProgress.unlocks.tax && !inChallenge("su")) {
         pps = pps.mul(tmp.value.tax.ptsEff);
     }
-    setFactor(15, [0], "Taxed Coins", `×${format(tmp.value.tax.ptsEff, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.tax, "tax");
+    setFactor(15, [0], "Taxed Coins", `×${format(tmp.value.tax.ptsEff, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.tax && !inChallenge("su"), "tax");
 
-    if (getKuaUpgrade("p", 3)) {
+    if (getKuaUpgrade("p", 3) && !inChallenge("su")) {
         pps = pps.pow(tmp.value.kua.effects.ptPower);
     }
-    setFactor(16, [0], "KPower Upgrade 3", `^${format(tmp.value.kua.effects.ptPower, 3)}`, `${format(pps, 1)}`, getKuaUpgrade("p", 3), "kua");
+    setFactor(16, [0], "KPower Upgrade 3", `^${format(tmp.value.kua.effects.ptPower, 3)}`, `${format(pps, 1)}`, getKuaUpgrade("p", 3) && !inChallenge("su"), "kua");
 
-    if (player.value.gameProgress.col.inAChallenge) {
+    if (player.value.gameProgress.col.inAChallenge && !inChallenge("su")) {
         pps = pps.pow(
             ACHIEVEMENT_DATA[2].eff
                 .mul(
@@ -1287,7 +1266,7 @@ function calcPPS(): Decimal {
                 .add(1)
         );
     }
-    setFactor(17, [0], "Achievement Tier 3", `^${format(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1), 3)}`, `${format(pps, 1)}`, player.value.gameProgress.col.inAChallenge, "ach");
+    setFactor(17, [0], "Achievement Tier 3", `^${format(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1), 3)}`, `${format(pps, 1)}`, player.value.gameProgress.col.inAChallenge && !inChallenge("su"), "ach");
 
     return pps;
 }

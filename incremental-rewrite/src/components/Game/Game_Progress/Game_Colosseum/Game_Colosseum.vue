@@ -72,84 +72,87 @@ import {
             v-if="tab.tabList[tab.currentTab][0] === 0"
         >
             <div v-for="item in COL_CHALLENGES" class="flex-container" :key="item.id">
-                <button
-                    v-if="item.show"
-                    :class="{
-                        colButton: !completedChallenge(item.id) && !inChallenge(item.id),
-                        colButtonProg: completedChallenge(item.id) ? false : inChallenge(item.id),
-                        colButtonComp: completedChallenge(item.id),
+                <div v-if="item.show" class="flex-container" style="flex-direction: column">
+                    <button
+                        v-if="item.show"
+                        :class="{
+                            colButton: !completedChallenge(item.id) && !inChallenge(item.id),
+                            colButtonProg: completedChallenge(item.id) ? false : inChallenge(item.id),
+                            colButtonComp: completedChallenge(item.id),
 
-                        normColBorder: !completedChallenge(item.id) && !inChallenge(item.id),
-                        normColBorderProg: completedChallenge(item.id)
-                            ? false
-                            : inChallenge(item.id),
-                        normColBorderComp: completedChallenge(item.id)
-                    }"
-                    class="whiteText fontVerdana main-container"
-                    style="padding: 0%; margin-left: 0.2vw; margin-right: 0.2vw"
-                    @click="challengeToggle(item.id)"
-                >
-                    <div
-                        :class="{
-                            colButtonHeader: !completedChallenge(item.id) && !inChallenge(item.id),
-                            colButtonHeaderProg: completedChallenge(item.id)
+                            normColBorder: !completedChallenge(item.id) && !inChallenge(item.id),
+                            normColBorderProg: completedChallenge(item.id)
                                 ? false
                                 : inChallenge(item.id),
-                            colButtonHeaderComp: completedChallenge(item.id)
+                            normColBorderComp: completedChallenge(item.id)
                         }"
-                        class="first-cont"
-                        style="height: 16.667%"
+                        class="whiteText fontVerdana main-container"
+                        style="padding: 0%; margin-left: 0.2vw; margin-right: 0.2vw"
+                        @click="challengeToggle(item.id)"
                     >
-                        <span
-                            class="generic-text"
-                            style="left: 0.3vw; top: 0.3vw; font-size: 0.65vw"
-                            >{{
-                                [
-                                    "One-Time",
-                                    `Multiple (${format(player.gameProgress.col.completed[item.id])} / ${format(item.cap)})`,
-                                    "Continuous"
-                                ][item.type]
-                            }}</span
+                        <div
+                            :class="{
+                                colButtonHeader: !completedChallenge(item.id) && !inChallenge(item.id),
+                                colButtonHeaderProg: completedChallenge(item.id)
+                                    ? false
+                                    : inChallenge(item.id),
+                                colButtonHeaderComp: completedChallenge(item.id)
+                            }"
+                            class="first-cont"
+                            style="height: 16.667%"
                         >
-                        <span
-                            class="generic-text"
-                            style="right: 0.3vw; top: 0.3vw; font-size: 0.65vw"
-                            >#{{ item.num }}</span
+                            <span class="generic-text" style="left: 0.3vw; top: 0.3vw; font-size: 0.65vw" >{{ [ "One-Time", `Multiple (${format(player.gameProgress.col.completed[item.id])} / ${format(item.cap)})`, "Continuous"][item.type] }}</span>
+                            <span class="generic-text" style="right: 0.3vw; top: 0.3vw; font-size: 0.65vw" >#{{ item.num }}</span>
+                            <span class="centered-text" style="top: 1.2vw; font-size: 1vw"><b>{{ item.name }}</b></span>
+                        </div>
+                        <div
+                            :class="{
+                                colButtonDesc: !completedChallenge(item.id) && !inChallenge(item.id),
+                                colButtonDescProg: completedChallenge(item.id)
+                                    ? false
+                                    : inChallenge(item.id),
+                                colButtonDescComp: completedChallenge(item.id)
+                            }"
+                            class="second-cont"
+                            style="height: 33.333%; font-size: 0.65vw"
                         >
-                        <span class="centered-text" style="top: 1.2vw; font-size: 1vw"
-                            ><b>{{ item.name }}</b></span
+                            <span class="centered-text" style="top: 0.5vw">{{ item.goalDesc }}</span>
+                            <span class="centered-text" style="top: 2vw">{{ item.desc }}</span>
+                        </div>
+                        <div
+                            :class="{
+                                colButtonRew: !completedChallenge(item.id) && !inChallenge(item.id),
+                                colButtonRewProg: completedChallenge(item.id)
+                                    ? false
+                                    : inChallenge(item.id),
+                                colButtonRewComp: completedChallenge(item.id)
+                            }"
+                            class="third-cont"
+                            style="height: 50%; font-size: 0.65vw"
                         >
+                            <span class="centered-text" style="top: 2vw"> - REWARD - </span>
+                            <span class="centered-text" style="top: 4.4vw">{{ item.reward }}</span>
+                        </div>
+                    </button>
+                    <!-- TODO: replace the slider with text input after cap > 20 or something -->
+                    <div v-if="item.type === 1 && Decimal.gte(player.gameProgress.col.completed[item.id], 1)" 
+                    class="whiteText fontVerdana generatorButton"
+                    style="padding: 0%; margin-left: 0.2vw; margin-right: 0.2vw; width: 14.28vw; height: 3vw; display: flex; flex-direction: column; border: 0.24vw solid #fff;">
+                        <div class="first-cont" style="height: 40%">
+                            <span class="generic-text" style="left: 0.3vw; top: 0.3vw; font-size: 0.65vw" >Select Difficulty</span>
+                            <span class="generic-text" style="right: 0.3vw; top: 0.3vw; font-size: 0.65vw" >{{ format(player.gameProgress.inChallenge[item.id].optionalDiff) }} / {{ format(player.gameProgress.col.completed[item.id]) }}</span>
+                            <span class="centered-text" style="top: 0.6vw; font-size: 0.65vw" >You may change the difficulty to get achievements, or other challenges may force you into certain difficulties! Changing the difficulty will not change the rewards you already have.</span>
+                        </div>
+                        <div class="second-cont" style="height: 60%">
+                            <div class="slidecontainer" style="position: absolute; left: 3%; width: 94%;">
+                                <input class="slider colSlider" style="padding: 0vw; margin: 0vw" type="range" v-model="player.gameProgress.inChallenge[item.id].optionalDiff" :min="0" :max="new Decimal(player.gameProgress.col.completed[item.id]).toNumber()"/>
+                                <!-- <Tooltip :display="`${value}`" :class="{ fullWidth: !title }" :direction="Direction.Down">
+                                    <input type="range" class="slider" v-model="value" :min="min" :max="max"  />
+                                </Tooltip>                                         -->
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        :class="{
-                            colButtonDesc: !completedChallenge(item.id) && !inChallenge(item.id),
-                            colButtonDescProg: completedChallenge(item.id)
-                                ? false
-                                : inChallenge(item.id),
-                            colButtonDescComp: completedChallenge(item.id)
-                        }"
-                        class="second-cont"
-                        style="height: 33.333%; font-size: 0.65vw"
-                    >
-                        <span class="centered-text" style="top: 0.5vw">{{ item.goalDesc }}</span>
-                        <span class="centered-text" style="top: 2vw">{{ item.desc }}</span>
-                    </div>
-                    <div
-                        :class="{
-                            colButtonRew: !completedChallenge(item.id) && !inChallenge(item.id),
-                            colButtonRewProg: completedChallenge(item.id)
-                                ? false
-                                : inChallenge(item.id),
-                            colButtonRewComp: completedChallenge(item.id)
-                        }"
-                        class="third-cont"
-                        style="height: 50%; font-size: 0.65vw"
-                    >
-                        <span class="centered-text" style="top: 2vw"> - REWARD - </span>
-                        <span class="centered-text" style="top: 4.4vw">{{ item.reward }}</span>
-                    </div>
-                </button>
-                <!-- TODO: make slider for selecting challenge difficulty from 0 up to your challenges completed -->
+                </div>
             </div>
         </div>
         <div

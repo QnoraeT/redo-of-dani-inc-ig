@@ -431,52 +431,21 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                 <div v-for="(item, index) in KUA_ENHANCERS.enhances" :key="index">
                     <div class="flex-container" v-if="Decimal.gte(tmp.kua.totalEnhSources, index * 3)">
                         <div :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" style="margin-top: -0.3vw; width: 50vw; height: 8vw; text-align: center">
-                            <div
-                                class="flex-container"
-                                style="flex-direction: column; margin: 0.5vw; margin-top: 0vw"
-                            >
-                                <span style="margin-top: 0.5vw; font-size: 1.4vw"
-                                    ><b
-                                        >Enhancer {{ index + 1 }} ×{{
-                                            format(
-                                                player.gameProgress.kua.enhancers.enhancers[index]
-                                            )
-                                        }}
-                                        (Power:
-                                        {{ format(tmp.kua.trueEnhPower[index].mul(100), 2) }}%)</b
-                                    ></span
-                                >
-                                <div
-                                    class="flex-container"
-                                    style="justify-content: space-between; margin-top: 0.5vw"
-                                >
+                            <div class="flex-container" style="flex-direction: column; margin: 0.5vw; margin-top: 0vw">
+                                <span style="margin-top: 0.5vw; font-size: 1.4vw">
+                                    <b>
+                                        Enhancer {{ index + 1 }} ×{{ format(player.gameProgress.kua.enhancers.enhancers[index]) }} (Power: {{ format(tmp.kua.trueEnhPower[index].mul(100), 2) }}%)
+                                    </b>
+                                </span>
+                                <div class="flex-container" style="justify-content: space-between; margin-top: 0.5vw">
                                     <div class="slidecontainer" style="width: 15vw">
-                                        <input
-                                            class="slider"
-                                            type="range"
-                                            v-model="
-                                                player.gameProgress.kua.enhancers.enhancePow[index]
-                                            "
-                                        />
+                                        <input class="slider" type="range" v-model="player.gameProgress.kua.enhancers.enhancePow[index]"/>
                                         <!-- <Tooltip :display="`${value}`" :class="{ fullWidth: !title }" :direction="Direction.Down">
                                             <input type="range" class="slider" v-model="value" :min="min" :max="max"  />
                                         </Tooltip>                                         -->
                                     </div>
                                     <div class="flex-container" style="flex-direction: column">
-                                        <span style="font-size: 1.4vw"
-                                            >XP:
-                                            {{
-                                                format(
-                                                    player.gameProgress.kua.enhancers.enhanceXP[
-                                                        index
-                                                    ],
-                                                    2
-                                                )
-                                            }}
-                                            ({{
-                                                format(tmp.kua.kuaTrueSourceXPGen[index], 2)
-                                            }}/s)</span
-                                        >
+                                        <span style="font-size: 1.4vw">XP: {{ format(player.gameProgress.kua.enhancers.enhanceXP[index], 2) }} ({{ format(tmp.kua.kuaTrueSourceXPGen[index], 2) }}/s)</span>
                                         <span style="font-size: 1vw">{{ item.desc }}</span>
                                     </div>
                                 </div>
@@ -489,15 +458,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                                 border: `0.3vw solid ${item.color}`,
                                 backgroundColor: `${colorChange(item.color, 0.25, 1.0)}`
                             }"
-                            style="
-                                margin-top: -0.3vw;
-                                margin-left: -0.3vw;
-                                width: 8vw;
-                                height: 8.45vw;
-                                text-align: center;
-                                font-size: 1.4vw;
-                            "
-                            class="fontVerdana whiteText"
+                            class="fontVerdana whiteText enhAllocButton"
                         >
                             Add All
                         </button>
@@ -508,15 +469,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                                 border: `0.3vw solid ${item.color}`,
                                 backgroundColor: `${colorChange(item.color, 0.25, 1.0)}`
                             }"
-                            style="
-                                margin-top: -0.3vw;
-                                margin-left: -0.3vw;
-                                width: 8vw;
-                                height: 8.45vw;
-                                text-align: center;
-                                font-size: 1.4vw;
-                            "
-                            class="fontVerdana whiteText"
+                            class="fontVerdana whiteText enhAllocButton"
                         >
                             Add 1
                         </button>
@@ -527,15 +480,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                                 border: `0.3vw solid ${item.color}`,
                                 backgroundColor: `${colorChange(item.color, 0.25, 1.0)}`
                             }"
-                            style="
-                                margin-top: -0.3vw;
-                                margin-left: -0.3vw;
-                                width: 8vw;
-                                height: 8.45vw;
-                                text-align: center;
-                                font-size: 1.4vw;
-                            "
-                            class="fontVerdana whiteText"
+                            class="fontVerdana whiteText enhAllocButton"
                         >
                             Remove 1
                         </button>
@@ -546,15 +491,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                                 border: `0.3vw solid ${item.color}`,
                                 backgroundColor: `${colorChange(item.color, 0.25, 1.0)}`
                             }"
-                            style="
-                                margin-top: -0.3vw;
-                                margin-left: -0.3vw;
-                                width: 8vw;
-                                height: 8.45vw;
-                                text-align: center;
-                                font-size: 1.4vw;
-                            "
-                            class="fontVerdana whiteText"
+                            class="fontVerdana whiteText enhAllocButton"
                         >
                             Remove All
                         </button>
@@ -564,3 +501,13 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
         </div>
     </div>
 </template>
+<style scoped>
+.enhAllocButton {
+    margin-top: -0.3vw;
+    margin-left: -0.3vw;
+    width: 8vw;
+    height: 8.45vw;
+    text-align: center;
+    font-size: 1.4vw;
+}
+</style>

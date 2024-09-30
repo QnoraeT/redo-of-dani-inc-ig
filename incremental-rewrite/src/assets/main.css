@@ -455,6 +455,23 @@ body {
     cursor: pointer; /* Cursor on hover */
 }
 
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.colSlider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 1.2vw; /* Set a specific slider handle width */
+    height: 1.2vw; /* Slider handle height */
+    background: #ff5100; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.colSlider::-moz-range-thumb {
+    width: 1.2vw; /* Set a specific slider handle width */
+    height: 1.2vw; /* Slider handle height */
+    background: #ff5100; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
 /* taken from TMT ig */
 .popup {
     border: 0.2vw solid;

@@ -6,6 +6,9 @@ export const switchTab = (where: number) => {
 
 export const switchSubTab = (where: number, index: number) => {
     tab.value.tabList[tab.value.currentTab][index] = where;
+    for (let i = index + 1; i < tab.value.tabList[tab.value.currentTab].length; i++) {
+        tab.value.tabList[tab.value.currentTab][i] = 0
+    }
 };
 
 export type Tab = {

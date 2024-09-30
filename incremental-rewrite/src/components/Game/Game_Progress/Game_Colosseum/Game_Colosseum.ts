@@ -29,15 +29,27 @@ export type colChallengeData = {
     canComplete: boolean;
     progress: Decimal;
     progDisplay: string;
+    internalChallengeCond?: Array<Array<DecimalSource>>
+    internalChallengeEffect?: Array<Array<DecimalSource>>
 };
+
+export const getColChalDisplayedDifficulty = (id: challengeIDList) => {
+    return player.value.gameProgress.inChallenge[id].overall ? Decimal.sub(player.value.gameProgress.inChallenge[id].depths, 1) : player.value.gameProgress.inChallenge[id].optionalDiff;
+}
+
+export const getColChalCondEffects = (id: challengeIDList) => {
+    return COL_CHALLENGES[id].internalChallengeCond![new Decimal(challengeDepth(id)).sub(1).max(0).toNumber()]!
+}
+
 /**
  * type
  * 0 = One-Time only
  * 1 = Can complete multiple times (Decimal)
- * 2 = Continouous (Decimal, best)
+ * 2 = Continuous (Decimal, best)
  *
  * layer
- * 0 = kua
+ * 0 = kua (it probably should be 2 but there should NOT be a col challenge for anything earlier than 2 because then it will just trivialize the challenge)
+ * 1 = tax (skipping col)
  */
 export const COL_CHALLENGES: colChallenges = {
     nk: {
@@ -52,7 +64,7 @@ export const COL_CHALLENGES: colChallenges = {
         },
         desc: `All Kuaraniai resources and upgrades are disabled.`,
         reward: `Unlock another tab in Colosseum, and unlock another challenge.`,
-        cap: 1,
+        cap: D(1),
         show: true,
         get canComplete() {
             return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
@@ -86,25 +98,25 @@ export const COL_CHALLENGES: colChallenges = {
                 D(1e165),
                 D(1e200),
                 D(Infinity)
-            ][new Decimal(timesCompleted("su")).toNumber()];
+            ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
         },
         get goalDesc() {
             return `Reach ${format(this.goal)} Points.`;
         },
         get desc() {
             return [
-                `Your PPS is restricted to only Upgrades, PRai, and PR2 and all upgrades scale ${format(2, 1)}× faster.`,
-                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(2.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e20)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(3, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e25)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(3.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e30)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(4, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e35)}, and Upgrade 2's effect is dilated to the ^${format(0.95, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e40)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e50)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e60)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
-                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(15, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and PR2, all upgrades scale ${format(25, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e90)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous and all upgrades scale ${format(2, 1)}× faster.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(2.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e20)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(3, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e25)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(3.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e30)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(4, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e35)}, and Upgrade 2's effect is dilated to the ^${format(0.95, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e40)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e50)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e60)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(15, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(25, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e90)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
                 `winner you complete it all`
-            ][new Decimal(timesCompleted("su")).toNumber()];
+            ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
         },
         get reward() {
             return [
@@ -119,9 +131,36 @@ export const COL_CHALLENGES: colChallenges = {
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(65, 1)}%), Upgrade 1's Hyper scaling is ${format(13)}% weaker, and Upgrade 2's base is increased by +${format(1.5, 1)}%.`,
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(80, 1)}%), Upgrade 1's Hyper scaling is ${format(15)}% weaker, and Upgrade 2's base is increased by +${format(3, 1)}%.`,
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(100, 1)}%), Upgrade 1's Hyper scaling is ${format(20)}% weaker, Upgrade 2's base is increased by +${format(5, 1)}%, and Point taxation starts ${format(1e6)}× later.`
-            ][new Decimal(timesCompleted("su")).toNumber()];
+            ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
         },
-        cap: 10,
+        // trying not to completely hard code in everything in *different files* and for js trying not to create 1,000 arrays for one thing sfgsdgnisudb
+        internalChallengeCond: [
+            [D(2),   D(1),    D(1),    D(1), D(1)],
+            [D(2.5), D(1e20), D(1),    D(1), D(1)],
+            [D(3),   D(1e25), D(1),    D(1), D(1)],
+            [D(3.5), D(1e30), D(1),    D(1), D(1)],
+            [D(4),   D(1e35), D(0.95), D(1), D(1)],
+            [D(5),   D(1e40), D(0.9),  D(1), D(1)],
+            [D(7.5), D(1e50), D(0.85), D(1), D(1)],
+            [D(10),  D(1e60), D(0.8),  D(0), D(1)],
+            [D(15),  D(1e75), D(0.75), D(0), D(0.75)],
+            [D(25),  D(1e90), D(0.7),  D(0), D(0.5)],
+            [D(40),  D(1e95), D(0.65), D(0), D(1/3)],
+        ],
+        internalChallengeEffect: [
+            [D(0.025), D(1),    D(1),     D(1)],
+            [D(0.05),  D(1),    D(1),     D(1)],
+            [D(0.075), D(1),    D(1),     D(1)],
+            [D(0.1),   D(1),    D(1),     D(1)],
+            [D(0.15),  D(1),    D(1),     D(1)],
+            [D(0.25),  D(0.97), D(1),     D(1)],
+            [D(0.35),  D(0.94), D(1),     D(1)],
+            [D(0.5),   D(0.9),  D(1),     D(1)],
+            [D(0.65),  D(0.87), D(1.015), D(1)],
+            [D(0.8),   D(0.85), D(1.03),  D(1)],
+            [D(1),     D(0.8),  D(1.05),  D(1e6)],
+        ],
+        cap: D(10),
         get show() {
             return Decimal.gte(timesCompleted("nk"), 1);
         },
@@ -144,7 +183,7 @@ export const COL_CHALLENGES: colChallenges = {
         id: "df",
         layer: 0,
         name: `Decaying Feeling`,
-        goal: D(10025),
+        goal: D(1e25),
         get goalDesc() {
             return `Reach ${format(this.goal)} Points.`;
         },

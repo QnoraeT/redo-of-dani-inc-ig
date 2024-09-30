@@ -31,50 +31,18 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
             "
         ></canvas>
         <div class="flex-container" style="background-color: #ffffff20" v-if="tmp.gameIsRunning">
-            <div
-                style="
-                    flex-grow: 1;
-                    flex-basis: 0;
-                    text-align: left;
-                    text-shadow: #ffffff 0vw 0vw 0.3vw;
-                "
-                class="bigText whiteText grayShadow fontVerdana"
-            >
+            <div style=" flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.3vw; " class="bigText whiteText grayShadow fontVerdana" >
                 {{ format(player.gameProgress.main.points) }} Points
             </div>
-            <div
-                style="
-                    flex-grow: 1;
-                    flex-basis: 0;
-                    text-align: center;
-                    text-shadow: #ffff00 0vw 0vw 0.18vw;
-                "
-                class="mediumBigText yellowText fontVerdana"
-            >
+            <div style=" flex-grow: 1; flex-basis: 0; text-align: center; text-shadow: #ffff00 0vw 0vw 0.18vw; " class="mediumBigText yellowText fontVerdana" >
                 FPS: {{ gameVars.displayedFPS }}
             </div>
-            <div
-                style="
-                    flex-grow: 1;
-                    flex-basis: 0;
-                    text-align: right;
-                    text-shadow: #ffffff 0vw 0vw 0.3vw;
-                "
-                class="bigText whiteText grayShadow fontVerdana"
-            >
+            <div style=" flex-grow: 1; flex-basis: 0; text-align: right; text-shadow: #ffffff 0vw 0vw 0.3vw; " class="bigText whiteText grayShadow fontVerdana" >
                 {{ format(tmp.main.pps, 1) }}/s
             </div>
         </div>
         <div class="flex-container" style="background-color: #ffffff20" v-if="!tmp.gameIsRunning">
-            <div
-                style="
-                    flex-grow: 1;
-                    flex-basis: 0;
-                    text-align: left;
-                    text-shadow: #ffffff 0vw 0vw 0.3vw;
-                "
-                class="bigText whiteText grayShadow fontVerdana"
-            >
+            <div style=" flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.3vw; " class="bigText whiteText grayShadow fontVerdana" >
                 Loading...
             </div>
         </div>
@@ -157,11 +125,11 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
                     )
                 }"
             >
-                <span v-if="player.gameProgress.inChallenge[index].overall" class="fontVerdana">
+                <span v-if="player.gameProgress.inChallenge[index].overall" class="fontVerdana" style="font-size: 1.07vw; margin: 0vw">
                     {{
                         item.name +
                         (Decimal.gt(player.gameProgress.inChallenge[index].depths, 1)
-                            ? ` x${format(player.gameProgress.inChallenge[index].depths)}`
+                            ? ` ×${format(player.gameProgress.inChallenge[index].depths)}`
                             : "")
                     }}{{
                         player.gameProgress.inChallenge[index].overall

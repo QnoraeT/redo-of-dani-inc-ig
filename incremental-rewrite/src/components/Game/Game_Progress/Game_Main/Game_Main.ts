@@ -5,7 +5,7 @@ import { scale, D, smoothPoly, smoothExp, expQuadCostGrowth } from '@/calc'
 import { getSCSLAttribute, setSCSLEffectDisp, SCALE_ATTR, SOFT_ATTR, doAllScaling, type ScSlItems } from '@/softcapScaling'
 import { getAchievementEffect, ifAchievement } from '../../Game_Achievements/Game_Achievements'
 import { getKuaUpgrade, KUA_ENHANCERS, KUA_UPGRADES } from '../Game_Kuaraniai/Game_Kuaraniai'
-import { getColResEffect, getColResLevel } from '../Game_Colosseum/Game_Colosseum'
+import { challengeDepth, COL_CHALLENGES, getColChalCondEffects, getColResEffect, getColResLevel, inChallenge } from '../Game_Colosseum/Game_Colosseum'
 import { setFactor } from '../../Game_Stats/Game_Stats'
 
 export type MainOneUpg = {
@@ -903,11 +903,16 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 11)) {
                     scal = scal.div(10 / 9);
                 }
+                setFactor(5, [1, upgID, 1], "PR2 11", `/${format(10 / 9, 2)}`, `${format(scal, 2)} effective`, Decimal.gte(player.value.gameProgress.main.pr2.amount, 11));
             }
-
+            if (inChallenge("su")) {
+                scal = scal.mul(getColChalCondEffects("su")[0])
+            }
+            setFactor(6, [1, upgID, 1], `Sabotaged Upgrades ×${format(challengeDepth("su"))}`, `×${format(getColChalCondEffects("su")[0], 2)}`, `${format(scal, 2)} effective`, inChallenge("su"), "col");
+            
             i = scal;
             scal = doAllScaling(scal, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true), false);
-            setFactor(5, [1, upgID, 1], "Scaling", `scaling(${format(i, 2)})`, `${format(scal, 2)} effective`, true);
+            setFactor(7, [1, upgID, 1], "Scaling", `scaling(${format(i, 2)})`, `${format(scal, 2)} effective`, true);
 
             if (upgID === 3) {
                 scal = scal.div(KUA_ENHANCERS.enhances[3].effect())
@@ -921,24 +926,24 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
 
             tmp.value.main.upgrades[upgID].cost = expQuadCostGrowth(scal, tmp.value.main.upgrades[upgID].costBase.scale[2], tmp.value.main.upgrades[upgID].costBase.scale[1], tmp.value.main.upgrades[upgID].costBase.scale[0], tmp.value.main.upgrades[upgID].costBase.exp, false);
             if (tmp.value.main.upgrades[upgID].costBase.scale[2].gt(1)) {
-                setFactor(6, [1, upgID, 1], "Resulting Cost", `${format(tmp.value.main.upgrades[upgID].costBase.scale[2], 4)}^${format(scal)}² × ${format(tmp.value.main.upgrades[upgID].costBase.scale[1], 2)}^${format(scal)} × ${format(tmp.value.main.upgrades[upgID].costBase.scale[0])}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, true);
+                setFactor(8, [1, upgID, 1], "Resulting Cost", `${format(tmp.value.main.upgrades[upgID].costBase.scale[2], 4)}^${format(scal)}² × ${format(tmp.value.main.upgrades[upgID].costBase.scale[1], 2)}^${format(scal)} × ${format(tmp.value.main.upgrades[upgID].costBase.scale[0])}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, true);
             } else {
-                setFactor(6, [1, upgID, 1], "Resulting Cost", `${format(tmp.value.main.upgrades[upgID].costBase.scale[1], 2)}^${format(scal)} × ${format(tmp.value.main.upgrades[upgID].costBase.scale[0])}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, true);
+                setFactor(8, [1, upgID, 1], "Resulting Cost", `${format(tmp.value.main.upgrades[upgID].costBase.scale[1], 2)}^${format(scal)} × ${format(tmp.value.main.upgrades[upgID].costBase.scale[0])}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, true);
             }
 
             if (upgID === 0) {
                 tmp.value.main.upgrades[upgID].cost = tmp.value.main.upgrades[upgID].cost.div(tmp.value.main.upgrades[1].effect ?? 1);
-                setFactor(7, [1, upgID, 1], "Upgrade 2", `/${format(tmp.value.main.upgrades[1].effect ?? 1, 2)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, Decimal.gte(player.value.gameProgress.main.upgrades[1].bought, 1));
+                setFactor(9, [1, upgID, 1], "Upgrade 2", `/${format(tmp.value.main.upgrades[1].effect ?? 1, 2)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, Decimal.gte(player.value.gameProgress.main.upgrades[1].bought, 1));
 
                 tmp.value.main.upgrades[upgID].cost = tmp.value.main.upgrades[upgID].cost.div(tmp.value.main.upgrades[4].effect ?? 1);
-                setFactor(8, [1, upgID, 1], "Upgrade 5", `/${format(tmp.value.main.upgrades[4].effect ?? 1, 2)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, Decimal.gte(player.value.gameProgress.main.upgrades[4].bought, 1));
+                setFactor(10, [1, upgID, 1], "Upgrade 5", `/${format(tmp.value.main.upgrades[4].effect ?? 1, 2)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, Decimal.gte(player.value.gameProgress.main.upgrades[4].bought, 1));
             }
 
             if (upgID === 1) {
                 if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[0], 1)) {
                     tmp.value.main.upgrades[upgID].cost = tmp.value.main.upgrades[upgID].cost.div(MAIN_ONE_UPGS[0].effect!);
                 }
-                setFactor(9, [1, upgID, 1], "One-Upgrade #1", `/${format(MAIN_ONE_UPGS[0].effect!, 2)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, Decimal.gte(player.value.gameProgress.main.oneUpgrades[0], 1));
+                setFactor(11, [1, upgID, 1], "One-Upgrade #1", `/${format(MAIN_ONE_UPGS[0].effect!, 2)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, Decimal.gte(player.value.gameProgress.main.oneUpgrades[0], 1));
             }
 
             tmp.value.main.upgrades[upgID].target = D(0);
@@ -968,6 +973,9 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 }
 
                 scal = doAllScaling(scal, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true), true);
+                if (inChallenge("su")) {
+                    scal = scal.div(getColChalCondEffects("su")[0])
+                }
                 if (upgID === 2) {
                     if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 11)) {
                         scal = scal.mul(10 / 9);

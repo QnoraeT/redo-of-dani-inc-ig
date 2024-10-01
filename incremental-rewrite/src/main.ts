@@ -1186,10 +1186,10 @@ function calcPPS(): Decimal {
     pps = pps.mul(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1);
     setFactor(3, [0], "PRai", `×${format(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1, 2)}`, `${format(pps, 1)}`, true);
 
-    if (player.value.gameProgress.unlocks.pr2 && !inChallenge("su")) {
+    if (player.value.gameProgress.unlocks.pr2) {
         pps = pps.mul(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1);
     }
-    setFactor(4, [0], "PR2", `×${format(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1, 2)}`, `${format(pps, 1)}`,  player.value.gameProgress.unlocks.pr2 && !inChallenge("su"));
+    setFactor(4, [0], "PR2", `×${format(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1, 2)}`, `${format(pps, 1)}`,  player.value.gameProgress.unlocks.pr2);
 
     if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1) && !inChallenge("su")) {
         pps = pps.mul(MAIN_ONE_UPGS[9].effect!);
@@ -1355,7 +1355,7 @@ function gameLoop(): void {
             );
         }
         // FIXME: every time PPS gets updated, check the id value for this (18)
-        setFactor(18, [0], "Taxation", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, true, "sc1");
+        setFactor(18, [0], "Taxation", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start), "sc1");
 
         player.value.gameProgress.main.points = Decimal.add(
             player.value.gameProgress.main.points,

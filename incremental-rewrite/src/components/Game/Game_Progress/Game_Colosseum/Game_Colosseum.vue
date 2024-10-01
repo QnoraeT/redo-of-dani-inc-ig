@@ -114,10 +114,10 @@ import {
                                 colButtonDescComp: completedChallenge(item.id)
                             }"
                             class="second-cont"
-                            style="height: 33.333%; font-size: 0.65vw"
+                            style="height: 33.333%; font-size: 0.6vw"
                         >
                             <span class="centered-text" style="top: 0.5vw">{{ item.goalDesc }}</span>
-                            <span class="centered-text" style="top: 2vw">{{ item.desc }}</span>
+                            <span class="centered-text" style="top: 2.0vw">{{ item.desc }}</span>
                         </div>
                         <div
                             :class="{
@@ -130,8 +130,8 @@ import {
                             class="third-cont"
                             style="height: 50%; font-size: 0.65vw"
                         >
-                            <span class="centered-text" style="top: 2vw"> - REWARD - </span>
-                            <span class="centered-text" style="top: 4.4vw">{{ item.reward }}</span>
+                            <span class="centered-text" style="top: 1.6vw"> - REWARD - </span>
+                            <span class="centered-text" style="top: 4vw">{{ item.reward }}</span>
                         </div>
                     </button>
                     <!-- TODO: replace the slider with text input after cap > 20 or something -->

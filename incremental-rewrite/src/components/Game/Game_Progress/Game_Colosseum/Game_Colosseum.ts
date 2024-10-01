@@ -87,16 +87,16 @@ export const COL_CHALLENGES: colChallenges = {
         name: `Sabotaged Upgrades`,
         get goal() {
             return [
-                D(1e60),
+                D(1e35),
+                D(1e33),
+                D(1e30),
+                D(1e33),
+                D(1e35),
+                D(1e40),
                 D(1e55),
-                D(1e52),
-                D(1e55),
-                D(1e60),
-                D(1e70),
-                D(1e95),
-                D(1e120),
-                D(1e165),
-                D(1e200),
+                D(1e75),
+                D(1e100),
+                D(1e150),
                 D(Infinity)
             ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
         },
@@ -105,16 +105,16 @@ export const COL_CHALLENGES: colChallenges = {
         },
         get desc() {
             return [
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous and all upgrades scale ${format(2, 1)}× faster.`,
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(2.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e20)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(3, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e25)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(3.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e30)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(4, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e35)}, and Upgrade 2's effect is dilated to the ^${format(0.95, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e40)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e50)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e60)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(15, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, and Dotgenous, all upgrades scale ${format(25, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e90)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous and all upgrades scale ${format(1.5, 1)}× faster.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(2, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e20)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(2.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e25)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(3, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e30)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(4, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e35)}, and Upgrade 2's effect is dilated to the ^${format(0.95, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e40)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e50)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e60)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(15, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(25, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e90)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
                 `winner you complete it all`
             ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
         },
@@ -133,12 +133,13 @@ export const COL_CHALLENGES: colChallenges = {
                 `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(100, 1)}%), Upgrade 1's Hyper scaling is ${format(20)}% weaker, Upgrade 2's base is increased by +${format(5, 1)}%, and Point taxation starts ${format(1e6)}× later.`
             ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
         },
-        // trying not to completely hard code in everything in *different files* and for js trying not to create 1,000 arrays for one thing sfgsdgnisudb
+        // trying not to completely hardcode in everything in *different files* and for js trying not to create 1,000 arrays for one thing sfgsdgnisudb
+        // ! FOR CHALLENGES THAT ARE MEANT TO SUPPORT *DECIMAL* CAPS, MAKE internalChallengeCond AND internalChallengeEffect A GET() SO ITS COMPATIBLE
         internalChallengeCond: [
-            [D(2),   D(1),    D(1),    D(1), D(1)],
-            [D(2.5), D(1e20), D(1),    D(1), D(1)],
-            [D(3),   D(1e25), D(1),    D(1), D(1)],
-            [D(3.5), D(1e30), D(1),    D(1), D(1)],
+            [D(1.5), D(1),    D(1),    D(1), D(1)],
+            [D(2),   D(1e20), D(1),    D(1), D(1)],
+            [D(2.5), D(1e25), D(1),    D(1), D(1)],
+            [D(3),   D(1e30), D(1),    D(1), D(1)],
             [D(4),   D(1e35), D(0.95), D(1), D(1)],
             [D(5),   D(1e40), D(0.9),  D(1), D(1)],
             [D(7.5), D(1e50), D(0.85), D(1), D(1)],

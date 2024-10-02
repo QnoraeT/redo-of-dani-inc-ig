@@ -4,7 +4,7 @@ import { player, tmp } from "@/main";
 import { D } from "@/calc";
 import { getKuaUpgrade } from "../Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { spawnPopup } from "@/popups";
-import { getColResLevel } from "../Game_Progress/Game_Colosseum/Game_Colosseum";
+import { getColResLevel, timesCompleted } from "../Game_Progress/Game_Colosseum/Game_Colosseum";
 
 export type Ach_Types = "main" | "kua" | "col" | "tax" | "kb";
 export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "tax", "kb"];
@@ -1147,7 +1147,6 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                // ! Unable
                 // id: 2
                 ordering: 2,
                 get name() {
@@ -1157,7 +1156,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `Complete "Sabotaged Upgrades" 5 times.`;
                 },
                 get cond() {
-                    return false;
+                    return Decimal.gte(timesCompleted("su"), 5);
                 },
                 reward: ``,
                 get show() {

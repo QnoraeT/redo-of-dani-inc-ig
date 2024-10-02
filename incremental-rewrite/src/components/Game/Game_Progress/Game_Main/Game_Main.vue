@@ -7,6 +7,7 @@ import { MAIN_ONE_UPGS, MAIN_UPGS, PR2_EFF, buyGenUPG, buyOneMainUpg, getOMUpgra
 import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
 import { switchSubTab } from '@/components/MainTabs/MainTabs'
 import Tab_Button from '@/components/MainTabs/DefaultTabButton.vue'
+import { inChallenge } from '../Game_Colosseum/Game_Colosseum'
 </script>
 <template>
     <div id="generators" v-if="tab.currentTab === 0">
@@ -19,7 +20,7 @@ import Tab_Button from '@/components/MainTabs/DefaultTabButton.vue'
                 <div v-for="(item, index) in MAIN_ONE_UPGS" :key="index">
                     <!-- set padding to 0vw because it auto-inserts padding -->
                     <button @click="buyOneMainUpg(index)" :class="{ nope: !tmp.main.oneUpgrades[index].canBuy && !maxxedOMUpgrade(index), ok: tmp.main.oneUpgrades[index].canBuy && !maxxedOMUpgrade(index), done: maxxedOMUpgrade(index) }" :style="{ backgroundColor: getOMUpgrade(index) ? '#303030' : '#202020' }" v-if="item.show" style="width: 12vw; height: 8vw; margin-left: 0.18vw; margin-right: 0.18vw; margin-bottom: 0.36vw; font-size: 0.65vw;" class="generatorButton fontVerdana whiteText">
-                        <span :style="{ color: '#ddd' }" style="font-size: 0.75vw; margin-right: 0.5vw"><b>#{{index + 1}}</b></span>
+                        <span :style="{ color: '#ddd' }" style="font-size: 0.75vw; margin-right: 0.5vw"><b>#{{index + 1}}</b></span><span v-if="inChallenge('im')" class="whiteText">x{{ format(getOMUpgrade(index)) }}</span>
                         <br><span v-if="!item.implemented" style="color: #ff0; font-size: 0.5vw"><b>[ NOT IMPLEMENTED ]</b><br></span>
                         <span class="vertical-align: top;">{{item.desc}}</span>
                         <br><br>
@@ -74,7 +75,7 @@ import Tab_Button from '@/components/MainTabs/DefaultTabButton.vue'
     
                             <button style="text-align: center; width: 18vw; height: 3vw; font-size: 0.7vw" 
                             :class="{ nopeFill: !player.gameProgress.main.prai.auto, okFill: player.gameProgress.main.prai.auto }"
-                            class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPRai" v-if="getKuaUpgrade('s', 1)" @click="player.gameProgress.main.prai.auto = !player.gameProgress.main.prai.auto">
+                            class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPRai" v-if="getKuaUpgrade('s', 1) || inChallenge('df')" @click="player.gameProgress.main.prai.auto = !player.gameProgress.main.prai.auto">
                                 <b>PRai Generator: {{player.gameProgress.main.prai.auto?"On":"Off"}}</b>
                             </button>
                         </div>
@@ -88,10 +89,10 @@ import Tab_Button from '@/components/MainTabs/DefaultTabButton.vue'
                                 Reset all of your previous progress to for a PR2 reset.
                                 <br><span :style="{ color: tmp.main.pr2.costTextColor }">{{
                                     tmp.main.pr2.canDo
-                                        ? false
+                                        ? inChallenge("im")
                                             ? `You can PR2 reset ${format(tmp.main.pr2.target.sub(player.gameProgress.main.pr2.amount).floor())} times!`
                                             : `You can PR2 reset! (${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai)`
-                                        : `You need ${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai to PR2 reset.`
+                                        : `You need ${format(inChallenge("im") ? player.gameProgress.main.points : player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai to PR2 reset.`
                                 }}</span><br>
                                 <br>You have {{format(player.gameProgress.main.pr2.amount)}} PR2, which boosts your PRai and points by {{format(tmp.main.pr2.effect, 2)}}×.
                                 <br>{{tmp.main.pr2.textEffect.txt===""?"":`At ${format(tmp.main.pr2.textEffect.when)} PR2 reset${tmp.main.pr2.textEffect.when.eq(1)?"":"s"}, ${tmp.main.pr2.textEffect.txt}`}}

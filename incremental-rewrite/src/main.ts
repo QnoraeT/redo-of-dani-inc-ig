@@ -33,7 +33,6 @@ import {
 } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { diePopupsDie } from "./popups";
 import {
-    challengeDepth,
     getColResEffect,
     getColXPtoNext,
     inChallenge,
@@ -279,6 +278,7 @@ export const makeChallengeInfo = () => {
         overall: false,
         depths: D(0),
         optionalDiff: D(0),
+        enteredDiff: D(0)
     };
 };
 
@@ -463,6 +463,7 @@ export type ChallengeData = {
     overall: boolean;
     depths: DecimalSource;
     optionalDiff: DecimalSource;
+    enteredDiff: DecimalSource
 };
 
 export type TmpMainUpgrade = {
@@ -566,6 +567,10 @@ type Tmp = {
         researchesAtOnce: number;
         researchesAllocated: number;
         researchSpeed: Decimal;
+        effects: {
+            upg1a2sc: Decimal
+            res: Decimal
+        };
     };
     tax: {
         req: Decimal;
@@ -735,6 +740,10 @@ function initTemp(): Tmp {
             powGenExp: D(0.4),
             powGen: D(0),
             truePowGen: D(0),
+            effects: {
+                upg1a2sc: D(1),
+                res: D(1)
+            },
             researchesAtOnce: 1,
             researchesAllocated: 0,
             researchSpeed: D(1)
@@ -1039,16 +1048,13 @@ export const reset = (layer: number, override = false) => {
             if (tmp.value.main.pr2.canDo || override) {
                 resetSuccessful = true;
                 if (!override) {
-                    player.value.gameProgress.main.pr2.amount = Decimal.add(
-                        player.value.gameProgress.main.pr2.amount,
-                        1
-                    );
+                    player.value.gameProgress.main.pr2.amount = Decimal.add(player.value.gameProgress.main.pr2.amount, 1);
+                    if (inChallenge("im")) {
+                        player.value.gameProgress.main.pr2.amount = Decimal.max(player.value.gameProgress.main.pr2.amount, tmp.value.main.pr2.target.floor().add(1));
+                    }
                 }
 
-                player.value.gameProgress.main.prai.amount = Decimal.min(
-                    10,
-                    player.value.gameProgress.main.pr2.amount
-                );
+                player.value.gameProgress.main.prai.amount = Decimal.min(10, player.value.gameProgress.main.pr2.amount);
 
                 updateStart(1, 0);
             }
@@ -1178,78 +1184,88 @@ function calcPPS(): Decimal {
     pps = pps.mul(tmp.value.main.upgrades[0].effect);
     setFactor(1, [0], "Upgrade 1", `×${format(tmp.value.main.upgrades[0].effect, 2)}`, `${format(pps, 1)}`, true);
 
+    if (Decimal.gte(player.value.gameProgress.main.upgrades[1].bought, 1) && inChallenge("im")) {
+        pps = pps.mul(tmp.value.main.upgrades[1].effect);
+    }
+    setFactor(2, [0], "Upgrade 2", `×${format(tmp.value.main.upgrades[1].effect, 2)}`, `${format(pps, 1)}`, Decimal.gte(player.value.gameProgress.main.upgrades[1].bought, 1) && inChallenge("im"), "col");
+
     if (Decimal.gte(player.value.gameProgress.main.upgrades[3].bought, 1)) {
         pps = pps.mul(tmp.value.main.upgrades[3].effect);
     }
-    setFactor(2, [0], "Upgrade 4", `×${format(tmp.value.main.upgrades[3].effect, 2)}`, `${format(pps, 1)}`, Decimal.gte(player.value.gameProgress.main.upgrades[3].bought, 1));
+    setFactor(3, [0], "Upgrade 4", `×${format(tmp.value.main.upgrades[3].effect, 2)}`, `${format(pps, 1)}`, Decimal.gte(player.value.gameProgress.main.upgrades[3].bought, 1));
+
+    if (Decimal.gte(player.value.gameProgress.main.upgrades[4].bought, 1) && inChallenge("im")) {
+        pps = pps.mul(tmp.value.main.upgrades[4].effect);
+    }
+    setFactor(4, [0], "Upgrade 5", `×${format(tmp.value.main.upgrades[4].effect, 2)}`, `${format(pps, 1)}`, Decimal.gte(player.value.gameProgress.main.upgrades[4].bought, 1) && inChallenge("im"), "col");
 
     pps = pps.mul(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1);
-    setFactor(3, [0], "PRai", `×${format(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1, 2)}`, `${format(pps, 1)}`, true);
+    setFactor(5, [0], "PRai", `×${format(tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : 1, 2)}`, `${format(pps, 1)}`, true);
 
     if (player.value.gameProgress.unlocks.pr2) {
         pps = pps.mul(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1);
     }
-    setFactor(4, [0], "PR2", `×${format(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1, 2)}`, `${format(pps, 1)}`,  player.value.gameProgress.unlocks.pr2);
+    setFactor(6, [0], "PR2", `×${format(tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : 1, 2)}`, `${format(pps, 1)}`,  player.value.gameProgress.unlocks.pr2);
 
     if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1) && !inChallenge("su")) {
         pps = pps.mul(MAIN_ONE_UPGS[9].effect!);
     }
-    setFactor(5, [0], "One-Upgrade #10", `×${format(MAIN_ONE_UPGS[9].effect!, 2)}`, `${format(pps, 1)}`, Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1) && !inChallenge("su"));
+    setFactor(7, [0], "One-Upgrade #10", `×${format(MAIN_ONE_UPGS[9].effect!, 2)}`, `${format(pps, 1)}`, Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1) && !inChallenge("su"));
     
     if (ifAchievement(0, 3) && !inChallenge("su")) {
         pps = pps.mul(1.2);
     }
-    setFactor(6, [0], "Achievement ID (0, 3)", `×${format(1.2, 2)}`, `${format(pps, 1)}`, ifAchievement(0, 3) && !inChallenge("su"), "ach");
+    setFactor(8, [0], "Achievement ID (0, 3)", `×${format(1.2, 2)}`, `${format(pps, 1)}`, ifAchievement(0, 3) && !inChallenge("su"), "ach");
 
     if (!inChallenge("su")) {
         pps = pps.mul(ACHIEVEMENT_DATA[0].eff);
     }
-    setFactor(7, [0], "Achievement Tier 1", `×${format(ACHIEVEMENT_DATA[0].eff, 2)}`, `${format(pps, 1)}`, !inChallenge("su"), "ach");
+    setFactor(9, [0], "Achievement Tier 1", `×${format(ACHIEVEMENT_DATA[0].eff, 2)}`, `${format(pps, 1)}`, !inChallenge("su"), "ach");
 
     if (player.value.gameProgress.unlocks.kua && !inChallenge("su")) {
         pps = pps.mul(tmp.value.kua.effects.kpowerPassive);
     }
-    setFactor(8, [0], "KPower Base Effect", `×${format(tmp.value.kua.effects.kpowerPassive, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.kua && !inChallenge("su"), "kua");
+    setFactor(10, [0], "KPower Base Effect", `×${format(tmp.value.kua.effects.kpowerPassive, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.kua && !inChallenge("su"), "kua");
 
     if (getKuaUpgrade("s", 7) && !inChallenge("su")) {
         pps = pps.mul(tmp.value.kua.effects.pts);
     }
-    setFactor(9, [0], "KShard Upgrade 7", `×${format(tmp.value.kua.effects.pts, 2)}`, `${format(pps, 1)}`, getKuaUpgrade("s", 7) && !inChallenge("su"), "kua");
+    setFactor(11, [0], "KShard Upgrade 7", `×${format(tmp.value.kua.effects.pts, 2)}`, `${format(pps, 1)}`, getKuaUpgrade("s", 7) && !inChallenge("su"), "kua");
 
     if (ifAchievement(1, 0) && !inChallenge("su")) {
         pps = pps.mul(2);
     }
-    setFactor(10, [0], "Achievement ID (1, 0)", `×${format(2, 2)}`, `${format(pps, 1)}`, ifAchievement(1, 0) && !inChallenge("su"), "ach");
+    setFactor(12, [0], "Achievement ID (1, 0)", `×${format(2, 2)}`, `${format(pps, 1)}`, ifAchievement(1, 0) && !inChallenge("su"), "ach");
 
     if (ifAchievement(1, 1) && !inChallenge("su")) {
         pps = pps.mul(getAchievementEffect(1, 1));
     }
-    setFactor(11, [0], "Achievement ID (1, 1)", `×${format(getAchievementEffect(1, 1), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 1) && !inChallenge("su"), "ach");
+    setFactor(13, [0], "Achievement ID (1, 1)", `×${format(getAchievementEffect(1, 1), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 1) && !inChallenge("su"), "ach");
 
     if (ifAchievement(1, 3) && !inChallenge("su")) {
         pps = pps.mul(getAchievementEffect(1, 3));
     }
-    setFactor(12, [0], "Achievement ID (1, 3)", `×${format(getAchievementEffect(1, 3), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 3) && !inChallenge("su"), "ach");
+    setFactor(14, [0], "Achievement ID (1, 3)", `×${format(getAchievementEffect(1, 3), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 3) && !inChallenge("su"), "ach");
 
     if (ifAchievement(1, 13) && !inChallenge("su")) {
         pps = pps.mul(getAchievementEffect(1, 13));
     }
-    setFactor(13, [0], "Achievement ID (1, 13)", `×${format(getAchievementEffect(1, 13), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 13) && !inChallenge("su"), "ach");
+    setFactor(15, [0], "Achievement ID (1, 13)", `×${format(getAchievementEffect(1, 13), 2)}`, `${format(pps, 1)}`, ifAchievement(1, 13) && !inChallenge("su"), "ach");
 
     if (player.value.gameProgress.unlocks.col) {
         pps = pps.mul(getColResEffect(0));
     }
-    setFactor(14, [0], "Dotgenous", `×${format(getColResEffect(0), 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.col, "col");
+    setFactor(16, [0], "Dotgenous", `×${format(getColResEffect(0), 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.col, "col");
 
     if (player.value.gameProgress.unlocks.tax && !inChallenge("su")) {
         pps = pps.mul(tmp.value.tax.ptsEff);
     }
-    setFactor(15, [0], "Taxed Coins", `×${format(tmp.value.tax.ptsEff, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.tax && !inChallenge("su"), "tax");
+    setFactor(17, [0], "Taxed Coins", `×${format(tmp.value.tax.ptsEff, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.tax && !inChallenge("su"), "tax");
 
     if (getKuaUpgrade("p", 3) && !inChallenge("su")) {
         pps = pps.pow(tmp.value.kua.effects.ptPower);
     }
-    setFactor(16, [0], "KPower Upgrade 3", `^${format(tmp.value.kua.effects.ptPower, 3)}`, `${format(pps, 1)}`, getKuaUpgrade("p", 3) && !inChallenge("su"), "kua");
+    setFactor(18, [0], "KPower Upgrade 3", `^${format(tmp.value.kua.effects.ptPower, 3)}`, `${format(pps, 1)}`, getKuaUpgrade("p", 3) && !inChallenge("su"), "kua");
 
     if (player.value.gameProgress.col.inAChallenge && !inChallenge("su")) {
         pps = pps.pow(
@@ -1266,7 +1282,7 @@ function calcPPS(): Decimal {
                 .add(1)
         );
     }
-    setFactor(17, [0], "Achievement Tier 3", `^${format(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1), 3)}`, `${format(pps, 1)}`, player.value.gameProgress.col.inAChallenge && !inChallenge("su"), "ach");
+    setFactor(19, [0], "Achievement Tier 3", `^${format(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1), 3)}`, `${format(pps, 1)}`, player.value.gameProgress.col.inAChallenge && !inChallenge("su"), "ach");
 
     return pps;
 }
@@ -1322,8 +1338,18 @@ function gameLoop(): void {
             newPts: D(0),
             scal: getSCSLAttribute("points", false)
         };
-        data.oldPts = Decimal.max(player.value.gameProgress.main.points, data.scal[0].start);
+        data.oldPts = Decimal.max(player.value.gameProgress.main.points, 10);
 
+        if (inChallenge("df")) {
+            data.newPts = scale(scale(scale(scale(data.oldPts.max(10).log10(), 0.2, true, 1, 1, 0.5).pow10().add(generate).log10(), 0.2, false, 1, 1, 0.5).pow10(), 0.2, true, 10, 1, 0.5).add(generate), 0.2, false, 10, 1, 0.5);
+
+            generate = data.newPts.sub(data.oldPts).max(1);
+            tmp.value.main.pps = generate.div(gameDelta);
+        }
+        // FIXME: every time PPS gets updated, check the id value for this (20)
+        setFactor(20, [0], "Decaying Feeling", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, inChallenge("df"), "col");
+
+        data.oldPts = Decimal.max(player.value.gameProgress.main.points, data.scal[0].start);
         setSCSLEffectDisp("points", false, 0, `/${format(1, 2)}`);
         if (Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start)) {
             data.newPts = scale(
@@ -1354,8 +1380,8 @@ function gameLoop(): void {
                 `/${format(Decimal.div(data.oldGen, generate), 2)}`
             );
         }
-        // FIXME: every time PPS gets updated, check the id value for this (18)
-        setFactor(18, [0], "Taxation", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start), "sc1");
+        // FIXME: every time PPS gets updated, check the id value for this (21)
+        setFactor(21, [0], "Taxation", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start), "sc1");
 
         player.value.gameProgress.main.points = Decimal.add(
             player.value.gameProgress.main.points,

@@ -41,6 +41,10 @@ export const getColChalCondEffects = (id: challengeIDList) => {
     return COL_CHALLENGES[id].internalChallengeCond![new Decimal(challengeDepth(id)).sub(1).max(0).toNumber()]!
 }
 
+export const getColChalCondEffectsDec = (id: challengeIDList) => {
+    return COL_CHALLENGES[id].internalChallengeCond!
+}
+
 /**
  * type
  * 0 = One-Time only
@@ -88,15 +92,15 @@ export const COL_CHALLENGES: colChallenges = {
         get goal() {
             return [
                 D(1e35),
-                D(1e33),
-                D(1e30),
-                D(1e33),
-                D(1e35),
                 D(1e40),
+                D(1e45),
                 D(1e55),
-                D(1e75),
+                D(1e65),
+                D(1e80),
                 D(1e100),
-                D(1e150),
+                D(1e140),
+                D(1e200),
+                D(1e300),
                 D(Infinity)
             ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
         },
@@ -106,15 +110,15 @@ export const COL_CHALLENGES: colChallenges = {
         get desc() {
             return [
                 `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous and all upgrades scale ${format(1.5, 1)}× faster.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(2, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e20)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(2.5, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e25)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(3, 1)}× faster, and Upgrade 1's softcap starts earlier by ×${format(1e30)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(4, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e35)}, and Upgrade 2's effect is dilated to the ^${format(0.95, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e40)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e50)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(10, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e60)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(15, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e75)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(25, 1)}× faster, Upgrade 1's softcap starts earlier by ×${format(1e90)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(2, 1)}× faster, and Upgrade 1's base is reduced by -${format(0.1, 3)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(2.5, 1)}× faster, and Upgrade 1's base is reduced by -${format(0.2, 3)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(3, 1)}× faster, and Upgrade 1's base is reduced by -${format(0.25, 3)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(4, 1)}× faster, Upgrade 1's base is reduced by -${format(0.3, 3)}, and Upgrade 2's effect is dilated to the ^${format(0.95, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(5, 1)}× faster, Upgrade 1's base is reduced by -${format(0.35, 3)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's base is reduced by -${format(0.4, 3)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(10, 1)}× faster, Upgrade 1's base is reduced by -${format(0.425, 3)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(15, 1)}× faster, Upgrade 1's base is reduced by -${format(0.45, 3)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
+                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(25, 1)}× faster, Upgrade 1's base is reduced by -${format(0.475, 3)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
                 `winner you complete it all`
             ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
         },
@@ -134,19 +138,19 @@ export const COL_CHALLENGES: colChallenges = {
             ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
         },
         // trying not to completely hardcode in everything in *different files* and for js trying not to create 1,000 arrays for one thing sfgsdgnisudb
-        // ! FOR CHALLENGES THAT ARE MEANT TO SUPPORT *DECIMAL* CAPS, MAKE internalChallengeCond AND internalChallengeEffect A GET() SO ITS COMPATIBLE
+        // ! FOR CHALLENGES THAT ARE MEANT TO SUPPORT *DECIMAL* CAPS, MAKE internalChallengeCond AND internalChallengeEffect A GET() INSTEAD OF AN ARRAY SO ITS COMPATIBLE
         internalChallengeCond: [
-            [D(1.5), D(1),    D(1),    D(1), D(1)],
-            [D(2),   D(1e20), D(1),    D(1), D(1)],
-            [D(2.5), D(1e25), D(1),    D(1), D(1)],
-            [D(3),   D(1e30), D(1),    D(1), D(1)],
-            [D(4),   D(1e35), D(0.95), D(1), D(1)],
-            [D(5),   D(1e40), D(0.9),  D(1), D(1)],
-            [D(7.5), D(1e50), D(0.85), D(1), D(1)],
-            [D(10),  D(1e60), D(0.8),  D(0), D(1)],
-            [D(15),  D(1e75), D(0.75), D(0), D(0.75)],
-            [D(25),  D(1e90), D(0.7),  D(0), D(0.5)],
-            [D(40),  D(1e95), D(0.65), D(0), D(1/3)],
+            [D(1.5), D(0),     D(1),    D(1), D(1)],
+            [D(2),   D(0.1),   D(1),    D(1), D(1)],
+            [D(2.5), D(0.2),   D(1),    D(1), D(1)],
+            [D(3),   D(0.25),  D(1),    D(1), D(1)],
+            [D(4),   D(0.3),   D(0.95), D(1), D(1)],
+            [D(5),   D(0.35),  D(0.9),  D(1), D(1)],
+            [D(7.5), D(0.4),   D(0.85), D(1), D(1)],
+            [D(10),  D(0.425), D(0.8),  D(0), D(1)],
+            [D(15),  D(0.45),  D(0.75), D(0), D(0.75)],
+            [D(25),  D(0.475), D(0.7),  D(0), D(0.5)],
+            [D(40),  D(0.5),   D(0.65), D(0), D(1/3)],
         ],
         internalChallengeEffect: [
             [D(0.025), D(1),    D(1),     D(1)],
@@ -188,8 +192,8 @@ export const COL_CHALLENGES: colChallenges = {
         get goalDesc() {
             return `Reach ${format(this.goal)} Points.`;
         },
-        desc: `Points, PRai, and all Kuaraniai resources gain less the more you have.`,
-        reward: `insert something here and Unlock another challenge.`,
+        desc: `Points, PRai, and all Kuaraniai resources gain less the more you have. However, PRai's auto-generator is always unlocked, and always runs at ${format(100)}%.`,
+        reward: `Colosseum Power speeds up research, increase all pre-Col resources by ${format(5)}×, and Unlock another challenge.`,
         cap: 1,
         get show() {
             return Decimal.gte(timesCompleted("su"), 1);
@@ -217,7 +221,7 @@ export const COL_CHALLENGES: colChallenges = {
         get goalDesc() {
             return `Reach ${format(this.goal)} Points.`;
         },
-        desc: `All Upgrades can only be bought once, but One-Upgrades are repeatable (Upgrade 2 and 5 change to boosting point gain), PRai is a static resource while PR2's amount scales normally. Kuaraniai and above will not be affected.`,
+        desc: `All Upgrades can only be bought once, but One-Upgrades are repeatable (Upgrade 2 and 5 change to boosting point gain), You start with 1 PR2. PRai is a static resource while PR2's amount scales as if it was a 'normal' resource. Kuaraniai and above will not be affected.`,
         reward: `Something here.`,
         cap: 1,
         get show() {
@@ -530,6 +534,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             tmp.value.col.researchesAtOnce = 1;
             tmp.value.col.researchesAllocated = 0;
             tmp.value.col.researchSpeed = D(1);
+            tmp.value.col.researchSpeed = tmp.value.col.researchSpeed.mul(tmp.value.col.effects.res);
 
             for (let i = 0; i < COL_RESEARCH.length; i++) {
                 if (player.value.gameProgress.col.research.enabled[i] === undefined) {
@@ -588,6 +593,19 @@ export const updateCol = (type: number, delta: DecimalSource) => {
 
                 i = Decimal.max(player.value.gameProgress.col.power, 1).cbrt().mul(5).add(40);
                 player.value.gameProgress.col.maxTime = i;
+
+                tmp.value.col.effects = {
+                    upg1a2sc: D(1),
+                    res: D(1)
+                }
+
+                tmp.value.col.effects.upg1a2sc = Decimal.gte(timesCompleted("su"), 1)
+                    ? Decimal.max(player.value.gameProgress.col.power, 1).log(1000).sub(1).mul(getColChalCondEffects("su")[0]).div(10).add(1)
+                    : D(1)
+
+                tmp.value.col.effects.res = Decimal.gte(timesCompleted("df"), 1)
+                    ? Decimal.max(player.value.gameProgress.col.power, 10).log10()
+                    : D(1)
             }
 
             k = 0;
@@ -617,6 +635,10 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 if (player.value.gameProgress.inChallenge[chalID].entered || player.value.gameProgress.inChallenge[chalID].trapped) {
                     j = D(1);
                 }
+                if (COL_CHALLENGES[chalID].type === 1) {
+                    j = Decimal.add(player.value.gameProgress.inChallenge[chalID].enteredDiff, 1);
+                }
+                // anything after this replaces the selected value; as if a challenge sent you into another challenge with a set difficulty
                 player.value.gameProgress.inChallenge[chalID].depths = j;
             }
 
@@ -696,6 +718,7 @@ export const challengeToggle = (id: challengeIDList) => {
         player.value.gameProgress.inChallenge[id].name = COL_CHALLENGES[id].name;
         player.value.gameProgress.inChallenge[id].goalDesc = COL_CHALLENGES[id].goalDesc;
         player.value.gameProgress.inChallenge[id].entered = true;
+        player.value.gameProgress.inChallenge[id].enteredDiff = player.value.gameProgress.inChallenge[id].optionalDiff;
 
         const obj: colChallengesSavedData = makeColChallengeSaveData();
 
@@ -703,6 +726,9 @@ export const challengeToggle = (id: challengeIDList) => {
         player.value.gameProgress.col.challengeOrder.chalID.push(COL_CHALLENGES[id].id);
         player.value.gameProgress.col.challengeOrder.layer.push(COL_CHALLENGES[id].layer);
         reset(3, true);
+        if (id === 'im') {
+            player.value.gameProgress.main.pr2.amount = D(1);
+        }
     } else {
         if (COL_CHALLENGES[id].canComplete) {
             player.value.gameProgress.col.completed[id] = Decimal.add(

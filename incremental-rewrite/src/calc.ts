@@ -21,17 +21,17 @@ export const scale = (
         case "L1":
             return inverse
                 ? Decimal.pow(num, 2)
-                      .add(Decimal.sub(str, 1).mul(start).mul(num).mul(4))
-                      .sub(Decimal.sub(str, 1).mul(Decimal.pow(start, 2)).mul(4))
-                      .add(Decimal.sub(str, 1).mul(start).mul(2))
-                      .add(num)
-                      .div(2)
-                      .div(str)
+                        .add(Decimal.sub(str, 1).mul(start).mul(num).mul(4))
+                        .sub(Decimal.sub(str, 1).mul(Decimal.pow(start, 2)).mul(4))
+                        .add(Decimal.sub(str, 1).mul(start).mul(2))
+                        .add(num)
+                        .div(2)
+                        .div(str)
                 : Decimal.mul(str, num).add(
-                      Decimal.mul(start, Decimal.sub(1, str)).mul(
-                          Decimal.sub(2, Decimal.div(start, num))
-                      )
-                  );
+                        Decimal.mul(start, Decimal.sub(1, str)).mul(
+                            Decimal.sub(2, Decimal.div(start, num))
+                        )
+                    );
         // Polynomial
         case 0:
         case 0.1:

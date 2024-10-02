@@ -11,6 +11,7 @@ import {
     KUA_UPGRADES
 } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_Main";
+import { timesCompleted } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 
 export const SCALE_ATTR = [
     { pow: 2, type: 0, name: "Scaled", color: `#3080FF` },
@@ -377,6 +378,10 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+                    
+                    if (Decimal.gte(timesCompleted("su"), 1)) {
+                        data[0].power = data[0].power.div(tmp.value.col.effects.upg1a2sc);
+                    }
                     break;
                 case "upg2":
                     data.push({
@@ -406,6 +411,10 @@ export const getSCSLAttribute = (
                     }
 
                     data[0].start = data[0].start.mul(tmp.value.kua.effects.upg2Softcap);
+
+                    if (Decimal.gte(timesCompleted("su"), 1)) {
+                        data[0].power = data[0].power.div(tmp.value.col.effects.upg1a2sc);
+                    }
                     break;
                 case "upg3":
                     data.push({

@@ -1,7 +1,7 @@
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { player, tmp, updateAllBest, updateAllTotal } from "@/main";
 import { format, formatPerc } from "@/format";
-import { D, smoothExp, smoothPoly } from "@/calc";
+import { D, scale, smoothExp, smoothPoly } from "@/calc";
 import { ACHIEVEMENT_DATA } from "../../Game_Achievements/Game_Achievements";
 import { getColResEffect, inChallenge } from "../Game_Colosseum/Game_Colosseum";
 import { setFactor } from "../../Game_Stats/Game_Stats";
@@ -542,7 +542,7 @@ export const updateAllKua = (delta: DecimalSource) => {
 };
 
 export const updateKua = (type: number, delta: DecimalSource) => {
-    let i, j, k, generate, decayExp;
+    let i, j, k, generate, decayExp, data;
     switch (type) {
         case -1:
             tmp.value.kua.active.kpower.upgrades = true;
@@ -644,6 +644,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             );
 
             tmp.value.kua.req = D(1e10);
+            if (inChallenge("im")) {
+                tmp.value.kua.req = tmp.value.kua.req.div(4e8);
+            }
             tmp.value.kua.mult = D(0.0001);
             tmp.value.kua.exp = D(3);
 
@@ -665,18 +668,32 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 tmp.value.kua.effectivePrai.gte(tmp.value.kua.req) && tmp.value.kua.active.gain;
             tmp.value.kua.pending = tmp.value.kua.canDo
                 ? tmp.value.kua.effectivePrai
-                      .log(tmp.value.kua.req)
-                      .ln()
-                      .mul(1.5)
-                      .div(tmp.value.kua.exp)
-                      .add(1)
-                      .pow(tmp.value.kua.exp)
-                      .sub(1)
-                      .pow10()
-                      .mul(tmp.value.kua.mult)
+                        .log(tmp.value.kua.req)
+                        .ln()
+                        .mul(1.5)
+                        .div(tmp.value.kua.exp)
+                        .add(1)
+                        .pow(tmp.value.kua.exp)
+                        .sub(1)
+                        .pow10()
+                        .mul(tmp.value.kua.mult)
                 : D(0);
             setFactor(0, [4, 1], "Base", `~${format(tmp.value.kua.mult, 4)}*10^(ln(log(${format(tmp.value.kua.effectivePrai)})))^${format(tmp.value.kua.exp, 2)}) (approx.)`, `${format(tmp.value.kua.pending, 4)}`, true);
             
+            data = {
+                oldGain: tmp.value.kua.pending,
+                oldKua: D(0),
+                newKua: D(0),
+            };
+            data.oldKua = Decimal.max(player.value.gameProgress.kua.amount, 1e-4);
+
+            if (inChallenge("df")) {
+                data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, 0.75).add(tmp.value.kua.pending), 0.2, false, 1e-4, 1, 0.75);
+
+                tmp.value.kua.pending = data.newKua.sub(data.oldKua);
+            }
+            setFactor(1, [4, 1], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tmp.value.kua.pending), 2)}`, `${format(tmp.value.kua.pending, 4)}`, inChallenge("df"), "col");
+
             if (player.value.gameProgress.kua.auto) {
                 generate = tmp.value.kua.pending.mul(delta).mul(0.0001);
                 player.value.gameProgress.kua.amount = Decimal.add(
@@ -808,11 +825,11 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     0
                 )
                     ? Decimal.pow(
-                          20,
-                          Decimal.log10(player.value.gameProgress.kua.kshards.amount).add(2).div(13)
-                      )
-                          .div(1e3)
-                          .add(1)
+                            20,
+                            Decimal.log10(player.value.gameProgress.kua.kshards.amount).add(2).div(13)
+                        )
+                            .div(1e3)
+                            .add(1)
                     : D(1);
 
                 tmp.value.kua.effects.upg6 = Decimal.gt(
@@ -820,12 +837,12 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     1
                 )
                     ? Decimal.log10(player.value.gameProgress.kua.kpower.amount)
-                          .div(13)
-                          .mul(7)
-                          .add(1)
-                          .cbrt()
-                          .sub(6)
-                          .pow10()
+                            .div(13)
+                            .mul(7)
+                            .add(1)
+                            .cbrt()
+                            .sub(6)
+                            .pow10()
                     : D(0);
 
                 tmp.value.kua.effects.upg1SuperScaling = getKuaUpgrade("p", 6)
@@ -850,19 +867,19 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
                 tmp.value.kua.effects.pts = getKuaUpgrade("s", 7)
                     ? Decimal.max(k, 1)
-                          .mul(1e3)
-                          .cbrt()
-                          .log10()
-                          .pow(1.1)
-                          .mul(
-                              Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 0)
-                                  .add(1)
-                                  .ln()
-                                  .mul(2)
-                                  .add(1)
-                                  .sqrt()
-                          )
-                          .pow10()
+                            .mul(1e3)
+                            .cbrt()
+                            .log10()
+                            .pow(1.1)
+                            .mul(
+                                Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 0)
+                                    .add(1)
+                                    .ln()
+                                    .mul(2)
+                                    .add(1)
+                                    .sqrt()
+                            )
+                            .pow10()
                     : D(1);
             }
 
@@ -874,6 +891,20 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     i = i.mul(2.5);
                 }
                 setFactor(1, [4, 2], "KPower Upgrade 1", `×${format(2.5, 2)}`, `${format(i, 3)}`, getKuaUpgrade("p", 1), "kua");
+
+                data = {
+                    oldGain: i,
+                    oldKua: D(0),
+                    newKua: D(0),
+                };
+                data.oldKua = Decimal.max(player.value.gameProgress.kua.amount, 1e-4);
+    
+                if (inChallenge("df")) {
+                    data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, 0.5).add(i), 0.2, false, 1e-4, 1, 0.5);
+    
+                    i = data.newKua.sub(data.oldKua);
+                }
+                setFactor(2, [4, 2], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
             }
             tmp.value.kua.shardGen = i;
 
@@ -885,6 +916,20 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     i = i.mul(tmp.value.kua.effects.kpower);
                 }
                 setFactor(1, [4, 3], "KShard Upgrade 10", `×${format(tmp.value.kua.effects.kpower, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 10), "kua");
+
+                data = {
+                    oldGain: i,
+                    oldKua: D(0),
+                    newKua: D(0),
+                };
+                data.oldKua = Decimal.max(player.value.gameProgress.kua.amount, 1e-4);
+
+                if (inChallenge("df")) {
+                    data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, 0.5).add(i), 0.2, false, 1e-4, 1, 0.5);
+    
+                    i = data.newKua.sub(data.oldKua);
+                }
+                setFactor(2, [4, 3], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
             }
             tmp.value.kua.powGen = i;
 

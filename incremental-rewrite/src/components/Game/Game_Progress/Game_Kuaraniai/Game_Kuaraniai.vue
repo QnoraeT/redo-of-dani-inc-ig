@@ -27,17 +27,10 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                 margin-bottom: 1vw;
             "
         >
-            <button
-                @click="switchSubTab(0, 0)"
-                class="kuaButton2 fontVerdana whiteText normalTabButton"
-            >
+            <button @click="switchSubTab(0, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton" >
                 Main
             </button>
-            <button
-                @click="switchSubTab(-1, 0)"
-                style="width: 10vw"
-                class="kuaButton2 fontVerdana whiteText normalTabButton"
-            >
+            <button @click="switchSubTab(-1, 0)" style="width: 10vw" class="kuaButton2 fontVerdana whiteText normalTabButton" >
                 Bought Upgrades
             </button>
             <!-- disable this for now, seems unbalanced -->
@@ -152,13 +145,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
             v-if="tab.tabList[tab.currentTab][0] === 0"
         >
             <button
-                style="
-                    text-align: center;
-                    margin-top: 0.48vw;
-                    margin-left: auto;
-                    margin-right: auto;
-                    font-size: 0.8vw;
-                "
+                style="text-align: center; margin-top: 0.48vw; margin-left: auto; margin-right: auto; font-size: 0.8vw;"
                 :class="{ nope: !tmp.kua.canDo, ok: tmp.kua.canDo }"
                 class="whiteText thinlargeButton fontVerdana kuaButton"
                 id="kuaGain"
@@ -210,7 +197,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                 </div>
             </button>
             <button
-                style="text-align: center; width: 35vw; height: 3vw; font-size: 0.7vw"
+                style="text-align: center; width: 35vw; height: 3vw; font-size: 0.7vw; margin-left: auto; margin-right: auto;"
                 :class="{
                     nopeFill: !player.gameProgress.kua.auto,
                     okFill: player.gameProgress.kua.auto

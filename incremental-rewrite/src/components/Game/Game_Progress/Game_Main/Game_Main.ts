@@ -31,7 +31,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
         implemented: true,
         get cost() {
             if (inChallenge("im")) {
-                return Decimal.pow(2, getOMUpgrade(0)).mul(10)
+                return Decimal.pow(getOMUpgrade(0), 1.2).pow_base(100).mul(1e6)
             } else {
                 return D(1e6)
             }
@@ -45,7 +45,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
                 i = i.pow(MAIN_ONE_UPGS[5].effect!);
             }
             if (inChallenge("im")) {
-                i = i.pow(Decimal.add(getOMUpgrade(0), 1).sqrt())
+                i = i.pow(Decimal.max(getOMUpgrade(0), 1).sqrt())
             }
             return i;
         },
@@ -57,7 +57,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
         implemented: true,
         get cost() {
             if (inChallenge("im")) {
-                return Decimal.pow(2.2, getOMUpgrade(1)).mul(15)
+                return Decimal.pow(getOMUpgrade(1), 1.3).pow_base(200).mul(4e6)
             } else {
                 return D(4e6)
             }
@@ -68,7 +68,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
                 i = i.mul(MAIN_ONE_UPGS[5].effect!);
             }
             if (inChallenge("im")) {
-                i = i.mul(Decimal.add(getOMUpgrade(1), 1))
+                i = i.mul(Decimal.max(getOMUpgrade(1), 1))
             }
             return i;
         },
@@ -78,11 +78,20 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     {
         implemented: true,
-        cost: D(5e7),
+        get cost() {
+            if (inChallenge("im")) {
+                return Decimal.pow(getOMUpgrade(2), 1.4).pow_base(1e3).mul(5e7)
+            } else {
+                return D(5e7)
+            }
+        },
         get effect() { 
             let i = D(5);
             if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[5], 1)) {
                 i = i.pow(MAIN_ONE_UPGS[5].effect!);
+            }
+            if (inChallenge("im")) {
+                i = i.mul(Decimal.max(getOMUpgrade(2), 1))
             }
             return i;
         },
@@ -92,11 +101,20 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     {
         implemented: true,
-        cost: D(2e10),
+        get cost() {
+            if (inChallenge("im")) {
+                return Decimal.pow(getOMUpgrade(3), 1.5).pow_base(2e4).mul(2e10)
+            } else {
+                return D(2e10)
+            }
+        },
         get effect() { 
             let i = Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 0).mul(0.1).add(1).ln().add(1);
             if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[5], 1)) {
                 i = i.pow(MAIN_ONE_UPGS[5].effect!);
+            }
+            if (inChallenge("im")) {
+                i = i.pow(Decimal.add(getOMUpgrade(2), 1).pow(1.2))
             }
             return i;
         },
@@ -1139,15 +1157,13 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 setFactor(8, [2, 0], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i)}`, inChallenge("df"), "col");
 
                 if (inChallenge("im")) {
-                    i = i.log2().root(1.1).sub(player.value.gameProgress.main.prai.amount);
+                    i = i.root(Decimal.pow(1/0.8, player.value.gameProgress.inChallenge.im.depths))
                 }
-                setFactor(9, [2, 0], "Inverted Mechanics", `log2(${format(Decimal.pow(2, i.add(player.value.gameProgress.main.prai.amount).pow(1.1)), 2)})^${format(1/1.1, 3)} - ${format(player.value.gameProgress.main.prai.amount)}`, `${format(i)}`, inChallenge("im"), "col");
+                setFactor(9, [2, 0], `Inverted Mechanics ×${format(challengeDepth("im"))}`, `^${format(Decimal.pow(0.8, player.value.gameProgress.inChallenge.im.depths), 3)}`, `${format(i)}`, inChallenge("im"), "col");
+
                 tmp.value.main.prai.pending = i.floor().max(0);
 
                 i = tmp.value.main.prai.pending.add(1).floor();
-                if (inChallenge("im")) {
-                    i = Decimal.pow(2, i.add(player.value.gameProgress.main.prai.amount).pow(1.1));
-                }
                 if (Decimal.gte(getColResLevel(1), 1)) {
                     i = i.div(getColResEffect(1));
                 }
@@ -1243,33 +1259,30 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
 
             scal = D(player.value.gameProgress.main.pr2.amount);
             setFactor(0, [3, 0], "Base", `${format(scal)}`, `${format(scal)} effective`, true);
+            if (inChallenge("im")) {
+                i = i.mul(Decimal.pow(1.2, player.value.gameProgress.inChallenge.im.depths))
+            }
+            setFactor(1, [3, 0], `Inverted Mechanics ×${format(challengeDepth("im"))}`, `×${format(Decimal.pow(1.2, player.value.gameProgress.inChallenge.im.depths), 3)}`, `${format(scal)} effective`, inChallenge("im"), "col");
+
             scal = doAllScaling(scal, getSCSLAttribute('pr2', true), false);
-            setFactor(1, [3, 0], "Scaling", `scaling(${format(scal)})`, `${format(scal)} effective`, true);
+            setFactor(2, [3, 0], "Scaling", `scaling(${format(scal)})`, `${format(scal)} effective`, true);
 
             scal = scal.div(KUA_ENHANCERS.enhances[6].effect())
 
             tmp.value.main.pr2.cost = smoothExp(smoothPoly(scal, 2, 200, false), 1.03, false).add(1).pow_base(i);
-            setFactor(2, [3, 0], "Resulting Requirement", `${format(i, 2)} ^ (${format(scal)} × 1.03 ^ (${format(scal)}) ^ 2) (approx.)`, `${format(tmp.value.main.pr2.cost)}`, true);
-            if (inChallenge("im")) {
-                tmp.value.main.pr2.cost = scal.pow(4).mul(1e6);
-                setFactor(2, [3, 0], "Req: Inverted Mechanics", `(11 / ${format(i, 2)}) ^ (${format(scal)}^${format(1/1.2, 3)})`, `${format(tmp.value.main.pr2.cost)}`, true, "col");
-            }
+            setFactor(3, [3, 0], "Resulting Requirement", `${format(i, 2)} ^ (${format(scal)} × 1.03 ^ (${format(scal)}) ^ 2) (approx.)`, `${format(tmp.value.main.pr2.cost)}`, true);
             
             if (ifAchievement(0, 7)) {
                 tmp.value.main.pr2.cost = tmp.value.main.pr2.cost.div(1.5);
             }
-            setFactor(3, [3, 0], "Achievement ID: (0, 7)", `/${format(1.5, 2)}`, `${format(tmp.value.main.pr2.cost)}`, ifAchievement(0, 7), "ach");
+            setFactor(4, [3, 0], "Achievement ID: (0, 7)", `/${format(1.5, 2)}`, `${format(tmp.value.main.pr2.cost)}`, ifAchievement(0, 7), "ach");
 
-            if (inChallenge("im") ? Decimal.gte(player.value.gameProgress.main.points, 10) : Decimal.gte(player.value.gameProgress.main.prai.amount, 10)) {
-                scal = inChallenge("im") ? D(player.value.gameProgress.main.points) : D(player.value.gameProgress.main.prai.amount)
+            if (Decimal.gte(player.value.gameProgress.main.prai.amount, 10)) {
+                scal = D(player.value.gameProgress.main.prai.amount)
                 if (ifAchievement(0, 7)) {
                     scal = scal.mul(1.5);
                 }
-                if (inChallenge("im")) {
-                    scal = scal.div(1e6).root(4);
-                } else {
-                    scal = smoothPoly(smoothExp(scal.log(i).sub(1), 1.03, true), 2, 200, true);
-                }
+                scal = smoothPoly(smoothExp(scal.log(i).sub(1), 1.03, true), 2, 200, true);
 
                 scal = scal.mul(KUA_ENHANCERS.enhances[6].effect())
 
@@ -1308,16 +1321,12 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
             setFactor(3, [3, 2], "KPower Upgrade 8", `×(1 + ${format(j, 2)}) ^ (${format(tmp.value.main.pr2.effective)})`, `×${format(i)}`, getKuaUpgrade("p", 8), "kua");
 
-            if (inChallenge("im")) {
-                i = i.ln().root(3).add(1)
-            }
-            setFactor(4, [3, 2], "Inverted Mechanics", `cbrt(ln(${format(i.sub(1).pow(3).exp())}))+${format(1)}`, `×${format(i)}`, inChallenge("im"), "col");
             tmp.value.main.pr2.effect = i;
 
             updateAllBest(player.value.gameProgress.main.pr2.best, player.value.gameProgress.main.pr2.amount);
             player.value.gameProgress.main.pr2.bestEver = Decimal.max(player.value.gameProgress.main.pr2.bestEver, player.value.gameProgress.main.pr2.amount);
 
-            tmp.value.main.pr2.canDo = Decimal.gte(inChallenge("im") ? player.value.gameProgress.main.points : player.value.gameProgress.main.prai.amount, Decimal.sub(tmp.value.main.pr2.cost, 0.5));
+            tmp.value.main.pr2.canDo = Decimal.gte(player.value.gameProgress.main.prai.amount, Decimal.sub(tmp.value.main.pr2.cost, 0.5));
 
             tmp.value.main.pr2.costTextColor = "#FFFFFF";
             if (player.value.settings.scaleSoftColors) {

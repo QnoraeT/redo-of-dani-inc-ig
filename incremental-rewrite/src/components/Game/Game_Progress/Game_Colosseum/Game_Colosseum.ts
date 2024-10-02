@@ -221,7 +221,7 @@ export const COL_CHALLENGES: colChallenges = {
         get goalDesc() {
             return `Reach ${format(this.goal)} Points.`;
         },
-        desc: `All Upgrades can only be bought once, but One-Upgrades are repeatable (Upgrade 2 and 5 change to boosting point gain), You start with 1 PR2. PRai is a static resource while PR2's amount scales as if it was a 'normal' resource. Kuaraniai and above will not be affected.`,
+        desc: `All Upgrades can only be bought once, but One-Upgrades are repeatable. (Upgrade 2 and 5 change to boosting point gain.) Point and PRai gain are raised to the ^${format(0.8, 3)} and PR2 scales ${format(1.2, 2)}× faster.`,
         reward: `Something here.`,
         cap: 1,
         get show() {

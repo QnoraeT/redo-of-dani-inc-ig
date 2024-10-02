@@ -33,6 +33,7 @@ import {
 } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { diePopupsDie } from "./popups";
 import {
+    challengeDepth,
     getColResEffect,
     getColXPtoNext,
     inChallenge,
@@ -1049,9 +1050,6 @@ export const reset = (layer: number, override = false) => {
                 resetSuccessful = true;
                 if (!override) {
                     player.value.gameProgress.main.pr2.amount = Decimal.add(player.value.gameProgress.main.pr2.amount, 1);
-                    if (inChallenge("im")) {
-                        player.value.gameProgress.main.pr2.amount = Decimal.max(player.value.gameProgress.main.pr2.amount, tmp.value.main.pr2.target.floor().add(1));
-                    }
                 }
 
                 player.value.gameProgress.main.prai.amount = Decimal.min(10, player.value.gameProgress.main.pr2.amount);
@@ -1284,6 +1282,10 @@ function calcPPS(): Decimal {
     }
     setFactor(19, [0], "Achievement Tier 3", `^${format(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1), 3)}`, `${format(pps, 1)}`, player.value.gameProgress.col.inAChallenge && !inChallenge("su"), "ach");
 
+    if (inChallenge("im")) {
+        pps = pps.root(Decimal.pow(1/0.8, player.value.gameProgress.inChallenge.im.depths))
+    }
+    setFactor(20, [0], `Inverted Mechanics ×${format(challengeDepth("im"))}`, `^${format(Decimal.pow(0.8, player.value.gameProgress.inChallenge.im.depths), 3)}`, `${format(pps, 1)}`, inChallenge("im"), "col");
     return pps;
 }
 
@@ -1346,8 +1348,8 @@ function gameLoop(): void {
             generate = data.newPts.sub(data.oldPts).max(1);
             tmp.value.main.pps = generate.div(gameDelta);
         }
-        // FIXME: every time PPS gets updated, check the id value for this (20)
-        setFactor(20, [0], "Decaying Feeling", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, inChallenge("df"), "col");
+        // FIXME: every time PPS gets updated, check the id value for this (21)
+        setFactor(21, [0], "Decaying Feeling", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, inChallenge("df"), "col");
 
         data.oldPts = Decimal.max(player.value.gameProgress.main.points, data.scal[0].start);
         setSCSLEffectDisp("points", false, 0, `/${format(1, 2)}`);
@@ -1380,8 +1382,8 @@ function gameLoop(): void {
                 `/${format(Decimal.div(data.oldGen, generate), 2)}`
             );
         }
-        // FIXME: every time PPS gets updated, check the id value for this (21)
-        setFactor(21, [0], "Taxation", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start), "sc1");
+        // FIXME: every time PPS gets updated, check the id value for this (22)
+        setFactor(22, [0], "Taxation", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start), "sc1");
 
         player.value.gameProgress.main.points = Decimal.add(
             player.value.gameProgress.main.points,

@@ -644,9 +644,6 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             );
 
             tmp.value.kua.req = D(1e10);
-            if (inChallenge("im")) {
-                tmp.value.kua.req = tmp.value.kua.req.div(4e8);
-            }
             tmp.value.kua.mult = D(0.0001);
             tmp.value.kua.exp = D(3);
 

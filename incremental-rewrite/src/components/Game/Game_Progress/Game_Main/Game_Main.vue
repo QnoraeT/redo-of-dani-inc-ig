@@ -89,10 +89,10 @@ import { inChallenge } from '../Game_Colosseum/Game_Colosseum'
                                 Reset all of your previous progress to for a PR2 reset.
                                 <br><span :style="{ color: tmp.main.pr2.costTextColor }">{{
                                     tmp.main.pr2.canDo
-                                        ? inChallenge("im")
+                                        ? false
                                             ? `You can PR2 reset ${format(tmp.main.pr2.target.sub(player.gameProgress.main.pr2.amount).floor())} times!`
                                             : `You can PR2 reset! (${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai)`
-                                        : `You need ${format(inChallenge("im") ? player.gameProgress.main.points : player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai to PR2 reset.`
+                                        : `You need ${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai to PR2 reset.`
                                 }}</span><br>
                                 <br>You have {{format(player.gameProgress.main.pr2.amount)}} PR2, which boosts your PRai and points by {{format(tmp.main.pr2.effect, 2)}}×.
                                 <br>{{tmp.main.pr2.textEffect.txt===""?"":`At ${format(tmp.main.pr2.textEffect.when)} PR2 reset${tmp.main.pr2.textEffect.when.eq(1)?"":"s"}, ${tmp.main.pr2.textEffect.txt}`}}

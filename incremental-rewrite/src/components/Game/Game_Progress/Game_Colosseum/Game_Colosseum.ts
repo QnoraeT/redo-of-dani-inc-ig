@@ -257,7 +257,7 @@ export const COL_CHALLENGES: colChallenges = {
         get progress() {
             return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
                 .log10()
-                .div(Decimal.log10(timesCompleted(this.id)))
+                .div(Decimal.log10(Decimal.max(timesCompleted(this.id), 10)))
                 .min(1);
         },
         get progDisplay() {

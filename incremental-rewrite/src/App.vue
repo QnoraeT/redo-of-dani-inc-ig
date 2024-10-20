@@ -112,7 +112,7 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
                 You have <b>{{ formatTime(player.gameProgress.col.time, 3) }}</b> left within these
                 challenges:
             </span>
-            <div
+            <!-- <div
                 v-for="(item, index) in player.gameProgress.inChallenge"
                 :key="item.id"
                 style="text-align: center"
@@ -137,7 +137,7 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
                             : ""
                     }}
                 </span>
-            </div>
+            </div> -->
         </div>
         <div
             class="flex-container"

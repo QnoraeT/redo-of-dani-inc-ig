@@ -970,10 +970,6 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     ? Decimal.max(k, 10).log10().sub(1).div(4).add(1).pow(1.1).sub(1).pow10()
                     : D(1);
 
-                tmp.value.kua.effects.kpower = getKuaUpgrade("s", 10)
-                    ? Decimal.max(k, 10).log10()
-                    : D(1);
-
                 tmp.value.kua.effects.pts = getKuaUpgrade("s", 7)
                     ? Decimal.max(k, 1)
                             .mul(1e3)

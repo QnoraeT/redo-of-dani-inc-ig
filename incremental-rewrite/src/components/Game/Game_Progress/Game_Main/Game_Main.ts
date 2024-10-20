@@ -398,7 +398,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     { // 20
         implemented: false,
         cost: D("e2000"),
-        get effect() { return Decimal.add(tmp.value.main.upgrades[0].effective, 1).ln().mul(Decimal.ln(tmp.value.main.upgrades[0].effectBase).mul(0.001)).add(1) },
+        get effect() { return tmp.value.main.upgrades[0].effective.mul(Decimal.ln(tmp.value.main.upgrades[0].effectBase)).mul(0.0001).add(1).root(12).sub(1).mul(12).add(1) },
         get desc() { return `Upgrade 1 also raises point gain.`; },
         get effectDesc() { return `^${format(this.effect!, 3)}`; },
         get show() { return player.value.gameProgress.unlocks.tax; }
@@ -1080,7 +1080,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             return getKuaUpgrade('s', 15);
         },
         get autoUnlocked() {
-            return false
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 100);
         },
         get display() {
             return `Raise Upgrade 1's effect by ^${format(this.calcEB, 3)}`;
@@ -1127,7 +1127,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             return getKuaUpgrade('s', 16);
         },
         get autoUnlocked() {
-            return false
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 125);
         },
         get display() {
             return `Raise Upgrade 1's cost by ^${format(this.calcEB, 3)}`;
@@ -1174,7 +1174,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             return getKuaUpgrade('s', 17);
         },
         get autoUnlocked() {
-            return false
+            return Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 150);
         },
         get display() {
             return `Multiply Upgrade 1's base by ×${format(this.calcEB, 3)}`;

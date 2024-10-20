@@ -28,22 +28,9 @@ import { getTaxUpgrade, TAX_UPGRADES } from "./Game_Taxation";
                     ><span style="font-size: 1.5vw">{{ format(tmp.tax.ptsEff, 2) }}x.</span></b
                 ></span
             >
-            <button
-                class="whiteText smallTaxBorder taxButton fontVerdana"
-                style="
-                    height: 4vw;
-                    width: 20vw;
-                    font-size: 0.8vw;
-                    margin-left: auto;
-                    margin-right: auto;
-                    margin-top: 1.5vw;
-                "
-            >
-                Gain
-                <span style="font-size: 1vw"
-                    ><b>{{ format(tmp.tax.pending, 3) }}</b></span
-                >
-                taxed coins upon taxation. <br />You will do a Colosseum reset.
+            <button class="whiteText smallTaxBorder taxButton fontVerdana" style=" height: 4vw; width: 20vw; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.5vw; " > 
+                Gain <span style="font-size: 1vw" ><b>{{ format(tmp.tax.pending, 3) }}</b></span> taxed coins upon taxation.<br>
+                This will reset all prior layers.
             </button>
             <div
                 class="flex-container"

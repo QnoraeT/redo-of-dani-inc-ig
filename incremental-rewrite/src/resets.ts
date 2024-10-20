@@ -5,7 +5,7 @@ import { setAchievement } from "./components/Game/Game_Achievements/Game_Achieve
 import { D } from "./calc";
 import { updateAllStart, updateStart } from "./components/Game/Game_Progress/Game_Main/Game_Main";
 import { updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
-import { updateAllCol } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
+import { COL_CHALLENGES, COL_RESEARCH, updateAllCol, type challengeIDList } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 
 
 export const resetTotalBestArray = (
@@ -164,6 +164,15 @@ export const reset = (layer: number, override = false) => {
                     );
                 }
 
+                player.value.gameProgress.col.power = D(0);
+                player.value.gameProgress.col.time = D(0);
+                for (const i in COL_CHALLENGES) {
+                    player.value.gameProgress.col.completed[i as challengeIDList] = D(0);
+                }
+                for (let i = 0; i < COL_RESEARCH.length; i++) {
+                    player.value.gameProgress.col.research.xpTotal[i] = D(0);
+                    player.value.gameProgress.col.research.enabled[i] = false;
+                }
                 updateAllCol(0);
             }
             break;
@@ -195,6 +204,8 @@ export const reset = (layer: number, override = false) => {
         resetTotalBestArray(player.value.gameProgress.kua.kshards.totals, D(0), layer);
         resetTotalBestArray(player.value.gameProgress.kua.best, D(0), layer);
         resetTotalBestArray(player.value.gameProgress.kua.totals, D(0), layer);
+        resetTotalBestArray(player.value.gameProgress.col.best, D(0), layer);
+        resetTotalBestArray(player.value.gameProgress.col.totals, D(0), layer);
 
         reset(layer - 1, true);
     }

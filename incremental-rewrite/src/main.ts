@@ -6,7 +6,7 @@ import Decimal, { type DecimalSource } from "break_eternity.js";
 import { type Tab } from "./components/MainTabs/MainTabs";
 import { D, expQuadCostGrowth, scale, smoothExp, smoothPoly } from "./calc";
 import { format } from "./format";
-import { saveID, SAVE_MODES, saveTheFrickingGame } from "./saving";
+import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame } from "./saving";
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from "./softcapScaling";
 import { updateAllStart, initAllMainUpgrades, initAllMainOneUpgrades, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_Main";
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
@@ -1212,6 +1212,7 @@ function gameLoop(): void {
         console.error(player.value);
         console.error(`Temporary Variables:`);
         console.error(tmp.value);
+        console.warn(`If you cannot go to your saves at all; If you think you are utterly hopeless of playing this game again, run resetTheWholeGame() ! I'll try to make an interactive version of this sooner or later so you don't have to go into console...`)
         clearInterval(gameReviver);
         return;
     }
@@ -1261,6 +1262,7 @@ declare global {
         getColXPtoNext: typeof getColXPtoNext;
         smoothPoly: typeof smoothPoly
         smoothExp: typeof smoothExp
+        resetTheWholeGame: typeof resetTheWholeGame
     }
 }
 
@@ -1275,5 +1277,6 @@ window.scale = scale;
 window.getColXPtoNext = getColXPtoNext;
 window.smoothPoly = smoothPoly;
 window.smoothExp = smoothExp;
+window.resetTheWholeGame = resetTheWholeGame;
 
 createApp(App).mount("#app");

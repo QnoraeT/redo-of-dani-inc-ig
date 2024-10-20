@@ -1,6 +1,7 @@
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { format } from "./format";
 
+// ! DO NOT USE SCALE WHEN POWSCALE = 1 OR STR = 0, IT WILL BREAKKK
 export const scale = (
     num: DecimalSource,
     type: number | string,
@@ -69,14 +70,8 @@ export const scale = (
         case "SE":
         case "SE1":
             return inverse // steep scaling
-                ? Decimal.pow(
-                      start,
-                      Decimal.sub(num, start).mul(str).add(start).log(start).root(str)
-                  )
-                : Decimal.pow(start, Decimal.log(num, start).pow(str))
-                      .sub(start)
-                      .div(str)
-                      .add(start);
+                ? Decimal.pow(start, Decimal.sub(num, start).mul(str).add(start).log(start).root(str))
+                : Decimal.pow(start, Decimal.log(num, start).pow(str)).sub(start).div(str).add(start);
         case 2.2:
         case "SE2": // very shallow scaling
             return inverse
@@ -88,15 +83,8 @@ export const scale = (
         case "C":
         case "C1":
             return inverse
-                ? str
-                      .mul(num)
-                      .add(Decimal.pow(start, 2))
-                      .sub(Decimal.mul(start, num).mul(2))
-                      .div(str.sub(num))
-                : str
-                      .mul(num)
-                      .sub(Decimal.pow(start, 2))
-                      .div(Decimal.sub(str, Decimal.mul(start, 2)).add(num));
+                ? str.mul(num).add(Decimal.pow(start, 2)).sub(Decimal.mul(start, num).mul(2)).div(str.sub(num))
+                : str.mul(num).sub(Decimal.pow(start, 2)).div(Decimal.sub(str, Decimal.mul(start, 2)).add(num));
         default:
             throw new Error(`Scaling type ${type} doesn't exist`);
     }

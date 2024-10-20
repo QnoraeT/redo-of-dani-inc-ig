@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Decimal from "break_eternity.js";
 import { gameVars, tab } from "@/main";
-import { tmp, player, reset } from "@/main";
+import { tmp, player } from "@/main";
 import { format, formatPerc } from "@/format";
 import { switchSubTab } from "@/components/MainTabs/MainTabs";
 import { gRC, colorChange } from "@/calc";
@@ -15,6 +15,7 @@ import {
     buyKuaEnhSourceUPG
 } from "./Game_Kuaraniai";
 import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
+import { reset } from "@/resets";
 </script>
 <template>
     <div id="kuaraniai" v-if="tab.currentTab === 4">
@@ -27,12 +28,8 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                 margin-bottom: 1vw;
             "
         >
-            <button @click="switchSubTab(0, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton" >
-                Main
-            </button>
-            <button @click="switchSubTab(-1, 0)" style="width: 10vw" class="kuaButton2 fontVerdana whiteText normalTabButton" >
-                Bought Upgrades
-            </button>
+            <button @click="switchSubTab(0, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Main</button>
+            <button @click="switchSubTab(-1, 0)" style="width: 10vw" class="kuaButton2 fontVerdana whiteText normalTabButton">Bought Upgrades</button>
             <!-- disable this for now, seems unbalanced -->
             <!-- <button @click="switchSubTab(1, 0)" v-if="player.gameProgress.unlocks.kuaEnhancers" class="kuaButton2 fontVerdana whiteText normalTabButton">Enhancers</button> -->
         </div>
@@ -81,7 +78,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                             flex-direction: row;
                             flex-wrap: wrap;
                             justify-content: center;
-                            width: 60vw;
+                            width: 90vw;
                         "
                     >
                         <div v-for="(item, index) in KUA_UPGRADES.KShards" :key="index">
@@ -119,7 +116,7 @@ import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
                             flex-direction: row;
                             flex-wrap: wrap;
                             justify-content: center;
-                            width: 60vw;
+                            width: 90vw;
                         "
                     >
                         <div v-for="(item, index) in KUA_UPGRADES.KPower" :key="index">

@@ -4,45 +4,29 @@ import { createApp, ref, type Ref } from "vue";
 import App from "./App.vue";
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { type Tab } from "./components/MainTabs/MainTabs";
-import { D, expQuadCostGrowth, scale } from "./calc";
+import { D, expQuadCostGrowth, scale, smoothExp, smoothPoly } from "./calc";
 import { format } from "./format";
 import { saveID, SAVE_MODES, saveTheFrickingGame } from "./saving";
-import {
-    getSCSLAttribute,
-    setSCSLEffectDisp,
-    compileScalSoftList,
-    updateAllSCSL
-} from "./softcapScaling";
-import {
-    updateAllStart,
-    updateStart,
-    initAllMainUpgrades,
-    initAllMainOneUpgrades,
-    MAIN_ONE_UPGS
-} from "./components/Game/Game_Progress/Game_Main/Game_Main";
-import {
-    ACHIEVEMENT_DATA,
-    fixAchievements,
-    getAchievementEffect,
-    ifAchievement,
-    setAchievement
-} from "./components/Game/Game_Achievements/Game_Achievements";
-import {
-    getKuaUpgrade,
-    updateAllKua
-} from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
+import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from "./softcapScaling";
+import { updateAllStart, initAllMainUpgrades, initAllMainOneUpgrades, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_Main";
+import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
+import { getKuaUpgrade, updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { diePopupsDie } from "./popups";
-import {
-    challengeDepth,
-    getColResEffect,
-    getColXPtoNext,
-    inChallenge,
-    updateAllCol,
-    type challengeIDList,
-    type colChallengesSavedData
-} from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
+import { challengeDepth, getColResEffect, getColXPtoNext, inChallenge, timesCompleted, updateAllCol, type challengeIDList, type colChallengesSavedData } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 import { updateAllTax } from "./components/Game/Game_Progress/Game_Taxation/Game_Taxation";
 import { ALL_FACTORS, initStatsFactors, setFactor } from "./components/Game/Game_Stats/Game_Stats";
+import { updatePlayerData } from "./versionControl";
+
+// ! THIS SLOWS DOWN CALCULATIONS!!
+const NAN_CHECKER = true;
+
+export const NaNCheck = (num: DecimalSource) => {
+    if (NAN_CHECKER) {
+        if (Decimal.isNaN(num)) {
+            throw new Error(`NaN detected!`)
+        }
+    }
+}
 
 export const NEXT_UNLOCKS = [
     {
@@ -93,13 +77,13 @@ export const NEXT_UNLOCKS = [
     },
     {
         get shown() {
-            return Decimal.gte(player.value.gameProgress.main.points, "e400");
+            return Decimal.gte(player.value.gameProgress.main.points, "e500");
         },
         get done() {
             return player.value.gameProgress.unlocks.tax;
         },
         get dispPart1() {
-            return `${format(player.value.gameProgress.main.points)} / ${format("e500")}`;
+            return `${format(player.value.gameProgress.main.points)} / ${format("ee3")}`;
         },
         dispPart2: `Points to unlock the next layer.`,
         color: "#f0d000"
@@ -118,7 +102,7 @@ type Game = {
     }>;
 };
 
-type Player = {
+export type Player = {
     lastUpdated: number;
     offlineTime: number;
     totalRealTime: number;
@@ -285,7 +269,7 @@ export const makeChallengeInfo = () => {
 
 export const initPlayer = (set = false): Player => {
     const mainUpgrades = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 9; i++) {
         mainUpgrades.push({
             bought: D(0),
             best: D(0),
@@ -562,6 +546,7 @@ type Tmp = {
         enhSlowdown: Decimal;
     };
     col: {
+        totalColChalComp: Decimal;
         powGenExp: Decimal;
         truePowGen: Decimal;
         powGen: Decimal;
@@ -589,6 +574,9 @@ type Tmp = {
         upg4: string;
         upg5: string;
         upg6: string;
+        upg7: string;
+        upg8: string;
+        upg9: string;
         pr2: string;
         kuaupg4base: string;
         kuaupg5base: string;
@@ -738,6 +726,7 @@ function initTemp(): Tmp {
             enhSlowdown: D(1)
         },
         col: {
+            totalColChalComp: D(0),
             powGenExp: D(0.4),
             powGen: D(0),
             truePowGen: D(0),
@@ -765,6 +754,9 @@ function initTemp(): Tmp {
             upg4: "Upgrade 4",
             upg5: "Upgrade 5",
             upg6: "Upgrade 6",
+            upg7: "Upgrade 7",
+            upg8: "Upgrade 8",
+            upg9: "Upgrade 9",
             pr2: "PR2",
             kuaupg4base: "Upgrade 4's Base",
             kuaupg5base: "Upgrade 5's Base",
@@ -808,53 +800,6 @@ function loadGame(): void {
     gameVars.value.sessionStart = Date.now();
     window.requestAnimationFrame(gameLoop);
 }
-
-export const updatePlayerData = (player: Player): Player => {
-    player.version = player.version || -1;
-    if (player.version < 0) {
-        player.version = 0;
-    }
-    if (player.version === 0) {
-
-        // player.displayVersion = '1.0.0'
-        // player.version = 1;
-    }
-    if (player.version === 1) {
-
-        // player.version = 2;
-    }
-    if (player.version === 2) {
-
-        // player.version = 3;
-    }
-    if (player.version === 3) {
-
-        // player.version = 4;
-    }
-    if (player.version === 4) {
-
-        // player.version = 5;
-    }
-    if (player.version === 5) {
-
-        // player.version = 6;
-    }
-    if (player.version === 6) {
-
-        // player.version = 7;
-    }
-    if (player.version === 7) {
-        // player.version = 8;
-    }
-    if (player.version === 8) {
-        // player.version = 9;
-    }
-    if (player.version === 9) {
-        // player.version = 10;
-    }
-
-    return player;
-};
 
 // const draw = document.getElementById("canvas")! as HTMLCanvasElement;
 // const pen = draw.getContext("2d")!;
@@ -984,197 +929,6 @@ export const updatePlayerData = (player: Player): Player => {
 //     }
 // }
 
-export const resetTotalBestArray = (
-    array: Array<null | DecimalSource>,
-    defaultt: Decimal,
-    clear: number
-) => {
-    if (clear > array.length) {
-        console.warn(
-            `[resetTotalBestArray]: Clear (${clear}) is larger than the array (${array.length})!`
-        );
-        console.warn(array);
-    }
-    if (array[clear] !== null) {
-        array[clear] = defaultt;
-    }
-};
-
-export const reset = (layer: number, override = false) => {
-    if (layer <= -1) {
-        return;
-    }
-
-    let resetSuccessful = false;
-    switch (layer) {
-        case 0:
-            if (tmp.value.main.prai.canDo || override) {
-                resetSuccessful = true;
-                if (!override) {
-                    player.value.gameProgress.main.prai.amount = Decimal.add(
-                        player.value.gameProgress.main.prai.amount,
-                        tmp.value.main.prai.pending
-                    );
-                    updateAllTotal(
-                        player.value.gameProgress.main.prai.totals,
-                        tmp.value.main.prai.pending
-                    );
-                    player.value.gameProgress.main.prai.totalEver = Decimal.add(
-                        player.value.gameProgress.main.prai.totalEver,
-                        tmp.value.main.prai.pending
-                    );
-                    player.value.gameProgress.main.prai.times = Decimal.add(
-                        player.value.gameProgress.main.prai.times,
-                        1
-                    );
-                    console.log(setAchievement(0, 7));
-                }
-
-                for (let i = 0; i < 2; i++) {
-                    player.value.gameProgress.main.prai.timeInPRai = D(0);
-                    player.value.gameProgress.main.points = D(0);
-
-                    for (let i = 0; i < 3; i++) {
-                        player.value.gameProgress.main.upgrades[i].bought = D(0);
-                    }
-
-                    updateStart(0, 0);
-                    updateStart(-3, 0);
-                    updateStart(-2, 0);
-                    updateStart(-1, 0);
-                }
-            }
-            break;
-        case 1:
-            if (tmp.value.main.pr2.canDo || override) {
-                resetSuccessful = true;
-                if (!override) {
-                    player.value.gameProgress.main.pr2.amount = Decimal.add(player.value.gameProgress.main.pr2.amount, 1);
-                }
-
-                player.value.gameProgress.main.prai.amount = Decimal.min(10, player.value.gameProgress.main.pr2.amount);
-
-                updateStart(1, 0);
-            }
-            break;
-        case 2:
-            if (tmp.value.kua.canDo || override) {
-                resetSuccessful = true;
-                if (!override) {
-                    setAchievement(0, 3);
-                    setAchievement(1, 4);
-                    setAchievement(1, 6);
-                    setAchievement(1, 8);
-                    setAchievement(1, 9);
-                    setAchievement(1, 10);
-                    setAchievement(1, 11);
-                    setAchievement(1, 12);
-                    player.value.gameProgress.kua.amount = Decimal.add(
-                        player.value.gameProgress.kua.amount,
-                        tmp.value.kua.pending
-                    );
-                    updateAllTotal(player.value.gameProgress.kua.totals, tmp.value.kua.pending);
-                    player.value.gameProgress.kua.totalEver = Decimal.add(
-                        player.value.gameProgress.kua.totalEver,
-                        tmp.value.kua.pending
-                    );
-                    player.value.gameProgress.kua.times = Decimal.add(
-                        player.value.gameProgress.kua.times,
-                        1
-                    );
-                }
-
-                player.value.gameProgress.main.prai.times = D(0);
-                player.value.gameProgress.main.prai.amount = D(0);
-                player.value.gameProgress.kua.timeInKua = D(0);
-                if (Decimal.lt(player.value.gameProgress.main.pr2.amount, 25)) {
-                    player.value.gameProgress.main.oneUpgrades = [];
-                }
-
-                updateAllKua(0);
-                updateAllStart(0);
-            }
-            break;
-        case 3:
-            resetSuccessful = true;
-            player.value.gameProgress.kua.amount = D(0);
-            player.value.gameProgress.kua.times = D(0);
-            player.value.gameProgress.kua.timeInKua = D(0);
-            player.value.gameProgress.kua.kshards.amount = D(0);
-            player.value.gameProgress.kua.kshards.upgrades = 0;
-            player.value.gameProgress.kua.kpower.amount = D(0);
-            player.value.gameProgress.kua.kpower.upgrades = 0;
-            player.value.gameProgress.main.pr2.amount = D(0);
-            for (let i = 0; i < 6; i++) {
-                player.value.gameProgress.main.upgrades[i].auto = false;
-            }
-            player.value.gameProgress.main.prai.auto = false;
-
-            for (let i = 0; i < 6; i++) {
-                player.value.gameProgress.main.upgrades[i].bought = D(0);
-                player.value.gameProgress.main.upgrades[i].boughtInReset[3] = D(0);
-            }
-
-            player.value.gameProgress.kua.enhancers.sources = [D(0), D(0), D(0)];
-            player.value.gameProgress.kua.enhancers.enhancers = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)];
-            player.value.gameProgress.kua.enhancers.enhanceXP = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)];
-            player.value.gameProgress.kua.enhancers.enhancePow = [D(0), D(0), D(0), D(0), D(0), D(0), D(0)];
-            player.value.gameProgress.kua.enhancers.xpSpread = D(1);
-            player.value.gameProgress.kua.enhancers.inExtraction = 0;
-            player.value.gameProgress.kua.enhancers.extractionXP = [D(0), D(0), D(0)];
-            player.value.gameProgress.kua.enhancers.upgrades = [];
-            updateAllKua(0);
-            break;
-        case 4:
-            if (tmp.value.tax.canDo || override) {
-                resetSuccessful = true;
-                if (!override) {
-                    player.value.gameProgress.tax.amount = Decimal.add(
-                        player.value.gameProgress.tax.amount,
-                        tmp.value.tax.pending
-                    );
-                    player.value.gameProgress.tax.times = Decimal.add(
-                        player.value.gameProgress.tax.times,
-                        1
-                    );
-                }
-
-                updateAllCol(0);
-            }
-            break;
-        default:
-            throw new Error(`uhh i don't think ${layer} is resettable`);
-    }
-
-    if (resetSuccessful) {
-        for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
-            player.value.gameProgress.main.upgrades[i].boughtInReset[layer] = D(0);
-        }
-
-        resetTotalBestArray(player.value.gameProgress.main.totals, D(0), layer);
-        resetTotalBestArray(player.value.gameProgress.main.best, D(0), layer);
-        resetTotalBestArray(
-            player.value.gameProgress.main.prai.totals,
-            Decimal.min(10, player.value.gameProgress.main.pr2.amount),
-            layer
-        );
-        resetTotalBestArray(
-            player.value.gameProgress.main.prai.best,
-            Decimal.min(10, player.value.gameProgress.main.pr2.amount),
-            layer
-        );
-        resetTotalBestArray(player.value.gameProgress.main.pr2.best, D(0), layer);
-        resetTotalBestArray(player.value.gameProgress.kua.kpower.best, D(0), layer);
-        resetTotalBestArray(player.value.gameProgress.kua.kpower.totals, D(0), layer);
-        resetTotalBestArray(player.value.gameProgress.kua.kshards.best, D(0), layer);
-        resetTotalBestArray(player.value.gameProgress.kua.kshards.totals, D(0), layer);
-        resetTotalBestArray(player.value.gameProgress.kua.best, D(0), layer);
-        resetTotalBestArray(player.value.gameProgress.kua.totals, D(0), layer);
-
-        reset(layer - 1, true);
-    }
-};
-
 function calcPPS(): Decimal {
     let pps = D(1);
     setFactor(0, [0], "Base", "1.0", `${format(pps, 1)}`, true);
@@ -1255,15 +1009,20 @@ function calcPPS(): Decimal {
     }
     setFactor(16, [0], "Dotgenous", `×${format(getColResEffect(0), 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.col, "col");
 
+    if (timesCompleted("df") && !inChallenge("su")) {
+        pps = pps.mul(10);
+    }
+    setFactor(17, [0], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(10, 2)}`, `${format(pps, 1)}`, Decimal.gte(timesCompleted("df"), 1) && !inChallenge("su"), "col");
+
     if (player.value.gameProgress.unlocks.tax && !inChallenge("su")) {
         pps = pps.mul(tmp.value.tax.ptsEff);
     }
-    setFactor(17, [0], "Taxed Coins", `×${format(tmp.value.tax.ptsEff, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.tax && !inChallenge("su"), "tax");
+    setFactor(18, [0], "Taxed Coins", `×${format(tmp.value.tax.ptsEff, 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.tax && !inChallenge("su"), "tax");
 
     if (getKuaUpgrade("p", 3) && !inChallenge("su")) {
         pps = pps.pow(tmp.value.kua.effects.ptPower);
     }
-    setFactor(18, [0], "KPower Upgrade 3", `^${format(tmp.value.kua.effects.ptPower, 3)}`, `${format(pps, 1)}`, getKuaUpgrade("p", 3) && !inChallenge("su"), "kua");
+    setFactor(19, [0], "KPower Upgrade 3", `^${format(tmp.value.kua.effects.ptPower, 3)}`, `${format(pps, 1)}`, getKuaUpgrade("p", 3) && !inChallenge("su"), "kua");
 
     if (player.value.gameProgress.col.inAChallenge && !inChallenge("su")) {
         pps = pps.pow(
@@ -1280,12 +1039,14 @@ function calcPPS(): Decimal {
                 .add(1)
         );
     }
-    setFactor(19, [0], "Achievement Tier 3", `^${format(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1), 3)}`, `${format(pps, 1)}`, player.value.gameProgress.col.inAChallenge && !inChallenge("su"), "ach");
+    setFactor(20, [0], "Achievement Tier 3", `^${format(ACHIEVEMENT_DATA[2].eff.mul(Decimal.pow(0.25, Decimal.div(player.value.gameProgress.col.time, player.value.gameProgress.col.maxTime).max(0))).add(1), 3)}`, `${format(pps, 1)}`, player.value.gameProgress.col.inAChallenge && !inChallenge("su"), "ach");
 
     if (inChallenge("im")) {
-        pps = pps.root(Decimal.pow(1/0.8, player.value.gameProgress.inChallenge.im.depths))
+        pps = pps.pow(Decimal.pow(0.8, challengeDepth("im")))
     }
-    setFactor(20, [0], `Inverted Mechanics ×${format(challengeDepth("im"))}`, `^${format(Decimal.pow(0.8, player.value.gameProgress.inChallenge.im.depths), 3)}`, `${format(pps, 1)}`, inChallenge("im"), "col");
+    setFactor(21, [0], `Inverted Mechanics ×${format(challengeDepth("im"))}`, `^${format(Decimal.pow(0.8, challengeDepth("im")), 3)}`, `${format(pps, 1)}`, inChallenge("im"), "col");
+
+    NaNCheck(pps);
     return pps;
 }
 
@@ -1343,7 +1104,7 @@ function gameLoop(): void {
         data.oldPts = Decimal.max(player.value.gameProgress.main.points, 10);
 
         if (inChallenge("df")) {
-            data.newPts = scale(scale(scale(scale(data.oldPts.max(10).log10(), 0.2, true, 1, 1, 0.5).pow10().add(generate).log10(), 0.2, false, 1, 1, 0.5).pow10(), 0.2, true, 10, 1, 0.5).add(generate), 0.2, false, 10, 1, 0.5);
+            data.newPts = scale(scale(scale(scale(data.oldPts.max(10).log10(), 0.2, true, 1, 1, Decimal.pow(0.5, challengeDepth("df"))).pow10().add(generate).log10(), 0.2, false, 1, 1, Decimal.pow(0.5, challengeDepth("df"))).pow10(), 0.2, true, 10, 1, Decimal.pow(0.5, challengeDepth("df"))).add(generate), 0.2, false, 10, 1, Decimal.pow(0.5, challengeDepth("df")));
 
             generate = data.newPts.sub(data.oldPts).max(1);
             tmp.value.main.pps = generate.div(gameDelta);
@@ -1498,6 +1259,8 @@ declare global {
         ALL_FACTORS: typeof ALL_FACTORS;
         scale: typeof scale;
         getColXPtoNext: typeof getColXPtoNext;
+        smoothPoly: typeof smoothPoly
+        smoothExp: typeof smoothExp
     }
 }
 
@@ -1510,5 +1273,7 @@ window.expQuadCostGrowth = expQuadCostGrowth;
 window.ALL_FACTORS = ALL_FACTORS;
 window.scale = scale;
 window.getColXPtoNext = getColXPtoNext;
+window.smoothPoly = smoothPoly;
+window.smoothExp = smoothExp;
 
 createApp(App).mount("#app");

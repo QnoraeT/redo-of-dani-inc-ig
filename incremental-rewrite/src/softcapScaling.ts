@@ -10,8 +10,8 @@ import {
     getKuaUpgrade,
     KUA_UPGRADES
 } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
-import { MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_Main";
-import { timesCompleted } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
+import { getOMUpgrade, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_Main";
+import { getColChalRewEffects, timesCompleted } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 
 export const SCALE_ATTR = [
     { pow: 2, type: 0, name: "Scaled", color: `#3080FF` },
@@ -62,6 +62,9 @@ export type ScSlItems =
     | "upg4"
     | "upg5"
     | "upg6"
+    | "upg7"
+    | "upg8"
+    | "upg9"
     | "pr2"
     | "kuaupg4base"
     | "kuaupg5base"
@@ -74,6 +77,9 @@ const ScSlItemsList: Array<ScSlItems> = [
     "upg4",
     "upg5",
     "upg6",
+    "upg7",
+    "upg8",
+    "upg9",
     "pr2",
     "kuaupg4base",
     "kuaupg5base",
@@ -94,6 +100,9 @@ type ListOfScSl = {
     upg4: DataofScSlCategory;
     upg5: DataofScSlCategory;
     upg6: DataofScSlCategory;
+    upg7: DataofScSlCategory;
+    upg8: DataofScSlCategory;
+    upg9: DataofScSlCategory;
     pr2: DataofScSlCategory;
     kuaupg4base: DataofScSlCategory;
     kuaupg5base: DataofScSlCategory;
@@ -116,6 +125,9 @@ export const LIST_OF_SCSL: ListOfScSl = {
     upg4: makeDataofScSl(4),
     upg5: makeDataofScSl(5),
     upg6: makeDataofScSl(6),
+    upg7: makeDataofScSl(7),
+    upg8: makeDataofScSl(8),
+    upg9: makeDataofScSl(9),
     pr2: makeDataofScSl(7),
     kuaupg4base: makeDataofScSl(8),
     kuaupg5base: makeDataofScSl(9),
@@ -210,6 +222,12 @@ export const getSCSLAttribute = (
                     if (getKuaUpgrade("p", 9)) {
                         data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff!);
                     }
+
+                    data[2].power = data[2].power.mul(getColChalRewEffects("su")[1])
+
+                    if (Decimal.gte(getOMUpgrade(14), 1)) {
+                        data[2].power = data[2].power.div(MAIN_ONE_UPGS[14].effect!);
+                    }
                     break;
                 case "upg2":
                     data.push({
@@ -275,6 +293,10 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+
+                    if (Decimal.gte(getOMUpgrade(12), 1)) {
+                        data[0].start = data[0].start.add(MAIN_ONE_UPGS[12].effect!);
+                    }
                     break;
                 case "upg4":
                     data.push({
@@ -346,6 +368,15 @@ export const getSCSLAttribute = (
                         displayedEffect: ""
                     });
                     break;
+                case "upg7":
+                    // empty
+                    break;
+                case "upg8":
+                    // empty
+                    break;
+                case "upg9":
+                    // empty
+                    break;
                 case "pr2":
                     // empty
                     break;
@@ -370,6 +401,9 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+                    if (Decimal.gte(timesCompleted("su"), 8)) {
+                        data[0].start = data[0].start.mul(getColChalRewEffects("su")[3])
+                    }
                     break;
                 case "upg1":
                     data.push({
@@ -443,10 +477,19 @@ export const getSCSLAttribute = (
                 case "upg6":
                     data.push({
                         start: D(2),
-                        basePow: D(1),
+                        basePow: D(0.5),
                         power: D(1),
                         displayedEffect: ""
                     });
+                    break;
+                case "upg7":
+                    // empty
+                    break;
+                case "upg8":
+                    // empty
+                    break;
+                case "upg9":
+                    // empty
                     break;
                 case "pr2":
                     // empty
@@ -551,6 +594,15 @@ const SOFT_VALUES = {
     get upg6() {
         return tmp.value.main.upgrades[5].effect;
     },
+    get upg7() {
+        return tmp.value.main.upgrades[6].effect;
+    },
+    get upg8() {
+        return tmp.value.main.upgrades[7].effect;
+    },
+    get upg9() {
+        return tmp.value.main.upgrades[8].effect;
+    },
     get prai() {
         return tmp.value.main.prai.effect;
     },
@@ -589,6 +641,15 @@ const SCAL_VALUES = {
     },
     get upg6() {
         return player.value.gameProgress.main.upgrades[5].bought;
+    },
+    get upg7() {
+        return player.value.gameProgress.main.upgrades[6].bought;
+    },
+    get upg8() {
+        return player.value.gameProgress.main.upgrades[7].bought;
+    },
+    get upg9() {
+        return player.value.gameProgress.main.upgrades[8].bought;
     },
     get pr2() {
         return player.value.gameProgress.main.pr2.amount;

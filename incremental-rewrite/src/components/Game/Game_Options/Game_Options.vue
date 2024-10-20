@@ -34,6 +34,13 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
             <Tab_Button @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :name="'Saving'" />
             <Tab_Button @click="switchSubTab(2, 0)" :selected="tab.tabList[tab.currentTab][0] === 2" :name="'Other Options'" />
         </div>
+        <div v-if="tab.tabList[tab.currentTab][0] === 0">
+            <div class="flex-container" style="flex-direction: row; justify-content: center">
+                <a href="https://discord.gg/JJKRfR3gH9">
+                    <Basic_Button style="border: 0.24vw solid #5090FF" :html="`Join the <span style='color: #5090FF'><b>Discord</b></span> Community!`" />
+                </a>
+            </div>
+        </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 1">
             <div class="flex-container" style=" flex-direction: row; justify-content: center; font-size: 1vw; margin-bottom: 0.3vw;">
                 <Tab_Button @click="switchSubTab(0, 1)" :selected="tab.tabList[tab.currentTab][1] === 0" :name="'Save List'" />

@@ -1,8 +1,10 @@
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { format } from "@/format";
-import { player, reset, tmp, updateAllBest, updateAllTotal } from "@/main";
+import { player, tmp, updateAllBest, updateAllTotal } from "@/main";
 import { D, linearAdd, sumHarmonicSeries } from "@/calc";
 import { setAchievement } from "../../Game_Achievements/Game_Achievements";
+import { reset } from "@/resets";
+import { setFactor } from "../../Game_Stats/Game_Stats";
 
 export type challengeIDList = "nk" | "su" | "df" | "im";
 export const challengeIDListArr: Array<challengeIDList> = ["nk", "su", "df", "im"];
@@ -21,28 +23,41 @@ export type colChallengeData = {
     layer: number;
     name: string;
     goal: Decimal;
+    resourceReq?: DecimalSource;
     goalDesc: string;
     desc: string;
     reward: string;
-    cap: DecimalSource;
+    cap: Decimal;
     show: boolean;
     canComplete: boolean;
     progress: Decimal;
     progDisplay: string;
-    internalChallengeCond?: Array<Array<DecimalSource>>
-    internalChallengeEffect?: Array<Array<DecimalSource>>
+    type1ChalCond?: Array<Array<Decimal>>
+    type1ChalEff?: Array<Array<Decimal>>
 };
 
 export const getColChalDisplayedDifficulty = (id: challengeIDList) => {
-    return player.value.gameProgress.inChallenge[id].overall ? Decimal.sub(player.value.gameProgress.inChallenge[id].depths, 1) : player.value.gameProgress.inChallenge[id].optionalDiff;
+    return player.value.gameProgress.inChallenge[id].overall ? Decimal.sub(challengeDepth(id), 1) : player.value.gameProgress.inChallenge[id].optionalDiff;
 }
 
 export const getColChalCondEffects = (id: challengeIDList) => {
-    return COL_CHALLENGES[id].internalChallengeCond![new Decimal(challengeDepth(id)).sub(1).max(0).toNumber()]!
+    return COL_CHALLENGES[id].type1ChalCond![new Decimal(challengeDepth(id)).sub(1).max(0).toNumber()]!
+}
+
+export const getColChalRewEffects = (id: challengeIDList) => {
+    return COL_CHALLENGES[id].type1ChalEff![new Decimal(timesCompleted(id)).max(0).toNumber()]
 }
 
 export const getColChalCondEffectsDec = (id: challengeIDList) => {
-    return COL_CHALLENGES[id].internalChallengeCond!
+    return COL_CHALLENGES[id].type1ChalCond!
+}
+
+export const getColChalSelectedRew = (id: challengeIDList, which: number) => {
+    return COL_CHALLENGES[id].type1ChalEff![new Decimal(getColChalDisplayedDifficulty(id)).add(1).toNumber()][which];
+}
+
+export const getColChalSelectedCond = (id: challengeIDList, which: number) => {
+    return COL_CHALLENGES[id].type1ChalCond![new Decimal(getColChalDisplayedDifficulty(id)).toNumber()][which];
 }
 
 /**
@@ -108,62 +123,72 @@ export const COL_CHALLENGES: colChallenges = {
             return `Reach ${format(this.goal)} Points.`;
         },
         get desc() {
-            return [
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous and all upgrades scale ${format(1.5, 1)}× faster.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(2, 1)}× faster, and Upgrade 1's base is reduced by -${format(0.1, 3)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(2.5, 1)}× faster, and Upgrade 1's base is reduced by -${format(0.2, 3)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(3, 1)}× faster, and Upgrade 1's base is reduced by -${format(0.25, 3)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(4, 1)}× faster, Upgrade 1's base is reduced by -${format(0.3, 3)}, and Upgrade 2's effect is dilated to the ^${format(0.95, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(5, 1)}× faster, Upgrade 1's base is reduced by -${format(0.35, 3)}, and Upgrade 2's effect is dilated to the ^${format(0.9, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(7.5, 1)}× faster, Upgrade 1's base is reduced by -${format(0.4, 3)}, and Upgrade 2's effect is dilated to the ^${format(0.85, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(10, 1)}× faster, Upgrade 1's base is reduced by -${format(0.425, 3)}, Upgrade 2's effect is dilated to the ^${format(0.8, 2)}, and Upgrades 4, 5, and 6 are disabled.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(15, 1)}× faster, Upgrade 1's base is reduced by -${format(0.45, 3)}, Upgrade 2's effect is dilated to the ^${format(0.75, 2)}, Upgrades 4, 5, and 6 are disabled, and PRai's effect is raised to the ^${format(0.75, 2)}.`,
-                `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous, all upgrades scale ${format(25, 1)}× faster, Upgrade 1's base is reduced by -${format(0.475, 3)}, Upgrade 2's effect is dilated to the ^${format(0.7, 2)}, Upgrades 4, 5, and 6 are disabled, PRai's effect is raised to the ^${format(0.5, 2)}.`,
-                `winner you complete it all`
-            ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), this.cap)) {
+                return `winner you complete it all`;
+            }
+            let txt = `Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous.`;
+            txt += ` All upgrades scale ${format(getColChalSelectedCond(this.id, 0), 1)}× faster.`;
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), 1)) {
+                txt += ` Upgrade 1's base is reduced by -${format(getColChalSelectedCond(this.id, 1), 3)}.`;
+            }
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), 4)) {
+                txt += ` Upgrade 2's effect is dilated to the ^${format(getColChalSelectedCond(this.id, 2), 2)}.`;
+            }
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), 7)) {
+                txt += ` Upgrades 4, 5, and 6 are disabled.`;
+            }
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), 8)) {
+                txt += ` PRai's effect is raised to the ^${format(getColChalSelectedCond(this.id, 3), 2)}.`;
+            }
+            return txt;
         },
         get reward() {
-            return [
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(2.5, 1)}%), and unlock a new challenge.`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(5, 1)}%)`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(7.5, 1)}%)`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(10, 1)}%)`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(15, 1)}%)`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(25, 1)}%) and Upgrade 1's Hyper scaling is ${format(3)}% weaker.`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(35, 1)}%) and Upgrade 1's Hyper scaling is ${format(6)}% weaker.`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(50, 1)}%) and Upgrade 1's Hyper scaling is ${format(10)}% weaker.`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(65, 1)}%), Upgrade 1's Hyper scaling is ${format(13)}% weaker, and Upgrade 2's base is increased by +${format(1.5, 1)}%.`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(80, 1)}%), Upgrade 1's Hyper scaling is ${format(15)}% weaker, and Upgrade 2's base is increased by +${format(3, 1)}%.`,
-                `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(100, 1)}%), Upgrade 1's Hyper scaling is ${format(20)}% weaker, Upgrade 2's base is increased by +${format(5, 1)}%, and Point taxation starts ${format(1e6)}× later.`
-            ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), this.cap)) {
+                return `winner you complete it all`;
+            }
+            let txt = `Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(getColChalSelectedRew(this.id, 0).mul(100), 1)}%)`;
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), 3)) {
+                txt += ` Upgrade 1's Hyper scaling is ${format(Decimal.sub(1, getColChalSelectedRew(this.id, 1)).mul(100), 1)}% weaker.`;
+            }
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), 5)) {
+                txt += ` Upgrade 2's base is increased by +${format(getColChalSelectedRew(this.id, 2).sub(1).mul(100))}%.`;
+            }
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), 7)) {
+                txt += ` Point taxation starts ${format(getColChalSelectedRew(this.id, 3))}× later.`;
+            }
+            if (Decimal.eq(getColChalDisplayedDifficulty("su"), 0)) {
+                txt += ` Unlock a new challenge.`;
+            }
+            return txt;
         },
         // trying not to completely hardcode in everything in *different files* and for js trying not to create 1,000 arrays for one thing sfgsdgnisudb
         // ! FOR CHALLENGES THAT ARE MEANT TO SUPPORT *DECIMAL* CAPS, MAKE internalChallengeCond AND internalChallengeEffect A GET() INSTEAD OF AN ARRAY SO ITS COMPATIBLE
-        internalChallengeCond: [
-            [D(1.5), D(0),     D(1),    D(1), D(1)],
-            [D(2),   D(0.1),   D(1),    D(1), D(1)],
-            [D(2.5), D(0.2),   D(1),    D(1), D(1)],
-            [D(3),   D(0.25),  D(1),    D(1), D(1)],
-            [D(4),   D(0.3),   D(0.95), D(1), D(1)],
-            [D(5),   D(0.35),  D(0.9),  D(1), D(1)],
-            [D(7.5), D(0.4),   D(0.85), D(1), D(1)],
-            [D(10),  D(0.425), D(0.8),  D(0), D(1)],
-            [D(15),  D(0.45),  D(0.75), D(0), D(0.75)],
-            [D(25),  D(0.475), D(0.7),  D(0), D(0.5)],
-            [D(40),  D(0.5),   D(0.65), D(0), D(1/3)],
+        type1ChalCond: [
+            [D(1.5), D(0),     D(1),    D(1)],    // difficulty 1
+            [D(2),   D(0.1),   D(1),    D(1)],    // difficulty 2
+            [D(2.5), D(0.2),   D(1),    D(1)],    // difficulty 3
+            [D(3),   D(0.25),  D(1),    D(1)],    // difficulty 4
+            [D(4),   D(0.3),   D(0.95), D(1)],    // difficulty 5
+            [D(5),   D(0.35),  D(0.9),  D(1)],    // difficulty 6
+            [D(7.5), D(0.4),   D(0.85), D(1)],    // difficulty 7
+            [D(10),  D(0.425), D(0.8),  D(1)],    // difficulty 8
+            [D(15),  D(0.45),  D(0.75), D(0.75)], // difficulty 9
+            [D(25),  D(0.475), D(0.7),  D(0.5)],  // difficulty 10
+            [D(40),  D(0.5),   D(0.65), D(1/3)],  // difficulty 11
         ],
-        internalChallengeEffect: [
-            [D(0.025), D(1),    D(1),     D(1)],
-            [D(0.05),  D(1),    D(1),     D(1)],
-            [D(0.075), D(1),    D(1),     D(1)],
-            [D(0.1),   D(1),    D(1),     D(1)],
-            [D(0.15),  D(1),    D(1),     D(1)],
-            [D(0.25),  D(0.97), D(1),     D(1)],
-            [D(0.35),  D(0.94), D(1),     D(1)],
-            [D(0.5),   D(0.9),  D(1),     D(1)],
-            [D(0.65),  D(0.87), D(1.015), D(1)],
-            [D(0.8),   D(0.85), D(1.03),  D(1)],
-            [D(1),     D(0.8),  D(1.05),  D(1e6)],
+        type1ChalEff: [
+            [D(0),     D(1),     D(1),     D(1)],    // reward 0
+            [D(0.025), D(1),     D(1),     D(1)],    // reward 1
+            [D(0.05),  D(1),     D(1),     D(1)],    // reward 2
+            [D(0.075), D(1),     D(1),     D(1)],    // reward 3
+            [D(0.1),   D(0.975), D(1),     D(1)],    // reward 4
+            [D(0.15),  D(0.95),  D(1),     D(1)],    // reward 5
+            [D(0.25),  D(0.925), D(1.05),  D(1)],    // reward 6
+            [D(0.35),  D(0.9),   D(1.1),   D(1)],    // reward 7
+            [D(0.5),   D(0.867), D(1.15),  D(100)],  // reward 8
+            [D(0.75),  D(0.833), D(1.25),  D(1e6)],  // reward 9
+            [D(1),     D(0.8),   D(1.35),  D(1e10)], // reward 10
+            [D(1),     D(0.8),   D(1.35),  D(1e10)], // reward 11 (repeat cuz cap)
         ],
         cap: D(10),
         get show() {
@@ -192,9 +217,9 @@ export const COL_CHALLENGES: colChallenges = {
         get goalDesc() {
             return `Reach ${format(this.goal)} Points.`;
         },
-        desc: `Points, PRai, and all Kuaraniai resources gain less the more you have. However, PRai's auto-generator is always unlocked, and always runs at ${format(100)}%.`,
-        reward: `Colosseum Power speeds up research, increase all pre-Col resources by ${format(5)}×, and Unlock another challenge.`,
-        cap: 1,
+        get desc() { return `Points, PRai, and all Kuaraniai resources gain less the more you have. However, PRai's auto-generator is always unlocked, and always runs at ${format(100)}%.`; },
+        get reward() { return `Colosseum Power speeds up research, increase all Kuaraniai resources by ${format(2)}×, boost Points and PRai by ${format(10)}×, and Unlock another challenge.`; },
+        cap: D(1),
         get show() {
             return Decimal.gte(timesCompleted("su"), 1);
         },
@@ -218,26 +243,25 @@ export const COL_CHALLENGES: colChallenges = {
         layer: 0,
         name: `Inverted Mechanics`,
         goal: D(1e70),
+        get resourceReq() { return player.value.gameProgress.main.points; },
         get goalDesc() {
-            return `Reach ${format(this.goal)} Points.`;
+            return `PB: ${format(timesCompleted(this.id))} / ${format(this.goal)} Points.`;
         },
-        desc: `All Upgrades can only be bought once, but One-Upgrades are repeatable. (Upgrade 2 and 5 change to boosting point gain.) Point and PRai gain are raised to the ^${format(0.8, 3)} and PR2 scales ${format(1.2, 2)}× faster.`,
+        get desc() { return `All Upgrades can only be bought once, but One-Upgrades are repeatable. Upgrade 2 and 5 change to boosting point gain. Point and PRai gain are raised to the ^${format(0.8, 3)} and PR2 scales ${format(1.2, 2)}× faster.`; },
         reward: `Something here.`,
-        cap: 1,
+        cap: D(Infinity),
         get show() {
             return Decimal.gte(timesCompleted("df"), 1);
         },
-        get canComplete() {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
-        },
+        canComplete: false,
         get progress() {
             return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
                 .log10()
-                .div(this.goal.log10())
+                .div(Decimal.log10(timesCompleted(this.id)))
                 .min(1);
         },
         get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(timesCompleted(this.id))} (${format(this.progress.mul(100), 3)}%)`;
         }
     }
 };
@@ -534,7 +558,9 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             tmp.value.col.researchesAtOnce = 1;
             tmp.value.col.researchesAllocated = 0;
             tmp.value.col.researchSpeed = D(1);
+            setFactor(0, [5, 1], "Base", `${format(1, 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, true);
             tmp.value.col.researchSpeed = tmp.value.col.researchSpeed.mul(tmp.value.col.effects.res);
+            setFactor(1, [5, 1], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(tmp.value.col.effects.res, 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
             for (let i = 0; i < COL_RESEARCH.length; i++) {
                 if (player.value.gameProgress.col.research.enabled[i] === undefined) {
@@ -555,22 +581,18 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             }
             break;
         case 0:
-            if (
-                Decimal.lte(player.value.gameProgress.col.time, 0) &&
-                player.value.gameProgress.col.inAChallenge
-            ) {
-                for (
-                    let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1;
-                    i >= 0;
-                    i--
-                ) {
+            if (Decimal.lte(player.value.gameProgress.col.time, 0) && player.value.gameProgress.col.inAChallenge) {
+                for (let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1; i >= 0; i--) {
                     exitChallenge(player.value.gameProgress.col.challengeOrder.chalID[i]);
                 }
             }
 
             if (player.value.gameProgress.unlocks.col) {
                 i = Decimal.max(player.value.gameProgress.kua.best[4]!, 100).div(100);
+                setFactor(0, [5, 0], "Base", `${format(Decimal.max(player.value.gameProgress.kua.best[4]!, 100), 2)} / ${format(100)}`, `${format(i, 2)}`, true);
                 tmp.value.col.powGen = i;
+                i = Decimal.cbrt(player.value.gameProgress.col.power).mul(0.6).pow10().add(tmp.value.col.powGen).log10().div(0.6).pow(3).sub(player.value.gameProgress.col.power);
+                setFactor(1, [5, 0], "Decay", `/${format(tmp.value.col.powGen.div(i), 2)}`, `${format(i, 2)}`, true);
 
                 generate = tmp.value.col.powGen.mul(delta);
                 i = player.value.gameProgress.col.power;
@@ -578,18 +600,9 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 tmp.value.col.truePowGen = Decimal.sub(player.value.gameProgress.col.power, i).div(delta);
 
                 updateAllTotal(player.value.gameProgress.col.totals, generate);
-                player.value.gameProgress.col.totalEver = Decimal.add(
-                    player.value.gameProgress.col.totalEver,
-                    tmp.value.col.truePowGen
-                );
-                updateAllBest(
-                    player.value.gameProgress.col.best,
-                    player.value.gameProgress.col.power
-                );
-                player.value.gameProgress.col.bestEver = Decimal.max(
-                    player.value.gameProgress.col.bestEver,
-                    player.value.gameProgress.col.power
-                );
+                player.value.gameProgress.col.totalEver = Decimal.add(player.value.gameProgress.col.totalEver, tmp.value.col.truePowGen);
+                updateAllBest(player.value.gameProgress.col.best, player.value.gameProgress.col.power);
+                player.value.gameProgress.col.bestEver = Decimal.max(player.value.gameProgress.col.bestEver, player.value.gameProgress.col.power);
 
                 i = Decimal.max(player.value.gameProgress.col.power, 1).cbrt().mul(5).add(40);
                 player.value.gameProgress.col.maxTime = i;
@@ -600,7 +613,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 }
 
                 tmp.value.col.effects.upg1a2sc = Decimal.gte(timesCompleted("su"), 1)
-                    ? Decimal.max(player.value.gameProgress.col.power, 1).log(1000).sub(1).mul(getColChalCondEffects("su")[0]).div(10).add(1)
+                    ? Decimal.max(player.value.gameProgress.col.power, 1).log(1000).sub(1).mul(getColChalRewEffects("su")[0]).mul(2.5).add(1)
                     : D(1)
 
                 tmp.value.col.effects.res = Decimal.gte(timesCompleted("df"), 1)
@@ -611,6 +624,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             k = 0;
             l = 0;
             player.value.gameProgress.col.inAChallenge = false;
+            tmp.value.col.totalColChalComp = D(0);
             for (let i = 0; i < challengeIDListArr.length; i++) {
                 chalID = challengeIDListArr[i];
 
@@ -640,6 +654,16 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 }
                 // anything after this replaces the selected value; as if a challenge sent you into another challenge with a set difficulty
                 player.value.gameProgress.inChallenge[chalID].depths = j;
+
+                if (COL_CHALLENGES[chalID].type === 2 && player.value.gameProgress.inChallenge[chalID].entered) {
+                    player.value.gameProgress.col.completed[chalID] = Decimal.max(player.value.gameProgress.col.completed[chalID], COL_CHALLENGES[chalID].resourceReq!);
+                }
+
+                if (COL_CHALLENGES[chalID].type === 2) {
+                    tmp.value.col.totalColChalComp = tmp.value.col.totalColChalComp.add(completedChallenge(chalID) ? 1 : 0);
+                } else {
+                    tmp.value.col.totalColChalComp = tmp.value.col.totalColChalComp.add(timesCompleted(chalID));
+                }
             }
 
             player.value.gameProgress.col.completedAll = k === l && player.value.gameProgress.col.inAChallenge;
@@ -704,7 +728,6 @@ export type colChallengesSavedData = {
     };
 };
 
-// TODO: Make challenge depths be the difficulty of the challenge, and also make a prompt what difficulty 0 to compeleted
 export const challengeToggle = (id: challengeIDList) => {
     if (!inChallenge(id)) {
         if (

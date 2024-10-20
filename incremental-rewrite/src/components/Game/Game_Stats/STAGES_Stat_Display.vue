@@ -4,7 +4,6 @@ import { tab, player, tmp } from "@/main";
 import { format, formatTime } from "@/format";
 import { STAGES } from "./Game_Stats";
 import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_Main";
-import { timesCompleted } from "../Game_Progress/Game_Colosseum/Game_Colosseum";
 
 defineProps<{
     id: number;
@@ -85,8 +84,7 @@ defineProps<{
             <span>
                 Total Colosseum Power: {{ format(player.gameProgress.col.totalEver, 2) }}<br />
                 Best Colosseum Power: {{ format(player.gameProgress.col.bestEver, 2) }}<br />
-                <!-- ! TODO: make this not hardcoded -->
-                Total Challenge Completions: {{ format(timesCompleted("nk")) }}<br />
+                Total Challenge Completions: {{ format(tmp.col.totalColChalComp) }}<br />
             </span>
         </div>
         <div v-if="id === 3" class="statText fontVerdana">

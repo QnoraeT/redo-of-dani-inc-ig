@@ -160,7 +160,8 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `Your PRai's multiplier goes from ${format(4)}× -> ${format(5)}×.`;
                 },
                 show: true,
-                status: true
+                status: true,
+                extra: `This may require you to do a higher level reset (like PR2) if you had already done a PRai reset!`
             },
             {
                 // id: 6
@@ -268,11 +269,11 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `A prelude 1`;
                 },
                 get desc() {
-                    return `Have ${format(1e30)} points without buying Upgrade 3.`;
+                    return `Have ${format(1e45)} points without buying Upgrade 3.`;
                 },
                 get cond() {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.best[1]!, 1e30) &&
+                        Decimal.gte(player.value.gameProgress.main.points, 1e45) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
                     );
                 },
@@ -293,11 +294,11 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `A prelude 2`;
                 },
                 get desc() {
-                    return `Have ${format(1e35)} points without buying Upgrade 2 and 3.`;
+                    return `Have ${format(1e63)} points without buying Upgrade 2 and 3.`;
                 },
                 get cond() {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.best[1]!, 1e35) &&
+                        Decimal.gte(player.value.gameProgress.main.points, 1e63) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
                     );
@@ -340,11 +341,11 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `A prelude 3`;
                 },
                 get desc() {
-                    return `Have ${format(1e40)} points without buying Upgrades 1, 2, and 3 in the current PRai run.`;
+                    return `Have ${format(1e90)} points without buying Upgrades 1, 2, and 3 in the current PRai run.`;
                 },
                 get cond() {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.best[1]!, 1e40) &&
+                        Decimal.gte(player.value.gameProgress.main.points, 1e90) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
@@ -437,18 +438,21 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                // ! Unable
                 // id: 17
                 ordering: 17,
                 get name() {
                     return `Apparently Upgrades 4-6 are all you need.`;
                 },
                 get desc() {
-                    return `Get ${format(1e30, 3)} points without having Upgrades 1-3 and without more than ${format(10)} PRai for this Kuaraniai run.`;
+                    return `Get ${format(1e30)} points without having Upgrades 1-3 and without more than ${format(10)} PRai for this Kuaraniai run.`;
                 },
                 autoComplete: false,
                 get cond() {
-                    return false;
+                    return Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
+                    Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
+                    Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0) &&
+                    Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10) &&
+                    Decimal.gte(player.value.gameProgress.main.best[2]!, 1e30);
                 },
                 get reward() {
                     return `PRai's effect is slightly boosted by ×${format(this.eff!, 2)} based off your time in PRai.`;
@@ -464,14 +468,8 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 },
                 get status() {
                     if (
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[0].boughtInReset[2],
-                            0
-                        ) &&
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[1].boughtInReset[2],
-                            0
-                        ) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
                     ) {
                         return Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10)

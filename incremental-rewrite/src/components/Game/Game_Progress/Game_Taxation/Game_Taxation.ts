@@ -2,6 +2,7 @@ import { D, expQuadCostGrowth } from "@/calc";
 import { format } from "@/format";
 import { player, tmp, updateAllBest, updateAllTotal } from "@/main";
 import Decimal, { type DecimalSource } from "break_eternity.js";
+import { setFactor } from "../../Game_Stats/Game_Stats";
 
 export const getTaxUpgrade = (id: number) => {
     return player.value.gameProgress.tax.upgrades[id] ?? D(0);
@@ -118,17 +119,18 @@ export const updateTax = (type: number, delta: DecimalSource) => {
                 }
             }
 
-            tmp.value.tax.req = D(Number.MAX_VALUE);
+            tmp.value.tax.req = D("ee3");
             tmp.value.tax.canDo = Decimal.gte(
                 player.value.gameProgress.main.totals[4]!,
                 Number.MAX_VALUE
             );
             tmp.value.tax.pending = tmp.value.tax.canDo
                 ? Decimal.pow(
-                      100,
-                      Decimal.log(player.value.gameProgress.main.totals[4]!, "e500").sqrt().sub(1)
-                  )
+                        100,
+                        Decimal.log(player.value.gameProgress.main.totals[4]!, "ee3").sqrt().sub(1)
+                    )
                 : D(0);
+            setFactor(0, [6, 0], "Base", `${format(100)}^((log(${format(player.value.gameProgress.main.totals[4]!, 2)})/${format(1000)})^${format(0.5, 2)} - 1)`, `${format(tmp.value.tax.pending, 2)}`, true);
 
             if (player.value.gameProgress.tax.auto) {
                 generate = tmp.value.tax.pending.mul(delta);

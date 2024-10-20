@@ -160,10 +160,11 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
             default:
                 throw new Error(`${player.value.settings.notation} is not a valid notation index!`);
         }
-    } catch {
+    } catch(e) {
         console.warn(
             `There was an error trying to get player.settings.notation! Falling back to Mixed Scientific...\n\nIf you have an object that has an item that uses format() without it being a get or function, this will occurr on load!`
         );
+        console.warn(e);
         if (Decimal.lt(number, "e-1e9")) {
             return `e${format(Decimal.log10(number), 0, expdec)}`;
         } else if (Decimal.lt(number, 0.001)) {

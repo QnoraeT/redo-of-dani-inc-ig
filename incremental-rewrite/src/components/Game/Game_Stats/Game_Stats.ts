@@ -1,11 +1,8 @@
 import Decimal from "break_eternity.js";
 import { player, tmp } from "@/main";
 import {
-    COL_CHALLENGES,
-    inChallenge,
     timesCompleted
 } from "../Game_Progress/Game_Colosseum/Game_Colosseum";
-import { D } from "@/calc";
 import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_Main";
 
 export type FactorColorID = "norm" | "ach" | "kua" | "col" | "tax" | "sc1" | "sc2"
@@ -15,7 +12,7 @@ export const factorColors = {
     ach: "#FFFF80",
     kua: "#B080FF",
     col: "#FFA080",
-    tax: "#FFF080",
+    tax: "#FFE040",
     sc1: "#FFA0A0",
     sc2: "#FFE0C0"
 }
@@ -237,7 +234,43 @@ export const ALL_FACTORS: Array<FactorsStat> = [
             }
         ],
         factors: null
-    }
+    },
+    {
+        name: "Colosseum",
+        get show() {
+            return player.value.gameProgress.unlocks.col;
+        },
+        subTabs: [
+            {
+                name: "Col Power Gain",
+                show: true,
+                subTabs: null,
+                factors: []
+            },
+            {
+                name: "Research Speed",
+                show: true,
+                subTabs: null,
+                factors: []
+            },
+        ],
+        factors: null
+    },
+    {
+        name: "Taxation",
+        get show() {
+            return player.value.gameProgress.unlocks.tax;
+        },
+        subTabs: [
+            {
+                name: "Coins Gain",
+                show: true,
+                subTabs: null,
+                factors: []
+            },
+        ],
+        factors: null
+    },
 ];
 
 export const initStatsFactors = () => {
@@ -279,7 +312,7 @@ export const STAGES = [
         name: "Main Tab",
         show: true,
         get progress() {
-            return Decimal.max(player.value.gameProgress.main.points, 1).log(  1e42);
+            return Decimal.max(player.value.gameProgress.main.points, 1).log(1e42);
         },
         get colors() {
             return {
@@ -320,11 +353,7 @@ export const STAGES = [
             return player.value.gameProgress.unlocks.col;
         },
         get progress() {
-            return timesCompleted("nk")
-                ? D(1)
-                : inChallenge("nk")
-                    ? COL_CHALLENGES.nk.progress
-                    : D(0);
+            return Decimal.div(timesCompleted("su"), 5).add(Decimal.log(timesCompleted("im"), 1e70)).div(2)
         },
         get colors() {
             return {

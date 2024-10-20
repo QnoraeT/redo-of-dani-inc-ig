@@ -3,7 +3,7 @@ import { player, tmp, updateAllBest, updateAllTotal } from "@/main";
 import { format, formatPerc } from "@/format";
 import { D, scale, smoothExp, smoothPoly } from "@/calc";
 import { ACHIEVEMENT_DATA } from "../../Game_Achievements/Game_Achievements";
-import { getColResEffect, inChallenge } from "../Game_Colosseum/Game_Colosseum";
+import { challengeDepth, getColResEffect, inChallenge, timesCompleted } from "../Game_Colosseum/Game_Colosseum";
 import { setFactor } from "../../Game_Stats/Game_Stats";
 
 // use get show if it can change in the mean time, currently unused as a placeholder
@@ -37,6 +37,8 @@ export type Kua_Upgrade = {
     cost: DecimalSource;
     show: boolean;
     eff?: Decimal;
+    eff2?: Decimal;
+    implemented?: boolean;
 };
 
 export const KUA_UPGRADES: Kua_Upgrade_List = {
@@ -44,7 +46,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 1
             get desc() {
-                return `Gain ${format(0.01, 2)}% of your pending PRai per second, and Kuaraniai Gain is multiplied by ${format(1.5, 2)}x`;
+                return `Gain ${format(0.01, 2)}% of your pending PRai per second, and Kuaraniai Gain is multiplied by ${format(1.5, 2)}×`;
             },
             get cost() {
                 return D(0.1);
@@ -54,7 +56,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 2
             get desc() {
-                return `KShards boost PRai's effect. Currently: ${format(this.eff!, 2)}x`;
+                return `KShards boost PRai's effect. Currently: ${format(this.eff!, 2)}×`;
             },
             get eff() {
                 let i = D(1);
@@ -126,7 +128,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 7
             get desc() {
-                return `Upgrade 1's cost base is decreased by -${format(0.05, 2)}, and Point gain is boosted by Kuaraniai, which increases over time in PRai.`;
+                return `Upgrade 1's linear cost scaling is multiplied by ×${format(0.95, 2)}, and Point gain is boosted by Kuaraniai, which increases over time in PRai.`;
             },
             get cost() {
                 return 1e7;
@@ -136,7 +138,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 8
             get desc() {
-                return `KPower's UPG2 effect has a better formula, and KShards increase PRai gain. Currently: ${format(this.eff!, 2)}x`;
+                return `KPower's UPG2 effect has a better formula, and KShards increase PRai gain. Currently: ${format(this.eff!, 2)}×`;
             },
             get eff() {
                 let i = D(1);
@@ -190,7 +192,87 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
                 return 1e15;
             },
             show: true
-        }
+        },
+        {
+            // 12
+            get desc() {
+                return `Upgrade 4 boosts Kuaraniai gain at a vastly reduced rate. Currently: ${format(this.eff!, 3)}×`;
+            },
+            get eff() {
+                let i = Decimal.max(tmp.value.main.upgrades[3].effect, 1);
+                i = i.log10().pow(0.2).add(1);
+                return i;
+            },
+            get cost() {
+                return 1e17;
+            },
+            show: true
+        },
+        {
+            // 13
+            get desc() {
+                return `Upgrade 5 boosts KShard gain at a vastly reduced rate. Currently: ${format(this.eff!, 3)}×`;
+            },
+            get eff() {
+                let i = Decimal.max(tmp.value.main.upgrades[4].effect, 1);
+                i = i.log10().pow(0.2).add(1);
+                return i;
+            },
+            get cost() {
+                return 1e19;
+            },
+            show: true
+        },
+        {
+            // 14
+            get desc() {
+                return `Upgrade 6 boosts KPower gain at a vastly increased rate, and Upgrade 3 also affects Upgrade 2 at a reduced rate. Currently: ${format(this.eff!, 3)}×, +${format(this.eff2!, 3)}`;
+            },
+            get eff() {
+                let i = Decimal.add(tmp.value.main.upgrades[5].effect, 1);
+                i = i.pow(4);
+                return i;
+            },
+            get eff2() {
+                let i = Decimal.max(tmp.value.main.upgrades[2].effect, 1);
+                i = i.div(3);
+                return i;
+            },
+            get cost() {
+                return 1e22;
+            },
+            show: true
+        },
+        {
+            // 15
+            get desc() {
+                return `Unlock Upgrade 7 which raises point gain.`;
+            },
+            get cost() {
+                return 1e25;
+            },
+            show: true
+        },
+        {
+            // 16
+            get desc() {
+                return `Unlock Upgrade 8 which raises Upgrade 1's cost.`;
+            },
+            get cost() {
+                return 1e30;
+            },
+            show: true
+        },
+        {
+            // 17
+            get desc() {
+                return `Unlock Upgrade 9 which multiplies Upgrade 1's base.`;
+            },
+            get cost() {
+                return 1e35;
+            },
+            show: true
+        },
     ],
     KPower: [
         {
@@ -306,7 +388,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 6
             get desc() {
-                return `Kuaraniai also delays Upgrade 2's softcap, and it's effect of Upgrade 1's scaling also apply to superscaling at a reduced rate.`;
+                return `Kuaraniai also delays Upgrade 2's softcap, and its effect of Upgrade 1's scaling also apply to superscaling at a reduced rate.`;
             },
             get cost() {
                 return 1e6;
@@ -316,7 +398,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 7
             get desc() {
-                return `Upgrade 2's effect is cubed, but it's other effects are not boosted.`;
+                return `Upgrade 2's effect is cubed, but its other effects are not boosted.`;
             },
             get cost() {
                 return 1e8;
@@ -363,6 +445,93 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             },
             get cost() {
                 return 1e18;
+            },
+            show: true
+        },
+        {
+            // 11
+            get desc() {
+                return `Upgrades 4, 5, and 6's cost scaling is ${format(10)}% slower.`;
+            },
+            get cost() {
+                return 1e21;
+            },
+            show: true
+        },
+        {
+            // 12
+            get desc() {
+                return `One-Upgrade #4 is improved.`;
+            },
+            get cost() {
+                return 1e24;
+            },
+            show: true
+        },
+        {
+            // 13
+            get desc() {
+                return `Upgrade 2's linear cost scaling is reduced by ×${format(0.92, 2)}.`;
+            },
+            get cost() {
+                return 1e28;
+            },
+            show: true
+        },
+        {
+            // 14
+            get desc() {
+                return `One-Upgrade #6 is ${format(10)}% stronger.`;
+            },
+            get cost() {
+                return 1e33;
+            },
+            show: true
+        },
+        {
+            // 15
+            get desc() {
+                return `Kuaraniai’s effects are ${format(5)}% stronger.`;
+            },
+            get cost() {
+                return 1e40;
+            },
+            show: true
+        },
+        {
+            // 16
+            implemented: false,
+            get desc() {
+                return `Upgrade 1's effectiveness is increased based off of how much KPower you have. Currently: +${format(this.eff!.sub(1).mul(100), 3)}%`;
+            },
+            get eff() {
+                let eff = Decimal.max(player.value.gameProgress.kua.kpower.amount, 1e45);
+                eff = eff.log10().log(45);
+                return eff;
+            },
+            get cost() {
+                return 1e45;
+            },
+            show: true
+        },
+        {
+            // 17
+            implemented: false,
+            get desc() {
+                return `All KShards and KPower's effects are stronger based off of their respective resource. Currently: KS: ${format(this.eff!.sub(1).mul(100), 3)}%, KP: ${format(this.eff2!.sub(1).mul(100), 3)}%`;
+            },
+            get eff() {
+                let eff = Decimal.max(player.value.gameProgress.kua.kshards.amount, 1);
+                eff = eff.log10().sqrt().div(100).add(1);
+                return eff;
+            },
+            get eff2() {
+                let eff = Decimal.max(player.value.gameProgress.kua.kpower.amount, 1);
+                eff = eff.log10().cbrt().div(100).add(1);
+                return eff;
+            },
+            get cost() {
+                return 1e50;
             },
             show: true
         }
@@ -632,9 +801,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     lastXP
                 ).div(delta);
 
-                tmp.value.kua.enhShowSlow =
-                    tmp.value.kua.enhShowSlow ||
-                    Decimal.gte(player.value.gameProgress.kua.enhancers.enhanceXP[i], 10);
+                tmp.value.kua.enhShowSlow = tmp.value.kua.enhShowSlow || Decimal.gte(player.value.gameProgress.kua.enhancers.enhanceXP[i], 10);
             }
             break;
         case 0:
@@ -644,25 +811,12 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             );
 
             tmp.value.kua.req = D(1e10);
-            tmp.value.kua.mult = D(0.0001);
             tmp.value.kua.exp = D(3);
 
             tmp.value.kua.exp = tmp.value.kua.exp.add(getColResEffect(2));
 
-            if (getKuaUpgrade("s", 1)) {
-                tmp.value.kua.mult = tmp.value.kua.mult.mul(1.5);
-            }
-
-            // if (ifAchievement(13)) {
-            //     tmp.value.kua.kuaMul = tmp.value.kua.kuaMul.mul(1.5);
-            // }
-
-            tmp.value.kua.effectivePrai = Decimal.add(
-                player.value.gameProgress.main.prai.totals[2]!,
-                tmp.value.main.prai.pending
-            );
-            tmp.value.kua.canDo =
-                tmp.value.kua.effectivePrai.gte(tmp.value.kua.req) && tmp.value.kua.active.gain;
+            tmp.value.kua.effectivePrai = Decimal.add(player.value.gameProgress.main.prai.totals[2]!, tmp.value.main.prai.pending);
+            tmp.value.kua.canDo = tmp.value.kua.effectivePrai.gte(tmp.value.kua.req) && tmp.value.kua.active.gain;
             tmp.value.kua.pending = tmp.value.kua.canDo
                 ? tmp.value.kua.effectivePrai
                         .log(tmp.value.kua.req)
@@ -671,12 +825,26 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                         .div(tmp.value.kua.exp)
                         .add(1)
                         .pow(tmp.value.kua.exp)
-                        .sub(1)
+                        .sub(5)
                         .pow10()
-                        .mul(tmp.value.kua.mult)
                 : D(0);
-            setFactor(0, [4, 1], "Base", `~${format(tmp.value.kua.mult, 4)}*10^(ln(log(${format(tmp.value.kua.effectivePrai)})))^${format(tmp.value.kua.exp, 2)}) (approx.)`, `${format(tmp.value.kua.pending, 4)}`, true);
+            setFactor(0, [4, 1], "Base", `~10^(ln(log(${format(tmp.value.kua.effectivePrai)})))^${format(tmp.value.kua.exp, 2)}-${format(5)}) (approx.)`, `${format(tmp.value.kua.pending, 4)}`, true);
             
+            if (getKuaUpgrade("s", 1)) {
+                tmp.value.kua.pending = tmp.value.kua.pending.mul(1.5);
+            }
+            setFactor(1, [4, 1], "KShard Upgrade 1", `×${format(1.5, 2)}`, `${format(tmp.value.kua.pending, 4)}`, getKuaUpgrade("s", 1), "kua");
+
+            if (getKuaUpgrade("s", 12)) {
+                tmp.value.kua.pending = tmp.value.kua.pending.mul(KUA_UPGRADES.KShards[11].eff!);
+            }
+            setFactor(2, [4, 1], "KShard Upgrade 12", `×${format(KUA_UPGRADES.KShards[11].eff!, 2)}`, `${format(tmp.value.kua.pending, 4)}`, getKuaUpgrade("s", 12), "kua");
+
+            if (timesCompleted("df")) {
+                tmp.value.kua.pending = tmp.value.kua.pending.mul(2);
+            }
+            setFactor(3, [4, 1], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(tmp.value.kua.pending, 1)}`, Decimal.gte(timesCompleted("df"), 1), "col");
+
             data = {
                 oldGain: tmp.value.kua.pending,
                 oldKua: D(0),
@@ -685,11 +853,11 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             data.oldKua = Decimal.max(player.value.gameProgress.kua.amount, 1e-4);
 
             if (inChallenge("df")) {
-                data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, 0.75).add(tmp.value.kua.pending), 0.2, false, 1e-4, 1, 0.75);
+                data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, Decimal.pow(0.75, challengeDepth("df"))).add(tmp.value.kua.pending), 0.2, false, 1e-4, 1, Decimal.pow(0.75, challengeDepth("df")));
 
                 tmp.value.kua.pending = data.newKua.sub(data.oldKua);
             }
-            setFactor(1, [4, 1], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tmp.value.kua.pending), 2)}`, `${format(tmp.value.kua.pending, 4)}`, inChallenge("df"), "col");
+            setFactor(4, [4, 1], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tmp.value.kua.pending), 2)}`, `${format(tmp.value.kua.pending, 4)}`, inChallenge("df"), "col");
 
             if (player.value.gameProgress.kua.auto) {
                 generate = tmp.value.kua.pending.mul(delta).mul(0.0001);
@@ -735,83 +903,23 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             }
             setFactor(2, [4, 0], "KShard Upgrade 11", `^${format(KUA_UPGRADES.KShards[10].eff!, 3)}`, `(${format(k, 4)} eff.) ${format(k.log(Decimal.max(player.value.gameProgress.kua.amount, 0)).mul(100), 2)}%`, getKuaUpgrade("s", 11), "kua");
 
+            if (getKuaUpgrade("p", 15)) {
+                k = k.pow(1.05);
+            }
+            setFactor(3, [4, 0], "KPower Upgrade 15", `^${format(1.05, 3)}`, `(${format(k, 4)} eff.) ${format(k.log(Decimal.max(player.value.gameProgress.kua.amount, 0)).mul(100), 2)}%`, getKuaUpgrade("p", 15), "kua");
+
             if (tmp.value.kua.active.effects) {
                 // * theres probably a better way to do this
                 // no requirements for this, no need to lump them in the ones with conditionals
-                tmp.value.kua.effects.upg1Scaling = Decimal.max(
-                    player.value.gameProgress.main.points,
-                    0
-                )
-                    .add(1)
-                    .log10()
-                    .pow(0.6)
-                    .div(200)
-                    .mul(
-                        Decimal.max(k, 0)
-                            .mul(1e4)
-                            .add(1)
-                            .pow(2 / 3)
-                            .sub(1)
-                    )
-                    .add(1)
-                    .log10()
-                    .add(1);
+                tmp.value.kua.effects.upg1Scaling = Decimal.max(player.value.gameProgress.main.points, 0).add(1).log10().pow(0.6).div(200).mul(Decimal.max(k, 0).mul(1e4).add(1).pow(2 / 3).sub(1)).add(1).log10().add(1);
                 if (getKuaUpgrade("p", 3)) {
-                    tmp.value.kua.effects.upg1Scaling = Decimal.max(
-                        player.value.gameProgress.main.points,
-                        0
-                    )
-                        .add(1)
-                        .pow(0.022)
-                        .mul(Decimal.max(k, 0).mul(10).add(1).pow(0.75).sub(1))
-                        .add(1)
-                        .log10()
-                        .add(1)
-                        .max(tmp.value.kua.effects.upg1Scaling);
+                    tmp.value.kua.effects.upg1Scaling = Decimal.max(player.value.gameProgress.main.points, 0).add(1).pow(0.022).mul(Decimal.max(k, 0).mul(10).add(1).pow(0.75).sub(1)).add(1).log10().add(1).max(tmp.value.kua.effects.upg1Scaling);
                 }
 
                 const exp = 1;
 
-                tmp.value.kua.effects.kshardPassive = Decimal.max(
-                    player.value.gameProgress.kua.kshards.totals[3]!,
-                    0.01
-                )
-                    .mul(1e3)
-                    .log10()
-                    .pow(2)
-                    .pow10()
-                    .div(10)
-                    .pow(0.04)
-                    .pow(exp)
-                    .mul(10)
-                    .log10()
-                    .mul(10)
-                    .log10()
-                    .pow(0.9)
-                    .pow10()
-                    .div(10)
-                    .pow10()
-                    .div(10);
-                tmp.value.kua.effects.kpowerPassive = Decimal.max(
-                    player.value.gameProgress.kua.kpower.totals[3]!,
-                    0.01
-                )
-                    .mul(1e3)
-                    .log10()
-                    .pow(2)
-                    .pow10()
-                    .div(10)
-                    .pow(0.04)
-                    .pow(exp)
-                    .mul(10)
-                    .log10()
-                    .mul(10)
-                    .log10()
-                    .pow(0.9)
-                    .pow10()
-                    .div(10)
-                    .pow10()
-                    .div(10);
+                tmp.value.kua.effects.kshardPassive = Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0.01).mul(1e3).log10().pow(2).pow10().div(10).pow(0.04).pow(exp).mul(10).log10().mul(10).log10().pow(0.9).pow10().div(10).pow10().div(10);
+                tmp.value.kua.effects.kpowerPassive = Decimal.max(player.value.gameProgress.kua.kpower.totals[3]!, 0.01).mul(1e3).log10().pow(2).pow10().div(10).pow(0.04).pow(exp).mul(10).log10().mul(10).log10().pow(0.9).pow10().div(10).pow10().div(10);
 
                 tmp.value.kua.effects.upg4 = Decimal.gt(k, 0)
                     ? Decimal.log10(k).add(4).div(13).mul(7).add(1).cbrt().sub(4).pow10().add(1)
@@ -847,7 +955,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     : D(1);
 
                 tmp.value.kua.effects.ptPower = getKuaUpgrade("p", 3)
-                    ? Decimal.max(k, 0).add(1).log2().sqrt().mul(0.01).add(1) // 1 = ^1, 2 = ^1.01, 16 = ^1.02, 256 = ^1.03, 65,536 = ^1.04 ...
+                    ? Decimal.max(k, 0).add(1).log2().add(1).sqrt().sub(1).mul(0.01).add(1) // 1 = ^1, 2 = ^1.01, 16 = ^1.02, 256 = ^1.03, 65,536 = ^1.04 ...
                     : D(1);
 
                 tmp.value.kua.effects.upg2Softcap = getKuaUpgrade("s", 6)
@@ -859,7 +967,11 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     : D(1);
 
                 tmp.value.kua.effects.kpower = getKuaUpgrade("s", 10)
-                    ? Decimal.max(k, 10).log10().sub(1).div(4).pow(1.1).pow10()
+                    ? Decimal.max(k, 10).log10().sub(1).div(4).add(1).pow(1.1).sub(1).pow10()
+                    : D(1);
+
+                tmp.value.kua.effects.kpower = getKuaUpgrade("s", 10)
+                    ? Decimal.max(k, 10).log10()
                     : D(1);
 
                 tmp.value.kua.effects.pts = getKuaUpgrade("s", 7)
@@ -889,6 +1001,16 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 }
                 setFactor(1, [4, 2], "KPower Upgrade 1", `×${format(2.5, 2)}`, `${format(i, 3)}`, getKuaUpgrade("p", 1), "kua");
 
+                if (timesCompleted("df")) {
+                    i = i.mul(2);
+                }
+                setFactor(2, [4, 2], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
+
+                if (getKuaUpgrade("s", 13)) {
+                    i = i.mul(KUA_UPGRADES.KShards[12].eff!);
+                }
+                setFactor(3, [4, 2], "KShard Upgrade 13", `×${format(KUA_UPGRADES.KShards[12].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 13), "kua");
+
                 data = {
                     oldGain: i,
                     oldKua: D(0),
@@ -897,11 +1019,11 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 data.oldKua = Decimal.max(player.value.gameProgress.kua.amount, 1e-4);
     
                 if (inChallenge("df")) {
-                    data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, 0.5).add(i), 0.2, false, 1e-4, 1, 0.5);
+                    data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, Decimal.pow(0.5, challengeDepth("df"))).add(i), 0.2, false, 1e-4, 1, Decimal.pow(0.5, challengeDepth("df")));
     
                     i = data.newKua.sub(data.oldKua);
                 }
-                setFactor(2, [4, 2], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
+                setFactor(4, [4, 2], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
             }
             tmp.value.kua.shardGen = i;
 
@@ -914,6 +1036,16 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 }
                 setFactor(1, [4, 3], "KShard Upgrade 10", `×${format(tmp.value.kua.effects.kpower, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 10), "kua");
 
+                if (timesCompleted("df")) {
+                    i = i.mul(2);
+                }
+                setFactor(2, [4, 3], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
+
+                if (getKuaUpgrade("s", 14)) {
+                    i = i.mul(KUA_UPGRADES.KShards[13].eff!);
+                }
+                setFactor(3, [4, 3], "KShard Upgrade 14", `×${format(KUA_UPGRADES.KShards[13].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 14), "kua");
+
                 data = {
                     oldGain: i,
                     oldKua: D(0),
@@ -922,11 +1054,11 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 data.oldKua = Decimal.max(player.value.gameProgress.kua.amount, 1e-4);
 
                 if (inChallenge("df")) {
-                    data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, 0.5).add(i), 0.2, false, 1e-4, 1, 0.5);
+                    data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, Decimal.pow(0.5, challengeDepth("df"))).add(i), 0.2, false, 1e-4, 1, Decimal.pow(0.5, challengeDepth("df")));
     
                     i = data.newKua.sub(data.oldKua);
                 }
-                setFactor(2, [4, 3], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
+                setFactor(4, [4, 3], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
             }
             tmp.value.kua.powGen = i;
 

@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import Decimal from 'break_eternity.js'
 import { tab } from '@/main'
-import { tmp, player, reset } from '@/main'
+import { tmp, player } from '@/main'
 import { format, formatTime } from '@/format'
 import { MAIN_ONE_UPGS, MAIN_UPGS, PR2_EFF, buyGenUPG, buyOneMainUpg, getOMUpgrade, maxxedOMUpgrade } from './Game_Main'
 import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
 import { switchSubTab } from '@/components/MainTabs/MainTabs'
 import Tab_Button from '@/components/MainTabs/DefaultTabButton.vue'
 import { inChallenge } from '../Game_Colosseum/Game_Colosseum'
+import { reset } from '@/resets'
 </script>
 <template>
     <div id="generators" v-if="tab.currentTab === 0">

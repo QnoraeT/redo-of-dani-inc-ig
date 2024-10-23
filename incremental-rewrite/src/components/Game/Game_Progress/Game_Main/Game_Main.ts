@@ -517,6 +517,7 @@ export const buyGenUPG = (id: number): void => {
         for (let i = 0; i < player.value.gameProgress.main.upgrades[id].boughtInReset.length; i++) {
             player.value.gameProgress.main.upgrades[id].boughtInReset[i] = player.value.gameProgress.main.upgrades[id].bought;
         }
+        updateStart(-(id + 1), 0);
     }
 }
 
@@ -1526,7 +1527,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 }
                 setFactor(7, [2, 0], "Firsterious", `×${format(getColResEffect(1), 2)}`, `${format(i)}`, Decimal.gte(getColResLevel(1), 1), "col");
 
-                if (timesCompleted("df")) {
+                if (Decimal.gte(timesCompleted("df"), 1)) {
                     i = i.mul(10);
                 }
                 setFactor(8, [2, 0], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(10, 2)}`, `${format(i, 1)}`, Decimal.gte(timesCompleted("df"), 1), "col");

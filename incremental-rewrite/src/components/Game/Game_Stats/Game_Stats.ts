@@ -1,9 +1,6 @@
-import Decimal from "break_eternity.js";
-import { player, tmp } from "@/main";
-import {
-    timesCompleted
-} from "../Game_Progress/Game_Colosseum/Game_Colosseum";
+import { player } from "@/main";
 import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_Main";
+import { D } from "@/calc";
 
 export type FactorColorID = "norm" | "ach" | "kua" | "col" | "tax" | "sc1" | "sc2"
 export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "col", "tax", "sc1", "sc2"]
@@ -312,7 +309,8 @@ export const STAGES = [
         name: "Main Tab",
         show: true,
         get progress() {
-            return Decimal.max(player.value.gameProgress.main.points, 1).log(1e42);
+            return D(0);
+            // return Decimal.max(player.value.gameProgress.main.points, 1).log(1e42);
         },
         get colors() {
             return {
@@ -331,10 +329,11 @@ export const STAGES = [
             return player.value.gameProgress.unlocks.kua;
         },
         get progress() {
-            return Decimal.add(player.value.gameProgress.kua.amount, tmp.value.kua.pending)
-                .max(0.0001)
-                .mul(1e4)
-                .log(1e6);
+            return D(0);
+            // return Decimal.add(player.value.gameProgress.kua.amount, tmp.value.kua.pending)
+            //     .max(0.0001)
+            //     .mul(1e4)
+            //     .log(1e6);
         },
         get colors() {
             return {
@@ -353,7 +352,8 @@ export const STAGES = [
             return player.value.gameProgress.unlocks.col;
         },
         get progress() {
-            return Decimal.div(timesCompleted("su"), 5).add(Decimal.log(timesCompleted("im"), 1e70)).div(2)
+            return D(0);
+            // return Decimal.div(timesCompleted("su"), 5).add(Decimal.log(timesCompleted("im"), 1e70)).div(2)
         },
         get colors() {
             return {
@@ -372,7 +372,8 @@ export const STAGES = [
             return player.value.gameProgress.unlocks.tax;
         },
         get progress() {
-            return Decimal.add(tmp.value.tax.pending, player.value.gameProgress.tax.amount).div(20);
+            return D(0);
+            // return Decimal.add(tmp.value.tax.pending, player.value.gameProgress.tax.amount).div(20);
         },
         get colors() {
             return {

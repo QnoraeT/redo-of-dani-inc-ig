@@ -57,7 +57,7 @@ import { reset } from '@/resets'
                 <tr>
                     <td> 
                         <div class="flex-container" style="flex-direction: column;">
-                            <button style="text-align: center; font-size: 0.7vw" 
+                            <button style="text-align: center; font-size: 0.65vw" 
                             :class="{ nope: !tmp.main.prai.canDo, ok: tmp.main.prai.canDo }"
                             class="whiteText largeButton fontVerdana generatorButton" id="prai" @click="reset(0)">
                             <h3 style="font-size: 1vw">PRai: {{format(player.gameProgress.main.prai.amount)}}</h3>
@@ -74,7 +74,7 @@ import { reset } from '@/resets'
                                 <br>{{tmp.main.prai.canDo ? `Resetting now will boost your points by ${format(Decimal.div(tmp.main.prai.nextEffect, tmp.main.prai.effect), 2)}×` : ""}}
                             </button>
     
-                            <button style="text-align: center; width: 18vw; height: 3vw; font-size: 0.7vw" 
+                            <button style="text-align: center; width: 18vw; height: 3vw; font-size: 0.65vw" 
                             :class="{ nopeFill: !player.gameProgress.main.prai.auto, okFill: player.gameProgress.main.prai.auto }"
                             class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPRai" v-if="getKuaUpgrade('s', 1) || inChallenge('df')" @click="player.gameProgress.main.prai.auto = !player.gameProgress.main.prai.auto">
                                 <b>PRai Generator: {{player.gameProgress.main.prai.auto?"On":"Off"}}</b>
@@ -83,7 +83,7 @@ import { reset } from '@/resets'
                     </td>
                     <td>
                         <div class="flex-container" style="flex-direction: column;">
-                            <button style="text-align: center; font-size: 0.7vw" 
+                            <button style="text-align: center; font-size: 0.65vw" 
                             :class="{ nope: !tmp.main.pr2.canDo, ok: tmp.main.pr2.canDo }"
                             class="whiteText largeButton fontVerdana generatorButton" id="pr2" v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)" @click="reset(1)">
                                 <h3 style="font-size: 1vw">PR2: {{format(player.gameProgress.main.pr2.amount)}}</h3>
@@ -99,7 +99,7 @@ import { reset } from '@/resets'
                                 <br>{{tmp.main.pr2.textEffect.txt===""?"":`At ${format(tmp.main.pr2.textEffect.when)} PR2 reset${tmp.main.pr2.textEffect.when.eq(1)?"":"s"}, ${tmp.main.pr2.textEffect.txt}`}}
                             </button>
         
-                            <button style="text-align: center; width: 18vw; height: 3vw; font-size: 0.7vw" 
+                            <button style="text-align: center; width: 18vw; height: 3vw; font-size: 0.65vw" 
                             :class="{ nopeFill: !player.gameProgress.main.pr2.auto, okFill: player.gameProgress.main.pr2.auto }"
                             class="whiteText thinMediumButton fontVerdana genAutoButton" id="autoPR2" v-if="false" @click="player.gameProgress.main.pr2.auto = !player.gameProgress.main.pr2.auto">
                                 <b>PR2 Autobuyer: {{player.gameProgress.main.pr2.auto?"On":"Off"}}</b>
@@ -111,9 +111,9 @@ import { reset } from '@/resets'
             <div class="flex-container" style="flex-direction: column-reverse; margin-top: 0.96vw; margin-left: auto; margin-right: auto; align-items: center;">
                 <div v-for="(item, index) in PR2_EFF" :key="index">
                     <div v-if="Decimal.gte(player.gameProgress.main.pr2.amount, item.when) && item.show">
-                        <div style="font-size: 0.8vw; text-align: center; border: 0.18vw solid #c0c0c0; height: 4vw; width: 36vw" 
+                        <div style="font-size: 0.5vw; text-align: center; border: 0.12vw solid #c0c0c0; height: 2.5vw; width: 20vw" 
                         class="whiteText largeButton fontVerdana generatorButton">
-                            <span style="font-size: 1.2vw">PR2: {{ format(item.when) }}</span><br>
+                            <span style="font-size: 0.7vw">PR2: {{ format(item.when) }}</span><br>
                             {{ item.text }}
                         </div>
                     </div>

@@ -232,7 +232,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                         <span class="tooltiptext">
                             <span v-for="j in item.list" :key="j.id">
                                 {{ j.txt }}
-                                <br />
+                                <br>
                             </span>
                         </span>
                     </div>
@@ -263,7 +263,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                         <span class="tooltiptext">
                             <span v-for="j in item.list" :key="j.id">
                                 {{ j.txt }}
-                                <br />
+                                <br>
                             </span>
                         </span>
                     </div>

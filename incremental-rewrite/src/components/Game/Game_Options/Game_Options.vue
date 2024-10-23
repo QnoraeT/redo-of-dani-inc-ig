@@ -39,6 +39,9 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                 <a href="https://discord.gg/JJKRfR3gH9">
                     <Basic_Button style="border: 0.24vw solid #5090FF" :html="`Join the <span style='color: #5090FF'><b>Discord</b></span> Community!`" />
                 </a>
+                <a href="https://github.com/QnoraeT/redo-of-dani-inc-ig">
+                    <Basic_Button style="border: 0.24vw solid #c0c0c0" :html="`See the <span style='color: #c0c0c0'><b>source code</b></span> of the game on Github!`" />
+                </a>
             </div>
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 1">

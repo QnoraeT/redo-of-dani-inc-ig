@@ -106,10 +106,10 @@ export const COL_CHALLENGES: colChallenges = {
         name: `Sabotaged Upgrades`,
         get goal() {
             return [
-                D(1e35),
+                D(1e24),
+                D(1e33),
                 D(1e40),
-                D(1e45),
-                D(1e55),
+                D(1e50),
                 D(1e65),
                 D(1e80),
                 D(1e100),
@@ -213,7 +213,7 @@ export const COL_CHALLENGES: colChallenges = {
         id: "df",
         layer: 0,
         name: `Decaying Feeling`,
-        goal: D(1e25),
+        goal: D(1e20),
         get goalDesc() {
             return `Reach ${format(this.goal)} Points.`;
         },
@@ -613,7 +613,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 }
 
                 tmp.value.col.effects.upg1a2sc = Decimal.gte(timesCompleted("su"), 1)
-                    ? Decimal.max(player.value.gameProgress.col.power, 1).log(1000).sub(1).mul(getColChalRewEffects("su")[0]).mul(2.5).add(1)
+                    ? Decimal.max(player.value.gameProgress.col.power, 1).log10().mul(getColChalRewEffects("su")[0]).mul(2.5).add(1)
                     : D(1)
 
                 tmp.value.col.effects.res = Decimal.gte(timesCompleted("df"), 1)

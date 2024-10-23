@@ -17,12 +17,12 @@ export const updatePlayerData = (player: Player): Player => {
                 };
             }
         }
-        player.displayVersion = '1.0.1';
+        player.displayVersion = 'v1.0.1';
         player.version = 1;
     }
     if (player.version === 1) {
-
-        // player.version = 2;
+        player.displayVersion = 'v1.0.2'; // tbh not much other than a late commit
+        player.version = 2;
     }
     if (player.version === 2) {
 

@@ -16,14 +16,15 @@ import { challengeDepth, getColResEffect, getColXPtoNext, inChallenge, timesComp
 import { updateAllTax } from "./components/Game/Game_Progress/Game_Taxation/Game_Taxation";
 import { ALL_FACTORS, initStatsFactors, setFactor } from "./components/Game/Game_Stats/Game_Stats";
 import { updatePlayerData } from "./versionControl";
+import { reset } from "./resets";
 
-// ! THIS SLOWS DOWN CALCULATIONS!!
+// this may slow down calculations!!
 const NAN_CHECKER = true;
 
 export const NaNCheck = (num: DecimalSource) => {
     if (NAN_CHECKER) {
         if (Decimal.isNaN(num)) {
-            throw new Error(`NaN detected!`)
+            throw new Error(`NaN detected!`);
         }
     }
 }
@@ -1009,7 +1010,7 @@ function calcPPS(): Decimal {
     }
     setFactor(16, [0], "Dotgenous", `×${format(getColResEffect(0), 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.col, "col");
 
-    if (timesCompleted("df") && !inChallenge("su")) {
+    if (Decimal.gte(timesCompleted("df"), 1) && !inChallenge("su")) {
         pps = pps.mul(10);
     }
     setFactor(17, [0], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(10, 2)}`, `${format(pps, 1)}`, Decimal.gte(timesCompleted("df"), 1) && !inChallenge("su"), "col");
@@ -1260,9 +1261,10 @@ declare global {
         ALL_FACTORS: typeof ALL_FACTORS;
         scale: typeof scale;
         getColXPtoNext: typeof getColXPtoNext;
-        smoothPoly: typeof smoothPoly
-        smoothExp: typeof smoothExp
-        resetTheWholeGame: typeof resetTheWholeGame
+        smoothPoly: typeof smoothPoly;
+        smoothExp: typeof smoothExp;
+        resetTheWholeGame: typeof resetTheWholeGame;
+        reset: typeof reset;
     }
 }
 
@@ -1278,5 +1280,6 @@ window.getColXPtoNext = getColXPtoNext;
 window.smoothPoly = smoothPoly;
 window.smoothExp = smoothExp;
 window.resetTheWholeGame = resetTheWholeGame;
+window.reset = reset;
 
 createApp(App).mount("#app");

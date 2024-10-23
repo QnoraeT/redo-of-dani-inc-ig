@@ -593,10 +593,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Increase UP1's base by +${format(this.effect(), 4)}`;
             },
-            effect(
-                xp = player.value.gameProgress.kua.enhancers.enhanceXP[0],
-                pow = tmp.value.kua.trueEnhPower[0]
-            ) {
+            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[0], pow = tmp.value.kua.trueEnhPower[0]) {
                 const effect = Decimal.max(xp, 0)
                     .mul(0.0025)
                     .add(1)
@@ -613,10 +610,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Increase UP2's base by +${format(this.effect(), 4)}`;
             },
-            effect(
-                xp = player.value.gameProgress.kua.enhancers.enhanceXP[1],
-                pow = tmp.value.kua.trueEnhPower[1]
-            ) {
+            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[1], pow = tmp.value.kua.trueEnhPower[1]) {
                 const effect = Decimal.max(xp, 0)
                     .mul(0.00025)
                     .add(1)
@@ -634,10 +628,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Increase UP3's base by +${format(this.effect(), 4)}`;
             },
-            effect(
-                xp = player.value.gameProgress.kua.enhancers.enhanceXP[2],
-                pow = tmp.value.kua.trueEnhPower[2]
-            ) {
+            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[2], pow = tmp.value.kua.trueEnhPower[2]) {
                 const effect = Decimal.max(xp, 0)
                     .mul(0.0025)
                     .add(1)
@@ -759,31 +750,16 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             }
 
             for (let i = 0; i < KUA_ENHANCERS.enhances.length; i++) {
-                tmp.value.kua.trueEnhPower[i] = Decimal.div(
-                    player.value.gameProgress.kua.enhancers.enhancePow[i],
-                    Decimal.max(j, player.value.gameProgress.kua.enhancers.xpSpread)
-                ).div(100);
-                tmp.value.kua.totalEnhSources = Decimal.add(
-                    tmp.value.kua.totalEnhSources,
-                    player.value.gameProgress.kua.enhancers.sources[i]
-                );
-                tmp.value.kua.enhSourcesUsed = Decimal.add(
-                    tmp.value.kua.enhSourcesUsed,
-                    player.value.gameProgress.kua.enhancers.enhancers[i]
-                );
+                tmp.value.kua.trueEnhPower[i] = Decimal.div(player.value.gameProgress.kua.enhancers.enhancePow[i], Decimal.max(j, player.value.gameProgress.kua.enhancers.xpSpread)).div(100);
+                tmp.value.kua.totalEnhSources = Decimal.add(tmp.value.kua.totalEnhSources, player.value.gameProgress.kua.enhancers.sources[i]);
+                tmp.value.kua.enhSourcesUsed = Decimal.add(tmp.value.kua.enhSourcesUsed, player.value.gameProgress.kua.enhancers.enhancers[i]);
 
-                tmp.value.kua.baseSourceXPGen[i] = Decimal.pow(
-                    player.value.gameProgress.kua.enhancers.enhancers[i],
-                    1.5
-                );
+                tmp.value.kua.baseSourceXPGen[i] = Decimal.pow(player.value.gameProgress.kua.enhancers.enhancers[i], 1.5);
 
                 generate = tmp.value.kua.baseSourceXPGen[i].mul(delta);
 
                 const lastXP = player.value.gameProgress.kua.enhancers.enhanceXP[i];
-                player.value.gameProgress.kua.enhancers.enhanceXP[i] = Decimal.add(
-                    player.value.gameProgress.kua.enhancers.enhanceXP[i],
-                    1
-                )
+                player.value.gameProgress.kua.enhancers.enhanceXP[i] = Decimal.add(player.value.gameProgress.kua.enhancers.enhanceXP[i], 1)
                     .root(decayExp)
                     .sub(1)
                     .mul(decayExp)
@@ -796,19 +772,13 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     .add(1)
                     .pow(decayExp)
                     .sub(1);
-                tmp.value.kua.kuaTrueSourceXPGen[i] = Decimal.sub(
-                    player.value.gameProgress.kua.enhancers.enhanceXP[i],
-                    lastXP
-                ).div(delta);
+                tmp.value.kua.kuaTrueSourceXPGen[i] = Decimal.sub(player.value.gameProgress.kua.enhancers.enhanceXP[i], lastXP).div(delta);
 
                 tmp.value.kua.enhShowSlow = tmp.value.kua.enhShowSlow || Decimal.gte(player.value.gameProgress.kua.enhancers.enhanceXP[i], 10);
             }
             break;
         case 0:
-            player.value.gameProgress.kua.timeInKua = Decimal.add(
-                player.value.gameProgress.kua.timeInKua,
-                delta
-            );
+            player.value.gameProgress.kua.timeInKua = Decimal.add(player.value.gameProgress.kua.timeInKua, delta);
 
             tmp.value.kua.req = D(1e10);
             tmp.value.kua.exp = D(3);
@@ -840,7 +810,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             }
             setFactor(2, [4, 1], "KShard Upgrade 12", `×${format(KUA_UPGRADES.KShards[11].eff!, 2)}`, `${format(tmp.value.kua.pending, 4)}`, getKuaUpgrade("s", 12), "kua");
 
-            if (timesCompleted("df")) {
+            if (Decimal.gte(timesCompleted("df"), 1)) {
                 tmp.value.kua.pending = tmp.value.kua.pending.mul(2);
             }
             setFactor(3, [4, 1], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(tmp.value.kua.pending, 1)}`, Decimal.gte(timesCompleted("df"), 1), "col");
@@ -916,31 +886,20 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     tmp.value.kua.effects.upg1Scaling = Decimal.max(player.value.gameProgress.main.points, 0).add(1).pow(0.022).mul(Decimal.max(k, 0).mul(10).add(1).pow(0.75).sub(1)).add(1).log10().add(1).max(tmp.value.kua.effects.upg1Scaling);
                 }
 
-                const exp = 1;
+                const exp = D(1.35);
 
-                tmp.value.kua.effects.kshardPassive = Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0.01).mul(1e3).log10().pow(2).pow10().div(10).pow(0.04).pow(exp).mul(10).log10().mul(10).log10().pow(0.9).pow10().div(10).pow10().div(10);
-                tmp.value.kua.effects.kpowerPassive = Decimal.max(player.value.gameProgress.kua.kpower.totals[3]!, 0.01).mul(1e3).log10().pow(2).pow10().div(10).pow(0.04).pow(exp).mul(10).log10().mul(10).log10().pow(0.9).pow10().div(10).pow10().div(10);
+                tmp.value.kua.effects.kshardPassive = Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0.01).mul(1e3).log10().pow(2).sub(1).pow10().pow(0.04).pow(exp).log10().add(1).log10().add(1).pow(0.9).sub(1).pow10().sub(1).pow10();
+                tmp.value.kua.effects.kpowerPassive = Decimal.max(player.value.gameProgress.kua.kpower.totals[3]!, 0.01).mul(1e3).log10().pow(2).sub(1).pow10().pow(0.04).pow(exp).log10().add(1).log10().add(1).pow(0.9).sub(1).pow10().sub(1).pow10();
 
                 tmp.value.kua.effects.upg4 = Decimal.gt(k, 0)
                     ? Decimal.log10(k).add(4).div(13).mul(7).add(1).cbrt().sub(4).pow10().add(1)
                     : D(1);
 
-                tmp.value.kua.effects.upg5 = Decimal.gt(
-                    player.value.gameProgress.kua.kshards.amount,
-                    0
-                )
-                    ? Decimal.pow(
-                            20,
-                            Decimal.log10(player.value.gameProgress.kua.kshards.amount).add(2).div(13)
-                        )
-                            .div(1e3)
-                            .add(1)
+                tmp.value.kua.effects.upg5 = Decimal.gt(player.value.gameProgress.kua.kshards.amount, 0)
+                    ? Decimal.pow(20, Decimal.log10(player.value.gameProgress.kua.kshards.amount).add(2).div(13)).div(1e3).add(1)
                     : D(1);
 
-                tmp.value.kua.effects.upg6 = Decimal.gt(
-                    player.value.gameProgress.kua.kpower.amount,
-                    1
-                )
+                tmp.value.kua.effects.upg6 = Decimal.gt(player.value.gameProgress.kua.kpower.amount, 1)
                     ? Decimal.log10(player.value.gameProgress.kua.kpower.amount)
                             .div(13)
                             .mul(7)
@@ -997,15 +956,15 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 }
                 setFactor(1, [4, 2], "KPower Upgrade 1", `×${format(2.5, 2)}`, `${format(i, 3)}`, getKuaUpgrade("p", 1), "kua");
 
-                if (timesCompleted("df")) {
-                    i = i.mul(2);
-                }
-                setFactor(2, [4, 2], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
-
                 if (getKuaUpgrade("s", 13)) {
                     i = i.mul(KUA_UPGRADES.KShards[12].eff!);
                 }
-                setFactor(3, [4, 2], "KShard Upgrade 13", `×${format(KUA_UPGRADES.KShards[12].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 13), "kua");
+                setFactor(2, [4, 2], "KShard Upgrade 13", `×${format(KUA_UPGRADES.KShards[12].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 13), "kua");
+
+                if (Decimal.gte(timesCompleted("df"), 1)) {
+                    i = i.mul(2);
+                }
+                setFactor(3, [4, 2], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
                 data = {
                     oldGain: i,
@@ -1032,15 +991,15 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 }
                 setFactor(1, [4, 3], "KShard Upgrade 10", `×${format(tmp.value.kua.effects.kpower, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 10), "kua");
 
-                if (timesCompleted("df")) {
-                    i = i.mul(2);
-                }
-                setFactor(2, [4, 3], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
-
                 if (getKuaUpgrade("s", 14)) {
                     i = i.mul(KUA_UPGRADES.KShards[13].eff!);
                 }
-                setFactor(3, [4, 3], "KShard Upgrade 14", `×${format(KUA_UPGRADES.KShards[13].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 14), "kua");
+                setFactor(2, [4, 3], "KShard Upgrade 14", `×${format(KUA_UPGRADES.KShards[13].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 14), "kua");
+
+                if (Decimal.gte(timesCompleted("df"), 1)) {
+                    i = i.mul(2);
+                }
+                setFactor(3, [4, 3], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
                 data = {
                     oldGain: i,
@@ -1059,42 +1018,18 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.powGen = i;
 
             generate = tmp.value.kua.shardGen.mul(delta);
-            player.value.gameProgress.kua.kshards.amount = Decimal.add(
-                player.value.gameProgress.kua.kshards.amount,
-                generate
-            );
+            player.value.gameProgress.kua.kshards.amount = Decimal.add(player.value.gameProgress.kua.kshards.amount, generate);
             updateAllTotal(player.value.gameProgress.kua.kshards.totals, generate);
-            player.value.gameProgress.kua.kshards.totalEver = Decimal.add(
-                player.value.gameProgress.kua.kshards.totalEver,
-                generate
-            );
-            updateAllBest(
-                player.value.gameProgress.kua.kshards.best,
-                player.value.gameProgress.kua.kshards.amount
-            );
-            player.value.gameProgress.kua.kshards.bestEver = Decimal.max(
-                player.value.gameProgress.kua.kshards.bestEver,
-                player.value.gameProgress.kua.kshards.amount
-            );
+            player.value.gameProgress.kua.kshards.totalEver = Decimal.add(player.value.gameProgress.kua.kshards.totalEver, generate);
+            updateAllBest(player.value.gameProgress.kua.kshards.best,player.value.gameProgress.kua.kshards.amount);
+            player.value.gameProgress.kua.kshards.bestEver = Decimal.max(player.value.gameProgress.kua.kshards.bestEver, player.value.gameProgress.kua.kshards.amount);
 
             generate = tmp.value.kua.powGen.mul(delta);
-            player.value.gameProgress.kua.kpower.amount = Decimal.add(
-                player.value.gameProgress.kua.kpower.amount,
-                generate
-            );
+            player.value.gameProgress.kua.kpower.amount = Decimal.add(player.value.gameProgress.kua.kpower.amount, generate);
             updateAllTotal(player.value.gameProgress.kua.kpower.totals, generate);
-            player.value.gameProgress.kua.kpower.totalEver = Decimal.add(
-                player.value.gameProgress.kua.kpower.totalEver,
-                generate
-            );
-            updateAllBest(
-                player.value.gameProgress.kua.kpower.best,
-                player.value.gameProgress.kua.kpower.amount
-            );
-            player.value.gameProgress.kua.kpower.bestEver = Decimal.max(
-                player.value.gameProgress.kua.kpower.bestEver,
-                player.value.gameProgress.kua.kpower.amount
-            );
+            player.value.gameProgress.kua.kpower.totalEver = Decimal.add(player.value.gameProgress.kua.kpower.totalEver, generate);
+            updateAllBest(player.value.gameProgress.kua.kpower.best,player.value.gameProgress.kua.kpower.amount);
+            player.value.gameProgress.kua.kpower.bestEver = Decimal.max(player.value.gameProgress.kua.kpower.bestEver, player.value.gameProgress.kua.kpower.amount);
             break;
         default:
             throw new Error(`Kuaraniai area of the game does not contain ${type}`);
@@ -1103,50 +1038,27 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
 export const buyKShardUpg = (id: number) => {
     if (id === player.value.gameProgress.kua.kshards.upgrades) {
-        if (
-            Decimal.gte(player.value.gameProgress.kua.kshards.amount, KUA_UPGRADES.KShards[id].cost)
-        ) {
+        if (Decimal.gte(player.value.gameProgress.kua.kshards.amount, KUA_UPGRADES.KShards[id].cost)) {
             player.value.gameProgress.kua.kshards.upgrades++;
-            player.value.gameProgress.kua.kshards.amount = Decimal.sub(
-                player.value.gameProgress.kua.kshards.amount,
-                KUA_UPGRADES.KShards[id].cost
-            );
+            player.value.gameProgress.kua.kshards.amount = Decimal.sub(player.value.gameProgress.kua.kshards.amount, KUA_UPGRADES.KShards[id].cost);
         }
     }
 };
 
 export const buyKPowerUpg = (id: number) => {
     if (id === player.value.gameProgress.kua.kpower.upgrades) {
-        if (
-            Decimal.gte(player.value.gameProgress.kua.kpower.amount, KUA_UPGRADES.KPower[id].cost)
-        ) {
+        if (Decimal.gte(player.value.gameProgress.kua.kpower.amount, KUA_UPGRADES.KPower[id].cost)) {
             player.value.gameProgress.kua.kpower.upgrades++;
-            player.value.gameProgress.kua.kpower.amount = Decimal.sub(
-                player.value.gameProgress.kua.kpower.amount,
-                KUA_UPGRADES.KPower[id].cost
-            );
+            player.value.gameProgress.kua.kpower.amount = Decimal.sub(player.value.gameProgress.kua.kpower.amount, KUA_UPGRADES.KPower[id].cost);
         }
     }
 };
 
 export const buyKuaEnhSourceUPG = (i: number, max = false) => {
-    if (
-        Decimal.gte(
-            KUA_ENHANCERS.sources[i].source,
-            KUA_ENHANCERS.sources[i].cost(player.value.gameProgress.kua.enhancers.sources[i])
-        )
-    ) {
-        if (max) {
-            player.value.gameProgress.kua.enhancers.sources[i] = Decimal.max(
-                player.value.gameProgress.kua.enhancers.sources[i],
-                KUA_ENHANCERS.sources[i].target(KUA_ENHANCERS.sources[i].source).floor().add(1)
-            );
-        } else {
-            player.value.gameProgress.kua.enhancers.sources[i] = Decimal.add(
-                player.value.gameProgress.kua.enhancers.sources[i],
-                1
-            );
-        }
+    if (Decimal.gte(KUA_ENHANCERS.sources[i].source, KUA_ENHANCERS.sources[i].cost(player.value.gameProgress.kua.enhancers.sources[i]))) {
+        player.value.gameProgress.kua.enhancers.sources[i] = max 
+            ? Decimal.max(player.value.gameProgress.kua.enhancers.sources[i], KUA_ENHANCERS.sources[i].target(KUA_ENHANCERS.sources[i].source).floor().add(1))
+            : Decimal.add(player.value.gameProgress.kua.enhancers.sources[i], 1);
     }
 };
 

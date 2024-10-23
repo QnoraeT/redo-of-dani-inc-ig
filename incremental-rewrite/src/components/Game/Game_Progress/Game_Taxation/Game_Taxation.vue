@@ -80,14 +80,14 @@ import { getTaxUpgrade, TAX_UPGRADES } from "./Game_Taxation";
                                     item.type === 0 ? "One-Time" : "Repeatable"
                                 }}]</b
                             ></span
-                        ><br />
+                        ><br>
                         <span v-if="!item.implemented" style="color: #ff0; font-size: 0.5vw"
                             ><b>[ NOT IMPLEMENTED ]</b><br
                         /></span>
                         <span class="vertical-align: top;" style="font-size: 0.6vw">{{
                             item.desc
                         }}</span>
-                        <br /><br />
+                        <br><br>
                         <span
                             v-if="
                                 (item.type === 0 && Decimal.lt(getTaxUpgrade(index), 1)) ||

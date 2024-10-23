@@ -19,30 +19,13 @@ import { reset } from "@/resets";
 </script>
 <template>
     <div id="kuaraniai" v-if="tab.currentTab === 4">
-        <div
-            class="flex-container"
-            style="
-                flex-direction: row;
-                justify-content: center;
-                font-size: 1.4vw;
-                margin-bottom: 1vw;
-            "
-        >
+        <div class="flex-container" style=" flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;">
             <button @click="switchSubTab(0, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Main</button>
             <button @click="switchSubTab(-1, 0)" style="width: 10vw" class="kuaButton2 fontVerdana whiteText normalTabButton">Bought Upgrades</button>
             <!-- disable this for now, seems unbalanced -->
             <!-- <button @click="switchSubTab(1, 0)" v-if="player.gameProgress.unlocks.kuaEnhancers" class="kuaButton2 fontVerdana whiteText normalTabButton">Enhancers</button> -->
         </div>
-        <div
-            class="flex-container"
-            style="
-                margin-left: auto;
-                margin-right: auto;
-                flex-direction: column;
-                justify-content: center;
-            "
-            v-if="tab.tabList[tab.currentTab][0] === -1"
-        >
+        <div class="flex-container" style=" margin-left: auto; margin-right: auto; flex-direction: column; justify-content: center;" v-if="tab.tabList[tab.currentTab][0] === -1">
             <div
                 class="flex-container"
                 style="flex-direction: column; justify-content: center"
@@ -68,26 +51,11 @@ import { reset } from "@/resets";
                         :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime) / 4, 1.0, 1.0) }"
                         class="fontVerdana"
                     >
-                        You have bought
-                        <b>{{ format(player.gameProgress.kua.kshards.upgrades) }}</b> Kuaraniai
-                        Shard Upgrades.<br />
+                        You have bought <b>{{ format(player.gameProgress.kua.kshards.upgrades) }}</b> Kuaraniai Shard Upgrades.<br>
                     </div>
-                    <div
-                        class="flex-container"
-                        style="
-                            flex-direction: row;
-                            flex-wrap: wrap;
-                            justify-content: center;
-                            width: 90vw;
-                        "
-                    >
+                    <div class="flex-container" style=" flex-direction: row; flex-wrap: wrap; justify-content: center; width: 90vw;">
                         <div v-for="(item, index) in KUA_UPGRADES.KShards" :key="index">
-                            <Kua_Upgrade
-                                v-if="index < player.gameProgress.kua.kshards.upgrades"
-                                :item="item"
-                                :index="index"
-                                :type="'KShards'"
-                            />
+                            <Kua_Upgrade v-if="index < player.gameProgress.kua.kshards.upgrades" :item="item" :index="index" :type="'KShards'" />
                         </div>
                     </div>
                 </div>
@@ -108,39 +76,17 @@ import { reset } from "@/resets";
                     >
                         You have bought
                         <b>{{ format(player.gameProgress.kua.kpower.upgrades) }}</b> Kuaraniai Power
-                        Upgrades.<br />
+                        Upgrades.<br>
                     </div>
-                    <div
-                        class="flex-container"
-                        style="
-                            flex-direction: row;
-                            flex-wrap: wrap;
-                            justify-content: center;
-                            width: 90vw;
-                        "
-                    >
+                    <div class="flex-container" style="flex-direction: row; flex-wrap: wrap; justify-content: center; width: 90vw;">
                         <div v-for="(item, index) in KUA_UPGRADES.KPower" :key="index">
-                            <Kua_Upgrade
-                                v-if="index < player.gameProgress.kua.kpower.upgrades"
-                                :item="item"
-                                :index="index"
-                                :type="'KPower'"
-                            />
+                            <Kua_Upgrade v-if="index < player.gameProgress.kua.kpower.upgrades" :item="item" :index="index" :type="'KPower'" />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div
-            class="flex-container"
-            style="
-                margin-left: auto;
-                margin-right: auto;
-                flex-direction: column;
-                justify-content: center;
-            "
-            v-if="tab.tabList[tab.currentTab][0] === 0"
-        >
+        <div class="flex-container" style=" margin-left: auto; margin-right: auto; flex-direction: column; justify-content: center;" v-if="tab.tabList[tab.currentTab][0] === 0">
             <button
                 style="text-align: center; margin-top: 0.48vw; margin-left: auto; margin-right: auto; font-size: 0.8vw;"
                 :class="{ nope: !tmp.kua.canDo, ok: tmp.kua.canDo }"
@@ -151,46 +97,21 @@ import { reset } from "@/resets";
                 <h3 style="font-size: 1vw">
                     Kuaraniai: {{ format(player.gameProgress.kua.amount, 3) }}
                 </h3>
-                Convert your {{ format(tmp.kua.effectivePrai) }} PRai into
-                {{ format(tmp.kua.pending, 4) }} Kuaraniai. <br />{{
+                {{
                     tmp.kua.canDo
-                        ? `You can convert PRai to Kuaraniai! (${format(tmp.kua.effectivePrai)} / ${format(tmp.kua.req)} PRai)`
+                        ? `You can convert ${format(tmp.kua.effectivePrai)} PRai to ${format(tmp.kua.pending, 4)} Kuaraniai!`
                         : `You need ${format(tmp.kua.effectivePrai)} / ${format(tmp.kua.req)} PRai to convert into Kuaraniai.`
                 }}
-                <br />You have {{ format(player.gameProgress.kua.amount, 3) }} Kuaraniai, which
-                generates {{ format(tmp.kua.shardGen, 4) }} Kuaraniai Shards (KShards) per second.
-                It also:
+                <br>You have {{ format(player.gameProgress.kua.amount, 3) }} Kuaraniai, which generates {{ format(tmp.kua.shardGen, 4) }} Kuaraniai Shards (KShards) per second. It also:
                 <div v-if="tmp.kua.active.effects">
-                    <li>
-                        Reduces Upgrade 1's scaling strength by
-                        {{ formatPerc(tmp.kua.effects.upg1Scaling, 3) }}
-                    </li>
-                    <li v-if="player.gameProgress.kua.kpower.upgrades >= 6">
-                        Reduces Upgrade 1's super scaling strength by
-                        {{ formatPerc(tmp.kua.effects.upg1SuperScaling, 3) }}
-                    </li>
-                    <li v-if="Decimal.gt(player.gameProgress.kua.amount, 0)">
-                        Adds Upgrade 4, and makes it's base ×{{
-                            format(tmp.kua.effects.upg4, 4)
-                        }}/bought.
-                    </li>
-                    <li v-if="player.gameProgress.kua.kpower.upgrades >= 3">
-                        Raises Points gain to ^{{ format(tmp.kua.effects.ptPower, 4) }}
-                    </li>
-                    <li v-if="player.gameProgress.kua.kpower.upgrades >= 6">
-                        Delays Upgrade 2's softcap by {{ format(tmp.kua.effects.upg2Softcap, 2) }}×
-                    </li>
-                    <li v-if="player.gameProgress.kua.kshards.upgrades >= 7">
-                        Multiplies Point gain by {{ format(tmp.kua.effects.pts, 2) }}×
-                    </li>
-                    <li v-if="player.gameProgress.kua.kshards.upgrades >= 10">
-                        Increases KShards' PRai effect boost by ^{{
-                            format(tmp.kua.effects.kshardPrai, 4)
-                        }}
-                    </li>
-                    <li v-if="player.gameProgress.kua.kshards.upgrades >= 10">
-                        Boosts KPower gain by ×{{ format(tmp.kua.effects.kpower, 2) }}
-                    </li>
+                    <li>Reduces Upgrade 1's scaling strength by {{ formatPerc(tmp.kua.effects.upg1Scaling, 3) }}</li>
+                    <li v-if="player.gameProgress.kua.kpower.upgrades >= 6">Reduces Upgrade 1's super scaling strength by {{ formatPerc(tmp.kua.effects.upg1SuperScaling, 3) }}</li>
+                    <li v-if="Decimal.gt(player.gameProgress.kua.amount, 0)">Adds Upgrade 4, and makes it's base ×{{format(tmp.kua.effects.upg4, 4)}}/bought.</li>
+                    <li v-if="player.gameProgress.kua.kpower.upgrades >= 3">Raises Points gain to ^{{ format(tmp.kua.effects.ptPower, 4) }}</li>
+                    <li v-if="player.gameProgress.kua.kpower.upgrades >= 6">Delays Upgrade 2's softcap by {{ format(tmp.kua.effects.upg2Softcap, 2) }}×</li>
+                    <li v-if="player.gameProgress.kua.kshards.upgrades >= 7">Multiplies Point gain by {{ format(tmp.kua.effects.pts, 2) }}×</li>
+                    <li v-if="player.gameProgress.kua.kshards.upgrades >= 10">Increases KShards' PRai effect boost by ^{{format(tmp.kua.effects.kshardPrai, 4)}}</li>
+                    <li v-if="player.gameProgress.kua.kshards.upgrades >= 10">Boosts KPower gain by ×{{ format(tmp.kua.effects.kpower, 2) }}</li>
                 </div>
             </button>
             <button
@@ -235,32 +156,12 @@ import { reset } from "@/resets";
                         <b>{{ format(player.gameProgress.kua.kshards.amount, 3) }}</b> Kuaraniai
                         shards.
                         <div v-if="tmp.kua.active.kshards.effects" class="fontVerdana">
-                            <li>
-                                Boosts PRai gain by {{ format(tmp.kua.effects.kshardPassive, 3) }}×.
-                            </li>
-                            <li>
-                                Generate {{ format(tmp.kua.powGen, 3) }} Kuaraniai Power (KPower)
-                                per second.
-                            </li>
-                            <li v-if="Decimal.gt(player.gameProgress.kua.kshards.amount, 0)">
-                                Adds Upgrade 5, and makes it's base ×{{
-                                    format(tmp.kua.effects.upg5, 4)
-                                }}/bought.
-                            </li>
-                            <li v-if="player.gameProgress.kua.kshards.upgrades >= 2">
-                                Multiply PRai's effect by
-                                {{ format(KUA_UPGRADES.KShards[1].eff!, 2) }}×.
-                            </li>
-                            <li v-if="player.gameProgress.kua.kshards.upgrades >= 8">
-                                Multiply PRai gain by
-                                {{ format(KUA_UPGRADES.KShards[7].eff!, 2) }}×.
-                            </li>
-                            <li v-if="player.gameProgress.kua.kshards.upgrades >= 9">
-                                Delays Upgrade 2's cost growth (after scaling costs) by +{{
-                                    format(KUA_UPGRADES.KShards[8].eff!, 2)
-                                }}
-                                purchases.
-                            </li>
+                            <li>Boosts PRai gain by {{ format(tmp.kua.effects.kshardPassive, 3) }}×.</li>
+                            <li>Generate {{ format(tmp.kua.powGen, 3) }} Kuaraniai Power (KPower) per second.</li>
+                            <li v-if="Decimal.gt(player.gameProgress.kua.kshards.amount, 0)">Adds Upgrade 5, and makes it's base ×{{format(tmp.kua.effects.upg5, 4)}}/bought.</li>
+                            <li v-if="player.gameProgress.kua.kshards.upgrades >= 2">Multiply PRai's effect by {{ format(KUA_UPGRADES.KShards[1].eff!, 2) }}×.</li>
+                            <li v-if="player.gameProgress.kua.kshards.upgrades >= 8">Multiply PRai gain by {{ format(KUA_UPGRADES.KShards[7].eff!, 2) }}×.</li>
+                            <li v-if="player.gameProgress.kua.kshards.upgrades >= 9">Delays Upgrade 2's cost growth (after scaling costs) by +{{format(KUA_UPGRADES.KShards[8].eff!, 2)}} purchases.</li>
                         </div>
                     </div>
                     <div
@@ -305,34 +206,12 @@ import { reset } from "@/resets";
                         <b>{{ format(player.gameProgress.kua.kpower.amount, 3) }}</b> Kuaraniai
                         power.
                         <div v-if="tmp.kua.active.kpower.effects" class="fontVerdana">
-                            <li>
-                                Boosts Point gain by
-                                {{ format(tmp.kua.effects.kpowerPassive, 3) }}×.
-                            </li>
-                            <li v-if="Decimal.gt(player.gameProgress.kua.kpower.amount, 1)">
-                                Adds Upgrade 6, and makes it's base +{{
-                                    format(tmp.kua.effects.upg6, 5)
-                                }}/bought.
-                            </li>
-                            <li v-if="player.gameProgress.kua.kpower.upgrades >= 1">
-                                Increases Upgrade 2's base by +{{
-                                    format(KUA_UPGRADES.KPower[0].eff!, 3)
-                                }}.
-                            </li>
-                            <li v-if="player.gameProgress.kua.kpower.upgrades >= 2">
-                                Makes Upgrade 3
-                                {{ format(KUA_UPGRADES.KPower[1].eff!.sub(1).mul(100), 3) }}% more
-                                effective.
-                            </li>
-                            <li v-if="player.gameProgress.kua.kpower.upgrades >= 4">
-                                Delays Upgrade 2's softcap by
-                                {{ format(KUA_UPGRADES.KPower[3].eff!, 2) }}×.
-                            </li>
-                            <li v-if="player.gameProgress.kua.kpower.upgrades >= 5">
-                                Raises PRai's effect to ^{{
-                                    format(KUA_UPGRADES.KPower[4].eff!, 4)
-                                }}.
-                            </li>
+                            <li>Boosts Point gain by {{ format(tmp.kua.effects.kpowerPassive, 3) }}×.</li>
+                            <li v-if="Decimal.gt(player.gameProgress.kua.kpower.amount, 1)">Adds Upgrade 6, and makes it's base +{{format(tmp.kua.effects.upg6, 5)}}/bought.</li>
+                            <li v-if="player.gameProgress.kua.kpower.upgrades >= 1">Increases Upgrade 2's base by +{{format(KUA_UPGRADES.KPower[0].eff!, 3)}}.</li>
+                            <li v-if="player.gameProgress.kua.kpower.upgrades >= 2">Makes Upgrade 3 {{ format(KUA_UPGRADES.KPower[1].eff!.sub(1).mul(100), 3) }}% more effective.</li>
+                            <li v-if="player.gameProgress.kua.kpower.upgrades >= 4">Delays Upgrade 2's softcap by {{ format(KUA_UPGRADES.KPower[3].eff!, 2) }}×.</li>
+                            <li v-if="player.gameProgress.kua.kpower.upgrades >= 5">Raises PRai's effect to ^{{format(KUA_UPGRADES.KPower[4].eff!, 4)}}.</li>
                         </div>
                     </div>
                     <div
@@ -360,25 +239,8 @@ import { reset } from "@/resets";
                 </div>
             </div>
         </div>
-        <div
-            class="flex-container"
-            style="flex-direction: column"
-            v-if="tab.tabList[tab.currentTab][0] === 1"
-        >
-            <div
-                class="flex-container"
-                style="
-                    margin-left: auto;
-                    margin-right: auto;
-                    flex-direction: row;
-                    flex-wrap: wrap;
-                    justify-content: center;
-                    margin-top: 1vw;
-                    margin-bottom: 1vw;
-                    width: 50vw;
-                    align-content: center;
-                "
-            >
+        <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 1">
+            <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 1vw; margin-bottom: 1vw; width: 50vw; align-content: center;">
                 <div v-for="(item, index) in KUA_ENHANCERS.sources" :key="index">
                     <div class="flex-container" style="flex-direction: column; margin: 0.2vw">
                         <button style="text-align: center; font-size: 0.8vw" :class="{ nope: !tmp.kua.sourcesCanBuy[index], ok: tmp.kua.sourcesCanBuy[index] }" class="whiteText mediumButton fontVerdana kuaButton" @click="buyKuaEnhSourceUPG(index)">
@@ -435,48 +297,16 @@ import { reset } from "@/resets";
                                 </div>
                             </div>
                         </div>
-                        <button
-                            @click="kuaEnh(index, Infinity)"
-                            :style="{
-                                color: item.color,
-                                border: `0.3vw solid ${item.color}`,
-                                backgroundColor: `${colorChange(item.color, 0.25, 1.0)}`
-                            }"
-                            class="fontVerdana whiteText enhAllocButton"
-                        >
+                        <button @click="kuaEnh(index, Infinity)" :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
                             Add All
                         </button>
-                        <button
-                            @click="kuaEnh(index, 1)"
-                            :style="{
-                                color: item.color,
-                                border: `0.3vw solid ${item.color}`,
-                                backgroundColor: `${colorChange(item.color, 0.25, 1.0)}`
-                            }"
-                            class="fontVerdana whiteText enhAllocButton"
-                        >
+                        <button @click="kuaEnh(index, 1)" :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
                             Add 1
                         </button>
-                        <button
-                            @click="kuaEnh(index, -1)"
-                            :style="{
-                                color: item.color,
-                                border: `0.3vw solid ${item.color}`,
-                                backgroundColor: `${colorChange(item.color, 0.25, 1.0)}`
-                            }"
-                            class="fontVerdana whiteText enhAllocButton"
-                        >
+                        <button @click="kuaEnh(index, -1)" :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
                             Remove 1
                         </button>
-                        <button
-                            @click="kuaEnh(index, -Infinity)"
-                            :style="{
-                                color: item.color,
-                                border: `0.3vw solid ${item.color}`,
-                                backgroundColor: `${colorChange(item.color, 0.25, 1.0)}`
-                            }"
-                            class="fontVerdana whiteText enhAllocButton"
-                        >
+                        <button @click="kuaEnh(index, -Infinity)" :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
                             Remove All
                         </button>
                     </div>

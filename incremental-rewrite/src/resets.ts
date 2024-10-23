@@ -35,22 +35,10 @@ export const reset = (layer: number, override = false) => {
             if (tmp.value.main.prai.canDo || override) {
                 resetSuccessful = true;
                 if (!override) {
-                    player.value.gameProgress.main.prai.amount = Decimal.add(
-                        player.value.gameProgress.main.prai.amount,
-                        tmp.value.main.prai.pending
-                    );
-                    updateAllTotal(
-                        player.value.gameProgress.main.prai.totals,
-                        tmp.value.main.prai.pending
-                    );
-                    player.value.gameProgress.main.prai.totalEver = Decimal.add(
-                        player.value.gameProgress.main.prai.totalEver,
-                        tmp.value.main.prai.pending
-                    );
-                    player.value.gameProgress.main.prai.times = Decimal.add(
-                        player.value.gameProgress.main.prai.times,
-                        1
-                    );
+                    player.value.gameProgress.main.prai.amount = Decimal.add(player.value.gameProgress.main.prai.amount, tmp.value.main.prai.pending);
+                    updateAllTotal(player.value.gameProgress.main.prai.totals, tmp.value.main.prai.pending);
+                    player.value.gameProgress.main.prai.totalEver = Decimal.add(player.value.gameProgress.main.prai.totalEver, tmp.value.main.prai.pending);
+                    player.value.gameProgress.main.prai.times = Decimal.add(player.value.gameProgress.main.prai.times, 1);
                     setAchievement(0, 7);
                 }
 
@@ -76,6 +64,7 @@ export const reset = (layer: number, override = false) => {
                     player.value.gameProgress.main.pr2.amount = Decimal.add(player.value.gameProgress.main.pr2.amount, 1);
                 }
 
+                player.value.gameProgress.main.prai.times = D(0);
                 player.value.gameProgress.main.prai.amount = Decimal.min(10, player.value.gameProgress.main.pr2.amount);
 
                 updateStart(1, 0);

@@ -154,13 +154,13 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `Have ${format(1e18)} points without doing a PRai reset.`;
                 },
                 get cond() {
-                    return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e18);
+                    return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e18) && Decimal.lt(player.value.gameProgress.main.prai.times, 1);
                 },
                 get reward() {
                     return `Your PRai's multiplier goes from ${format(4)}× -> ${format(5)}×.`;
                 },
                 show: true,
-                status: true,
+                get status() { return Decimal.lt(player.value.gameProgress.main.prai.times, 1) ? true : `Failed due to having PRai reset ${format(player.value.gameProgress.main.prai.times)} times.`; },
                 extra: `This may require you to do a higher level reset (like PR2) if you had already done a PRai reset!`
             },
             {

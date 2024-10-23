@@ -90,15 +90,7 @@ import {
                                     width: `3vw`,
                                     height: `3vw`
                                 }"
-                                style="
-                                    justify-content: space-around;
-                                    align-items: center;
-                                    font-size: 0.75vw;
-                                    height: 3vw;
-                                    width: 3vw;
-                                    margin-right: 0.2vw;
-                                    margin-left: 0.2vw;
-                                "
+                                style="justify-content: space-around; align-items: center; font-size: 0.75vw; height: 3vw; width: 3vw; margin-right: 0.2vw; margin-left: 0.2vw;"
                                 class="tooltip fontVerdana whiteText flex-container"
                             >
                                 <div
@@ -132,12 +124,12 @@ import {
                                         >ID: ({{ index }}, {{ item2 }})
                                     </span>
                                     <span style="font-size: 1vw">{{ item.list[item2].name }}</span>
-                                    <br /><br />{{ item.list[item2].desc }} <br />{{
+                                    <br><br>{{ item.list[item2].desc }} <br>{{
                                         item.list[item2].reward === ""
                                             ? ""
                                             : `Reward: ${item.list[item2].reward}`
                                     }}
-                                    <span :style="{ color: ACH_DEF_COLORS[Ach_Types_List[index]].unable }"  v-if="item.list[item2].status !== true && !ifAchievement(index, item2)"><br>{{ item.list[item2].status }}</span >
+                                    <span :style="{ color: colorChange(ACH_DEF_COLORS[Ach_Types_List[index]].unable, 1.0, 0.5) }"  v-if="item.list[item2].status !== true && !ifAchievement(index, item2)"><br>{{ item.list[item2].status }}</span >
                                     <span style="font-size: 0.6vw; color: #ccc" v-if="item.list[item2].extra" ><br>{{ item.list[item2].extra }}</span >
                                 </span>
                             </div>

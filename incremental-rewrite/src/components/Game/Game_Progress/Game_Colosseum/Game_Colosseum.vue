@@ -484,7 +484,7 @@ import {
                                     : "Start"
                             }}
                             researching {{ COL_RESEARCH[tab.tabList[tab.currentTab][1]].name }}.
-                            <br />{{
+                            <br>{{
                                 tmp.col.researchesAtOnce - tmp.col.researchesAllocated <= 0
                                     ? `You can't allocate anymore researches.`
                                     : `You can allocate ${tmp.col.researchesAtOnce - tmp.col.researchesAllocated} more ${tmp.col.researchesAtOnce - tmp.col.researchesAllocated === 1 ? "research" : "researches"}.`

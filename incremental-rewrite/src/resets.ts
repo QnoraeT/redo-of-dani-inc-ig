@@ -123,6 +123,7 @@ export const reset = (layer: number, override = false) => {
                 player.value.gameProgress.main.upgrades[i].auto = false;
             }
             player.value.gameProgress.main.prai.auto = false;
+            player.value.gameProgress.kua.auto = false;
 
             for (let i = 0; i < 9; i++) {
                 player.value.gameProgress.main.upgrades[i].bought = D(0);

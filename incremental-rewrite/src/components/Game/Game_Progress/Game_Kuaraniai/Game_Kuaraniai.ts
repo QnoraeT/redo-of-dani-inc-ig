@@ -506,7 +506,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             },
             get eff() {
                 let eff = Decimal.max(player.value.gameProgress.kua.kpower.amount, 1e45);
-                eff = eff.log10().log(45);
+                eff = eff.log10().log(45).sub(1).div(5).add(1);
                 return eff;
             },
             get cost() {
@@ -522,12 +522,12 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             },
             get eff() {
                 let eff = Decimal.max(player.value.gameProgress.kua.kshards.amount, 1);
-                eff = eff.log10().sqrt().div(100).add(1);
+                eff = eff.log10().sqrt().div(250).add(1);
                 return eff;
             },
             get eff2() {
                 let eff = Decimal.max(player.value.gameProgress.kua.kpower.amount, 1);
-                eff = eff.log10().cbrt().div(100).add(1);
+                eff = eff.log10().cbrt().div(250).add(1);
                 return eff;
             },
             get cost() {
@@ -831,22 +831,13 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
             if (player.value.gameProgress.kua.auto) {
                 generate = tmp.value.kua.pending.mul(delta).mul(0.0001);
-                player.value.gameProgress.kua.amount = Decimal.add(
-                    player.value.gameProgress.kua.amount,
-                    generate
-                );
+                player.value.gameProgress.kua.amount = Decimal.add(player.value.gameProgress.kua.amount, generate);
                 updateAllTotal(player.value.gameProgress.kua.totals, generate);
-                player.value.gameProgress.kua.totalEver = Decimal.add(
-                    player.value.gameProgress.kua.totalEver,
-                    generate
-                );
+                player.value.gameProgress.kua.totalEver = Decimal.add(player.value.gameProgress.kua.totalEver, generate);
             }
 
             updateAllBest(player.value.gameProgress.kua.best, player.value.gameProgress.kua.amount);
-            player.value.gameProgress.kua.bestEver = Decimal.max(
-                player.value.gameProgress.kua.bestEver,
-                player.value.gameProgress.kua.amount
-            );
+            player.value.gameProgress.kua.bestEver = Decimal.max(player.value.gameProgress.kua.bestEver, player.value.gameProgress.kua.amount);
 
             tmp.value.kua.effects = {
                 kshardPassive: D(1),
@@ -863,20 +854,21 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 pts: D(1)
             };
 
-            k = Decimal.max(player.value.gameProgress.kua.amount, 0);
-            setFactor(0, [4, 0], "Base", `${format(player.value.gameProgress.kua.amount, 4)}`, `(${format(k, 4)} eff.) ${format(k.log(Decimal.max(player.value.gameProgress.kua.amount, 0)).mul(100), 2)}%`, true);
-            k = k.add(1).pow(ACHIEVEMENT_DATA[1].eff).sub(1);
-            setFactor(1, [4, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].eff, 3)}`, `(${format(k, 4)} eff.) ${format(k.log(Decimal.max(player.value.gameProgress.kua.amount, 0)).mul(100), 2)}%`, true, "ach");
+            k = D(1);
+            setFactor(0, [4, 0], "Base", `${format(player.value.gameProgress.kua.amount, 4)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true);
+            k = k.mul(ACHIEVEMENT_DATA[1].eff);
+            setFactor(1, [4, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].eff, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true, "ach");
 
             if (getKuaUpgrade("s", 11)) {
-                k = k.pow(KUA_UPGRADES.KShards[10].eff!);
+                k = k.mul(KUA_UPGRADES.KShards[10].eff!);
             }
-            setFactor(2, [4, 0], "KShard Upgrade 11", `^${format(KUA_UPGRADES.KShards[10].eff!, 3)}`, `(${format(k, 4)} eff.) ${format(k.log(Decimal.max(player.value.gameProgress.kua.amount, 0)).mul(100), 2)}%`, getKuaUpgrade("s", 11), "kua");
+            setFactor(2, [4, 0], "KShard Upgrade 11", `^${format(KUA_UPGRADES.KShards[10].eff!, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, getKuaUpgrade("s", 11), "kua");
 
             if (getKuaUpgrade("p", 15)) {
-                k = k.pow(1.05);
+                k = k.mul(1.05);
             }
-            setFactor(3, [4, 0], "KPower Upgrade 15", `^${format(1.05, 3)}`, `(${format(k, 4)} eff.) ${format(k.log(Decimal.max(player.value.gameProgress.kua.amount, 0)).mul(100), 2)}%`, getKuaUpgrade("p", 15), "kua");
+            setFactor(3, [4, 0], "KPower Upgrade 15", `^${format(1.05, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, getKuaUpgrade("p", 15), "kua");
+            k = Decimal.pow(player.value.gameProgress.kua.amount, k);
 
             if (tmp.value.kua.active.effects) {
                 // * theres probably a better way to do this

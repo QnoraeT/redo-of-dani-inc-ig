@@ -6,12 +6,7 @@ defineProps<{
 }>();
 </script>
 <template>
-    <button
-        style="border: 0.2vw solid #ffffff"
-        :style="{ width: `${width === undefined ? 7.5 : width}vw` }"
-        :class="{ generatorButton: !selected, generatorButtonSelected: selected }"
-        class="whiteText fontVerdana normalTabButton"
-    >
+    <button style="border: 0.2vw solid #ffffff; font-size: 0.67vw" :style="{ width: `${width === undefined ? 7.5 : width}vw` }" :class="{ generatorButton: !selected, generatorButtonSelected: selected }" class="whiteText fontVerdana normalTabButton">
         {{ name }}
     </button>
 </template>

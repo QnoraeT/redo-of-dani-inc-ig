@@ -9,31 +9,10 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
 </script>
 <template>
     <div id="stats" v-if="tab.currentTab === 2">
-        <div
-            class="flex-container"
-            style="
-                flex-direction: row;
-                justify-content: center;
-                font-size: 1vw;
-                margin-bottom: 0.5vw;
-            "
-        >
-            <Tab_Button
-                @click="switchSubTab(0, 0)"
-                :selected="tab.tabList[tab.currentTab][0] === 0"
-                :name="'Progress'"
-            />
-            <Tab_Button
-                @click="switchSubTab(1, 0)"
-                :selected="tab.tabList[tab.currentTab][0] === 1"
-                :width="10"
-                :name="'Scaling / Softcaps'"
-            />
-            <Tab_Button
-                @click="switchSubTab(2, 0)"
-                :selected="tab.tabList[tab.currentTab][0] === 2"
-                :name="'All Factors'"
-            />
+        <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1vw; margin-bottom: 0.5vw;">
+            <Tab_Button @click="switchSubTab(0, 0)" :selected="tab.tabList[tab.currentTab][0] === 0" :name="'Progress'" /> 
+            <Tab_Button @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :width="10" :name="'Scaling / Softcaps'" /> 
+            <Tab_Button @click="switchSubTab(2, 0)" :selected="tab.tabList[tab.currentTab][0] === 2" :name="'All Factors'" />
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 0">
             <div class="flex-container" style="flex-direction: column; justify-content: center">
@@ -287,16 +266,8 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                 <div v-if="tab.tabList[tab.currentTab][1] === index && item.factors !== null">
                     <div class="flex-container cont1">
                         <div class="flex-container cont2">
-                            <div
-                                v-for="(item2, index2) in item.factors"
-                                :key="index2"
-                                style="display: contents; margin-top: 0.4vw"
-                            >
-                                <div
-                                    v-if="item2 !== undefined && item2.show"
-                                    class="flex-container fontVerdana factorLayout"
-                                    :style="{ color: factorColors[item2.color] }"
-                                >
+                            <div v-for="(item2, index2) in item.factors" :key="index2" style="display: contents; margin-top: 0.4vw">
+                                <div v-if="item2 !== undefined && item2.show" class="flex-container fontVerdana factorLayout" :style="{ color: factorColors[item2.color] }">
                                     <span class="leftF">{{ item2.name }}</span>
                                     <span class="centerF">{{ item2.effect }}</span>
                                     <span class="rightF">{{ item2.now }}</span>
@@ -317,23 +288,11 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                         </div>
                     </div>
                     <div v-for="(item2, index2) in item.subTabs" :key="item2.name">
-                        <div
-                            v-if="
-                                tab.tabList[tab.currentTab][2] === index2 && item2.factors !== null
-                            "
-                        >
+                        <div v-if=" tab.tabList[tab.currentTab][2] === index2 && item2.factors !== null">
                             <div class="flex-container cont1">
                                 <div class="flex-container cont2">
-                                    <div
-                                        v-for="(item3, index3) in item2.factors"
-                                        :key="index3"
-                                        style="display: contents; margin-top: 0.4vw"
-                                    >
-                                        <div
-                                            v-if="item3 !== undefined && item3.show"
-                                            class="flex-container fontVerdana factorLayout"
-                                            :style="{ color: factorColors[item3.color] }"
-                                        >
+                                    <div v-for="(item3, index3) in item2.factors" :key="index3" style="display: contents; margin-top: 0.4vw">
+                                        <div v-if="item3 !== undefined && item3.show" class="flex-container fontVerdana factorLayout" :style="{ color: factorColors[item3.color] }">
                                             <span class="leftF">{{ item3.name }}</span>
                                             <span class="centerF">{{ item3.effect }}</span>
                                             <span class="rightF">{{ item3.now }}</span>
@@ -354,24 +313,11 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                 </div>
                             </div>
                             <div v-for="(item3, index3) in item2.subTabs" :key="item3.name">
-                                <div
-                                    v-if="
-                                        tab.tabList[tab.currentTab][3] === index3 &&
-                                        item3.factors !== null
-                                    "
-                                >
+                                <div v-if=" tab.tabList[tab.currentTab][3] === index3 && item3.factors !== null">
                                     <div class="flex-container cont1">
                                         <div class="flex-container cont2">
-                                            <div
-                                                v-for="(item4, index4) in item3.factors"
-                                                :key="index4"
-                                                style="display: contents; margin-top: 0.4vw"
-                                            >
-                                                <div
-                                                    v-if="item4 !== undefined && item4.show"
-                                                    class="flex-container fontVerdana factorLayout"
-                                                    :style="{ color: factorColors[item4.color] }"
-                                                >
+                                            <div v-for="(item4, index4) in item3.factors" :key="index4" style="display: contents; margin-top: 0.4vw">
+                                                <div v-if="item4 !== undefined && item4.show" class="flex-container fontVerdana factorLayout" :style="{ color: factorColors[item4.color] }">
                                                     <span class="leftF">{{ item4.name }}</span>
                                                     <span class="centerF">{{ item4.effect }}</span>
                                                     <span class="rightF">{{ item4.now }}</span>

@@ -27,6 +27,15 @@ export const TABS_LIST = [
         if: true
     },
     {
+        name: "Stored Time",
+        staticName: -1,
+        backgroundColor: "#004400",
+        textColor: "#00FF00",
+        outlineColor: "#008000",
+        highlightColor: "#00FF00",
+        if: true
+    },
+    {
         name: "Options",
         staticName: 1,
         backgroundColor: "#999999",

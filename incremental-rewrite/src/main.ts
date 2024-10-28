@@ -104,136 +104,142 @@ type Game = {
 };
 
 export type Player = {
-    lastUpdated: number;
-    offlineTime: number;
-    totalRealTime: number;
-    gameTime: DecimalSource;
-    setTimeSpeed: DecimalSource;
-    version: number;
-    displayVersion: string;
+    lastUpdated: number,
+    offlineTime: number,
+    totalRealTime: number,
+    gameTime: DecimalSource,
+    setTimeSpeed: DecimalSource,
+    version: number,
+    displayVersion: string,
     settings: {
-        notation: number;
-        scaleSoftColors: boolean;
-    };
+        notation: number,
+        scaleSoftColors: boolean
+    },
 
     gameProgress: {
-        achievements: Array<Array<number>>;
-        inChallenge: Challenge;
+        dilatedTime: {
+            normalized: boolean,
+            normalizeTime: number,
+            paused: boolean,
+            speed: DecimalSource
+        },
+        achievements: Array<Array<number>>,
+        inChallenge: Challenge,
         unlocks: {
-            pr2: boolean;
-            kua: boolean;
-            kuaEnhancers: boolean;
-            col: boolean;
-            tax: boolean;
-        };
+            pr2: boolean,
+            kua: boolean,
+            kuaEnhancers: boolean,
+            col: boolean,
+            tax: boolean
+        },
         main: {
-            points: DecimalSource;
-            totals: Array<null | DecimalSource>; // prai, pr2, kua, col, tax
-            best: Array<null | DecimalSource>; // prai, pr2, kua, col, tax
-            totalEver: DecimalSource;
-            bestEver: DecimalSource;
+            points: DecimalSource,
+            totals: Array<null | DecimalSource>, // prai, pr2, kua, col, tax
+            best: Array<null | DecimalSource>, // prai, pr2, kua, col, tax
+            totalEver: DecimalSource,
+            bestEver: DecimalSource,
             upgrades: Array<{
-                bought: DecimalSource;
-                best: DecimalSource;
-                auto: boolean;
-                boughtInReset: Array<DecimalSource>; // prai, pr2, kua, col, tax
-            }>;
-            oneUpgrades: Array<DecimalSource>;
+                bought: DecimalSource,
+                best: DecimalSource,
+                auto: boolean,
+                boughtInReset: Array<DecimalSource> // prai, pr2, kua, col, tax
+            }>,
+            oneUpgrades: Array<DecimalSource>,
             prai: {
-                totals: Array<null | DecimalSource>; // null, pr2, kua, col, tax
-                best: Array<null | DecimalSource>; // null, pr2, kua, col, tax
-                totalEver: DecimalSource;
-                bestEver: DecimalSource;
-                amount: DecimalSource;
-                timeInPRai: DecimalSource;
-                auto: boolean;
-                times: DecimalSource;
-            };
+                totals: Array<null | DecimalSource>, // null, pr2, kua, col, tax
+                best: Array<null | DecimalSource>, // null, pr2, kua, col, tax
+                totalEver: DecimalSource,
+                bestEver: DecimalSource,
+                amount: DecimalSource,
+                timeInPRai: DecimalSource,
+                auto: boolean,
+                times: DecimalSource
+            },
             pr2: {
-                best: Array<null | DecimalSource>; // null, null, kua, col, tax
-                bestEver: DecimalSource;
-                amount: DecimalSource;
-                timeInPR2: DecimalSource;
-                auto: boolean;
-            };
-        };
+                best: Array<null | DecimalSource>, // null, null, kua, col, tax
+                bestEver: DecimalSource,
+                amount: DecimalSource,
+                timeInPR2: DecimalSource,
+                auto: boolean
+            }
+        },
         kua: {
-            auto: boolean;
-            amount: DecimalSource;
-            totals: Array<null | DecimalSource>; // null, null, null, col, tax
-            best: Array<null | DecimalSource>; // null, null, null, col, tax
-            totalEver: DecimalSource;
-            bestEver: DecimalSource;
-            timeInKua: DecimalSource;
-            times: DecimalSource;
+            auto: boolean,
+            amount: DecimalSource,
+            totals: Array<null | DecimalSource>, // null, null, null, col, tax
+            best: Array<null | DecimalSource>, // null, null, null, col, tax
+            totalEver: DecimalSource,
+            bestEver: DecimalSource,
+            timeInKua: DecimalSource,
+            times: DecimalSource,
             kshards: {
-                amount: DecimalSource;
-                totals: Array<null | DecimalSource>; // null, null, null, col, tax
-                best: Array<null | DecimalSource>; // null, null, null, col, tax
-                totalEver: DecimalSource;
-                bestEver: DecimalSource;
-                upgrades: number;
-            };
+                amount: DecimalSource,
+                totals: Array<null | DecimalSource>, // null, null, null, col, tax
+                best: Array<null | DecimalSource>, // null, null, null, col, tax
+                totalEver: DecimalSource,
+                bestEver: DecimalSource,
+                upgrades: number
+            },
             kpower: {
-                amount: DecimalSource;
-                totals: Array<null | DecimalSource>; // null, null, null, col, tax
-                best: Array<null | DecimalSource>; // null, null, null, col, tax
-                totalEver: DecimalSource;
-                bestEver: DecimalSource;
-                upgrades: number;
-            };
+                amount: DecimalSource,
+                totals: Array<null | DecimalSource>, // null, null, null, col, tax
+                best: Array<null | DecimalSource>, // null, null, null, col, tax
+                totalEver: DecimalSource,
+                bestEver: DecimalSource,
+                upgrades: number
+            },
             enhancers: {
-                autoSources: boolean;
-                sources: Array<DecimalSource>;
-                enhancers: Array<DecimalSource>;
-                enhanceXP: Array<DecimalSource>;
-                enhancePow: Array<DecimalSource>;
-                xpSpread: DecimalSource;
-                inExtraction: number;
-                extractionXP: Array<DecimalSource>;
-                upgrades: Array<number>;
-            };
-        };
+                autoSources: boolean,
+                sources: Array<DecimalSource>,
+                enhancers: Array<DecimalSource>,
+                enhanceXP: Array<DecimalSource>,
+                enhancePow: Array<DecimalSource>,
+                xpSpread: DecimalSource,
+                inExtraction: number,
+                extractionXP: Array<DecimalSource>,
+                upgrades: Array<number>
+            }
+        },
         col: {
-            inAChallenge: boolean;
+            inAChallenge: boolean,
             completed: {
-                nk: DecimalSource;
-                su: DecimalSource;
-                df: DecimalSource;
-                im: DecimalSource;
-            };
-            challengeOrder: { chalID: Array<challengeIDList>; layer: Array<number> };
-            completedAll: boolean;
+                nk: DecimalSource,
+                su: DecimalSource,
+                df: DecimalSource,
+                im: DecimalSource
+            },
+            challengeOrder: { chalID: Array<challengeIDList>, layer: Array<number> },
+            completedAll: boolean,
             saved: {
-                nk: colChallengesSavedData | null;
-                su: colChallengesSavedData | null;
-                df: colChallengesSavedData | null;
-                im: colChallengesSavedData | null;
-            };
-            power: DecimalSource;
-            totals: Array<null | DecimalSource>; // null, null, null, null, tax
-            best: Array<null | DecimalSource>; // null, null, null, null, tax
-            totalEver: DecimalSource;
-            bestEver: DecimalSource;
-            time: DecimalSource;
-            maxTime: DecimalSource;
+                nk: colChallengesSavedData | null,
+                su: colChallengesSavedData | null,
+                df: colChallengesSavedData | null,
+                im: colChallengesSavedData | null
+            },
+            power: DecimalSource,
+            totals: Array<null | DecimalSource>, // null, null, null, null, tax
+            best: Array<null | DecimalSource>, // null, null, null, null, tax
+            totalEver: DecimalSource,
+            bestEver: DecimalSource,
+            time: DecimalSource,
+            maxTime: DecimalSource,
             research: {
-                xpTotal: Array<DecimalSource>;
-                enabled: Array<boolean>;
-            };
-        };
+                xpTotal: Array<DecimalSource>,
+                enabled: Array<boolean>
+            }
+        },
         tax: {
-            timeInTax: DecimalSource;
-            auto: boolean;
-            amount: DecimalSource;
-            totals: Array<null | DecimalSource>; // null, null, null, null, null
-            best: Array<null | DecimalSource>; // null, null, null, null, null
-            totalEver: DecimalSource;
-            bestEver: DecimalSource;
-            times: DecimalSource;
-            upgrades: Array<DecimalSource>;
-        };
-    };
+            timeInTax: DecimalSource,
+            auto: boolean,
+            amount: DecimalSource,
+            totals: Array<null | DecimalSource>, // null, null, null, null, null
+            best: Array<null | DecimalSource>, // null, null, null, null, null
+            totalEver: DecimalSource,
+            bestEver: DecimalSource,
+            times: DecimalSource,
+            upgrades: Array<DecimalSource>
+        }
+    }
 };
 
 export const initGameBeforeSave = (): Game => {
@@ -292,6 +298,12 @@ export const initPlayer = (set = false): Player => {
         },
 
         gameProgress: {
+            dilatedTime: {
+                normalized: false,
+                normalizeTime: 0.05,
+                paused: false,
+                speed: D(1)
+            },
             unlocks: {
                 pr2: false,
                 kua: false,
@@ -799,6 +811,7 @@ function loadGame(): void {
 
     player.value.offlineTime += Math.max(0, Date.now() - player.value.lastUpdated);
     gameVars.value.sessionStart = Date.now();
+    player.value.lastUpdated = Date.now();
     window.requestAnimationFrame(gameLoop);
 }
 
@@ -1008,7 +1021,7 @@ function calcPPS(): Decimal {
     if (player.value.gameProgress.unlocks.col) {
         pps = pps.mul(getColResEffect(0));
     }
-    setFactor(16, [0], "Dotgenous", `×${format(getColResEffect(0), 2)}`, `${format(pps, 1)}`, player.value.gameProgress.unlocks.col, "col");
+    setFactor(16, [0], "Dotgenous", `×${format(getColResEffect(0), 2)}`, `${format(pps, 1)}`, Decimal.gte(timesCompleted("nk"), 1), "col");
 
     if (Decimal.gte(timesCompleted("df"), 1) && !inChallenge("su")) {
         pps = pps.mul(10);
@@ -1074,16 +1087,22 @@ function gameLoop(): void {
                 for (let i = 0; i < gameVars.value.fpsList.length; ++i) {
                     gameVars.value.fps += gameVars.value.fpsList[i];
                 }
-                gameVars.value.displayedFPS = (
-                    gameVars.value.fpsList.length / gameVars.value.fps
-                ).toFixed(1);
+                gameVars.value.displayedFPS = (gameVars.value.fpsList.length / gameVars.value.fps).toFixed(1);
                 gameVars.value.fpsList = [];
             }
         }
 
-        const gameDelta = Decimal.mul(gameVars.value.delta, tmp.value.gameTimeSpeed).mul(
-            player.value.setTimeSpeed
-        );
+        if (player.value.gameProgress.dilatedTime.paused) {
+            player.value.offlineTime += gameVars.value.delta * 1000;
+            gameVars.value.delta = 0;
+        }
+        if (player.value.gameProgress.dilatedTime.normalized) {
+            if (gameVars.value.delta > player.value.gameProgress.dilatedTime.normalizeTime) {
+                player.value.offlineTime += (gameVars.value.delta - player.value.gameProgress.dilatedTime.normalizeTime) * 1000;
+                gameVars.value.delta = player.value.gameProgress.dilatedTime.normalizeTime;
+            }
+        }
+        const gameDelta = Decimal.mul(gameVars.value.delta, tmp.value.gameTimeSpeed).mul(player.value.setTimeSpeed);
         player.value.gameTime = Decimal.add(player.value.gameTime, gameDelta);
         player.value.totalRealTime += gameVars.value.delta;
 
@@ -1147,38 +1166,18 @@ function gameLoop(): void {
         // FIXME: every time PPS gets updated, check the id value for this (22)
         setFactor(22, [0], "Taxation", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start), "sc1");
 
-        player.value.gameProgress.main.points = Decimal.add(
-            player.value.gameProgress.main.points,
-            generate
-        );
+        player.value.gameProgress.main.points = Decimal.add(player.value.gameProgress.main.points, generate);
 
         updateAllTotal(player.value.gameProgress.main.totals, generate);
-        player.value.gameProgress.main.totalEver = Decimal.add(
-            player.value.gameProgress.main.totalEver,
-            generate
-        );
+        player.value.gameProgress.main.totalEver = Decimal.add(player.value.gameProgress.main.totalEver, generate);
         updateAllBest(player.value.gameProgress.main.best, player.value.gameProgress.main.points);
-        player.value.gameProgress.main.bestEver = Decimal.max(
-            player.value.gameProgress.main.bestEver,
-            player.value.gameProgress.main.points
-        );
+        player.value.gameProgress.main.bestEver = Decimal.max(player.value.gameProgress.main.bestEver, player.value.gameProgress.main.points);
 
-        player.value.gameProgress.unlocks.pr2 =
-            player.value.gameProgress.unlocks.pr2 ||
-            Decimal.gte(player.value.gameProgress.main.prai.amount, 9.5);
-        player.value.gameProgress.unlocks.kua =
-            player.value.gameProgress.unlocks.kua ||
-            Decimal.gte(player.value.gameProgress.main.pr2.amount, 10);
-        player.value.gameProgress.unlocks.kuaEnhancers =
-            player.value.gameProgress.unlocks.kuaEnhancers ||
-            Decimal.gte(player.value.gameProgress.kua.amount, 0.0095);
-        player.value.gameProgress.unlocks.col =
-            player.value.gameProgress.unlocks.col ||
-            (player.value.gameProgress.kua.kpower.upgrades >= 2 &&
-                Decimal.gte(player.value.gameProgress.kua.amount, 100));
-        player.value.gameProgress.unlocks.tax =
-            player.value.gameProgress.unlocks.tax ||
-            Decimal.gte(player.value.gameProgress.main.points, "e500");
+        player.value.gameProgress.unlocks.pr2 = player.value.gameProgress.unlocks.pr2 || Decimal.gte(player.value.gameProgress.main.prai.amount, 9.5);
+        player.value.gameProgress.unlocks.kua = player.value.gameProgress.unlocks.kua || Decimal.gte(player.value.gameProgress.main.pr2.amount, 10);
+        player.value.gameProgress.unlocks.kuaEnhancers = player.value.gameProgress.unlocks.kuaEnhancers || Decimal.gte(player.value.gameProgress.kua.amount, 0.0095);
+        player.value.gameProgress.unlocks.col = player.value.gameProgress.unlocks.col || (player.value.gameProgress.kua.kpower.upgrades >= 2 && Decimal.gte(player.value.gameProgress.kua.amount, 100));
+        player.value.gameProgress.unlocks.tax = player.value.gameProgress.unlocks.tax || Decimal.gte(player.value.gameProgress.main.points, "ee6");
 
         for (let i = 0; i < ACHIEVEMENT_DATA.length; i++) {
             for (let j = 0; j < ACHIEVEMENT_DATA[i].list.length; j++) {

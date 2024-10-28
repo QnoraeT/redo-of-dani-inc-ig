@@ -613,7 +613,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 }
 
                 tmp.value.col.effects.upg1a2sc = Decimal.gte(timesCompleted("su"), 1)
-                    ? Decimal.max(player.value.gameProgress.col.power, 1).log10().mul(getColChalRewEffects("su")[0]).mul(2.5).add(1)
+                    ? Decimal.max(player.value.gameProgress.col.power, 1).log10().mul(getColChalRewEffects("su")[0]).add(1)
                     : D(1)
 
                 tmp.value.col.effects.res = Decimal.gte(timesCompleted("df"), 1)
@@ -730,11 +730,7 @@ export type colChallengesSavedData = {
 
 export const challengeToggle = (id: challengeIDList) => {
     if (!inChallenge(id)) {
-        if (
-            player.value.gameProgress.col.challengeOrder.layer[
-                player.value.gameProgress.col.challengeOrder.layer.length - 1
-            ] <= COL_CHALLENGES[id].layer
-        ) {
+        if (player.value.gameProgress.col.challengeOrder.layer[player.value.gameProgress.col.challengeOrder.layer.length - 1] <= COL_CHALLENGES[id].layer) {
             return;
         }
 
@@ -754,17 +750,19 @@ export const challengeToggle = (id: challengeIDList) => {
         }
     } else {
         if (COL_CHALLENGES[id].canComplete) {
-            player.value.gameProgress.col.completed[id] = Decimal.add(
-                player.value.gameProgress.col.completed[id],
-                1
-            ).min(COL_CHALLENGES[id].cap);
+            if (COL_CHALLENGES[id].type === 1) {
+                if (Decimal.eq(player.value.gameProgress.inChallenge[id].enteredDiff, player.value.gameProgress.col.completed[id])) {
+                    player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);
+                    player.value.gameProgress.inChallenge[id].optionalDiff = Decimal.add(player.value.gameProgress.inChallenge[id].optionalDiff, 1).min(COL_CHALLENGES[id].cap);
+                }
+            } else {
+                player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);
+            }
+
             setAchievement(2, 1);
         }
 
-        const layerExited =
-            player.value.gameProgress.col.challengeOrder.layer[
-                player.value.gameProgress.col.challengeOrder.chalID.indexOf(id)
-            ];
+        const layerExited = player.value.gameProgress.col.challengeOrder.layer[player.value.gameProgress.col.challengeOrder.chalID.indexOf(id)];
         for (let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1; i >= 0; i--) {
             if (player.value.gameProgress.col.challengeOrder.layer[i] > layerExited) {
                 break;

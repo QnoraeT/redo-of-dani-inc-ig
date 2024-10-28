@@ -25,12 +25,17 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 2;
     }
     if (player.version === 2) {
-
-        // player.version = 3;
+        player.displayVersion = 'v1.0.0'; // game isn't even released lmao
+        player.version = 3;
     }
     if (player.version === 3) {
-
-        // player.version = 4;
+        player.gameProgress.dilatedTime = {
+            normalized: false,
+            normalizeTime: 0.05,
+            paused: false,
+            speed: D(1)
+        }
+        player.version = 4;
     }
     if (player.version === 4) {
 

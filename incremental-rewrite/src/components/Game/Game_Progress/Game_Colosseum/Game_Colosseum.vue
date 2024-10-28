@@ -290,79 +290,27 @@ import {
                 "
             >
                 <div style="width: 100%; height: 100%">
-                    <div
-                        class="whiteText fontVerdana"
-                        style="
-                            display: flex;
-                            justify-content: center;
-                            background-color: #461100;
-                            position: relative;
-                            width: 100%;
-                            height: 15%;
-                            font-size: 1.6vw;
-                        "
-                    >
-                        <span class="centered-text" style="height: 100%">{{
-                            COL_RESEARCH[tab.tabList[tab.currentTab][1]].name
-                        }}</span>
+                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 15%; font-size: 1.6vw;">
+                        <span class="centered-text" style="height: 100%">
+                            {{ COL_RESEARCH[tab.tabList[tab.currentTab][1]].name }}
+                        </span>
                     </div>
-                    <div
-                        class="whiteText fontVerdana"
-                        style="
-                            display: flex;
-                            justify-content: center;
-                            background-color: #521400;
-                            position: relative;
-                            width: 100%;
-                            height: 12%;
-                            font-size: 1.2vw;
-                        "
-                    >
-                        <span class="centered-text" style="top: 4%"
-                            >Level:
-                            {{
-                                format(getColResLevel(tab.tabList[tab.currentTab][1]).floor(), 0)
-                            }}</span
-                        >
+                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #521400; position: relative; width: 100%; height: 12%; font-size: 1.2vw;">
+                        <span class="centered-text" style="top: 4%">
+                            Level: {{format(getColResLevel(tab.tabList[tab.currentTab][1]).floor(), 0)}}
+                        </span>
                         <!-- i wish i made this better instead of having to do an extremely long formula T_T -->
                         <span v-if="getColResLevel(tab.tabList[tab.currentTab][1]).lt(1e12)" class="centered-text" style="top: 33.333%">
-                            XP: {{ 
-                                format(Decimal.sub(
-                                    player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 
-                                    COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor())
-                                    )
-                                    , 0) }} 
-                            / {{ 
-                                format(
-                                    COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
-                                        getColResLevel(tab.tabList[tab.currentTab][1]).floor().add(1)
-                                    ).sub(
-                                        COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
-                                            getColResLevel(tab.tabList[tab.currentTab][1]).floor()
-                                            )
-                                        )
-                                    , 0) }}
+                            XP: {{ format(Decimal.sub(player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor())), 0) }} / {{ format(COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor().add(1)).sub(COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor())), 0) }}
                         </span>
                         <span v-if="getColResLevel(tab.tabList[tab.currentTab][1]).gte(1e12)" class="centered-text" style="top: 33.333%" >
                             Total XP: {{ format(player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 0) }}
                         </span>
                         <div style="top: 68.5%; height: 0.75vw; width: 27.5vw; position: relative">
-                            <div
-                                style="
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    border: 0.18vw solid #882200;
-                                    background-color: #521400;
-                                    height: 100%;
-                                    width: 100%;
-                                "
-                            ></div>
+                            <div style="position: absolute; top: 0; left: 0; border: 0.18vw solid #882200; background-color: #521400; height: 100%; width: 100%;"></div>
                             <div
                                 :style="{
-                                    backgroundColor: player.gameProgress.col.research.enabled[
-                                        tab.tabList[tab.currentTab][1]
-                                    ]
+                                    backgroundColor: player.gameProgress.col.research.enabled[tab.tabList[tab.currentTab][1]]
                                         ? '#ffc000'
                                         : '#ff4000',
                                     width: `${
@@ -404,28 +352,11 @@ import {
                                                     .toNumber()
                                     }%`
                                 }"
-                                style="
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    border: 0.18vw solid #882200;
-                                    height: 100%;
-                                "
+                                style="position: absolute; top: 0; left: 0; border: 0.18vw solid #882200; height: 100%;"
                             ></div>
                         </div>
                     </div>
-                    <div
-                        class="whiteText fontVerdana"
-                        style="
-                            display: flex;
-                            justify-content: center;
-                            background-color: #461100;
-                            position: relative;
-                            width: 100%;
-                            height: 58%;
-                            font-size: 0.9vw;
-                        "
-                    >
+                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 58%; font-size: 0.9vw;">
                         <span class="centered-text" style="top: 0.4vw">{{
                             COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDesc(
                                 getColResLevel(tab.tabList[tab.currentTab][1]).floor()

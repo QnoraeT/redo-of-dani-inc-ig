@@ -398,7 +398,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     { // 20
         implemented: false,
         cost: D("e2000"),
-        get effect() { return tmp.value.main.upgrades[0].effective.mul(Decimal.ln(tmp.value.main.upgrades[0].effectBase)).mul(0.0001).add(1).root(12).sub(1).mul(12).add(1) },
+        get effect() { return tmp.value.main.upgrades[0].effective.mul(Decimal.ln(tmp.value.main.upgrades[0].effectBase)).mul(0.00001).add(1).root(3).sub(1).mul(3).add(1) },
         get desc() { return `Upgrade 1 also raises point gain.`; },
         get effectDesc() { return `^${format(this.effect!, 3)}`; },
         get show() { return player.value.gameProgress.unlocks.tax; }
@@ -476,7 +476,7 @@ export const PR2_EFF = [
     {
         show: true,
         when: D(20),
-        get text() { return `weaken Upgrade 1's cost scaling by ${format(10, 3)}%.`}
+        get text() { return `weaken Upgrade 1's cost scaling by ${format(2.5, 3)}%.`}
     },
     {
         show: true,
@@ -802,7 +802,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
 
             eff = scale(eff, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
             setSCSLEffectDisp('upg3', false, 0, `/${format(data.prevEff.div(eff), 3)}`);
-            setFactor(5, [1, 2, 0], "Softcap", `softcap(${format(data.prevEff)})`, `+${format(eff)}`, eff.gte(data.scal[0].start), "sc1");
+            setFactor(5, [1, 2, 0], "Softcap", `softcap(${format(data.prevEff, 3)})`, `+${format(eff, 3)}`, eff.gte(data.scal[0].start), "sc1");
             return eff;
         },
         get calcEB() {
@@ -1292,6 +1292,11 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             setFactor(1, [1, upgID, 1], "Achievement ID: (1, 6)", `/${format(getAchievementEffect(1, 6), 2)}`, `${format(scal, 2)} effective`, ifAchievement(1, 6), "ach");
 
             if (upgID === 0) {
+                if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 20)) {
+                    scal = scal.mul(0.975)
+                }
+                setFactor(2, [1, upgID, 1], "PR2 20", `×${format(0.975, 2)}`, `${format(scal, 2)} effective`, Decimal.gte(player.value.gameProgress.main.pr2.amount, 20));
+
                 if (getKuaUpgrade("p", 10)) {
                     scal = scal.div(KUA_UPGRADES.KPower[9].eff!)
                 }
@@ -1423,6 +1428,9 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 if (upgID === 0) {
                     if (getKuaUpgrade("p", 10)) {
                         scal = scal.mul(KUA_UPGRADES.KPower[9].eff!)
+                    }
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 20)) {
+                        scal = scal.div(0.975)
                     }
                 }
                 if (ifAchievement(1, 6)) {

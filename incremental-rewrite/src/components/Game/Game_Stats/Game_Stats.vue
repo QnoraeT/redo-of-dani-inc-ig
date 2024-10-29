@@ -47,46 +47,13 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                             >{{ format(getEndgame(), 2) }}% to ENDGAME</span
                         >
                         <div style="width: 100%; position: relative; height: 100%">
-                            <div
-                                style="
-                                    background-color: #404040;
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    height: 100%;
-                                    width: 100%;
-                                "
-                            ></div>
-                            <div
-                                :style="{ width: `${getEndgame().toNumber()}%` }"
-                                style="
-                                    background-color: #ffffff;
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    height: 100%;
-                                "
-                            ></div>
+                            <div style=" background-color: #404040; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"></div>
+                            <div :style="{ width: `${getEndgame().toNumber()}%` }" style=" background-color: #ffffff; position: absolute; top: 0; left: 0; height: 100%;"></div>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: flex-start; flex-direction: row">
-                        <div
-                            class="flex-container"
-                            style="
-                                justify-content: flex-start;
-                                flex-flow: wrap;
-                                flex-direction: column;
-                                align-items: center;
-                                flex-wrap: nowrap;
-                                width: 50%;
-                            "
-                        >
-                            <div
-                                v-for="(item, index) in STAGES"
-                                :key="item.id"
-                                class="flex-container"
-                                style="padding: 0.4vw; padding-bottom: 0vw; width: 100%"
-                            >
+                        <div class="flex-container" style=" justify-content: flex-start; flex-flow: wrap; flex-direction: column; align-items: center; flex-wrap: nowrap; width: 50%;">
+                            <div v-for="(item, index) in STAGES" :key="item.id" class="flex-container" style="padding: 0.4vw; padding-bottom: 0vw; width: 100%">
                                 <button
                                     v-if="item.show"
                                     @click="switchSubTab(index, 1)"
@@ -163,24 +130,8 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                 </button>
                             </div>
                         </div>
-                        <div
-                            class="flex-container"
-                            style="
-                                justify-content: flex-start;
-                                flex-flow: wrap;
-                                flex-direction: column;
-                                align-items: center;
-                                flex-wrap: nowrap;
-                                width: 50%;
-                                padding-top: 0.6vw;
-                            "
-                        >
-                            <div
-                                v-for="(item, index) in STAGES"
-                                :key="item.id"
-                                class="flex-container"
-                                style="width: 100%"
-                            >
+                        <div class="flex-container" style="justify-content: flex-start; flex-flow: wrap; flex-direction: column; align-items: center; flex-wrap: nowrap; width: 50%; padding-top: 0.6vw;">
+                            <div v-for="(item, index) in STAGES" :key="item.id" class="flex-container" style="width: 100%">
                                 <STAGES_StatDisplay :id="index" />
                             </div>
                         </div>
@@ -191,22 +142,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
         <div v-if="tab.tabList[tab.currentTab][0] === 1">
             <div class="flex-container" style="flex-direction: row; justify-content: center">
                 <div v-for="(item, index) in tmp.scaleList" :key="item.id" style="color: #fff">
-                    <div
-                        :style="{ backgroundColor: SCALE_ATTR[index].color }"
-                        v-if="item.list.length > 0"
-                        style="
-                            border-radius: 6vw;
-                            width: 6vw;
-                            height: 1.2vw;
-                            color: #fff;
-                            text-align: center;
-                            padding: 2.4vw 0;
-                            margin-left: 0.15vw;
-                            margin-right: 0.15vw;
-                            font-size: 0.8vw;
-                        "
-                        class="tooltip fontVerdana"
-                    >
+                    <div :style="{ backgroundColor: SCALE_ATTR[index].color }" v-if="item.list.length > 0" style="border-radius: 6vw; width: 6vw; height: 1.2vw; color: #fff; text-align: center; padding: 2.4vw 0; margin-left: 0.15vw; margin-right: 0.15vw; font-size: 0.8vw;" class="tooltip fontVerdana">
                         {{ SCALE_ATTR[index].name }}
                         <span class="tooltiptext">
                             <span v-for="j in item.list" :key="j.id">

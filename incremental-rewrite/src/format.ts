@@ -196,7 +196,7 @@ export const formatPerc = (number: DecimalSource, dec = 3, expdec = 3): string =
 
 export const formatTime = (number: DecimalSource, dec = 0, expdec = 3, limit = 2): string => {
     if (Decimal.lt(number, 0)) return `-${formatTime(Decimal.negate(number), dec, expdec)}`;
-    if (Decimal.eq(number, 0)) return (0).toFixed(dec);
+    if (Decimal.eq(number, 0)) return `${(0).toFixed(dec)}s`;
     if (Decimal.isNaN(number)) return "NaN";
     if (!Decimal.isFinite(number)) return "Infinity";
     let lim = 0;
@@ -209,10 +209,7 @@ export const formatTime = (number: DecimalSource, dec = 0, expdec = 3, limit = 2
         if (Decimal.gte(number, timeList[i].amt)) {
             end = lim + 1 >= limit || timeList[i].stop;
             str = `${str} ${format(Decimal.div(number, timeList[i].amt).sub(end ? 0 : 0.5), end ? dec : 0, expdec)}${timeList[i].name}`;
-            number = Decimal.sub(
-                number,
-                Decimal.div(number, timeList[i].amt).floor().mul(timeList[i].amt)
-            );
+            number = Decimal.sub(number, Decimal.div(number, timeList[i].amt).floor().mul(timeList[i].amt));
             lim++;
             if (timeList[i].stop) {
                 break;

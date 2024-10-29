@@ -472,6 +472,22 @@ body {
     cursor: pointer; /* Cursor on hover */
 }
 
+.dilTSlider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 1.2vw; /* Set a specific slider handle width */
+    height: 1.2vw; /* Slider handle height */
+    background: #09ff00; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.dilTSlider::-moz-range-thumb {
+    width: 1.2vw; /* Set a specific slider handle width */
+    height: 1.2vw; /* Slider handle height */
+    background: #09ff00; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
 /* taken from TMT ig */
 .popup {
     border: 0.2vw solid;

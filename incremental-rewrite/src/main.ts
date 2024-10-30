@@ -121,7 +121,8 @@ export type Player = {
             normalized: boolean,
             normalizeTime: number,
             paused: boolean,
-            speed: DecimalSource
+            speed: number,
+            speedEnabled: boolean
         },
         achievements: Array<Array<number>>,
         inChallenge: Challenge,
@@ -302,7 +303,8 @@ export const initPlayer = (set = false): Player => {
                 normalized: false,
                 normalizeTime: 0.05,
                 paused: false,
-                speed: D(1)
+                speed: 1,
+                speedEnabled: false
             },
             unlocks: {
                 pr2: false,
@@ -1101,6 +1103,11 @@ function gameLoop(): void {
                 player.value.offlineTime += (gameVars.value.delta - player.value.gameProgress.dilatedTime.normalizeTime) * 1000;
                 gameVars.value.delta = player.value.gameProgress.dilatedTime.normalizeTime;
             }
+        }
+        if (player.value.gameProgress.dilatedTime.speedEnabled) {
+            const prev = player.value.offlineTime;
+            player.value.offlineTime -= 1000 * gameVars.value.delta * (Math.pow(player.value.offlineTime / 1000, player.value.gameProgress.dilatedTime.speed) - 1);
+            gameVars.value.delta *= Math.pow(prev / 1000, player.value.gameProgress.dilatedTime.speed/2);
         }
         const gameDelta = Decimal.mul(gameVars.value.delta, tmp.value.gameTimeSpeed).mul(player.value.setTimeSpeed);
         player.value.gameTime = Decimal.add(player.value.gameTime, gameDelta);

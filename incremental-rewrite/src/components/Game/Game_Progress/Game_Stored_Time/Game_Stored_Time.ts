@@ -1,4 +1,10 @@
 import { player } from "@/main";
+import type { DecimalSource } from "break_eternity.js";
+import Decimal from "break_eternity.js";
+
+export const speedToConsume = (x: DecimalSource) => {
+    return Decimal.sub(x, 1);
+}
 
 export const setNormalizationTime = () => {
     const i = prompt(

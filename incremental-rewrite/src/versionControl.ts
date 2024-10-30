@@ -33,13 +33,15 @@ export const updatePlayerData = (player: Player): Player => {
             normalized: false,
             normalizeTime: 0.05,
             paused: false,
-            speed: D(1)
+            speed: 1,
+            speedEnabled: false
         }
         player.version = 4;
     }
     if (player.version === 4) {
-
-        // player.version = 5;
+        player.gameProgress.dilatedTime.speedEnabled = false;
+        
+        player.version = 5;
     }
     if (player.version === 5) {
 

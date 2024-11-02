@@ -106,7 +106,7 @@ type Game = {
 
 export type Player = {
     lastUpdated: number,
-    offlineTime: number,
+    offlineTime: DecimalSource,
     totalRealTime: number,
     gameTime: DecimalSource,
     setTimeSpeed: DecimalSource,
@@ -812,7 +812,7 @@ function loadGame(): void {
     fixAchievements();
     initStatsFactors();
 
-    player.value.offlineTime += Math.max(0, Date.now() - player.value.lastUpdated);
+    player.value.offlineTime = Decimal.add(player.value.offlineTime, Math.max(0, Date.now() - player.value.lastUpdated));
     gameVars.value.sessionStart = Date.now();
     player.value.lastUpdated = Date.now();
     window.requestAnimationFrame(gameLoop);
@@ -1096,23 +1096,25 @@ function gameLoop(): void {
         }
 
         if (player.value.gameProgress.dilatedTime.paused) {
-            player.value.offlineTime += gameVars.value.delta * 1000;
+            player.value.offlineTime = Decimal.add(player.value.offlineTime, gameVars.value.delta * 1000);
             gameVars.value.delta = 0;
         }
         if (player.value.gameProgress.dilatedTime.normalized) {
             if (gameVars.value.delta > player.value.gameProgress.dilatedTime.normalizeTime) {
-                player.value.offlineTime += (gameVars.value.delta - player.value.gameProgress.dilatedTime.normalizeTime) * 1000;
+                player.value.offlineTime = Decimal.add(player.value.offlineTime, (gameVars.value.delta - player.value.gameProgress.dilatedTime.normalizeTime) * 1000);
                 gameVars.value.delta = player.value.gameProgress.dilatedTime.normalizeTime;
             }
         }
+
+        player.value.totalRealTime += gameVars.value.delta;
+        let gameDelta = Decimal.mul(gameVars.value.delta, tmp.value.gameTimeSpeed).mul(player.value.setTimeSpeed);
         if (player.value.gameProgress.dilatedTime.speedEnabled) {
             const prev = player.value.offlineTime;
-            player.value.offlineTime -= 1000 * gameVars.value.delta * speedToConsume();
-            gameVars.value.delta *= timeSpeedBoost(prev);
+            player.value.offlineTime = Decimal.sub(player.value.offlineTime, Decimal.mul(gameDelta, speedToConsume()).mul(1000));
+            gameDelta = Decimal.mul(gameDelta, timeSpeedBoost(prev));
         }
-        const gameDelta = Decimal.mul(gameVars.value.delta, tmp.value.gameTimeSpeed).mul(player.value.setTimeSpeed);
+
         player.value.gameTime = Decimal.add(player.value.gameTime, gameDelta);
-        player.value.totalRealTime += gameVars.value.delta;
 
         updateAllSCSL();
         updateAllTax(gameDelta);

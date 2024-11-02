@@ -108,10 +108,10 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                                                     {{ formatTime(item.data.totalRealTime, 0, 3, 4) }}
                                                 </span>
                                                 <span v-if="game.currentSave != index" style="font-size: 0.75vw" class="whiteText" >
-                                                    Offline for {{ formatTime( (Date.now() - item.data.lastUpdated) / 1000, 0, 3, 4) }}
+                                                    Offline for {{ formatTime((Date.now() - item.data.lastUpdated) / 1000, 0, 3, 4) }}
                                                 </span>
                                                 <span style="font-size: 0.75vw" class="whiteText">
-                                                    Offline Time: {{ formatTime( item.data.offlineTime / 1000, 0, 3, 4) }}
+                                                    Offline Time: {{ formatTime(Decimal.div(item.data.offlineTime, 1000), 0, 3, 4) }}
                                                 </span>
                                             </div>
                                             <div style="flex-grow: 1; flex-basis: 0; text-align: right; font-size: 1.2vw;" class="whiteText">

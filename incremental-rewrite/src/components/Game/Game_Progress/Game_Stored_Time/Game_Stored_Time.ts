@@ -1,11 +1,12 @@
 import { player } from "@/main";
+import Decimal from "break_eternity.js";
 
 export const timeSpeedBoost = (x = player.value.offlineTime) => {
-    return Math.pow(1 + (x / 1000), player.value.gameProgress.dilatedTime.speed/2)
+    return Decimal.pow(Decimal.div(x, 1000).add(1), player.value.gameProgress.dilatedTime.speed/2)
 }
 
 export const speedToConsume = () => {
-    return Math.pow(1 + (player.value.offlineTime / 1000), player.value.gameProgress.dilatedTime.speed) - 1;
+    return Decimal.pow(Decimal.div(player.value.offlineTime, 1000).add(1), player.value.gameProgress.dilatedTime.speed).sub(1);
 }
 
 export const setNormalizationTime = () => {

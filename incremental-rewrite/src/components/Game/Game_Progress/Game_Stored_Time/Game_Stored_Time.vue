@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { format, formatTime } from '@/format';
 import { player, tab } from '@/main';
-import { setNormalizationTime } from './Game_Stored_Time';
+import { setNormalizationTime, speedToConsume, timeSpeedBoost } from './Game_Stored_Time';
 import Decimal from 'break_eternity.js';
 </script>
 <template>
@@ -32,8 +32,8 @@ import Decimal from 'break_eternity.js';
                             <input class="slider dilTSlider" style="padding: 0vw; margin: 0vw" type="range" v-model="player.gameProgress.dilatedTime.speed" min="0" max="1" step="any" />
                         </div>
                     </div>
-                    Currently: {{ format(Decimal.pow(player.offlineTime / 1000, player.gameProgress.dilatedTime.speed/2), 3) }}x, which is consuming {{ formatTime(Decimal.pow(player.offlineTime / 1000, player.gameProgress.dilatedTime.speed).sub(1), 3) }} of Offline Time per second.<br>
-                    (This boost will last for {{ player.gameProgress.dilatedTime.speed == 0 ? 'Disabled' : formatTime(Decimal.div(player.offlineTime / 1000, Decimal.pow(player.offlineTime / 1000, player.gameProgress.dilatedTime.speed).sub(1))) }}.)
+                    Currently: {{ format(timeSpeedBoost(), 3) }}x, which is consuming {{ formatTime(speedToConsume(), 3) }} of Offline Time per second.<br>
+                    (This boost will last for {{ player.gameProgress.dilatedTime.speed == 0 ? 'Disabled' : formatTime(Decimal.div(player.offlineTime / 1000, speedToConsume())) }}.)
                 </button>
                 <button @click="player.gameProgress.dilatedTime.speedEnabled = !player.gameProgress.dilatedTime.speedEnabled" class="flex-container buttonLol fontVerdana">
                     Accelerate time!<br>

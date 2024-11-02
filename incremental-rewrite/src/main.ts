@@ -17,6 +17,7 @@ import { updateAllTax } from "./components/Game/Game_Progress/Game_Taxation/Game
 import { ALL_FACTORS, initStatsFactors, setFactor } from "./components/Game/Game_Stats/Game_Stats";
 import { updatePlayerData } from "./versionControl";
 import { reset } from "./resets";
+import { speedToConsume, timeSpeedBoost } from "./components/Game/Game_Progress/Game_Stored_Time/Game_Stored_Time";
 
 // this may slow down calculations!!
 const NAN_CHECKER = true;
@@ -1106,8 +1107,8 @@ function gameLoop(): void {
         }
         if (player.value.gameProgress.dilatedTime.speedEnabled) {
             const prev = player.value.offlineTime;
-            player.value.offlineTime -= 1000 * gameVars.value.delta * (Math.pow(player.value.offlineTime / 1000, player.value.gameProgress.dilatedTime.speed) - 1);
-            gameVars.value.delta *= Math.pow(prev / 1000, player.value.gameProgress.dilatedTime.speed/2);
+            player.value.offlineTime -= 1000 * gameVars.value.delta * speedToConsume();
+            gameVars.value.delta *= timeSpeedBoost(prev);
         }
         const gameDelta = Decimal.mul(gameVars.value.delta, tmp.value.gameTimeSpeed).mul(player.value.setTimeSpeed);
         player.value.gameTime = Decimal.add(player.value.gameTime, gameDelta);

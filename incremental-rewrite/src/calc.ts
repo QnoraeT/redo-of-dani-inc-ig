@@ -249,11 +249,11 @@ export const expQuadCostGrowth = (
 ) => {
     return inv
         ? inverseQuad(
-              Decimal.layeradd10(x, -exp).log10(),
-              Decimal.log10(a),
-              Decimal.log10(b),
-              Decimal.log10(c)
-          )
+                Decimal.layeradd10(x, -exp).log10(),
+                Decimal.log10(a),
+                Decimal.log10(b),
+                Decimal.log10(c)
+            )
         : Decimal.pow(a, Decimal.pow(x, 2)).mul(Decimal.pow(b, x)).mul(c).layeradd10(exp);
 };
 
@@ -266,12 +266,12 @@ export const inverseQuad = (
     return Decimal.eq(a, 0)
         ? Decimal.sub(x, c).div(b)
         : Decimal.sub(x, c)
-              .mul(a)
-              .mul(4)
-              .add(Decimal.pow(b, 2))
-              .sqrt()
-              .sub(b)
-              .div(Decimal.mul(a, 2));
+                .mul(a)
+                .mul(4)
+                .add(Decimal.pow(b, 2))
+                .sqrt()
+                .sub(b)
+                .div(Decimal.mul(a, 2));
 };
 
 // ! don't use this smh
@@ -317,7 +317,7 @@ export const inverseFact = (x: DecimalSource) => {
     if (Decimal.gte(x, "ee18")) {
         return Decimal.log10(x);
     }
-    if (Decimal.gte(x, "e10000")) {
+    if (Decimal.gte(x, "ee4")) {
         return Decimal.log10(x).div(Decimal.log10(x).log10());
     }
     return Decimal.div(x, 2.5066282746310002).ln().div(Math.E).lambertw().add(1).exp().sub(0.5);
@@ -347,13 +347,13 @@ export const smoothPoly = (
 ) => {
     return inverse
         ? Decimal.add(x, Decimal.div(start, poly))
-              .mul(Decimal.mul(poly, Decimal.pow(start, Decimal.sub(poly, 1))))
-              .root(poly)
-              .sub(start)
+                .mul(Decimal.mul(poly, Decimal.pow(start, Decimal.sub(poly, 1))))
+                .root(poly)
+                .sub(start)
         : Decimal.add(x, start)
-              .pow(poly)
-              .div(Decimal.mul(poly, Decimal.pow(start, Decimal.sub(poly, 1))))
-              .sub(Decimal.div(start, poly));
+                .pow(poly)
+                .div(Decimal.mul(poly, Decimal.pow(start, Decimal.sub(poly, 1))))
+                .sub(Decimal.div(start, poly));
 };
 
 export const smoothExp = (x: DecimalSource, exp: DecimalSource, inv: boolean) => {
@@ -425,13 +425,13 @@ export const linearAdd = (
 
     return inverse
         ? Decimal.sub(growth, Decimal.mul(base, 2))
-              .pow(2)
-              .add(Decimal.mul(num, growth).mul(8))
-              .sqrt()
-              .sub(growth)
-              .sub(Decimal.mul(base, 2))
-              .div(Decimal.mul(growth, 2))
-        : Decimal.mul(growth, num).add(Decimal.mul(base, 2)).mul(Decimal.add(num, 1)).div(2);
+                .pow(2)
+                .add(Decimal.mul(num, growth).mul(8))
+                .sqrt()
+                .sub(growth)
+                .sub(Decimal.mul(base, 2))
+                .div(Decimal.mul(growth, 2))
+        : Decimal.mul(growth, num).add(Decimal.mul(base, 2)).mul(Decimal.add(num, 1)).div(2).add(1);
 };
 
 export const logPowSoftcap = (num: DecimalSource, start: DecimalSource, inv: boolean) => {
@@ -442,10 +442,10 @@ export const logPowSoftcap = (num: DecimalSource, start: DecimalSource, inv: boo
     start = Decimal.log10(start);
     return inv
         ? Decimal.sub(num, start)
-              .div(Decimal.ln(start))
-              .add(start)
-              .div(start)
-              .pow_base(start)
-              .pow10()
+                .div(Decimal.ln(start))
+                .add(start)
+                .div(start)
+                .pow_base(start)
+                .pow10()
         : Decimal.log(num, start).mul(start).sub(start).mul(Decimal.ln(start)).add(start).pow10();
 };

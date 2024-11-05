@@ -1,7 +1,7 @@
 import { player } from "@/main";
 import Decimal from "break_eternity.js";
 
-export const NOTATION_LIST = ["Mixed Scientific", "Scientific", "Letters"];
+export const NOTATION_LIST = ["Mixed Scientific", "Scientific", "Letters", "Antimatter Dimensions Resources", "Distance Incremental Rank"];
 
 export const switchNotation = () => {
     let txt = `What notation would you like to switch to? (Input a number to switch notations, or blank to keep the current notation.)\nList:`;

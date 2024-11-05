@@ -428,10 +428,10 @@ export const linearAdd = (
                 .pow(2)
                 .add(Decimal.mul(num, growth).mul(8))
                 .sqrt()
-                .sub(growth)
+                .add(growth)
                 .sub(Decimal.mul(base, 2))
                 .div(Decimal.mul(growth, 2))
-        : Decimal.mul(growth, num).add(Decimal.mul(base, 2)).mul(Decimal.add(num, 1)).div(2);
+        : Decimal.sub(num, 1).mul(growth).add(Decimal.mul(base, 2)).mul(num).div(2);
 };
 
 export const logPowSoftcap = (num: DecimalSource, start: DecimalSource, inv: boolean) => {

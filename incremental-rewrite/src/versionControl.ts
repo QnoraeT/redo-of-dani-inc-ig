@@ -48,8 +48,13 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 6;
     }
     if (player.version === 6) {
-
-        // player.version = 7;
+        player.gameProgress.kua.blessings = {
+            amount: D(0),
+            totals: [null, null, null, D(0), D(0)],
+            best: [null, null, null, D(0), D(0)],
+            upgrades: [D(0), D(0), D(0), D(0)]
+        }
+        player.version = 7;
     }
     if (player.version === 7) {
         // player.version = 8;

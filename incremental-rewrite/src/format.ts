@@ -2,58 +2,8 @@ import Decimal, { type DecimalSource } from "break_eternity.js";
 import { player } from "./main";
 import { D } from "./calc";
 
-const abbSuffixes: Array<string> = [
-    "",
-    "K",
-    "M",
-    "B",
-    "T",
-    "Qa",
-    "Qi",
-    "Sx",
-    "Sp",
-    "Oc",
-    "No",
-    "Dc",
-    "UDc",
-    "DDc",
-    "TDc",
-    "QaDc",
-    "QiDc",
-    "SxDc",
-    "SpDc",
-    "OcDc",
-    "NoDc",
-    "Vg"
-];
-const letter: Array<string> = [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z"
-];
+const abbSuffixes: Array<string> = ["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","UDc","DDc","TDc","QaDc","QiDc","SxDc","SpDc","OcDc","NoDc","Vg"];
+const letter: Array<string> = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
 
 const timeList = [
     { name: "pt", stop: true, amt: 5.39e-44 },
@@ -99,33 +49,20 @@ function formatLetter(remainingLogNumber: DecimalSource, string = ``): string {
     );
 }
 
-export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
+export const format = (number: DecimalSource, dec = 0, expdec = 3, notation = player.value.settings.notation): string => {
     if (Decimal.lt(number, 0)) return `-${format(Decimal.negate(number), dec, expdec)}`;
     if (Decimal.eq(number, 0)) return (0).toFixed(dec);
     if (Decimal.isNaN(number)) return "NaN";
     if (!Decimal.isFinite(number)) return "Infinity";
     try {
-        switch (player.value.settings.notation) {
-            case 0:
-                if (Decimal.lt(number, "e-1e9")) {
-                    return `e${format(Decimal.log10(number), 0, expdec)}`;
-                } else if (Decimal.lt(number, 0.001)) {
-                    const exp = Decimal.log10(number).mul(1.00000000001).floor();
-                    return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
-                } else if (Decimal.lt(number, 1e6)) {
-                    return numberWithCommas(new Decimal(number).toNumber().toFixed(dec));
-                } else if (Decimal.lt(number, abbExp)) {
+        switch (notation) {
+            case 0: // mixed
+                if (Decimal.gte(number, 1e6) && Decimal.lt(number, abbExp)) {
                     const abb = Decimal.log10(number).mul(0.33333333336666665).floor();
                     return `${Decimal.div(number, abb.mul(3).pow10()).toNumber().toFixed(expdec)} ${abbSuffixes[abb.toNumber()]}`;
-                } else if (Decimal.lt(number, "ee6")) {
-                    const exp = Decimal.log10(number).mul(1.00000000001).floor();
-                    return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
-                } else if (Decimal.lt(number, "10^^7")) {
-                    return `e${format(Decimal.log10(number), dec, expdec)}`;
-                } else {
-                    return `F${format(Decimal.slog(number), Math.max(dec, 3), expdec)}`;
                 }
-            case 1:
+                return format(number, dec, expdec, 1);
+            case 1: // sci
                 if (Decimal.lt(number, "e-1e9")) {
                     return `e${format(Decimal.log10(number), 0, expdec)}`;
                 } else if (Decimal.lt(number, 0.001)) {
@@ -141,22 +78,31 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3): string => {
                 } else {
                     return `F${format(Decimal.slog(number), Math.max(dec, 3), expdec)}`;
                 }
-            case 2:
-                if (Decimal.lt(number, "e-1e9")) {
-                    return `e${format(Decimal.log10(number), 0, expdec)}`;
-                } else if (Decimal.lt(number, 0.001)) {
-                    const exp = Decimal.log10(number).mul(1.00000000001).floor();
-                    return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
-                } else if (Decimal.lt(number, 1e3)) {
-                    return new Decimal(number).toNumber().toFixed(dec);
-                } else if (Decimal.lt(number, "ee9")) {
+            case 2: // letters
+                if (Decimal.gte(number, 1e3) && Decimal.lt(number, "ee9")) {
                     const abb = Decimal.log10(number).mul(0.33333333336666665).floor();
                     return `${Decimal.div(number, abb.mul(3).pow10()).toNumber().toFixed(expdec)} ${formatLetter(abb.sub(1), "")}`;
-                } else if (Decimal.lt(number, "10^^7")) {
-                    return `e${format(Decimal.log10(number), dec, expdec)}`;
-                } else {
-                    return `F${format(Decimal.slog(number), Math.max(dec, 3), expdec)}`;
                 }
+                return format(number, dec, expdec, 1);
+            case 3:
+                if (Decimal.gte(number, "10^^7")) {
+                    return `IM^${format(Decimal.slog(number).sub(2.0221273333), Math.max(dec, 3), expdec, 0)}`;
+                }
+                if (Decimal.gte(number, Number.MAX_VALUE)) {
+                    if (Decimal.lt(number, "2.8e95173")) {
+                        return `${format(Decimal.log10(number).div(308).sub(0.75).pow10(), expdec, expdec, 0)} ᴵᴾ`;
+                    } else if (Decimal.lt(number, "e542945439")) {
+                        return `${format(Decimal.log10(number).div(308).sub(0.75).div(308).sub(0.7).pow_base(5), expdec, expdec, 0)} ᴱᴾ`;
+                    } else if (Decimal.lt(number, "e181502546658")) {
+                        return `${format(Decimal.log10(number).div(308).sub(0.75).div(308).sub(0.7).mul(0.6989700043360187).div(4000).sub(1).pow_base(1000), expdec, expdec, 0)} ᴿᴹ`;
+                    } else {
+                        const rm = Decimal.log10(number).div(308).sub(0.75).div(308).sub(0.7).mul(0.6989700043360187).div(4000).sub(1).pow_base(1000);
+                        return `${format(rm.log10().sub(1000).pow(2).mul(rm.log10().sub(100000).max(1).pow(0.2)), expdec, expdec, Decimal.lt(number, "ee148.37336") ? 0 : 3)} ᴵᴹ`;
+                    }
+                }
+                return format(number, dec, expdec, 1);
+            case 4:
+                return `Rank ${format(Decimal.max(number, 10).div(10).log(2).sqrt().add(1), dec, expdec, 1)}`;
             default:
                 throw new Error(`${player.value.settings.notation} is not a valid notation index!`);
         }

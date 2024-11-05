@@ -20,8 +20,9 @@ import { reset } from "@/resets";
 <template>
     <div id="kuaraniai" v-if="tab.currentTab === 4">
         <div class="flex-container" style=" flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;">
-            <button @click="switchSubTab(0, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Main</button>
             <button @click="switchSubTab(-1, 0)" style="width: 10vw" class="kuaButton2 fontVerdana whiteText normalTabButton">Bought Upgrades</button>
+            <button @click="switchSubTab(0, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Main</button>
+            <button @click="switchSubTab(1, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Blessings</button>
             <!-- disable this for now, seems unbalanced -->
             <!-- <button @click="switchSubTab(1, 0)" v-if="player.gameProgress.unlocks.kuaEnhancers" class="kuaButton2 fontVerdana whiteText normalTabButton">Enhancers</button> -->
         </div>
@@ -243,32 +244,32 @@ import { reset } from "@/resets";
             <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 1vw; margin-bottom: 1vw; width: 50vw; align-content: center;">
                 <div v-for="(item, index) in KUA_ENHANCERS.sources" :key="index">
                     <div class="flex-container" style="flex-direction: column; margin: 0.2vw">
-                        <button style="text-align: center; font-size: 0.8vw" :class="{ nope: !tmp.kua.sourcesCanBuy[index], ok: tmp.kua.sourcesCanBuy[index] }" class="whiteText mediumButton fontVerdana kuaButton" @click="buyKuaEnhSourceUPG(index)">
-                            <h3 style="margin-top: 0.5vw; font-size: 1.15vw">
+                        <button style="text-align: center; font-size: 0.6vw" :class="{ nope: !tmp.kua.sourcesCanBuy[index], ok: tmp.kua.sourcesCanBuy[index] }" class="whiteText mediumButton fontVerdana kuaButton" @click="buyKuaEnhSourceUPG(index)">
+                            <h3 style="margin-top: 0.5vw; font-size: 0.75vw">
                                 Enhancer Source {{ index + 1 }}:
                                 {{ format(player.gameProgress.kua.enhancers.sources[index]) }}
                             </h3>
                             +1 Enhancer.
-                            <br><span>Cost: {{ format(KUA_ENHANCERS.sources[index].cost(player.gameProgress.kua.enhancers.sources[index]), 2) }} {{ KUA_ENHANCERS.sources[index].sourceName }}</span>
+                            <br><span>Cost: {{ format(item.cost(player.gameProgress.kua.enhancers.sources[index]), 2) }} {{ item.sourceName }}</span>
                         </button>
                     </div>
                 </div>
-                <button style="text-align: center; font-size: 0.8vw" :class="{ nopeFill: !player.gameProgress.kua.enhancers.autoSources, okFill: player.gameProgress.kua.enhancers.autoSources }" class="whiteText thinMediumButton fontVerdana kuaButton2" v-if="false" @click=" player.gameProgress.kua.enhancers.autoSources = !player.gameProgress.kua.enhancers.autoSources">
+                <button style="text-align: center; font-size: 0.5vw" :class="{ nopeFill: !player.gameProgress.kua.enhancers.autoSources, okFill: player.gameProgress.kua.enhancers.autoSources }" class="whiteText thinMediumButton fontVerdana kuaButton2" v-if="false" @click=" player.gameProgress.kua.enhancers.autoSources = !player.gameProgress.kua.enhancers.autoSources">
                     <b>Enhancer Sources Autobuyer:{{ player.gameProgress.kua.enhancers.autoSources ? "On" : "Off" }}</b>
                 </button>
                 <div class="flex-container" style="flex-direction: column; align-items: center">
                     <div class="flex-container" style="flex-direction: column; align-items: center">
-                        <span style="font-size: 1.6vw; text-align: center" class="whiteText fontVerdana">
+                        <span style="font-size: 1.1vw; text-align: center" class="whiteText fontVerdana">
                             You have {{ format(Decimal.sub(tmp.kua.totalEnhSources, tmp.kua.enhSourcesUsed)) }} / {{ format(tmp.kua.totalEnhSources) }} Enhancers.
                         </span>
-                        <span style="font-size: 1.6vw; text-align: center" class="whiteText fontVerdana">
+                        <span style="font-size: 1.1vw; text-align: center" class="whiteText fontVerdana">
                             You may only allocate a total {{ format(Decimal.mul(player.gameProgress.kua.enhancers.xpSpread, 100)) }}% of power to your enhancers.
                         </span>
-                        <span style="font-size: 1.6vw; text-align: center" class="whiteText fontVerdana" v-if="tmp.kua.enhShowSlow">
+                        <span style="font-size: 1.1vw; text-align: center" class="whiteText fontVerdana" v-if="tmp.kua.enhShowSlow">
                             The enhancer XP is slowing down! (Strength: {{ format(tmp.kua.enhSlowdown, 2) }}%)
                         </span>
                     </div>
-                    <button style="text-align: center; font-size: 0.8vw" class="whiteText thinMediumButton fontVerdana kuaButton2" @click="kuaEnhReset()">
+                    <button style="text-align: center; font-size: 0.55vw" class="whiteText thinMediumButton fontVerdana kuaButton2" @click="kuaEnhReset()">
                         Unallocate every enhancer.
                     </button>
                 </div>
@@ -276,37 +277,37 @@ import { reset } from "@/resets";
             <div class="flex-container" style="flex-direction: column; align-items: center">
                 <div v-for="(item, index) in KUA_ENHANCERS.enhances" :key="index">
                     <div class="flex-container" v-if="Decimal.gte(tmp.kua.totalEnhSources, index * 3)">
-                        <div :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" style="margin-top: -0.3vw; width: 50vw; height: 8vw; text-align: center">
+                        <div :style="{ color: item.color, border: `0.2vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" style="margin-top: -0.3vw; width: 30vw; height: 6vw; text-align: center">
                             <div class="flex-container" style="flex-direction: column; margin: 0.5vw; margin-top: 0vw">
-                                <span style="margin-top: 0.5vw; font-size: 1.4vw">
+                                <span style="margin-top: 0.3vw; font-size: 1vw">
                                     <b>
                                         Enhancer {{ index + 1 }} ×{{ format(player.gameProgress.kua.enhancers.enhancers[index]) }} (Power: {{ format(tmp.kua.trueEnhPower[index].mul(100), 2) }}%)
                                     </b>
                                 </span>
-                                <div class="flex-container" style="justify-content: space-between; margin-top: 0.5vw">
-                                    <div class="slidecontainer" style="width: 15vw">
+                                <div class="flex-container" style="justify-content: space-between; margin-top: 0.3vw">
+                                    <div class="slidecontainer" style="width: 12vw">
                                         <input class="slider" type="range" v-model="player.gameProgress.kua.enhancers.enhancePow[index]"/>
                                         <!-- <Tooltip :display="`${value}`" :class="{ fullWidth: !title }" :direction="Direction.Down">
                                             <input type="range" class="slider" v-model="value" :min="min" :max="max"  />
                                         </Tooltip>                                         -->
                                     </div>
                                     <div class="flex-container" style="flex-direction: column">
-                                        <span style="font-size: 1.4vw">XP: {{ format(player.gameProgress.kua.enhancers.enhanceXP[index], 2) }} ({{ format(tmp.kua.kuaTrueSourceXPGen[index], 2) }}/s)</span>
-                                        <span style="font-size: 1vw">{{ item.desc }}</span>
+                                        <span style="font-size: 1vw">XP: {{ format(player.gameProgress.kua.enhancers.enhanceXP[index], 2) }} ({{ format(tmp.kua.kuaTrueSourceXPGen[index], 2) }}/s)</span>
+                                        <span style="font-size: 0.7vw">{{ item.desc }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button @click="kuaEnh(index, Infinity)" :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
+                        <button @click="kuaEnh(index, Infinity)" :style="{ color: item.color, border: `0.2vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
                             Add All
                         </button>
-                        <button @click="kuaEnh(index, 1)" :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
+                        <button @click="kuaEnh(index, 1)" :style="{ color: item.color, border: `0.2vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
                             Add 1
                         </button>
-                        <button @click="kuaEnh(index, -1)" :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
+                        <button @click="kuaEnh(index, -1)" :style="{ color: item.color, border: `0.2vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
                             Remove 1
                         </button>
-                        <button @click="kuaEnh(index, -Infinity)" :style="{ color: item.color, border: `0.3vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
+                        <button @click="kuaEnh(index, -Infinity)" :style="{ color: item.color, border: `0.2vw solid ${item.color}`, backgroundColor: `${colorChange(item.color, 0.25, 1.0)}` }" class="fontVerdana whiteText enhAllocButton" >
                             Remove All
                         </button>
                     </div>
@@ -319,9 +320,9 @@ import { reset } from "@/resets";
 .enhAllocButton {
     margin-top: -0.3vw;
     margin-left: -0.3vw;
-    width: 8vw;
-    height: 8.45vw;
+    width: 6vw;
+    height: 6.35vw;
     text-align: center;
-    font-size: 1.4vw;
+    font-size: 1vw;
 }
 </style>

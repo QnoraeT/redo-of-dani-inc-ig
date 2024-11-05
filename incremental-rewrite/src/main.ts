@@ -4,7 +4,7 @@ import { createApp, ref, type Ref } from "vue";
 import App from "./App.vue";
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { type Tab } from "./components/MainTabs/MainTabs";
-import { D, expQuadCostGrowth, scale, smoothExp, smoothPoly } from "./calc";
+import { D, expQuadCostGrowth, linearAdd, scale, smoothExp, smoothPoly } from "./calc";
 import { format } from "./format";
 import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame } from "./saving";
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from "./softcapScaling";
@@ -79,6 +79,19 @@ export const NEXT_UNLOCKS = [
     },
     {
         get shown() {
+            return player.value.gameProgress.kua.kpower.upgrades >= 8;
+        },
+        get done() {
+            return player.value.gameProgress.unlocks.kblessings;
+        },
+        get dispPart1() {
+            return `${format(player.value.gameProgress.kua.amount)} / ${format(1e6)}`;
+        },
+        dispPart2: `Kuaraniai to unlock the next feature.`,
+        color: "#00ff00"
+    },
+    {
+        get shown() {
             return Decimal.gte(player.value.gameProgress.main.points, "e500");
         },
         get done() {
@@ -130,7 +143,8 @@ export type Player = {
         unlocks: {
             pr2: boolean,
             kua: boolean,
-            kuaEnhancers: boolean,
+            kenhancers: boolean,
+            kblessings: boolean,
             col: boolean,
             tax: boolean
         },
@@ -200,6 +214,12 @@ export type Player = {
                 inExtraction: number,
                 extractionXP: Array<DecimalSource>,
                 upgrades: Array<number>
+            },
+            blessings: {
+                amount: DecimalSource,
+                totals: Array<null | DecimalSource>, // null, null, null, col, tax
+                best: Array<null | DecimalSource>, // null, null, null, col, tax
+                upgrades: Array<DecimalSource>
             }
         },
         col: {
@@ -310,7 +330,8 @@ export const initPlayer = (set = false): Player => {
             unlocks: {
                 pr2: false,
                 kua: false,
-                kuaEnhancers: false,
+                kenhancers: false,
+                kblessings: false,
                 col: false,
                 tax: false
             },
@@ -382,6 +403,12 @@ export const initPlayer = (set = false): Player => {
                     inExtraction: 0,
                     extractionXP: [D(0), D(0), D(0)],
                     upgrades: []
+                },
+                blessings: {
+                    amount: D(0),
+                    totals: [null, null, null, D(0), D(0)],
+                    best: [null, null, null, D(0), D(0)],
+                    upgrades: [D(0), D(0), D(0), D(0)]
                 }
             },
             col: {
@@ -560,6 +587,14 @@ type Tmp = {
         enhSourcesUsed: Decimal;
         enhShowSlow: boolean;
         enhSlowdown: Decimal;
+        blessings: {
+            perSec: Decimal;
+            perClick: Decimal;
+            upgsUnlocked: Array<boolean>;
+            upg1Base: Decimal;
+            upg2Base: Decimal;
+            kuaEff: Decimal;
+        }
     };
     col: {
         totalColChalComp: Decimal;
@@ -739,7 +774,15 @@ function initTemp(): Tmp {
             totalEnhSources: D(0),
             enhSourcesUsed: D(0),
             enhShowSlow: false,
-            enhSlowdown: D(1)
+            enhSlowdown: D(1),
+            blessings: {
+                perSec: D(0),
+                perClick: D(0),
+                upgsUnlocked: [false, false, false, false],
+                upg1Base: D(0),
+                upg2Base: D(0),
+                kuaEff: D(1)
+            }
         },
         col: {
             totalColChalComp: D(0),
@@ -1185,8 +1228,9 @@ function gameLoop(): void {
 
         player.value.gameProgress.unlocks.pr2 = player.value.gameProgress.unlocks.pr2 || Decimal.gte(player.value.gameProgress.main.prai.amount, 9.5);
         player.value.gameProgress.unlocks.kua = player.value.gameProgress.unlocks.kua || Decimal.gte(player.value.gameProgress.main.pr2.amount, 10);
-        player.value.gameProgress.unlocks.kuaEnhancers = player.value.gameProgress.unlocks.kuaEnhancers || Decimal.gte(player.value.gameProgress.kua.amount, 0.0095);
+        player.value.gameProgress.unlocks.kenhancers = player.value.gameProgress.unlocks.kenhancers || Decimal.gte(player.value.gameProgress.kua.amount, 0.0095);
         player.value.gameProgress.unlocks.col = player.value.gameProgress.unlocks.col || (player.value.gameProgress.kua.kpower.upgrades >= 2 && Decimal.gte(player.value.gameProgress.kua.amount, 100));
+        player.value.gameProgress.unlocks.kblessings = player.value.gameProgress.unlocks.kblessings || (player.value.gameProgress.kua.kpower.upgrades >= 8 && Decimal.gte(player.value.gameProgress.kua.amount, 1e6));
         player.value.gameProgress.unlocks.tax = player.value.gameProgress.unlocks.tax || Decimal.gte(player.value.gameProgress.main.points, "ee6");
 
         for (let i = 0; i < ACHIEVEMENT_DATA.length; i++) {
@@ -1274,6 +1318,8 @@ declare global {
         smoothExp: typeof smoothExp;
         resetTheWholeGame: typeof resetTheWholeGame;
         reset: typeof reset;
+        linearAdd: typeof linearAdd;
+        format: typeof format;
     }
 }
 
@@ -1290,5 +1336,7 @@ window.smoothPoly = smoothPoly;
 window.smoothExp = smoothExp;
 window.resetTheWholeGame = resetTheWholeGame;
 window.reset = reset;
+window.linearAdd = linearAdd;
+window.format = format;
 
 createApp(App).mount("#app");

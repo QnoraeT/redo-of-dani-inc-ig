@@ -153,65 +153,25 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                 </div>
             </div>
             <div v-if="tab.tabList[tab.currentTab][1] === 1">
-                <div
-                    class="flex-container"
-                    style="flex-direction: column; justify-content: center; align-items: center"
-                >
-                    <span style="font-size: 1.1vw" class="fontVerdana whiteText"
-                        >Your mode selection is currently:
-                        {{ displayModesNonOptArray(tmp.saveModes) }}</span
-                    >
-                    <div
-                        class="flex-container"
-                        style="flex-direction: row; justify-content: center"
-                    >
-                        <button
-                            @click="createNewSave(tmp.saveModes)"
-                            class="whiteText fontVerdana generatorButton"
-                            style="
-                                margin: 0.25vw;
-                                border: 0.2vw solid #ffffff;
-                                height: 5vw;
-                                width: 12vw;
-                                font-size: 0.75vw;
-                            "
-                        >
+                <div class="flex-container" style="flex-direction: column; justify-content: center; align-items: center">
+                    <span style="font-size: 1.1vw" class="fontVerdana whiteText">
+                        Your mode selection is currently:
+                        {{ displayModesNonOptArray(tmp.saveModes) }}
+                    </span>
+                    <div class="flex-container" style="flex-direction: row; justify-content: center">
+                        <button @click="createNewSave(tmp.saveModes)" class="whiteText fontVerdana generatorButton" style="margin: 0.25vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
                             Add new save.
                             <span style="color: #ffff00"
                                 >WARNING: None of the modes are implemented yet!</span
                             >
                         </button>
-                        <button
-                            @click="resetModes()"
-                            class="whiteText fontVerdana generatorButton"
-                            style="
-                                margin: 0.25vw;
-                                border: 0.2vw solid #ffffff;
-                                height: 5vw;
-                                width: 12vw;
-                                font-size: 0.75vw;
-                            "
-                        >
+                        <button @click="resetModes()" class="whiteText fontVerdana generatorButton" style="margin: 0.25vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
                             Reset Mode Selection
                         </button>
                     </div>
-                    <div
-                        class="flex-container"
-                        style="flex-direction: row; justify-content: center"
-                    >
-                        <div
-                            style="
-                                display: flex;
-                                width: 60vw;
-                                flex-wrap: wrap;
-                                justify-content: center;
-                            "
-                        >
-                            <div
-                                v-for="(item, index) in SAVE_MODES"
-                                :key="item.id"
-                                class="flex-container"
-                            >
+                    <div class="flex-container" style="flex-direction: row; justify-content: center">
+                        <div style="display: flex; width: 60vw; flex-wrap: wrap; justify-content: center;">
+                            <div v-for="(item, index) in SAVE_MODES" :key="item.id" class="flex-container">
                                 <button
                                     @click="setTempModes(index)"
                                     class="whiteText fontVerdana tooltip"
@@ -244,7 +204,7 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 2">
             <div class="flex-container" style="flex-direction: row; justify-content: center">
-                <Basic_Button @click="setTimeSpeed()" style="color: #f00; border: 0.2vw solid #f00;" :html="`Set Time Speed. Currently: ${format(player.setTimeSpeed, 2)}`"/>
+                <Basic_Button @click="setTimeSpeed()" style="color: #f00; border: 0.2vw solid #f00;" :html="`Set Time Speed. Currently: ${format(player.setTimeSpeed, 2)}<br><span style='font-size: 0.6vw'><b>WARNING:</b> This will bug out if you use the offline time boost with this!</span>`"/>
                 <Basic_Button @click="switchNotation()" :html="`Switch notation. Currently: ${NOTATION_LIST[player.settings.notation]}`"/>
                 <Basic_Button @click="player.settings.scaleSoftColors = !player.settings.scaleSoftColors" :html="`Show scaling/softcap colors. Currently: ${player.settings.scaleSoftColors}`"/>
             </div>

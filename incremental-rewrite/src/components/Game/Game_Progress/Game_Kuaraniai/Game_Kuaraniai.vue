@@ -22,7 +22,7 @@ import { reset } from "@/resets";
         <div class="flex-container" style=" flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;">
             <button @click="switchSubTab(-1, 0)" style="width: 10vw" class="kuaButton2 fontVerdana whiteText normalTabButton">Bought Upgrades</button>
             <button @click="switchSubTab(0, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Main</button>
-            <button @click="switchSubTab(1, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Blessings</button>
+            <button v-if="player.gameProgress.unlocks.kblessings" @click="switchSubTab(1, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Blessings</button>
             <!-- disable this for now, seems unbalanced -->
             <!-- <button @click="switchSubTab(1, 0)" v-if="player.gameProgress.unlocks.kuaEnhancers" class="kuaButton2 fontVerdana whiteText normalTabButton">Enhancers</button> -->
         </div>
@@ -241,6 +241,11 @@ import { reset } from "@/resets";
             </div>
         </div>
         <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 1">
+            <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; justify-content: center; margin-top: 1vw; align-content: center;">
+
+            </div>
+        </div>
+        <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 99">
             <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 1vw; margin-bottom: 1vw; width: 50vw; align-content: center;">
                 <div v-for="(item, index) in KUA_ENHANCERS.sources" :key="index">
                     <div class="flex-container" style="flex-direction: column; margin: 0.2vw">
@@ -259,13 +264,13 @@ import { reset } from "@/resets";
                 </button>
                 <div class="flex-container" style="flex-direction: column; align-items: center">
                     <div class="flex-container" style="flex-direction: column; align-items: center">
-                        <span style="font-size: 1.1vw; text-align: center" class="whiteText fontVerdana">
+                        <span style="font-size: 0.75vw; text-align: center" class="whiteText fontVerdana">
                             You have {{ format(Decimal.sub(tmp.kua.totalEnhSources, tmp.kua.enhSourcesUsed)) }} / {{ format(tmp.kua.totalEnhSources) }} Enhancers.
                         </span>
-                        <span style="font-size: 1.1vw; text-align: center" class="whiteText fontVerdana">
+                        <span style="font-size: 0.75vw; text-align: center" class="whiteText fontVerdana">
                             You may only allocate a total {{ format(Decimal.mul(player.gameProgress.kua.enhancers.xpSpread, 100)) }}% of power to your enhancers.
                         </span>
-                        <span style="font-size: 1.1vw; text-align: center" class="whiteText fontVerdana" v-if="tmp.kua.enhShowSlow">
+                        <span style="font-size: 0.75vw; text-align: center" class="whiteText fontVerdana" v-if="tmp.kua.enhShowSlow">
                             The enhancer XP is slowing down! (Strength: {{ format(tmp.kua.enhSlowdown, 2) }}%)
                         </span>
                     </div>

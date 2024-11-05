@@ -57,10 +57,11 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 7;
     }
     if (player.version === 7) {
-        // player.version = 8;
+        player.version = 8;
     }
     if (player.version === 8) {
-        // player.version = 9;
+        player.displayVersion = 'The Sentreon Update - Nov-05-2024';
+        player.version = 9;
     }
     if (player.version === 9) {
         // player.version = 10;

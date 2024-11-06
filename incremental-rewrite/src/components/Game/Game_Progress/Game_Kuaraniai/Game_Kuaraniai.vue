@@ -241,8 +241,23 @@ import { reset } from "@/resets";
             </div>
         </div>
         <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 1">
-            <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; justify-content: center; margin-top: 1vw; align-content: center;">
+            <div style="margin-top: 0.2vw; background-color: #041; border: 0.2vw solid #0f4; margin-left: auto; margin-right: auto; display: flex; justify-content: center; flex-direction: row; box-shadow: 0 0 0.8vw 0.24vw rgb(0, 66, 17); height: 40vw; width: 80vw;">
+                <div class="fontVerdana" style="display: flex; flex-direction: column; border: 0.24vw solid #0f4; padding: 0.6vw; height: 38.4vw; width: 50%;">
+                    <span style="color: #0f2; text-align: center; font-size: 1.2vw">
+                        You have 
+                        <span style="font-size: 1.4vw"><b>{{ format(player.gameProgress.kua.blessings.amount, 2) }}</b></span> 
+                        Kuaraniai Blessings. 
+                        <span style="font-size: 1vw">({{ format(tmp.kua.blessings.perSec, 2) }}/s)</span>
+                    </span>
+                    <span style="color: #0f2; text-align: center; font-size: 0.7vw">
+                        This boosts Upgrade 1's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg1Base, 3) }}</b></span>.<br>
+                        This boosts Upgrade 2's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg2Base, 3) }}</b></span>.<br>
+                        This boosts Effective Kuaraniai by ×<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.kuaEff, 2) }}</b></span>.
+                    </span>
+                </div>
+                <div style="display: flex; justify-content: center; flex-direction: row; border: 0.18vw solid #0f4; height: 39.8vw; width: 50%;">
 
+                </div>
             </div>
         </div>
         <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 99">

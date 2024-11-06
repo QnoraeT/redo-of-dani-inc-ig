@@ -502,6 +502,24 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return txt;
                 },
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
+            },
+            {
+                // id: 18
+                ordering: 18,
+                get name() {
+                    return `You can't escape the IRS, fool!`;
+                },
+                get desc() {
+                    return `Reach ${format(Number.MAX_VALUE)} points.`;
+                },
+                get cond() {
+                    return Decimal.gte(player.value.gameProgress.main.bestEver, Number.MAX_VALUE);
+                },
+                reward: ``,
+                get show() {
+                    return Decimal.gte(player.value.gameProgress.main.bestEver, 1e100);
+                },
+                status: true
             }
         ],
         get rewAll() {

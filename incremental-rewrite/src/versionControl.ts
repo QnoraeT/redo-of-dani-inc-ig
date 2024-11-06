@@ -64,7 +64,8 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 9;
     }
     if (player.version === 9) {
-        // player.version = 10;
+        player.displayVersion = 'v1.0.0.1 - Nov-05-2024';
+        player.version = 10;
     }
 
     return player;

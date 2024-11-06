@@ -426,6 +426,17 @@ export const makeColChallengeSaveData = (): colChallengesSavedData => {
                 totals: [],
                 best: [],
                 upgrades: player.value.gameProgress.kua.kpower.upgrades
+            },
+            enhancers: {
+                autoSources: player.value.gameProgress.kua.enhancers.autoSources,
+                sources: player.value.gameProgress.kua.enhancers.sources,
+                enhancers: player.value.gameProgress.kua.enhancers.enhancers,
+                enhanceXP: player.value.gameProgress.kua.enhancers.enhanceXP,
+                enhancePow: player.value.gameProgress.kua.enhancers.enhancePow,
+                xpSpread: player.value.gameProgress.kua.enhancers.xpSpread,
+                inExtraction: player.value.gameProgress.kua.enhancers.inExtraction,
+                extractionXP: player.value.gameProgress.kua.enhancers.extractionXP,
+                upgrades: player.value.gameProgress.kua.enhancers.upgrades
             }
         },
         pr2: {
@@ -543,6 +554,16 @@ export const exitChallenge = (id: challengeIDList) => {
     player.value.gameProgress.kua.kpower.totals[3] = savedColData.kua.kpower.totals[3];
     player.value.gameProgress.kua.kpower.best[3] = savedColData.kua.kpower.best[3];
     player.value.gameProgress.kua.kpower.upgrades = savedColData.kua.kpower.upgrades;
+
+    player.value.gameProgress.kua.enhancers.autoSources = savedColData.kua.enhancers.autoSources;
+    player.value.gameProgress.kua.enhancers.sources = savedColData.kua.enhancers.sources;
+    player.value.gameProgress.kua.enhancers.enhancers = savedColData.kua.enhancers.enhancers;
+    player.value.gameProgress.kua.enhancers.enhanceXP = savedColData.kua.enhancers.enhanceXP;
+    player.value.gameProgress.kua.enhancers.enhancePow = savedColData.kua.enhancers.enhancePow;
+    player.value.gameProgress.kua.enhancers.xpSpread = savedColData.kua.enhancers.xpSpread;
+    player.value.gameProgress.kua.enhancers.inExtraction = savedColData.kua.enhancers.inExtraction;
+    player.value.gameProgress.kua.enhancers.extractionXP = savedColData.kua.enhancers.extractionXP;
+    player.value.gameProgress.kua.enhancers.upgrades = savedColData.kua.enhancers.upgrades;
 };
 
 export const updateAllCol = (delta: DecimalSource) => {
@@ -711,6 +732,17 @@ export type colChallengesSavedData = {
             best: Array<null | DecimalSource>;
             upgrades: number;
         };
+        enhancers: {
+            autoSources: boolean,
+            sources: Array<DecimalSource>,
+            enhancers: Array<DecimalSource>,
+            enhanceXP: Array<DecimalSource>,
+            enhancePow: Array<DecimalSource>,
+            xpSpread: DecimalSource,
+            inExtraction: number,
+            extractionXP: Array<DecimalSource>,
+            upgrades: Array<number>
+        }
     };
     pr2: {
         auto: boolean;

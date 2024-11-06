@@ -40,11 +40,11 @@ import {
                 <span style="font-size: 1.4vw"><b>{{ formatTime(player.gameProgress.col.maxTime, 3) }}</b></span>
                 within challenges.
             </span>
-            <span v-if="Decimal.gte(timesCompleted('su'), 1)" style="color: #f40; text-align: center; font-size: 0.7vw" >
+            <span v-if="Decimal.gte(timesCompleted('su'), 1)" style="color: #f40; text-align: center; font-size: 0.7vw">
                 This also weakens Upgrade 1 and 2's softcaps by 
                 <span style="font-size: 0.8vw"><b>{{ formatPerc(tmp.col.effects.upg1a2sc, 3) }}</b></span>.
             </span>
-            <span v-if="Decimal.gte(timesCompleted('df'), 1)" style="color: #f40; text-align: center; font-size: 0.7vw" >
+            <span v-if="Decimal.gte(timesCompleted('df'), 1)" style="color: #f40; text-align: center; font-size: 0.7vw">
                 This also boosts research speed by 
                 <span style="font-size: 0.8vw"><b>{{ format(tmp.col.effects.res, 3) }}</b></span>×.
             </span>

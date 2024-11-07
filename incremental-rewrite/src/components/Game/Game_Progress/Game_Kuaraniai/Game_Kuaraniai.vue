@@ -12,7 +12,9 @@ import {
     kuaEnh,
     buyKShardUpg,
     buyKPowerUpg,
-    buyKuaEnhSourceUPG
+    buyKuaEnhSourceUPG,
+    KUA_BLESS_UPGS,
+    gainKPOnClick
 } from "./Game_Kuaraniai";
 import Kua_Upgrade from "./KUA_Kua_Upgrades.vue";
 import { reset } from "@/resets";
@@ -241,11 +243,11 @@ import { reset } from "@/resets";
             </div>
         </div>
         <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 1">
-            <div style="margin-top: 0.2vw; background-color: #041; border: 0.2vw solid #0f4; margin-left: auto; margin-right: auto; display: flex; justify-content: center; flex-direction: row; box-shadow: 0 0 0.8vw 0.24vw rgb(0, 66, 17); height: 40vw; width: 80vw;">
+            <div style="margin-top: 0.2vw; background-color: #021; border: 0.2vw solid #0f4; margin-left: auto; margin-right: auto; display: flex; justify-content: center; flex-direction: row; box-shadow: 0 0 0.8vw 0.24vw rgb(0, 66, 17); height: 40vw; width: 80vw;">
                 <div class="fontVerdana" style="display: flex; flex-direction: column; border: 0.24vw solid #0f4; padding: 0.6vw; height: 38.4vw; width: 50%;">
                     <span style="color: #0f2; text-align: center; font-size: 1.2vw">
                         You have 
-                        <span style="font-size: 1.4vw"><b>{{ format(player.gameProgress.kua.blessings.amount, 2) }}</b></span> 
+                        <span style="font-size: 1.4vw"><b>{{ format(player.gameProgress.kua.blessings.amount, 3) }}</b></span> 
                         Kuaraniai Blessings. 
                         <span style="font-size: 1vw">({{ format(tmp.kua.blessings.perSec, 2) }}/s)</span>
                     </span>
@@ -254,6 +256,22 @@ import { reset } from "@/resets";
                         This boosts Upgrade 2's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg2Base, 3) }}</b></span>.<br>
                         This boosts Effective Kuaraniai by ×<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.kuaEff, 2) }}</b></span>.
                     </span>
+                    <button style="margin-top: 0.4vw; margin-left: auto; margin-right: auto; text-align: center; font-size: 0.65vw; border: 0.18vw solid #0f4; background-color: #041; width: 12vw; height: 2vw" class="whiteText fontVerdana" @click="gainKPOnClick()">
+                        Gain {{ format(tmp.kua.blessings.perClick, 3) }} KBlessings.
+                    </button>
+                    <div class="flex-container" style="margin-top: 0.4vw; flex-wrap: wrap; justify-content: center;">
+                        <div v-for="(item, index) in KUA_BLESS_UPGS" :key="index">
+                            <!-- set padding to 0vw because it auto-inserts padding -->
+                            <button @click="console.log('nuh uh')" :class="{ nope: !tmp.kua.blessings.upgrades[index].canBuy, ok: tmp.kua.blessings.upgrades[index].canBuy}" :style="{ backgroundColor: player.gameProgress.kua.blessings.upgrades[index] ? '#00300a' : '#002008' }" v-if="item.show" style="width: 12vw; height: 8vw; margin-left: 0.15vw; margin-right: 0.15vw; margin-bottom: 0.3vw; font-size: 0.65vw;" class="fontVerdana whiteText">
+                                <span :style="{ color: '#0d3' }" style="font-size: 0.7vw; margin-right: 0.5vw"><b>#{{index + 1}}</b></span><span class="whiteText">x{{ format(player.gameProgress.kua.blessings.upgrades[index]) }}</span><br>
+                                <!-- <br><span v-if="!item.implemented" style="color: #ff0; font-size: 0.5vw"><b>[ NOT IMPLEMENTED ]</b><br></span> -->
+                                <span class="vertical-align: top;">{{item.desc}}</span>
+                                <br><br>
+                                <span class="vertical-align: bottom;">Currently: <b><span style="font-size: 0.7vw; color: #fff">{{item.effDesc}}</span></b></span><br>
+                                <span class="vertical-align: bottom;">Cost: <b><span style="font-size: 0.7vw; color: #fff">{{format(item.cost.ceil())}}</span></b> KBlessings.</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div style="display: flex; justify-content: center; flex-direction: row; border: 0.18vw solid #0f4; height: 39.8vw; width: 50%;">
 

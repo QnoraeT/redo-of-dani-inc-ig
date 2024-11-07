@@ -52,7 +52,9 @@ export const updatePlayerData = (player: Player): Player => {
             amount: D(0),
             totals: [null, null, null, D(0), D(0)],
             best: [null, null, null, D(0), D(0)],
-            upgrades: [D(0), D(0), D(0), D(0)]
+            upgrades: [D(0), D(0), D(0), D(0)],
+            totalEver: D(0),
+            bestEver: D(0),
         }
         player.version = 7;
     }
@@ -66,6 +68,12 @@ export const updatePlayerData = (player: Player): Player => {
     if (player.version === 9) {
         player.displayVersion = 'v1.0.0.1 - Nov-05-2024';
         player.version = 10;
+    }
+    if (player.version === 10) {
+        player.gameProgress.kua.blessings.totalEver = D(0)
+        player.gameProgress.kua.blessings.bestEver = D(0)
+        player.displayVersion = 'v1.0.0.2 - Nov-06-2024';
+        player.version = 11;
     }
 
     return player;

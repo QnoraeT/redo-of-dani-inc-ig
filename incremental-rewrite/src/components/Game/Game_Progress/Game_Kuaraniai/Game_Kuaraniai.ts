@@ -118,6 +118,25 @@ export const KUA_BLESS_UPGS = [
     }
 ]
 
+export const initAllKBlessingUpgrades = () => {
+    const arr = [];
+    for (let i = KUA_BLESS_UPGS.length - 1; i >= 0; i--) {
+        arr.push(
+            {
+                canBuy: false
+            }
+        );
+    }
+    return arr;
+}
+
+export const gainKPOnClick = () => {
+    if (player.value.gameProgress.dilatedTime.paused) {
+        return;
+    }
+    player.value.gameProgress.kua.blessings.amount = Decimal.add(player.value.gameProgress.kua.blessings.amount, tmp.value.kua.blessings.perClick);
+}
+
 // use get show if it can change in the mean time, currently unused as a placeholder
 // costs will get the same treatment later
 
@@ -815,7 +834,14 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.blessings.upg2Base = Decimal.gte(player.value.gameProgress.kua.blessings.amount, 1)
                 ? Decimal.ln(player.value.gameProgress.kua.blessings.amount).add(1).mul(0.04)
                 : Decimal.mul(player.value.gameProgress.kua.blessings.amount, 0.04)
-            tmp.value.kua.blessings.kuaEff = Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).pow(4)
+            tmp.value.kua.blessings.kuaEff = Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).pow(4);
+
+            generate = tmp.value.kua.blessings.perSec.mul(delta);
+            player.value.gameProgress.kua.blessings.amount = Decimal.add(player.value.gameProgress.kua.blessings.amount, generate);
+            updateAllTotal(player.value.gameProgress.kua.blessings.totals, generate);
+            player.value.gameProgress.kua.blessings.totalEver = Decimal.add(player.value.gameProgress.kua.blessings.totalEver, generate);
+            updateAllBest(player.value.gameProgress.kua.blessings.best,player.value.gameProgress.kua.blessings.amount);
+            player.value.gameProgress.kua.blessings.bestEver = Decimal.max(player.value.gameProgress.kua.blessings.bestEver, player.value.gameProgress.kua.blessings.amount);
             break;
         case 1:
             tmp.value.kua.sourcesCanBuy = [false, false, false];

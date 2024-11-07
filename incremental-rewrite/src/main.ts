@@ -10,7 +10,7 @@ import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame } from "./sa
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from "./softcapScaling";
 import { updateAllStart, initAllMainUpgrades, initAllMainOneUpgrades, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_Main";
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
-import { getKuaUpgrade, updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
+import { getKuaUpgrade, initAllKBlessingUpgrades, updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { diePopupsDie } from "./popups";
 import { challengeDepth, getColResEffect, getColXPtoNext, inChallenge, timesCompleted, updateAllCol, type challengeIDList, type colChallengesSavedData } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 import { updateAllTax } from "./components/Game/Game_Progress/Game_Taxation/Game_Taxation";
@@ -219,6 +219,8 @@ export type Player = {
                 amount: DecimalSource,
                 totals: Array<null | DecimalSource>, // null, null, null, col, tax
                 best: Array<null | DecimalSource>, // null, null, null, col, tax
+                totalEver: DecimalSource,
+                bestEver: DecimalSource,
                 upgrades: Array<DecimalSource>
             }
         },
@@ -408,6 +410,8 @@ export const initPlayer = (set = false): Player => {
                     amount: D(0),
                     totals: [null, null, null, D(0), D(0)],
                     best: [null, null, null, D(0), D(0)],
+                    totalEver: D(0),
+                    bestEver: D(0),
                     upgrades: [D(0), D(0), D(0), D(0)]
                 }
             },
@@ -590,10 +594,12 @@ type Tmp = {
         blessings: {
             perSec: Decimal;
             perClick: Decimal;
-            upgsUnlocked: Array<boolean>;
             upg1Base: Decimal;
             upg2Base: Decimal;
             kuaEff: Decimal;
+            upgrades: Array<{
+                canBuy: boolean
+            }>;
         }
     };
     col: {
@@ -778,10 +784,10 @@ function initTemp(): Tmp {
             blessings: {
                 perSec: D(0),
                 perClick: D(0),
-                upgsUnlocked: [false, false, false, false],
                 upg1Base: D(0),
                 upg2Base: D(0),
-                kuaEff: D(1)
+                kuaEff: D(1),
+                upgrades: initAllKBlessingUpgrades()
             }
         },
         col: {

@@ -520,7 +520,72 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return Decimal.gte(player.value.gameProgress.main.bestEver, 1e100);
                 },
                 status: true
-            }
+            },
+            {
+                // id: 19
+                ordering: 19,
+                get name() {
+                    return `Ordered`;
+                },
+                get desc() {
+                    return `Every upgrade must have #×${format(10)} of themselves. (Upgrade 1 must be bought ${format(10)} times, Upgrade 2 ${format(20)} times, etc.)`;
+                },
+                get cond() {
+                    return Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 10) &&
+                        Decimal.eq(player.value.gameProgress.main.upgrades[1].bought, 20) &&
+                        Decimal.eq(player.value.gameProgress.main.upgrades[2].bought, 30) &&
+                        Decimal.eq(player.value.gameProgress.main.upgrades[3].bought, 40) &&
+                        Decimal.eq(player.value.gameProgress.main.upgrades[4].bought, 50) &&
+                        Decimal.eq(player.value.gameProgress.main.upgrades[5].bought, 60)
+                },
+                reward: ``,
+                get show() {
+                    return player.value.gameProgress.unlocks.col;
+                },
+                get status() {
+                    const fail: Array<number> = [];
+                    for (let i = 0; i < 6; i++) {
+                        if (!Decimal.eq(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 10*i)) {
+                            fail.push(i);
+                        }
+                    }
+                    if (fail.length === 0) {
+                        return true;
+                    }
+                    let txt = `Failed due to Upgrades `;
+                    for (let i = 0; i < fail.length - 1; i++) {
+                        txt += `${fail[i] + 1}, `;
+                    }
+                    if (fail.length > 1) {
+                        txt += ` and ${fail[fail.length - 1] + 1}`;
+                    } else {
+                        txt += `${fail[0] + 1}`;
+                    }
+                    txt += ` not meeting their target value.`
+                    return txt;
+                },
+                extra: `Hint: What resets Upgrades 4-6?`
+            },
+            {
+                // id: 20
+                ordering: 20,
+                get name() {
+                    return `Jumping to conclusions.`;
+                },
+                get desc() {
+                    return `Reach ${format(1e100)} PRai while doing no more than ${format(5)} PRai resets..`;
+                },
+                get cond() {
+                    return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e100) && Decimal.lte(player.value.gameProgress.main.prai.times, 5);
+                },
+                reward: ``,
+                get show() {
+                    return player.value.gameProgress.unlocks.col;
+                },
+                get status() {
+                    return Decimal.lte(player.value.gameProgress.main.prai.times, 5) ? true : `Failed due to having PRai reset ${format(player.value.gameProgress.main.prai.times)} times.`
+                }
+            },
         ],
         get rewAll() {
             return `Point gain is increased by ${format(this.eff.sub(1).mul(100), 2)}%. (×1.1 per main achievement)`;
@@ -717,14 +782,8 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get cond() {
                     return (
                         Decimal.gte(player.value.gameProgress.main.prai.best[2]!, 1e20) &&
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[0].boughtInReset[2],
-                            0
-                        ) &&
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[1].boughtInReset[2],
-                            0
-                        ) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
                     );
                 },
@@ -740,27 +799,12 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return player.value.gameProgress.unlocks.kua;
                 },
                 get status() {
-                    if (
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[0].boughtInReset[2],
-                            0
-                        ) &&
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[1].boughtInReset[2],
-                            0
-                        ) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
-                    ) {
+                    if (Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)) {
                         return true;
                     }
                     const fail: Array<number> = [];
                     for (let i = 0; i < 3; i++) {
-                        if (
-                            !Decimal.lte(
-                                player.value.gameProgress.main.upgrades[i].boughtInReset[2],
-                                0
-                            )
-                        ) {
+                        if (!Decimal.lte(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
                             fail.push(i);
                         }
                     }
@@ -866,14 +910,8 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get cond() {
                     return (
                         Decimal.gte(player.value.gameProgress.main.best[2]!, 1e80) &&
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[0].boughtInReset[2],
-                            0
-                        ) &&
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[1].boughtInReset[2],
-                            0
-                        ) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
                     );
                 },
@@ -885,26 +923,15 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 },
                 get status() {
                     if (
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[0].boughtInReset[2],
-                            0
-                        ) &&
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[1].boughtInReset[2],
-                            0
-                        ) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
                     ) {
                         return true;
                     }
                     const fail: Array<number> = [];
                     for (let i = 0; i < 3; i++) {
-                        if (
-                            !Decimal.lte(
-                                player.value.gameProgress.main.upgrades[i].boughtInReset[2],
-                                0
-                            )
-                        ) {
+                        if (!Decimal.lte(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
                             fail.push(i);
                         }
                     }
@@ -970,10 +997,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get cond() {
                     return (
                         Decimal.gte(player.value.gameProgress.main.best[2]!, 1e35) &&
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[0].boughtInReset[2],
-                            0
-                        ) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
                     );
                 },
@@ -986,19 +1010,13 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 },
                 get status() {
                     if (
-                        Decimal.lte(
-                            player.value.gameProgress.main.upgrades[0].boughtInReset[2],
-                            0
-                        ) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
                     ) {
                         return true;
                     }
                     const fail = [
-                        !Decimal.lte(
-                            player.value.gameProgress.main.upgrades[0].boughtInReset[2],
-                            0
-                        ),
+                        !Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0),
                         !Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
                     ];
                     let txt = `Failed due to having Upgrade `;
@@ -1035,9 +1053,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `Point gain is boosted but it decays over the next ${format(60, 2)} seconds. Currently: ×${format(this.eff!, 2)}`;
                 },
                 get eff() {
-                    let eff = Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 5).min(
-                        60
-                    );
+                    let eff = Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 5).min(60);
                     eff = Decimal.pow(1e2, Decimal.sub(55, eff.sub(5)).div(0.55).div(1e2).pow(2));
                     return eff;
                 },

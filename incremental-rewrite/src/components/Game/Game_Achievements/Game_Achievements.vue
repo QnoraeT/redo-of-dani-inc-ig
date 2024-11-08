@@ -16,8 +16,8 @@ import {
                 <div
                     v-if="item.show"
                     style="
-                        width: 42vw;
-                        height: 15vw;
+                        width: 42.5vw;
+                        padding-bottom: 2vw;
                         display: flex;
                         flex-direction: column;
                         align-items: center;
@@ -28,40 +28,28 @@ import {
                             player.gameProgress.achievements[index].length >= item.list.length
                                 ? ACH_DEF_COLORS[item.type].complete
                                 : mixColor(
-                                      ACH_DEF_COLORS[item.type].unable,
-                                      ACH_DEF_COLORS[item.type].canComplete,
-                                      'Linear',
-                                      player.gameProgress.achievements[index].length /
-                                          item.list.length
-                                  ),
+                                        ACH_DEF_COLORS[item.type].unable,
+                                        ACH_DEF_COLORS[item.type].canComplete,
+                                        'Linear',
+                                        player.gameProgress.achievements[index].length /
+                                            item.list.length
+                                    ),
                             0.25,
                             1
                         )
                     }"
                 >
                     <div style="display: flex; flex-direction: column; align-items: center">
-                        <span
-                            style="font-size: 1.2vw; margin-top: 0.3vw"
-                            class="fontVerdana whiteText"
-                            >Achievement Tier {{ index + 1 }}:
+                        <span style="font-size: 1.2vw; margin-top: 0.3vw" class="fontVerdana whiteText">
+                            Achievement Tier {{ index + 1 }}:
                             {{ player.gameProgress.achievements[index].length }} /
-                            {{ item.list.length }}</span
-                        >
-                        <span
-                            style="font-size: 0.9vw; margin-top: 0.3vw; text-align: center"
-                            class="fontVerdana whiteText"
-                            >{{ item.rewAll }}</span
-                        >
+                            {{ item.list.length }}
+                        </span>
+                        <span style="font-size: 0.9vw; margin-top: 0.3vw; text-align: center" class="fontVerdana whiteText">
+                            {{ item.rewAll }}
+                        </span>
                     </div>
-                    <div
-                        style="
-                            display: flex;
-                            flex-wrap: wrap;
-                            margin-top: 0.75vw;
-                            width: 35vw;
-                            justify-content: center;
-                        "
-                    >
+                    <div style="display: flex; flex-wrap: wrap; margin-top: 0.75vw; width: 40vw; justify-content: center;">
                         <div v-for="(item2, index2) in tmp.achievementList[index]" :key="index2">
                             <div
                                 v-if="item.list[item2].show || ifAchievement(index, item2)"

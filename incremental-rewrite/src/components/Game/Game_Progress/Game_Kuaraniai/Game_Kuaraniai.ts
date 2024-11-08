@@ -87,31 +87,31 @@ export const KUA_BLESS_UPGS = [
         get desc() {
             let txt = `KBs boost Upgrade 2's effect.`;
             if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[0], 6)) {
-                txt += ` KShards and KPower effects act like they're higher based off of your KBs.`
+                txt += ` KShards and KPower effects act like they're higher based off of your KBs.`;
             }
             if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[0], 12)) {
-                txt += ` Upgrade 1-6's scaling start is delayed based off of your KBs.`
+                txt += ` Upgrade 1-6's superscaling start is delayed based off of your KBs.`;
             }
             return txt;
         },
         get effDesc() {
-            let txt = `^${format(this.eff[0], 3)}`
+            let txt = `^${format(this.eff[0], 3)}`;
             if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[0], 6)) {
-                txt += `, ×${format(this.eff[1], 1)}`
+                txt += `, ×${format(this.eff[1], 1)}`;
             }
             if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[0], 12)) {
-                txt += `, +${format(this.eff[2], 2)}`
+                txt += `, +${format(this.eff[2], 2)}`;
             }
-            return txt
+            return txt;
         },
         get eff() {
             return [
                 Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).ln().div(100).mul(Decimal.sqrt(player.value.gameProgress.kua.blessings.upgrades[0])).add(1).root(1.5),
                 Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[0], 6) 
-                    ? Decimal.add(player.value.gameProgress.kua.blessings.amount, 1)
+                    ? Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).pow(Decimal.sub(player.value.gameProgress.kua.blessings.upgrades[0], 5).sqrt().sub(1))
                     : D(1),
                 Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[0], 12) 
-                    ? Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).ln().add(1).pow(2).sub(1).div(2)
+                    ? Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).ln().add(1).pow(Decimal.sub(player.value.gameProgress.kua.blessings.upgrades[0], 11).sqrt().div(2)).sub(1).div(Decimal.sub(player.value.gameProgress.kua.blessings.upgrades[0], 11).sqrt().div(2))
                     : D(0),
             ]
         }
@@ -834,7 +834,12 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.blessings.upg2Base = Decimal.gte(player.value.gameProgress.kua.blessings.amount, 1)
                 ? Decimal.ln(player.value.gameProgress.kua.blessings.amount).add(1).mul(0.04)
                 : Decimal.mul(player.value.gameProgress.kua.blessings.amount, 0.04)
-            tmp.value.kua.blessings.kuaEff = Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).pow(4);
+            tmp.value.kua.blessings.kuaEff = Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).log10().add(1).pow(0.9).sub(1).pow10();
+
+            for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
+                if (player.value.gameProgress.main.oneUpgrades[i] === undefined) { player.value.gameProgress.main.oneUpgrades[i] = D(0); }
+                tmp.value.main.oneUpgrades[i].canBuy = Decimal.gte(player.value.gameProgress.main.prai.amount, KUA_BLESS_UPGS[i].cost);
+            }
 
             generate = tmp.value.kua.blessings.perSec.mul(delta);
             player.value.gameProgress.kua.blessings.amount = Decimal.add(player.value.gameProgress.kua.blessings.amount, generate);

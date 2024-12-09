@@ -1,28 +1,28 @@
 <script setup lang="ts">
 import Decimal from 'break_eternity.js'
-import { tab } from '@/main'
+import { shiftDown, tab } from '@/main'
 import { tmp, player } from '@/main'
 import { format, formatTime } from '@/format'
-import { MAIN_ONE_UPGS, MAIN_UPGS, PR2_EFF, buyGenUPG, buyOneMainUpg, getOMUpgrade, maxxedOMUpgrade } from './Game_Main'
+import { MAIN_ONE_UPGS, MAIN_UPGS, PR2_EFF, buyGenUPG, buyOneMainUpg, getOMUpgrade, getPR2Cost, maxxedOMUpgrade } from './Game_Main'
 import { getKuaUpgrade } from '../Game_Kuaraniai/Game_Kuaraniai'
 import { switchSubTab } from '@/components/MainTabs/MainTabs'
 import Tab_Button from '@/components/MainTabs/DefaultTabButton.vue'
-import { inChallenge } from '../Game_Colosseum/Game_Colosseum'
-import { reset } from '@/resets'
+import { challengeDepth, COL_CHALLENGES, inChallenge } from '../Game_Colosseum/Game_Colosseum'
+import { resetStage } from '@/resets'
 </script>
 <template>
     <div id="generators" v-if="tab.currentTab === 0">
         <div v-if="Decimal.gte(player.gameProgress.main.pr2.bestEver, 6)" class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.0vw; margin-bottom: 0.3vw;">
             <Tab_Button @click="switchSubTab(0, 0)" :selected="tab.tabList[tab.currentTab][0] === 0" :name="'Main'" />
-            <Tab_Button @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :name="'One-Upgrades'" />
+            <Tab_Button :class="{ alert: tmp.main.canBuyUpg }" @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :name="'One-Upgrades'" />
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 1">
             <div class="flex-container" style="flex-wrap: wrap; align-content: flex-start; margin-top: 1vw; margin-left: auto; margin-right: auto; display: flex; justify-content: center; flex-direction: row; padding: 0.6vw; height: 45vw; width: 65vw;">
                 <div v-for="(item, index) in MAIN_ONE_UPGS" :key="index">
                     <!-- set padding to 0vw because it auto-inserts padding -->
-                    <button @click="buyOneMainUpg(index)" :class="{ nope: !tmp.main.oneUpgrades[index].canBuy && !maxxedOMUpgrade(index), ok: tmp.main.oneUpgrades[index].canBuy && !maxxedOMUpgrade(index), done: maxxedOMUpgrade(index) }" :style="{ backgroundColor: getOMUpgrade(index) ? '#303030' : '#202020' }" v-if="item.show" style="width: 12vw; height: 8vw; margin-left: 0.18vw; margin-right: 0.18vw; margin-bottom: 0.36vw; font-size: 0.65vw;" class="generatorButton fontVerdana whiteText">
-                        <span :style="{ color: '#ddd' }" style="font-size: 0.75vw; margin-right: 0.5vw"><b>#{{index + 1}}</b></span><span v-if="inChallenge('im')" class="whiteText">x{{ format(getOMUpgrade(index)) }}</span>
-                        <br><span v-if="!item.implemented" style="color: #ff0; font-size: 0.5vw"><b>[ NOT IMPLEMENTED ]</b><br></span>
+                    <button @click="buyOneMainUpg(index)" :class="{ nope: !tmp.main.oneUpgrades[index].canBuy && !maxxedOMUpgrade(index), ok: tmp.main.oneUpgrades[index].canBuy && !maxxedOMUpgrade(index), done: maxxedOMUpgrade(index) }" :style="{ backgroundColor: maxxedOMUpgrade(index) ? '#303030' : '#202020' }" v-if="item.show" style="width: 12vw; height: 8vw; margin-left: 0.18vw; margin-right: 0.18vw; margin-bottom: 0.36vw; font-size: 0.65vw;" class="generatorButton fontVerdana whiteText">
+                        <span style="font-size: 0.75vw; margin-right: 0.5vw; color: #ddd"><b>#{{index + 1}}</b></span><span v-if="inChallenge('im')" class="whiteText">×{{ format(getOMUpgrade(index)) }}</span>
+                        <br><span v-if="(item.implemented !== undefined) && (item.implemented === false)" style="color: #ff0; font-size: 0.5vw"><b>[ NOT IMPLEMENTED ]</b><br></span>
                         <span class="vertical-align: top;">{{item.desc}}</span>
                         <br><br>
                         <span class="vertical-align: bottom;">Currently: <b><span style="font-size: 0.75vw; color: #fff">{{item.effectDesc}}</span></b></span><br>
@@ -33,14 +33,19 @@ import { reset } from '@/resets'
             </div>
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 0">
+            <div class="flex-container" style="margin-left: auto; margin-right: auto; justify-content: center;">
+                <span class="whiteText fontVerdana" style="text-align: center; font-size: 0.9vw" v-if="inChallenge('dc')">Every bought upgrade boosts their multiplier by {{ format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2) }}×!</span>
+            </div>
+
             <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 0.5vw; margin-bottom: 0.5vw; width: 80vw; align-content: center;">
                 <div v-for="(item, index) in MAIN_UPGS" :key='index'>
                     <div class="flex-container" style="flex-direction: column; margin: 0.2vw;" v-if="tmp.main.upgrades[index].active && item.shown">
                         <button style="text-align: center; font-size: 0.7vw" 
                         :class="{ nope: !tmp.main.upgrades[index].canBuy, ok: tmp.main.upgrades[index].canBuy }"
                         class="whiteText mediumButton fontVerdana generatorButton" @click="buyGenUPG(index)">
-                            <h3 style="margin-top: 0.35vw; font-size: 0.9vw">Upgrade {{index + 1}}: {{format(player.gameProgress.main.upgrades[index].bought)}}{{Decimal.gt(tmp.main.upgrades[index].freeExtra, 0) ? ` (+${format(tmp.main.upgrades[index].freeExtra)})`:""}}</h3>
-                            {{MAIN_UPGS[index].display}}
+                            <h3 style="margin-top: 0.35vw; font-size: 0.9vw">Upgrade {{index + 1}}: {{format(player.gameProgress.main.upgrades[index].bought)}}&nbsp;<span style="font-size: 0.55vw" v-if="Decimal.gt(tmp.main.upgrades[index].freeExtra, 0)">(+{{format(tmp.main.upgrades[index].freeExtra)}})</span></h3>
+                            <span v-if="!inChallenge('dc')">{{MAIN_UPGS[index].display}}</span>
+                            <span v-if="inChallenge('dc')">Multiplier: {{ format(tmp.main.upgrades[index].multiplier, 2) }}×</span>
                             <br><span :style="{ color: tmp.main.upgrades[index].effectTextColor }">{{MAIN_UPGS[index].totalDisp}}</span>
                             <br><span :style="{ color: tmp.main.upgrades[index].costTextColor }">Cost: {{format(tmp.main.upgrades[index].cost)}} points</span>
                         </button>
@@ -59,7 +64,7 @@ import { reset } from '@/resets'
                         <div class="flex-container" style="flex-direction: column;">
                             <button style="text-align: center; font-size: 0.65vw" 
                             :class="{ nope: !tmp.main.prai.canDo, ok: tmp.main.prai.canDo }"
-                            class="whiteText largeButton fontVerdana generatorButton" id="prai" @click="reset(0)">
+                            class="whiteText largeButton fontVerdana generatorButton" id="prai" @click="resetStage('prai')">
                             <h3 style="font-size: 1vw">PRai: {{format(player.gameProgress.main.prai.amount)}}</h3>
                                 Reset your progress to gain {{`${Decimal.gte(player.gameProgress.main.pr2.amount, 1) ? format(tmp.main.prai.pending) + " " : ""}`}}PRai.<br>
                                 <span v-if="tmp.main.prai.pending.lt(100)">Gain at least {{ format(tmp.main.prai.req) }} points to do a PRai reset.<br></span>
@@ -85,15 +90,17 @@ import { reset } from '@/resets'
                         <div class="flex-container" style="flex-direction: column;">
                             <button style="text-align: center; font-size: 0.65vw" 
                             :class="{ nope: !tmp.main.pr2.canDo, ok: tmp.main.pr2.canDo }"
-                            class="whiteText largeButton fontVerdana generatorButton" id="pr2" v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)" @click="reset(1)">
+                            class="whiteText largeButton fontVerdana generatorButton" id="pr2" v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)" @click="resetStage('pr2')">
                                 <h3 style="font-size: 1vw">PR2: {{format(player.gameProgress.main.pr2.amount)}}</h3>
                                 Reset all of your previous progress to for a PR2 reset.
                                 <br><span :style="{ color: tmp.main.pr2.costTextColor }">{{
-                                    tmp.main.pr2.canDo
-                                        ? false
-                                            ? `You can PR2 reset ${format(tmp.main.pr2.target.sub(player.gameProgress.main.pr2.amount).floor())} times!`
-                                            : `You can PR2 reset! (${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai)`
-                                        : `You need ${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai to PR2 reset.`
+                                    shiftDown
+                                        ? `The next PR2 will require ${format(getPR2Cost(Decimal.add(player.gameProgress.main.pr2.amount, 1), false, false).div(getPR2Cost(player.gameProgress.main.pr2.amount, false, false)), 1)}× more PRai!`
+                                        : tmp.main.pr2.canDo
+                                            ? false
+                                                ? `You can PR2 reset ${format(tmp.main.pr2.target.sub(player.gameProgress.main.pr2.amount).floor())} times!`
+                                                : `You can PR2 reset! (${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai)`
+                                            : `You need ${format(player.gameProgress.main.prai.amount)} / ${format(tmp.main.pr2.cost)} PRai to PR2 reset.`
                                 }}</span><br>
                                 <br>You have {{format(player.gameProgress.main.pr2.amount)}} PR2, which boosts your PRai and points by {{format(tmp.main.pr2.effect, 2)}}×.
                                 <br>{{tmp.main.pr2.textEffect.txt===""?"":`At ${format(tmp.main.pr2.textEffect.when)} PR2 reset${tmp.main.pr2.textEffect.when.eq(1)?"":"s"}, ${tmp.main.pr2.textEffect.txt}`}}

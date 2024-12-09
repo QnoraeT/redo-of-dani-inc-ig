@@ -28,7 +28,7 @@ import Game_Stored_Time from "./components/Game/Game_Progress/Game_Stored_Time/G
                 FPS: {{ gameVars.displayedFPS }}
             </div>
             <div style="flex-grow: 1; flex-basis: 0; text-align: right; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana">
-                {{ format(tmp.main.pps, 1) }}/s
+                {{ `${tmp.main.ppsNullified ? '~' : ''}${format(tmp.main.pps, 1)}` }}/s
             </div>
         </div>
         <div class="flex-container" style="background-color: #ffffff20" v-if="!tmp.gameIsRunning">

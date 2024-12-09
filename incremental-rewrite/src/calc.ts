@@ -1,5 +1,6 @@
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { format } from "./format";
+import { NaNCheck } from "./main";
 
 // ! DO NOT USE SCALE WHEN POWSCALE = 1 OR STR = 0, IT WILL BREAKKK
 export const scale = (
@@ -14,13 +15,14 @@ export const scale = (
         return new Decimal(num);
     }
     str = Decimal.pow(powScale, str);
+    let result;
     switch (type) {
         // Divide
         case -1:
         case -1.1:
         case "L":
         case "L1":
-            return inverse
+            result = inverse
                 ? Decimal.pow(num, 2)
                         .add(Decimal.sub(str, 1).mul(start).mul(num).mul(4))
                         .sub(Decimal.sub(str, 1).mul(Decimal.pow(start, 2)).mul(4))
@@ -33,61 +35,72 @@ export const scale = (
                             Decimal.sub(2, Decimal.div(start, num))
                         )
                     );
+            break;
         // Polynomial
         case 0:
         case 0.1:
         case "P":
         case "P1":
-            return inverse
+            result = inverse
                 ? Decimal.sub(num, start).mul(str).div(start).add(1).root(str).mul(start)
                 : Decimal.div(num, start).pow(str).sub(1).mul(start).div(str).add(start);
+            break;
         case 0.2: // alemaninc
         case "P2":
-            return inverse
+            result = inverse
                 ? Decimal.div(num, start).root(str).sub(1).mul(str).add(1).mul(start)
                 : Decimal.div(num, start).sub(1).div(str).add(1).pow(str).mul(start);
+            break;
         // Exponential
         case 1:
         case 1.1:
         case "E":
         case "E1":
-            return inverse
+            result = inverse
                 ? Decimal.min(num, Decimal.div(num, start).log(str).add(1).mul(start))
                 : Decimal.max(num, Decimal.pow(str, Decimal.div(num, start).sub(1)).mul(start));
+            break;
         case 1.2:
         case "E2":
-            return inverse
+            result = inverse
                 ? Decimal.mul(num, str).mul(str.ln()).div(start).lambertw().mul(start).div(str.ln())
                 : Decimal.pow(str, Decimal.div(num, start).sub(1)).mul(num);
+            break;
         case 1.3: // alemaninc
         case "E3":
-            return inverse // poly exponential scaling
+            result = inverse // poly exponential scaling
                 ? Decimal.div(num, start).ln().mul(str.sub(1)).add(1).root(str.sub(1)).mul(start)
                 : Decimal.div(num, start).pow(str.sub(1)).sub(1).div(str.sub(1)).exp().mul(start);
+            break;
         // Semi-exponential
         case 2:
         case 2.1:
         case "SE":
         case "SE1":
-            return inverse // steep scaling
+            result = inverse // steep scaling
                 ? Decimal.pow(start, Decimal.sub(num, start).mul(str).add(start).log(start).root(str))
                 : Decimal.pow(start, Decimal.log(num, start).pow(str)).sub(start).div(str).add(start);
+            break;
         case 2.2:
         case "SE2": // very shallow scaling
-            return inverse
+            result = inverse
                 ? Decimal.pow(start, Decimal.log(num, start).sub(1).mul(str).add(1).root(str))
                 : Decimal.pow(start, Decimal.log(num, start).pow(str).sub(1).div(str).add(1));
+            break;
         // convergent
         case 3: // alemaninc
         case 3.1:
         case "C":
         case "C1":
-            return inverse
+            result = inverse
                 ? str.mul(num).add(Decimal.pow(start, 2)).sub(Decimal.mul(start, num).mul(2)).div(str.sub(num))
                 : str.mul(num).sub(Decimal.pow(start, 2)).div(Decimal.sub(str, Decimal.mul(start, 2)).add(num));
+            break;
         default:
             throw new Error(`Scaling type ${type} doesn't exist`);
     }
+    NaNCheck(result);
+    return result;
 };
 
 export const D = (x: DecimalSource) => {

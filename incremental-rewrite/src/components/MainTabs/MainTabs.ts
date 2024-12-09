@@ -1,4 +1,4 @@
-import { tab, player } from "@/main";
+import { tab, player, tmp } from "@/main";
 
 export const switchTab = (where: number) => {
     tab.value.currentTab = where;
@@ -24,7 +24,10 @@ export const TABS_LIST = [
         textColor: "#000000",
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
-        if: true
+        if: true,
+        get alert() {
+            return tmp.value.main.canBuyUpg;
+        }
     },
     {
         name: "Stored Time",
@@ -33,7 +36,10 @@ export const TABS_LIST = [
         textColor: "#00FF00",
         outlineColor: "#008000",
         highlightColor: "#00FF00",
-        if: true
+        if: true,
+        get alert() {
+            return player.value.gameProgress.dilatedTime.paused;
+        }
     },
     {
         name: "Options",
@@ -42,7 +48,8 @@ export const TABS_LIST = [
         textColor: "#000000",
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
-        if: true
+        if: true,
+        alert: false
     },
     {
         name: "Stats",
@@ -51,7 +58,8 @@ export const TABS_LIST = [
         textColor: "#000000",
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
-        if: true
+        if: true,
+        alert: false
     },
     {
         name: "Achievements",
@@ -60,7 +68,8 @@ export const TABS_LIST = [
         textColor: "#000000",
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
-        if: true
+        if: true,
+        alert: false
     },
     {
         name: "Kuaraniai",
@@ -71,6 +80,9 @@ export const TABS_LIST = [
         highlightColor: "#ff81cb",
         get if() {
             return player.value.gameProgress.unlocks.kua;
+        },
+        get alert() {
+            return tmp.value.kua.canBuyUpg;
         }
     },
     {
@@ -82,7 +94,8 @@ export const TABS_LIST = [
         highlightColor: "#ff9b7f",
         get if() {
             return player.value.gameProgress.unlocks.col;
-        }
+        },
+        alert: false
     },
     {
         name: "Taxation",
@@ -93,6 +106,7 @@ export const TABS_LIST = [
         highlightColor: "#ffff7f",
         get if() {
             return player.value.gameProgress.unlocks.tax;
-        }
+        },
+        alert: false
     }
 ];

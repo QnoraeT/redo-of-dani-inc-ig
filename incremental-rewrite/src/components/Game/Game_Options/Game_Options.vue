@@ -23,18 +23,31 @@ import {
     displayModesNonOptArray,
     displayModes
 } from "@/saving";
-import { NOTATION_LIST, setTimeSpeed, switchNotation } from "./Game_Options";
+import { NOTATION_LIST, setTimeSpeed, switchNotation, UPDATE_LOG } from "./Game_Options";
 import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
 import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
 </script>
 <template>
     <div id="options" v-if="tab.currentTab === 1">
         <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1vw; margin-bottom: 0.3vw;">
-            <Tab_Button @click="switchSubTab(0, 0)" :selected="tab.tabList[tab.currentTab][0] === 0" :name="'Links'" />
-            <Tab_Button @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :name="'Saving'" />
-            <Tab_Button @click="switchSubTab(2, 0)" :selected="tab.tabList[tab.currentTab][0] === 2" :name="'Other Options'" />
+            <Tab_Button @click="switchSubTab(0, 0)" :selected="tab.tabList[tab.currentTab][0] === 0" :name="'Notes'" />
+            <Tab_Button @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :name="'Links'" />
+            <Tab_Button @click="switchSubTab(2, 0)" :selected="tab.tabList[tab.currentTab][0] === 2" :name="'Saving'" />
+            <Tab_Button @click="switchSubTab(3, 0)" :selected="tab.tabList[tab.currentTab][0] === 3" :name="'Other Options'" />
+            <Tab_Button @click="switchSubTab(4, 0)" :selected="tab.tabList[tab.currentTab][0] === 4" :name="'Update Log'" />
+            <Tab_Button @click="switchSubTab(5, 0)" :selected="tab.tabList[tab.currentTab][0] === 5" :name="'Cheats'" />
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 0">
+            <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 0.9vw">
+                <span class="fontVerdana whiteText" style="text-align: center">
+                    <b>You may find some weird things in this incremental!</b><br>
+                    This was a game mostly made for fun, and mostly for an incremental I wanted to make when I was bored.<br>
+                    <br>
+                    Inspired by <span style="color: #a040ff">Jacorb</span>, <span style="color: #0c0">Hevipelle</span>, <span style="color: #c00">MrRedShark77</span>, and more!
+                </span>
+            </div>
+        </div>
+        <div v-if="tab.tabList[tab.currentTab][0] === 1">
             <div class="flex-container" style="flex-direction: row; justify-content: center">
                 <a href="https://discord.gg/JJKRfR3gH9">
                     <Basic_Button style="border: 0.24vw solid #5090FF" :html="`Join the <span style='color: #5090FF'><b>Discord</b></span> Community!`" />
@@ -44,21 +57,21 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                 </a>
             </div>
         </div>
-        <div v-if="tab.tabList[tab.currentTab][0] === 1">
+        <div v-if="tab.tabList[tab.currentTab][0] === 2">
             <div class="flex-container" style=" flex-direction: row; justify-content: center; font-size: 1vw; margin-bottom: 0.3vw;">
                 <Tab_Button @click="switchSubTab(0, 1)" :selected="tab.tabList[tab.currentTab][1] === 0" :name="'Save List'" />
                 <Tab_Button @click="switchSubTab(1, 1)" :selected="tab.tabList[tab.currentTab][1] === 1" :name="'Creating Saves'" />
             </div>
             <div v-if="tab.tabList[tab.currentTab][1] === 0">
                 <div class="flex-container" style="flex-direction: row; justify-content: center">
-                    <Basic_Button @click="saveTheFrickingGame()" :html="'Save manually.'" />
+                    <Basic_Button @click="saveTheFrickingGame(true)" :html="'Save manually.'" />
                     <Basic_Button @click="setAutosaveInterval()" :class="{ nope: game.autoSaveInterval >= 1e10, ok: game.autoSaveInterval < 1e10 }" :html="`Autosave Interval: ${formatTime( game.autoSaveInterval >= 1e10 ? Infinity : game.autoSaveInterval, 3)}`" />
                     <Basic_Button @click="exportSaveList()" :html="'Export save list to clipboard.'" />
                     <Basic_Button @click="importSaveList()" :html="'Import save list.'" />
                     <Basic_Button @click="resetTheWholeGame(true)" style="color: #f00; border: 0.2vw solid #f00;" :html="'Delete save list.'" />
                 </div>
-                <div class="flex-container" style=" align-items: center; flex-direction: column; margin-left: auto; margin-right: auto; border: 0.36vw solid #788088; background-color: #101418; width: 60vw; height: 40vw;">
-                    <div class="flex-container" style=" overflow: auto; overflow-y: scroll; align-items: center; flex-direction: column; border: 0.24vw solid #788088; height: 78%; width: 98%; margin-bottom: auto; margin-top: 1%;">
+                <div class="flex-container" style="align-items: center; flex-direction: column; margin-left: auto; margin-right: auto; border: 0.36vw solid #788088; background-color: #101418; width: 60vw; height: 40vw;">
+                    <div class="flex-container" style="overflow: auto; overflow-y: scroll; align-items: center; flex-direction: column; border: 0.24vw solid #788088; height: 78%; width: 98%; margin-bottom: auto; margin-top: 1%;">
                         <div
                             v-for="(item, index) in game.list"
                             :key="item.id"
@@ -161,9 +174,9 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                     <div class="flex-container" style="flex-direction: row; justify-content: center">
                         <button @click="createNewSave(tmp.saveModes)" class="whiteText fontVerdana generatorButton" style="margin: 0.25vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
                             Add new save.
-                            <span style="color: #ffff00"
-                                >WARNING: None of the modes are implemented yet!</span
-                            >
+                            <span style="color: #ffff00">
+                                WARNING: None of the modes are implemented yet!
+                            </span>
                         </button>
                         <button @click="resetModes()" class="whiteText fontVerdana generatorButton" style="margin: 0.25vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
                             Reset Mode Selection
@@ -184,12 +197,7 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                                             1.0
                                         )
                                     }"
-                                    style="
-                                        margin: 0.2vw;
-                                        height: 2.5vw;
-                                        width: 8vw;
-                                        font-size: 0.8vw;
-                                    "
+                                    style="margin: 0.2vw; height: 2.5vw; width: 8vw; font-size: 0.8vw;"
                                 >
                                     {{ item.name }}
                                     <span class="tooltiptext">
@@ -202,11 +210,29 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                 </div>
             </div>
         </div>
-        <div v-if="tab.tabList[tab.currentTab][0] === 2">
+        <div v-if="tab.tabList[tab.currentTab][0] === 3">
             <div class="flex-container" style="flex-direction: row; justify-content: center">
-                <Basic_Button @click="setTimeSpeed()" style="color: #f00; border: 0.2vw solid #f00;" :html="`Set Time Speed. Currently: ${format(player.setTimeSpeed, 2)}<br><span style='font-size: 0.6vw'><b>WARNING:</b> This will bug out if you use the offline time boost with this!</span>`"/>
                 <Basic_Button @click="switchNotation()" :html="`Switch notation. Currently: ${NOTATION_LIST[player.settings.notation]}`"/>
                 <Basic_Button @click="player.settings.scaleSoftColors = !player.settings.scaleSoftColors" :html="`Show scaling/softcap colors. Currently: ${player.settings.scaleSoftColors}`"/>
+                <Basic_Button @click="player.settings.scaledUpgBase = !player.settings.scaledUpgBase" :html="`Show the upgrade's effect base. If false, will show the upgrade's exact effect. Currently: ${player.settings.scaledUpgBase}`"/>
+            </div>
+        </div>
+        <div v-if="tab.tabList[tab.currentTab][0] === 4">
+            <div class="flex-container" style="flex-direction: column; align-items: center">
+                <span class="whiteText fontVerdana" style="font-size: 1.4vw"><b>Warning: This section of the game contains spoilers!</b></span><br>
+                <div v-for="(item, index) of UPDATE_LOG" :key="index" class="flex-container" style="flex-direction: column; align-items: center">
+                    <button @click="tab.tabList[tab.currentTab][1] === index + 1 ? switchSubTab(0, 1) : switchSubTab(index + 1, 1)" class="whiteText fontVerdana generatorButton" style="margin: 0.25vw; border: 0.24vw solid #ffffff; height: 4vw; width: 30vw; font-size: 1.5vw;">
+                        {{ item.name }}
+                    </button>
+                    <div v-if="tab.tabList[tab.currentTab][1] === index + 1" class="whiteText fontVerdana generatorButton" style="text-align: center; margin: 0.25vw; padding: 1vw; border: 0.18vw solid #c0c0c0; font-size: 0.9vw;">
+                        <span v-html="item.desc"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="tab.tabList[tab.currentTab][0] === 5">
+            <div class="flex-container" style="flex-direction: row; justify-content: center">
+                <Basic_Button @click="setTimeSpeed()" style="color: #f00; border: 0.2vw solid #f00;" :html="`Set Time Speed. Currently: ${format(player.setTimeSpeed, 2)}<br><span style='font-size: 0.6vw'><b>WARNING:</b> This will bug out if you use the offline time boost with this!</span>`"/>
             </div>
         </div>
     </div>

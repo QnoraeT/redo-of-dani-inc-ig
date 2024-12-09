@@ -1,8 +1,8 @@
 <script setup lang="ts">
 defineProps<{
-    name: string;
-    width?: number;
-    selected: boolean;
+    name: string,
+    width?: number,
+    selected: boolean
 }>();
 </script>
 <template>

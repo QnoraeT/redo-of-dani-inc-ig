@@ -8,6 +8,7 @@ import {
     initGameBeforeSave,
     gameVars
 } from "./main";
+import { spawnPopup } from "./popups";
 
 export const saveID = "danidanijr_save_revamp_redo";
 export const SAVE_MODES = [
@@ -59,7 +60,7 @@ export const SAVE_MODES = [
     {
         id: 5,
         name: "Scaled Ruins",
-        desc: 'This mode adds many, many scaling increases into the game. Is IM:R calling? This also includes scaling increases beyond the legendary "Atomic" scaling. There will be a few added mechanics to help you deal with these softcaps, but overall the game.value will be harder.',
+        desc: 'This mode adds many, many scaling increases into the game. Is IM:R calling? This also includes scaling increases beyond the legendary "Atomic" scaling. There will be a few added mechanics to help you deal with these softcaps, but overall the game will be harder.',
         borderColor: "#6040ff",
         borderSelectedColor: "#a080ff",
         bgColor: "#1f1a46",
@@ -113,9 +114,11 @@ export const displayModesNonOptArray = (modes: Array<boolean>): string => {
     return txt;
 };
 
-export const saveTheFrickingGame = (): void => {
+export const saveTheFrickingGame = (clicked = false): void => {
     localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
-    console.log("Game was saved!");
+    if (clicked) {
+        spawnPopup(0, `The game has been saved!`, `Save`, 3, `#00FF00`);
+    }
 };
 
 export const resetTheWholeGame = (prompt: boolean): void => {
@@ -123,11 +126,7 @@ export const resetTheWholeGame = (prompt: boolean): void => {
         if (!confirm("Are you sure you want to delete EVERY save?")) {
             return;
         }
-        if (
-            !confirm(
-                "You cannot recover ANY of your save files unless if you have an exported backup! Are you still sure? [Final Warning]"
-            )
-        ) {
+        if (!confirm("You cannot recover ANY of your save files unless if you have an exported backup! Are you still sure? [Final Warning]")) {
             return;
         }
     }
@@ -208,11 +207,7 @@ export const deleteSave = (id: number): void => {
     if (!confirm("Are you sure you want to delete this save?")) {
         return;
     }
-    if (
-        !confirm(
-            "You cannot recover this save unless if you have an exported backup! Are you still sure? [Final Warning]"
-        )
-    ) {
+    if (!confirm("You cannot recover this save unless if you have an exported backup! Are you still sure? [Final Warning]")) {
         return;
     }
     if (game.value.list.length === 1) {
@@ -221,6 +216,10 @@ export const deleteSave = (id: number): void => {
     }
     game.value.list.splice(id, 1);
     if (game.value.currentSave === id) {
+        if (id === 0) {
+            switchToSave(id);
+            return;
+        }
         switchToSave(id - 1);
     }
     if (id < game.value.currentSave) {
@@ -242,26 +241,30 @@ export const importSave = (id: number): void => {
         JSON.parse(atob(save));
     } catch (e) {
         alert(`Importing save file failed! ${e}`);
+        spawnPopup(0, e as string, "Something went wrong!", 5, `#FF0000`);
         return;
     }
 
     let isSaveList = true;
+    let error;
     try {
         JSON.parse(atob(save)).list[0].id;
-    } catch {
+    } catch(e) {
         isSaveList = false;
+        error = e;
     }
 
     if (isSaveList) {
-        alert(
-            "Importing save file failed because this is an export of a save list, and not a save file."
-        );
+        alert("Importing save file failed because this is an export of a save list, and not a save file, or the save file is corrupted.");
+        spawnPopup(0, error as string, "Something went wrong!", 5, `#FF0000`);
         return;
     }
 
     setPlayerFromSave(save, id);
     saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
+
+    spawnPopup(0, "Successfully imported save file!", "Imported Save File", 3, `#00FF00`);
 };
 
 export const exportSave = (id: number): void => {
@@ -273,14 +276,12 @@ export const exportSave = (id: number): void => {
     el.setSelectionRange(0, 99999);
     document.execCommand("copy");
     document.body.removeChild(el);
+
+    spawnPopup(0, "Successfully exported save file to clipboard!", "Exported Save File", 3, `#00FF00`);
 };
 
 export const importSaveList = (): void => {
-    if (
-        !confirm(
-            "Are you sure you want to do this? This will overwrite EVERY save file in your save list!"
-        )
-    ) {
+    if (!confirm("Are you sure you want to do this? This will overwrite EVERY save file in your save list!")) {
         return;
     }
 
@@ -294,27 +295,31 @@ export const importSaveList = (): void => {
         JSON.parse(atob(save));
     } catch (e) {
         alert(`Importing save list failed! ${e}`);
+        spawnPopup(0, e as string, "Something went wrong!", 5, `#FF0000`);
         return;
     }
 
     let isSaveFile = true;
+    let error;
     try {
         JSON.parse(atob(save)).data.lastUpdated;
         JSON.parse(atob(save)).data.offlineTime;
-    } catch {
+    } catch(e) {
         isSaveFile = false;
+        error = e;
     }
 
     if (isSaveFile) {
-        alert(
-            "Importing save list failed because either this is an export of a save file, and not a save list, or this save file is corrupted."
-        );
+        alert("Importing save list failed because either this is an export of a save file, and not a save list, or this save file is corrupted.");
+        spawnPopup(0, error as string, "Something went wrong!", 5, `#FF0000`);
         return;
     }
 
     setGameFromSave(save);
     saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
+
+    spawnPopup(0, "Successfully imported save list!", "Imported Save List", 3, `#00FF00`);
 };
 
 export const exportSaveList = (): void => {
@@ -326,6 +331,8 @@ export const exportSaveList = (): void => {
     el.setSelectionRange(0, 99999);
     document.execCommand("copy");
     document.body.removeChild(el);
+
+    spawnPopup(0, "Successfully exported save list to clipboard!", "Exported Save List", 3, `#00FF00`);
 };
 
 export const setAutosaveInterval = (): void => {

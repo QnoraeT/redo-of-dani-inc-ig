@@ -9,7 +9,7 @@ import { getTaxUpgrade, TAX_UPGRADES } from "./Game_Taxation";
     <div id="taxation" v-if="tab.currentTab === 6">
         <div class="flex-container" style="flex-direction: column; justify-content: center; margin-bottom: 1vw">
             <span style="text-shadow: #ca0 0vw 0vw 0.8vw; color: #fc0; text-align: center; font-size: 1.2vw;" class="fontVerdana" >
-                You have <span style="font-size: 1.5vw" ><b>{{ format(player.gameProgress.tax.amount, 3) }}</b></span> taxed coins, which boost your points gain by <b><span style="font-size: 1.5vw">{{ format(tmp.tax.ptsEff, 2) }}x.</span></b>
+                You have <span style="font-size: 1.5vw" ><b>{{ format(player.gameProgress.tax.amount, 3) }}</b></span> taxed coins, which boost your points gain by <b><span style="font-size: 1.5vw">{{ format(tmp.tax.ptsEff, 2) }}×.</span></b>
             </span>
             <button class="whiteText smallTaxBorder taxButton fontVerdana" style="height: 4vw; width: 20vw; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.5vw;"> 
                 Gain <span style="font-size: 1vw" ><b>{{ format(tmp.tax.pending, 3) }}</b></span> taxed coins upon taxation.<br>
@@ -37,7 +37,7 @@ import { getTaxUpgrade, TAX_UPGRADES } from "./Game_Taxation";
                 <div v-for="(item, index) in TAX_UPGRADES" :key="index" class="flex-container">
                     <!-- set padding to 0vw because it auto-inserts padding -->
                     <button
-                        v-bind:style="{
+                        :style="{
                             backgroundColor:
                                 item.type === 0
                                     ? Decimal.gte(getTaxUpgrade(index), 1)
@@ -49,7 +49,7 @@ import { getTaxUpgrade, TAX_UPGRADES } from "./Game_Taxation";
                         style="width: 12vw; height: 8vw; margin-left: 0.24vw; margin-right: 0.24vw; font-size: 0.75vw;"
                         class="smallTaxBorder taxButton fontVerdana whiteText"
                     >
-                        <span v-bind:style="{ color: item.type === 0 ? '#dd0' : '#ff8' }" style="font-size: 0.75vw; margin-right: 0.5vw" ><b>
+                        <span :style="{ color: item.type === 0 ? '#dd0' : '#ff8' }" style="font-size: 0.75vw; margin-right: 0.5vw" ><b>
                             #{{ index + 1 }} [{{item.type === 0 ? "One-Time" : "Repeatable"}}]
                         </b></span
                         ><br>

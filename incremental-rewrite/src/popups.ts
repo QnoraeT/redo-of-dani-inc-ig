@@ -30,7 +30,7 @@ export const spawnPopup = (type = 0, text: string, title: string, timer: number,
 
 export const diePopupsDie = () => {
     for (let i = 0; i < popupList.length; i++) {
-        popupList[i].life -= gameVars.value.delta;
+        popupList[i].life -= gameVars.value.trueDelta;
         popupList[i].opacity = 1;
         if (popupList[i].maxlife - popupList[i].life < 0.2) {
             popupList[i].opacity = (popupList[i].maxlife - popupList[i].life) / 0.2;

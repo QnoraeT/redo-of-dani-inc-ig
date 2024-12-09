@@ -2,12 +2,15 @@ import { player } from "@/main";
 import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_Main";
 import { D } from "@/calc";
 
-export type FactorColorID = "norm" | "ach" | "kua" | "col" | "tax" | "sc1" | "sc2"
-export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "col", "tax", "sc1", "sc2"]
+export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "fkp" | "col" | "tax" | "sc1" | "sc2"
+export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "fkp", "col", "tax", "sc1", "sc2"]
 export const factorColors = {
     norm: "#FFFFFF",
     ach: "#FFFF80",
     kua: "#B080FF",
+    kb: "#00FF40",
+    kp: "#00FFFF",
+    fkp: "#80FF80",
     col: "#FFA080",
     tax: "#FFE040",
     sc1: "#FFA0A0",
@@ -15,16 +18,16 @@ export const factorColors = {
 }
 
 export type FactorsStat = {
-    name: string;
-    show: boolean;
-    subTabs: null | Array<FactorsStat>;
+    name: string,
+    show: boolean,
+    subTabs: null | Array<FactorsStat>,
     factors: null | Array<{
-        name: string;
-        color: FactorColorID;
-        effect: string;
-        show: boolean;
-        now: string;
-    }>;
+        name: string,
+        color: FactorColorID,
+        effect: string,
+        show: boolean,
+        now: string
+    }>
 };
 
 // ! i could generalize this but currently i am the big stupid so i probably wont', might regret this later but oh well
@@ -88,6 +91,23 @@ export const setFactor = (
             }
         } else {
             // ! sorry! i don't know how to fix this issue on page load, but it works after the first tick (?)
+            try {
+                ALL_FACTORS[where[0]].subTabs![where[1]].subTabs!
+            } catch(e) {
+                // console.error(`random error, don't know how to fix it`)
+                // console.log(`--- error start ---`)
+                // console.log(e)
+                // console.log('name:')
+                // console.log(ALL_FACTORS[where[0]].name)
+                // console.log('subTabs:')
+                // console.log(ALL_FACTORS[where[0]].subTabs!)
+                // console.log('where[1]')
+                // console.log(where[1])
+                // console.log('real')
+                // console.log(ALL_FACTORS[where[0]].subTabs![where[1]])
+                // console.log(`--- error end ---`)
+                return;
+            }
             if (ALL_FACTORS[where[0]].subTabs![where[1]].subTabs! === null) {
                 throw new Error(
                     `You can't go to a subtab to a factors only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
@@ -125,6 +145,40 @@ export const setFactor = (
             }
         }
     }
+};
+
+export const initStatsFactors = () => {
+    const arr = [];
+    for (let i = 0; i < MAIN_UPGS.length; i++) {
+        arr.push({
+            name: `Upgrade ${i + 1}`,
+            get show() {
+                return MAIN_UPGS[i].shown;
+            },
+            subTabs: [
+                {
+                    name: `Upgrade ${i + 1} Effect`,
+                    show: true,
+                    subTabs: null,
+                    factors: []
+                },
+                {
+                    name: `Upgrade ${i + 1} Cost`,
+                    show: true,
+                    subTabs: null,
+                    factors: []
+                },
+                {
+                    name: `Upgrade ${i + 1} Base`,
+                    show: true,
+                    subTabs: null,
+                    factors: []
+                }
+            ],
+            factors: null
+        });
+    }
+    ALL_FACTORS[1].subTabs = arr;
 };
 
 // ! factors === null and subTabs === null should be mutually exclusive !
@@ -228,7 +282,47 @@ export const ALL_FACTORS: Array<FactorsStat> = [
                 show: true,
                 subTabs: null,
                 factors: []
-            }
+            },
+            {
+                name: "KBlessing Active",
+                get show() {
+                    return player.value.gameProgress.unlocks.kblessings;
+                },
+                subTabs: null,
+                factors: []
+            },
+            {
+                name: "KBlessing Idle",
+                get show() {
+                    return player.value.gameProgress.unlocks.kblessings;
+                },
+                subTabs: null,
+                factors: []
+            },
+            {
+                name: "KProof Exponent",
+                get show() {
+                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
+                },
+                subTabs: null,
+                factors: []
+            },
+            {
+                name: "SKProof Exponent",
+                get show() {
+                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.strange;
+                },
+                subTabs: null,
+                factors: []
+            },
+            {
+                name: "FKProof Exponent",
+                get show() {
+                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.finicky;
+                },
+                subTabs: null,
+                factors: []
+            },
         ],
         factors: null
     },
@@ -269,39 +363,6 @@ export const ALL_FACTORS: Array<FactorsStat> = [
         factors: null
     },
 ];
-
-export const initStatsFactors = () => {
-    ALL_FACTORS[1].subTabs = [];
-    for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
-        ALL_FACTORS[1].subTabs.push({
-            name: `Upgrade ${i + 1}`,
-            get show() {
-                return MAIN_UPGS[i].shown;
-            },
-            subTabs: [
-                {
-                    name: `Upgrade ${i + 1} Effect`,
-                    show: true,
-                    subTabs: null,
-                    factors: []
-                },
-                {
-                    name: `Upgrade ${i + 1} Cost`,
-                    show: true,
-                    subTabs: null,
-                    factors: []
-                },
-                {
-                    name: `Upgrade ${i + 1} Base`,
-                    show: true,
-                    subTabs: null,
-                    factors: []
-                }
-            ],
-            factors: null
-        });
-    }
-};
 
 export const STAGES = [
     {

@@ -5,7 +5,7 @@ import type { Kua_Upgrade } from "./Game_Kuaraniai";
 defineProps<{
     item: Kua_Upgrade;
     index: number;
-    type: "KPower" | "KShards";
+    type: "KPower" | "KShards" | "Kua";
 }>();
 </script>
 <template>

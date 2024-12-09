@@ -8,10 +8,11 @@ import {
 } from "./components/Game/Game_Achievements/Game_Achievements";
 import {
     getKuaUpgrade,
+    KUA_BLESS_UPGS,
     KUA_UPGRADES
 } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { getOMUpgrade, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_Main";
-import { getColChalRewEffects, timesCompleted } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
+import { getColChalRewEffects, inChallenge, timesCompleted } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 
 export const SCALE_ATTR = [
     { pow: 2, type: 0, name: "Scaled", color: `#3080FF` },
@@ -68,7 +69,12 @@ export type ScSlItems =
     | "pr2"
     | "kuaupg4base"
     | "kuaupg5base"
-    | "kuaupg6base";
+    | "kuaupg6base"
+    | "kba"
+    | "kbi"
+    | "kp"
+    | "skp"
+    ;
 const ScSlItemsList: Array<ScSlItems> = [
     "points",
     "upg1",
@@ -83,7 +89,11 @@ const ScSlItemsList: Array<ScSlItems> = [
     "pr2",
     "kuaupg4base",
     "kuaupg5base",
-    "kuaupg6base"
+    "kuaupg6base",
+    "kba",
+    "kbi",
+    "kp",
+    "skp",
 ];
 
 type DataofScSlCategory = {
@@ -93,20 +103,24 @@ type DataofScSlCategory = {
 };
 
 type ListOfScSl = {
-    points: DataofScSlCategory;
-    upg1: DataofScSlCategory;
-    upg2: DataofScSlCategory;
-    upg3: DataofScSlCategory;
-    upg4: DataofScSlCategory;
-    upg5: DataofScSlCategory;
-    upg6: DataofScSlCategory;
-    upg7: DataofScSlCategory;
-    upg8: DataofScSlCategory;
-    upg9: DataofScSlCategory;
-    pr2: DataofScSlCategory;
-    kuaupg4base: DataofScSlCategory;
-    kuaupg5base: DataofScSlCategory;
-    kuaupg6base: DataofScSlCategory;
+    points: DataofScSlCategory,
+    upg1: DataofScSlCategory,
+    upg2: DataofScSlCategory,
+    upg3: DataofScSlCategory,
+    upg4: DataofScSlCategory,
+    upg5: DataofScSlCategory,
+    upg6: DataofScSlCategory,
+    upg7: DataofScSlCategory,
+    upg8: DataofScSlCategory,
+    upg9: DataofScSlCategory,
+    pr2: DataofScSlCategory,
+    kuaupg4base: DataofScSlCategory,
+    kuaupg5base: DataofScSlCategory,
+    kuaupg6base: DataofScSlCategory,
+    kba: DataofScSlCategory,
+    kbi: DataofScSlCategory,
+    kp: DataofScSlCategory,
+    skp: DataofScSlCategory,
 };
 
 export const makeDataofScSl = (id: number): DataofScSlCategory => {
@@ -131,7 +145,11 @@ export const LIST_OF_SCSL: ListOfScSl = {
     pr2: makeDataofScSl(7),
     kuaupg4base: makeDataofScSl(8),
     kuaupg5base: makeDataofScSl(9),
-    kuaupg6base: makeDataofScSl(10)
+    kuaupg6base: makeDataofScSl(10),
+    kba: makeDataofScSl(11),
+    kbi: makeDataofScSl(12),
+    kp: makeDataofScSl(13),
+    skp: makeDataofScSl(14),
 };
 
 export const setSCSLEffectDisp = (
@@ -228,6 +246,18 @@ export const getSCSLAttribute = (
                     if (Decimal.gte(getOMUpgrade(14), 1)) {
                         data[2].power = data[2].power.div(MAIN_ONE_UPGS[14].effect!);
                     }
+
+                    if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 1)) {
+                        data[2].start = data[2].start.add(KUA_BLESS_UPGS[1].eff()[0]);
+                    }
+
+                    data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff()[2]);
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg2":
                     data.push({
@@ -279,6 +309,14 @@ export const getSCSLAttribute = (
                     if (getKuaUpgrade("p", 9)) {
                         data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff!);
                     }
+
+                    data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff()[2]);
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg3":
                     data.push({
@@ -293,9 +331,28 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(1250),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(10000),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
 
                     if (Decimal.gte(getOMUpgrade(12), 1)) {
                         data[0].start = data[0].start.add(MAIN_ONE_UPGS[12].effect!);
+                    }
+                    data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff()[2]);
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
                     }
                     break;
                 case "upg4":
@@ -318,6 +375,18 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(1e20),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg5":
                     data.push({
@@ -339,6 +408,18 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(1e20),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg6":
                     data.push({
@@ -367,15 +448,108 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg7":
-                    // empty
+                    data.push({
+                        start: D(1000),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e6),
+                        basePow: D(3),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e25),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e100),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg8":
-                    // empty
+                    data.push({
+                        start: D(1250),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e7),
+                        basePow: D(3),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e20),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e80),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg9":
-                    // empty
+                    data.push({
+                        start: D(500),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(3e6),
+                        basePow: D(3),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e40),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e120),
+                        basePow: D(4),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "pr2":
                     // empty
@@ -387,6 +561,18 @@ export const getSCSLAttribute = (
                     // empty
                     break;
                 case "kuaupg6base":
+                    // empty
+                    break;
+                case "kba":
+                    // empty
+                    break;
+                case "kbi":
+                    // empty
+                    break;
+                case "kp":
+                    // empty
+                    break;
+                case "skp":
                     // empty
                     break;
                 default:
@@ -401,9 +587,12 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+
                     if (Decimal.gte(timesCompleted("su"), 8)) {
-                        data[0].start = data[0].start.mul(getColChalRewEffects("su")[3])
+                        data[0].start = data[0].start.mul(getColChalRewEffects("su")[3]);
                     }
+
+                    data[0].start = data[0].start.mul(tmp.value.kua.proofs.upgrades.effect[6].effect.max(1));
                     break;
                 case "upg1":
                     data.push({
@@ -412,9 +601,21 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+                    data.push({
+                        start: D(Number.MAX_VALUE),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
                     
                     if (Decimal.gte(timesCompleted("su"), 1)) {
                         data[0].power = data[0].power.div(tmp.value.col.effects.upg1a2sc);
+                    }
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
                     }
                     break;
                 case "upg2":
@@ -449,6 +650,12 @@ export const getSCSLAttribute = (
                     if (Decimal.gte(timesCompleted("su"), 1)) {
                         data[0].power = data[0].power.div(tmp.value.col.effects.upg1a2sc);
                     }
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg3":
                     data.push({
@@ -457,6 +664,12 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg4":
                     data.push({
@@ -465,6 +678,12 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg5":
                     data.push({
@@ -473,6 +692,12 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg6":
                     data.push({
@@ -481,6 +706,12 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "upg7":
                     // empty
@@ -501,6 +732,12 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "kuaupg5base":
                     data.push({
@@ -509,11 +746,67 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
                     break;
                 case "kuaupg6base":
                     data.push({
                         start: D(1),
                         basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+
+                    if (inChallenge('dc')) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].start = D(Infinity);
+                        }
+                    }
+                    break;
+                case "kba":
+                    data.push({
+                        start: D(1000),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case "kbi":
+                    data.push({
+                        start: D(10000),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case "kp":
+                    data.push({
+                        start: D(Number.MAX_VALUE),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D("ee4"),
+                        basePow: D(0.5),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
+                case "skp":
+                    data.push({
+                        start: D(1e100),
+                        basePow: D(0.75),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D("ee3"),
+                        basePow: D(0.75),
                         power: D(1),
                         displayedEffect: ""
                     });
@@ -617,6 +910,18 @@ const SOFT_VALUES = {
     },
     get kuaupg6base() {
         return tmp.value.kua.effects.upg6;
+    },
+    get kba() {
+        return tmp.value.kua.blessings.perClick;
+    },
+    get kbi() {
+        return tmp.value.kua.blessings.perSec;
+    },
+    get kp() {
+        return player.value.gameProgress.kua.proofs.amount;
+    },
+    get skp() {
+        return player.value.gameProgress.kua.proofs.strange.amount;
     }
 };
 
@@ -661,6 +966,18 @@ const SCAL_VALUES = {
         return D(0);
     },
     get kuaupg6base() {
+        return D(0);
+    },
+    get kba() {
+        return D(0);
+    },
+    get kbi() {
+        return D(0);
+    },
+    get kp() {
+        return D(0);
+    },
+    get skp() {
         return D(0);
     }
 };

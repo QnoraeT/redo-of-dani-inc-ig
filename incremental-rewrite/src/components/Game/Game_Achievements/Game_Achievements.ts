@@ -4,10 +4,10 @@ import { player, tmp } from "@/main";
 import { D } from "@/calc";
 import { getKuaUpgrade } from "../Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { spawnPopup } from "@/popups";
-import { getColResLevel, timesCompleted } from "../Game_Progress/Game_Colosseum/Game_Colosseum";
+import { challengeDepth, getColResLevel, inChallenge, timesCompleted } from "../Game_Progress/Game_Colosseum/Game_Colosseum";
 
-export type Ach_Types = "main" | "kua" | "col" | "tax" | "kb";
-export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "tax", "kb"];
+export type Ach_Types = "main" | "kua" | "col" |"tax";
+export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "tax"];
 
 export const ACH_DEF_COLORS = {
     main: {
@@ -29,11 +29,6 @@ export const ACH_DEF_COLORS = {
         unable: "#807000",
         canComplete: "#a06500",
         complete: "#d5c000"
-    },
-    kb: {
-        unable: "#2e3b32",
-        canComplete: "#366d46",
-        complete: "#7fffa3"
     }
 };
 
@@ -528,7 +523,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `Ordered`;
                 },
                 get desc() {
-                    return `Every upgrade must have #×${format(10)} of themselves. (Upgrade 1 must be bought ${format(10)} times, Upgrade 2 ${format(20)} times, etc.)`;
+                    return `Every upgrade from 1-6 must have #×${format(10)} of themselves. (Upgrade 1 must be bought ${format(10)} times, Upgrade 2 ${format(20)} times, etc.)`;
                 },
                 get cond() {
                     return Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 10) &&
@@ -545,7 +540,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 get status() {
                     const fail: Array<number> = [];
                     for (let i = 0; i < 6; i++) {
-                        if (!Decimal.eq(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 10*i)) {
+                        if (Decimal.neq(player.value.gameProgress.main.upgrades[i].bought, 10*(i+1))) {
                             fail.push(i);
                         }
                     }
@@ -573,7 +568,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `Jumping to conclusions.`;
                 },
                 get desc() {
-                    return `Reach ${format(1e100)} PRai while doing no more than ${format(5)} PRai resets..`;
+                    return `Reach ${format(1e100)} PRai while doing no more than ${format(5)} PRai resets.`;
                 },
                 get cond() {
                     return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e100) && Decimal.lte(player.value.gameProgress.main.prai.times, 5);
@@ -586,6 +581,64 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return Decimal.lte(player.value.gameProgress.main.prai.times, 5) ? true : `Failed due to having PRai reset ${format(player.value.gameProgress.main.prai.times)} times.`
                 }
             },
+            {
+                // id: 21
+                ordering: 21,
+                get name() {
+                    return `Reach Infinity, again!`;
+                },
+                get desc() {
+                    return `Reach ${format(Decimal.pow(Number.MAX_VALUE, 2))} Points.`;
+                },
+                get cond() {
+                    return Decimal.gte(player.value.gameProgress.main.points, Decimal.pow(Number.MAX_VALUE, 2));
+                },
+                reward: ``,
+                get show() {
+                    return player.value.gameProgress.unlocks.col;
+                },
+                status: true,
+            },
+            {
+                // id: 22
+                ordering: 22,
+                get name() {
+                    return `I wonder why this wasn't here for so long?`;
+                },
+                get desc() {
+                    return `Have over ${format(10)} effective Upgrade 1s without buying any.`;
+                },
+                get cond() {
+                    return Decimal.gt(tmp.value.main.upgrades[0].effective, 10) && Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 0);
+                },
+                reward: ``,
+                get show() {
+                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
+                },
+                get status() {
+                    return Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 0) ? true : `Failed due to having bought Upgrade 1.`
+                }
+            },
+            // {
+            //     // id: 23
+            //     ordering: 23,
+            //     get name() {
+            //         return `There are 2 constants in life. Death, and Taxes. Evade one of them.`;
+            //     },
+            //     get desc() {
+            //         return `Delay the tax man by ${format(1e50)}×!`;
+            //     },
+            //     get cond() {
+            //         return getSCSLAttribute('points', false)[0].start.gte(Decimal.mul(Number.MAX_VALUE, 1e50));
+            //     },
+            //     reward: ``,
+            //     get show() {
+            //         return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
+            //     },
+            //     get status() {
+            //         return `You need to evade your taxes by ${format(Decimal.mul(Number.MAX_VALUE, 1e50).div(getSCSLAttribute('points', false)[0].start), 2)}× more! (In layman's terms, delay the points softcap.)`
+            //     }
+            // },
         ],
         get rewAll() {
             return `Point gain is increased by ${format(this.eff.sub(1).mul(100), 2)}%. (×1.1 per main achievement)`;
@@ -651,6 +704,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         eff = eff.root(3);
                     }
                     eff = eff.pow(pow);
+
                     return eff;
                 },
                 get show() {
@@ -692,13 +746,9 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `Kuaraniai gain is increased by ${format(50)}%, and KShards produce another point multiplier. Currently: ×${format(this.eff!, 2)}`;
                 },
                 get eff() {
-                    return Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0)
-                        .mul(8)
-                        .add(1)
-                        .sqrt()
-                        .sub(1)
-                        .div(2)
-                        .add(1);
+                    return Decimal.gte(player.value.gameProgress.kua.kshards.totals[3]!, 5e11)
+                        ? Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).div(50).root(5).mul(10000)
+                        : Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).mul(8).add(1).sqrt().sub(1).div(2).add(1);
                 },
                 get show() {
                     return player.value.gameProgress.unlocks.kua;
@@ -728,10 +778,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return player.value.gameProgress.unlocks.kua;
                 },
                 get status() {
-                    return Decimal.lte(
-                        player.value.gameProgress.main.upgrades[2].boughtInReset[2],
-                        0
-                    )
+                    return Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
                         ? true
                         : `Failed due to having Upgrade 3.`;
                 },
@@ -757,7 +804,11 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 },
                 get eff() {
                     let eff = D(player.value.gameProgress.main.prai.amount);
-                    eff = eff.max(10).log10().cbrt().sub(1).div(500).add(1);
+                    if (eff.gte(1e216)) {
+                        eff = eff.log10().log(6).div(300).add(1)
+                    } else {
+                        eff = eff.max(10).log10().cbrt().sub(1).div(500).add(1);
+                    }
                     return eff;
                 },
                 get show() {
@@ -804,7 +855,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     }
                     const fail: Array<number> = [];
                     for (let i = 0; i < 3; i++) {
-                        if (!Decimal.lte(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
+                        if (Decimal.gt(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
                             fail.push(i);
                         }
                     }
@@ -858,7 +909,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 },
                 autoComplete: false,
                 get reward() {
-                    return `Increase PRai's gain exponent from ^${format(1 / 3, 3)} to ^${format(0.34, 3)}`;
+                    return `Increase PRai's gain exponent from ^${format(1 / 3, 3)} to ^${format(0.335, 3)}`;
                 },
                 get show() {
                     return player.value.gameProgress.unlocks.kua;
@@ -931,7 +982,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     }
                     const fail: Array<number> = [];
                     for (let i = 0; i < 3; i++) {
-                        if (!Decimal.lte(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
+                        if (Decimal.gt(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
                             fail.push(i);
                         }
                     }
@@ -1121,7 +1172,62 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return player.value.gameProgress.unlocks.kua;
                 },
                 status: true
-            }
+            },
+            {
+                // id: 17
+                ordering: 17,
+                get name() {
+                    return `Collector`;
+                },
+                get desc() {
+                    return `Buy 10 KShard and KPower upgrades.`;
+                },
+                get cond() {
+                    return player.value.gameProgress.kua.kshards.upgrades >= 10 && player.value.gameProgress.kua.kpower.upgrades >= 10;
+                },
+                reward: ``,
+                get show() {
+                    return player.value.gameProgress.unlocks.col;
+                },
+                status: true
+            },
+            {
+                // id: 18
+                ordering: 18,
+                get name() {
+                    return `Don't need em.`;
+                },
+                get desc() {
+                    return `Reach ${format(1e130)} points while buying only KShard or KPower upgrades.`;
+                },
+                get cond() {
+                    return Decimal.gte(player.value.gameProgress.main.points, 1e130) &&
+                        (player.value.gameProgress.kua.upgrades === 0 &&
+                        (player.value.gameProgress.kua.kshards.upgrades >= 0 && player.value.gameProgress.kua.kpower.upgrades === 0) ||
+                        (player.value.gameProgress.kua.kpower.upgrades >= 0 && player.value.gameProgress.kua.kshards.upgrades === 0));
+                },
+                autoComplete: false,
+                reward: ``,
+                get show() {
+                    return player.value.gameProgress.unlocks.col;
+                },
+                get status() {
+                    if (player.value.gameProgress.kua.upgrades !== 0) {
+                        return `Failed due to buying Kuaraniai upgrades.`;
+                    }
+                    if (!(player.value.gameProgress.kua.kshards.upgrades >= 0 && player.value.gameProgress.kua.kpower.upgrades === 0) ||
+                    (player.value.gameProgress.kua.kpower.upgrades >= 0 && player.value.gameProgress.kua.kshards.upgrades === 0)) {
+                        if (!(player.value.gameProgress.kua.kpower.upgrades >= 0 && player.value.gameProgress.kua.kshards.upgrades === 0)) {
+                            return `Failed due to buying KShard upgrades while having KPower upgrades.`;
+                        }
+                        if (!(player.value.gameProgress.kua.kshards.upgrades >= 0 && player.value.gameProgress.kua.kpower.upgrades === 0)) {
+                            return `Failed due to buying kPower upgrades while having KShard upgrades.`;
+                        }
+                    }
+                    return true;
+                },
+                extra: `You must do a Kuaraniai reset to earn this achievement!`
+            },
         ],
         get rewAll() {
             return `Kuaraniai's effects are ${format(this.eff.sub(1).mul(100), 2)}% stronger. (+1% per Kuaraniai achievement)`;
@@ -1197,7 +1303,6 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: true
             },
             {
-                // ! Unable
                 // id: 3
                 ordering: 3,
                 get name() {
@@ -1207,19 +1312,51 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return `Complete "Sabotaged Upgrades" on difficulty 1 without buying any upgrade.`;
                 },
                 get cond() {
-                    return false;
+                    return inChallenge('su') && Decimal.eq(challengeDepth('su'), 1) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[3].bought, 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[4].bought, 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[5].bought, 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[6].bought, 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[7].bought, 0) &&
+                        Decimal.lte(player.value.gameProgress.main.upgrades[8].bought, 0)
                 },
-                get reward() {
-                    return `Colosseum Power buffs Upgrade 1's base. Currently: `;
-                },
-                get eff() {
-                    const eff = D(1);
-                    return eff;
-                },
+                autoComplete: false,
+                reward: ``,
                 get show() {
                     return player.value.gameProgress.unlocks.col;
                 },
-                status: true
+                get status() {
+                    if (!inChallenge('su')) {
+                        return `Failed due to not being in challenge 'Sabotaged Upgrades'.`
+                    }
+                    if (Decimal.neq(challengeDepth('su'), 1)) {
+                        return `Failed due to not being in difficulty ${format(1)} of 'Sabotaged Upgrades'.`
+                    }
+
+                    const fail: Array<number> = [];
+                    for (let i = 0; i < 9; i++) {
+                        if (Decimal.gt(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
+                            fail.push(i);
+                        }
+                    }
+                    if (fail.length === 0) {
+                        return true;
+                    }
+                    let txt = `Failed due to having Upgrades `;
+                    for (let i = 0; i < fail.length - 1; i++) {
+                        txt += `${fail[i] + 1}, `;
+                    }
+                    if (fail.length > 1) {
+                        txt += ` and ${fail[fail.length - 1] + 1}.`;
+                    } else {
+                        txt += `${fail[0] + 1}.`;
+                    }
+                    return txt;
+                },
+                extra: `Complete the challenge to get this achievement!`
             },
             {
                 // id: 4
@@ -1259,7 +1396,25 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return player.value.gameProgress.unlocks.col;
                 },
                 status: true
-            }
+            },
+            {
+                // id: 6
+                ordering: 6,
+                get name() {
+                    return `This is weird wtf`;
+                },
+                get desc() {
+                    return `Reach a PB of ${format(1e35)} in Inverted Mechanics.`;
+                },
+                get cond() {
+                    return Decimal.gte(timesCompleted('im'), 1e35);
+                },
+                reward: ``,
+                get show() {
+                    return player.value.gameProgress.unlocks.col;
+                },
+                status: true
+            },
         ],
         get rewAll() {
             return `Points gain in colosseum challenges are increased the lower your time is. (100%: ^${format(this.eff.mul(0.25).add(1), 3)}, 50%: ^${format(this.eff.mul(0.5).add(1), 3)}, 0%: ^${format(this.eff.add(1), 3)})`;
@@ -1269,19 +1424,45 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             eff = Decimal.mul(eff, player.value.gameProgress.achievements[2].length);
             return eff;
         }
-    }
+    },
+    // {
+    //     type: "tax",
+    //     get show() {
+    //         return player.value.gameProgress.unlocks.tax;
+    //     },
+    //     list: [
+    //         {
+    //             // id: 0
+    //             ordering: 0,
+    //             get name() {
+    //                 return `The same issue as before, why so little of it?!`;
+    //             },
+    //             get desc() {
+    //                 return `Obtain at least ${format(1)} KBlessing.`;
+    //             },
+    //             get cond() {
+    //                 return Decimal.gte(player.value.gameProgress.kua.blessings.amount, 1);
+    //             },
+    //             reward: ``,
+    //             show: true,
+    //             status: true
+    //         },
+    //     ],
+    //     get rewAll() {
+    //         return `KBlessings gain is increased by ${format(this.eff.sub(1).mul(100), 2)}%. (×1.051 per KB achievement)`;
+    //     },
+    //     get eff() {
+    //         let eff = D(1.05);
+    //         eff = Decimal.pow(eff, player.value.gameProgress.achievements[3].length);
+    //         return eff;
+    //     }
+    // }
 ];
 
 export const setAchievement = (type: number, id: number) => {
     if (!ifAchievement(type, id) && ACHIEVEMENT_DATA[type].list[id].cond) {
         player.value.gameProgress.achievements[type].push(id);
-        spawnPopup(
-            0,
-            ACHIEVEMENT_DATA[type].list[id].desc,
-            ACHIEVEMENT_DATA[type].list[id].name,
-            3,
-            `#FFFF00`
-        );
+        spawnPopup(0, ACHIEVEMENT_DATA[type].list[id].desc, ACHIEVEMENT_DATA[type].list[id].name, 3, `#FFFF00`);
     }
     // return [ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].cond, ifAchievement(type, id), tmp.value.achievementList[type][id], player.value.gameProgress.achievements[type]]
 };
@@ -1314,10 +1495,7 @@ export const fixAchievements = () => {
 };
 
 export const getAchievementEffect = (type: number, id: number) => {
-    if (
-        Decimal.isNaN(ACHIEVEMENT_DATA[type].list[id].eff!) ||
-        ACHIEVEMENT_DATA[type].list[id].eff! === undefined
-    ) {
+    if (Decimal.isNaN(ACHIEVEMENT_DATA[type].list[id].eff!) || ACHIEVEMENT_DATA[type].list[id].eff! === undefined) {
         throw new Error(`Achievement ${type}, ${id}`);
     }
     return ACHIEVEMENT_DATA[type].list[id].eff!;

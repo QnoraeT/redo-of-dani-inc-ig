@@ -48,7 +48,7 @@ import {
                 This also boosts research speed by 
                 <span style="font-size: 0.8vw"><b>{{ format(tmp.col.effects.res, 3) }}</b></span>×.
             </span>
-            <span v-if="Decimal.gte(timesCompleted('su'), 1)" class="whiteText" style="font-size: 0.65vw; text-align: center; margin-top: 0.5vw">
+            <span v-if="Decimal.gte(timesCompleted('su'), 1) && tab.tabList[tab.currentTab][0] === 0" class="whiteText" style="font-size: 0.65vw; text-align: center; margin-top: 0.5vw">
                 You may change the difficulty to get achievements, or other challenges may force you into certain difficulties! Changing the difficulty will not change the rewards you already have.
             </span>
         </div>
@@ -83,7 +83,7 @@ import {
                             class="first-cont"
                             style="height: 16.667%"
                         >
-                            <span class="generic-text" style="left: 0.3vw; top: 0.3vw; font-size: 0.65vw" >{{ [ "One-Time", `Multiple (${format(timesCompleted(item.id))} / ${format(item.cap)})`, "Continuous"][item.type] }}</span>
+                            <span class="generic-text" style="left: 0.3vw; top: 0.3vw; font-size: 0.65vw" >{{ [ "One-Time", `Multiple (${format(timesCompleted(item.id))} / ${format(item.cap)})`, "Continuous", `Multiple (${format(timesCompleted(item.id))} / ${format(item.cap)})`][item.type] }}</span>
                             <span class="generic-text" style="right: 0.3vw; top: 0.3vw; font-size: 0.65vw" >#{{ item.num }}</span>
                             <span class="centered-text" style="top: 1.2vw; font-size: 1vw"><b>{{ item.name }}</b></span>
                             <span class="centered-text" style="top: 2.5vw; font-size: 0.6vw">Layer:&nbsp; <span :style="{ color: ['#FF8060', '#FFE000'][item.layer] }" >{{ ['Colosseum', 'Taxation'][item.layer] }}</span></span>
@@ -113,12 +113,21 @@ import {
                             class="third-cont"
                             style="height: 50%; font-size: 0.65vw"
                         >
-                            <span class="centered-text" style="top: 1.6vw">{{ item.type === 1 ? Decimal.eq(player.gameProgress.inChallenge[item.id].optionalDiff, timesCompleted(item.id)) ? ' - Next REWARD - ' : (Decimal.lt(player.gameProgress.inChallenge[item.id].optionalDiff, Decimal.sub(timesCompleted(item.id), 1)) ? ' - Previous REWARD - ' : ' - Current REWARD - ') : ' - REWARD - ' }}</span>
+                            <span class="centered-text" style="top: 1.6vw">{{ 
+                                item.type === 1 || item.type === 3 
+                                ? Decimal.eq(player.gameProgress.inChallenge[item.id].optionalDiff, timesCompleted(item.id)) 
+                                    ? ' - Next REWARD - ' 
+                                    : (Decimal.lt(player.gameProgress.inChallenge[item.id].optionalDiff, Decimal.sub(timesCompleted(item.id), 1)) 
+                                        ? ' - Previous REWARD - ' 
+                                        : ' - Current REWARD - ') 
+                                : ' - REWARD - '
+                            }}
+                            </span>
                             <span class="centered-text" style="top: 4vw">{{ item.reward }}</span>
                         </div>
                     </button>
                     <!-- TODO: replace the slider with text input after cap > 20 or something -->
-                    <div v-if="item.type === 1 && Decimal.gte(timesCompleted(item.id), 1)" 
+                    <div v-if="(item.type === 1 || item.type === 3) && Decimal.gte(timesCompleted(item.id), 1)" 
                     class="whiteText fontVerdana generatorButton"
                     style="padding: 0%; margin-left: 0.2vw; margin-right: 0.2vw; width: 14.28vw; height: 3vw; display: flex; flex-direction: column; border: 0.24vw solid #fff;">
                         <div class="first-cont" style="height: 40%">
@@ -135,16 +144,16 @@ import {
             </div>
         </div>
         <div style="background-color: #410; border: 0.2vw solid #ff4000; margin-left: auto; margin-right: auto; display: flex; justify-content: center; flex-direction: row; box-shadow: 0 0 0.8vw 0.24vw rgb(66, 17, 0); height: 40vw; width: 80vw;" v-if="tab.tabList[tab.currentTab][0] === 1">
-            <div style="display: flex; justify-content: center; flex-direction: row; flex-wrap: wrap; border: 0.24vw solid #ff4000; padding: 0.6vw; height: 38.4vw; width: 50%;">
+            <div class="flex-container" style="justify-content: center; align-content: flex-start; flex-direction: row; flex-wrap: wrap; border: 0.24vw solid #ff4000; padding: 0.6vw; height: 38.4vw; width: 50%;">
                 <div v-for="(item, index) in COL_RESEARCH" class="flex-container" :key="item.name">
                     <!-- set padding to 0vw because it auto-inserts padding -->
-                    <button v-if="item.unlocked" @click="switchSubTab(index, 1)" style="width: 9vw; height: 3.5vw; margin-left: 0.18vw; margin-right: 0.18vw; padding: 0vw;" class="smallColBorder colButton fontVerdana">
+                    <button v-if="item.unlocked" @click="switchSubTab(index, 1)" style="width: 9vw; height: 3.5vw; margin-left: 0.18vw; margin-right: 0.18vw; margin-top: 0.36vw; padding: 0vw;" class="smallColBorder colButton fontVerdana">
                         <div class="whiteText" style="display: flex; justify-content: center; background-color: #631900; position: relative; width: 100%; height: 42.5%; font-size: 0.75vw;">
                             <span class="centered-text" style="height: 100%">{{ item.name }}</span>
                         </div>
                         <div class="whiteText" style="display: flex; justify-content: center; background-color: #7a1f00; position: relative; width: 100%; height: 42.5%; font-size: 0.75vw;">
                             <span class="centered-text" style="height: 100%">
-                                Level: {{ format(item.scoreToLevel(player.gameProgress.col.research.xpTotal[index]) .floor(), 0) }}
+                                Level: {{ format(item.scoreToLevel(player.gameProgress.col.research.xpTotal[index]).floor(), 0) }}
                             </span>
                         </div>
                         <div style="height: 15%; width: 100%; position: relative">
@@ -199,9 +208,44 @@ import {
                         <span class="centered-text" style="top: 4%">
                             Level: {{format(getColResLevel(tab.tabList[tab.currentTab][1]).floor(), 0)}}
                         </span>
-                        <!-- i wish i made this better instead of having to do an extremely long formula T_T -->
                         <span v-if="getColResLevel(tab.tabList[tab.currentTab][1]).lt(1e12)" class="centered-text" style="top: 33.333%">
-                            XP: {{ format(Decimal.sub(player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor())), 0) }} / {{ format(COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor().add(1)).sub(COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(getColResLevel(tab.tabList[tab.currentTab][1]).floor())), 0) }}
+                            <!-- these are the worst formulas i've ever done lmfao -->
+                            <!-- basically, just try to estimate levels only using the XP amounts because trying to use levels at high enough numbers will just simply not work -->
+                            XP: {{ 
+                                format(
+                                    Decimal.sub(
+                                        player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 
+                                        COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
+                                            getColResLevel(tab.tabList[tab.currentTab][1]).floor()
+                                            )
+                                        )
+                                        , 0) }} 
+                                        / {{ 
+                                        format(
+                                            COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
+                                                getColResLevel(
+                                                    tab.tabList[tab.currentTab][1]
+                                                ).floor().add(1)
+                                            ).sub(
+                                                COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
+                                                    getColResLevel(tab.tabList[tab.currentTab][1]).floor()
+                                                )
+                                            ), 0) }} 
+                                        ({{ formatTime(COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
+                                            getColResLevel(tab.tabList[tab.currentTab][1]).floor().add(1)
+                                            )
+                                        .sub(
+                                            COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
+                                                getColResLevel(tab.tabList[tab.currentTab][1]).floor()
+                                            )
+                                        ).sub(
+                                            Decimal.sub(
+                                                player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 
+                                                COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
+                                                    getColResLevel(tab.tabList[tab.currentTab][1]).floor()
+                                                )
+                                            )
+                                        ).div(tmp.col.researchSpeed)) }})
                         </span>
                         <span v-if="getColResLevel(tab.tabList[tab.currentTab][1]).gte(1e12)" class="centered-text" style="top: 33.333%" >
                             Total XP: {{ format(player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 0) }}
@@ -256,7 +300,7 @@ import {
                             ></div>
                         </div>
                     </div>
-                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 58%; font-size: 0.9vw;">
+                    <div class="flex-container whiteText fontVerdana" style="justify-content: center; background-color: #461100; position: relative; width: 100%; height: 59%; font-size: 0.9vw;">
                         <span class="centered-text" style="top: 0.4vw">
                             {{COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDesc(getColResLevel(tab.tabList[tab.currentTab][1]).floor())}}
                         </span>
@@ -264,12 +308,12 @@ import {
                             {{COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDescLevel(getColResLevel(tab.tabList[tab.currentTab][1]).floor())}}
                         </span>
                     </div>
-                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #521400; position: relative; width: 100%; height: 5%; font-size: 1.1vw;">
+                    <div class="flex-container whiteText fontVerdana" style="justify-content: center; background-color: #521400; position: relative; width: 100%; height: 4.5%; font-size: 1.1vw;">
                         <span class="centered-text" style="top: 10%">
                             You currently have allocated {{ tmp.col.researchesAllocated }} / {{ tmp.col.researchesAtOnce }} researches.
                         </span>
                     </div>
-                    <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 10%;">
+                    <div class="flex-container whiteText fontVerdana" style="justify-content: center; background-color: #461100; position: relative; width: 100%; height: 9.5%;">
                         <button @click="allocColResearch(tab.tabList[tab.currentTab][1])" class="smallColBorder colButton fontVerdana whiteText" style="width: 50%; height: 80%; top: 10%; font-size: 0.75vw; position: relative;">
                             {{
                                 player.gameProgress.col.research.enabled[tab.tabList[tab.currentTab][1]]

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { format, formatTime } from '@/format';
 import { player, tab } from '@/main';
-import { setNormalizationTime, speedToConsume, timeSpeedBoost } from './Game_Stored_Time';
+import { speedToConsume, timeSpeedBoost } from './Game_Stored_Time';
 import Decimal from 'break_eternity.js';
 </script>
 <template>
@@ -13,11 +13,12 @@ import Decimal from 'break_eternity.js';
                     Normalize time.<br>
                     Currently: {{ player.gameProgress.dilatedTime.normalized ? 'Normalized' : 'Unnormalized' }}
                 </button>
-                <button @click="setNormalizationTime()" class="flex-container buttonLol fontVerdana">
+                <!-- ! theres an exploit here lmao ! -->
+                <!-- <button @click="setNormalizationTime()" class="flex-container buttonLol fontVerdana">
                     Change normalization time.<br>
                     Any tick that takes longer than this time will be automatically converted to offline time.<br>
                     Currently: {{ formatTime(player.gameProgress.dilatedTime.normalizeTime, 1) }}
-                </button>
+                </button> -->
             </div>
             <div class="flex-container" style="flex-direction: row;">
                 <button @click="player.gameProgress.dilatedTime.paused = !player.gameProgress.dilatedTime.paused" class="flex-container buttonLol fontVerdana">

@@ -312,6 +312,10 @@ body {
     border: 0.18vw solid #515c68;
 }
 
+.alert {
+    box-shadow: 0 0 1.5vw 0.24vw #c00000;
+}
+
 .nope {
     border: 0.24vw solid #400;
 }

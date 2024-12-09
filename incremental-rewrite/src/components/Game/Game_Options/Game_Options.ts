@@ -56,6 +56,23 @@ export const makeColor = (text: string, color: string) => {
 
 export const UPDATE_LOG = [
     {
+        name: `v1.1.1 - Dec-09-2024`,
+        desc: `
+        <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
+        Added a tally for how much your ${makeColor('KProof', '#0ff')} multiplies per second.<br>
+        Added a highlight for ${makeColor('KProof', '#0ff')} if you can buy automation.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Changes --- ></b></span><br>
+        None.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
+        Tried to fix ${makeColor('Colosseum', '#f62')} unlock resetting...<br>
+        Fixed ${makeColor('Kuaraniai', '#a4f')} upgrade 2 not working as expected.<br>
+        Fixed ${makeColor('KBlessing', '#0f0')} tier/tetr reaching requirement but not actually going into the next tier/tetr.<br>
+        Fixed ${makeColor('Trial and Error', '#0ff')} having NaN cost after buying ${makeColor('Unstable Conclusions', '#ff0')}<br>
+        `
+    },
+    {
         name: `v1.1.0 - Dec-07-2024`,
         desc: `
         <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>

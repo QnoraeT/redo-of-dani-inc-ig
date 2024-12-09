@@ -1228,6 +1228,24 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 },
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
+            {
+                // id: 19
+                ordering: 19,
+                get name() {
+                    return `Wait what?`;
+                },
+                get desc() {
+                    return `Have your KProof amount higher than your points.`;
+                },
+                get cond() {
+                    return Decimal.gte(player.value.gameProgress.kua.proofs.amount, player.value.gameProgress.main.points);
+                },
+                reward: ``,
+                get show() {
+                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
+                },
+                status: true
+            },
         ],
         get rewAll() {
             return `Kuaraniai's effects are ${format(this.eff.sub(1).mul(100), 2)}% stronger. (+1% per Kuaraniai achievement)`;

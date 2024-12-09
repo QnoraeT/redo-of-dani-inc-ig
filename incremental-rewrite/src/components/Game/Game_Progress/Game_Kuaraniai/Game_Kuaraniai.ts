@@ -958,11 +958,12 @@ export const KUA_BLESS_TIER = {
     tier: {
         show: true,
         req(x: DecimalSource) {
-            return smoothExp(x, 1.01, false).pow(1.2).mul(2).add(4);
+            return smoothExp(x, 1.01, false).pow(1.2).mul(2).add(4).floor();
         },
         target(x: DecimalSource) {
-            if (Decimal.lt(x, 4)) { return D(-1); }
-            return smoothExp(Decimal.sub(x, 4).div(2).root(1.2), 1.01, true);
+            x = Decimal.ceil(x);
+            if (x.lt(4)) { return D(-1); }
+            return smoothExp(x.sub(4).div(2).root(1.2), 1.01, true);
         },
         rounded(x: DecimalSource) {
             return this.target(x).floor().add(1);
@@ -992,11 +993,12 @@ export const KUA_BLESS_TIER = {
             return Decimal.gte(tmp.value.kua.blessings.tier, 3);
         },
         req(x: DecimalSource) {
-            return Decimal.add(x, 1).log10().add(1).pow(2).sub(1).pow10().sub(1).div(4).add(4);
+            return Decimal.add(x, 1).log10().add(1).pow(2).sub(1).pow10().sub(1).div(4).add(4).floor();
         },
         target(x: DecimalSource) {
-            if (Decimal.lt(x, 4)) { return D(-1); }
-            return Decimal.sub(x, 4).mul(4).add(1).log10().add(1).root(2).sub(1).pow10().sub(1);
+            x = Decimal.ceil(x);
+            if (x.lt(4)) { return D(-1); }
+            return x.sub(4).mul(4).add(1).log10().add(1).root(2).sub(1).pow10().sub(1);
         },
         rounded(x: DecimalSource) {
             return this.target(x).floor().add(1);
@@ -2152,6 +2154,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     if (k === 'kp' && (j >= 0 && j <= 2)) {
                         scal = scal.sub(tmp.value.kua.proofs.upgrades.skp[2].effect);
                     }
+                    scal = scal.max(0);
                     tmp.value.kua.proofs.upgrades[k][j].cost = KUA_PROOF_UPGS[k][j].cost(scal);
 
                     tmp.value.kua.proofs.upgrades[k][j].effect = KUA_PROOF_UPGS[k][j].effect(tmp.value.kua.proofs.upgrades[k][j].trueLevel);
@@ -2161,20 +2164,14 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             }
 
             tmp.value.kua.proofs.canBuyUpgs.auto = false;
-            for (let i = 0; i < KUA_PROOF_AUTO.other.length; i++) {
-                tmp.value.kua.proofs.canBuyUpgs.auto = tmp.value.kua.proofs.canBuyUpgs.auto || (KUA_PROOF_AUTO.other[i] && player.value.gameProgress.kua.proofs.automationBought.other[i]);
-            }
-            for (let i = 0; i < KUA_PROOF_AUTO.effect.length; i++) {
-                tmp.value.kua.proofs.canBuyUpgs.auto = tmp.value.kua.proofs.canBuyUpgs.auto || (KUA_PROOF_AUTO.effect[i] && player.value.gameProgress.kua.proofs.automationBought.effect[i]);
-            }
-            for (let i = 0; i < KUA_PROOF_AUTO.kp.length; i++) {
-                tmp.value.kua.proofs.canBuyUpgs.auto = tmp.value.kua.proofs.canBuyUpgs.auto || (KUA_PROOF_AUTO.kp[i] && player.value.gameProgress.kua.proofs.automationBought.kp[i]);
-            }
-            for (let i = 0; i < KUA_PROOF_AUTO.skp.length; i++) {
-                tmp.value.kua.proofs.canBuyUpgs.auto = tmp.value.kua.proofs.canBuyUpgs.auto || (KUA_PROOF_AUTO.skp[i] && player.value.gameProgress.kua.proofs.automationBought.skp[i]);
-            }
-            for (let i = 0; i < KUA_PROOF_AUTO.fkp.length; i++) {
-                tmp.value.kua.proofs.canBuyUpgs.auto = tmp.value.kua.proofs.canBuyUpgs.auto || (KUA_PROOF_AUTO.fkp[i] && player.value.gameProgress.kua.proofs.automationBought.fkp[i]);
+            for (let i = 0; i < Object.keys(KUA_PROOF_AUTO).length; i++) {
+                for (let j = 0; j < KUA_PROOF_AUTO[Object.keys(KUA_PROOF_AUTO)[i] as KuaProofAutoTypes].length; j++) {
+                    k = Object.keys(KUA_PROOF_AUTO)[i] as KuaProofAutoTypes;
+
+                    tmp.value.kua.proofs.canBuyUpgs.auto = tmp.value.kua.proofs.canBuyUpgs.auto || (Decimal.gte(player.value.gameProgress.kua.proofs.strange.amount, KUA_PROOF_AUTO[k][j].cost) && !player.value.gameProgress.kua.proofs.automationBought[k][j]);
+                    tmp.value.kua.proofs.canBuyUpg = tmp.value.kua.proofs.canBuyUpg || (Decimal.gte(player.value.gameProgress.kua.proofs.strange.amount, KUA_PROOF_AUTO[k][j].cost) && !player.value.gameProgress.kua.proofs.automationBought[k][j]);
+                    tmp.value.kua.canBuyUpg = tmp.value.kua.canBuyUpg || (Decimal.gte(player.value.gameProgress.kua.proofs.strange.amount, KUA_PROOF_AUTO[k][j].cost) && !player.value.gameProgress.kua.proofs.automationBought[k][j]);
+                }
             }
 
             if (player.value.gameProgress.kua.proofs.automationBought.other[0] && player.value.gameProgress.kua.proofs.automationEnabled.other[0]) {
@@ -2191,11 +2188,13 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(3, [4, 6], "Finicky KProof Effect", `+${format(tmp.value.kua.proofs.fkpEff, 2)}`, `^${format(tmp.value.kua.proofs.exp, 2)}`, tmp.value.kua.proofs.fkpEff.gt(0), "fkp");
             tmp.value.kua.proofs.exp = tmp.value.kua.proofs.exp.mul(tmp.value.kua.proofs.upgrades.kp[2].effect);
             setFactor(4, [4, 6], "Crafted Experiments", `×${format(tmp.value.kua.proofs.upgrades.kp[2].effect, 2)}`, `^${format(tmp.value.kua.proofs.exp, 2)}`, tmp.value.kua.proofs.upgrades.kp[2].effect.gt(1), "kp");
+            NaNCheck(tmp.value.kua.proofs.exp, `KProof's exponent was turned NaN!`)
 
             tmp.value.kua.proofs.skpExp = getStrangeKPExp(player.value.gameProgress.kua.proofs.strange.hiddenExp, true);
             tmp.value.kua.proofs.fkpExp = getFinickyKPExp(player.value.gameProgress.kua.proofs.finicky.hiddenExp, true);
 
             if (player.value.gameProgress.unlocks.kproofs.main && tmp.value.kua.active.proofs.gain) {
+                let fuck = player.value.gameProgress.kua.proofs.amount;
                 data = Decimal.add(player.value.gameProgress.kua.proofs.amount, 1).root(tmp.value.kua.proofs.exp).add(delta).pow(tmp.value.kua.proofs.exp).sub(1);
                 calc = Decimal.add(player.value.gameProgress.kua.proofs.amount, 1).root(tmp.value.kua.proofs.exp).add(1).pow(tmp.value.kua.proofs.exp).sub(1);
 
@@ -2207,6 +2206,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 if (data.gte(softcaps.scal[1].start)) {
                     data = scale(data, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
                     calc = scale(calc, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+                    fuck = scale(fuck, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
                     player.value.gameProgress.kua.proofs.amount = scale(player.value.gameProgress.kua.proofs.amount, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
                     setSCSLEffectDisp('kp', false, 1, `${format(calc.log(softcaps.prevEff), 3)}√`);
                 }
@@ -2214,21 +2214,29 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 if (data.gte(softcaps.scal[0].start)) {
                     data = scale(data, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
                     calc = scale(calc, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+                    fuck = scale(fuck, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
                     player.value.gameProgress.kua.proofs.amount = scale(player.value.gameProgress.kua.proofs.amount, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
                     setSCSLEffectDisp('kp', false, 0, `/${format(calc.div(softcaps.prevEff), 3)}`);
                 }
 
+                fuck = Decimal.add(fuck, 1).root(tmp.value.kua.proofs.exp).add(1).pow(tmp.value.kua.proofs.exp).sub(1);
                 player.value.gameProgress.kua.proofs.amount = Decimal.add(player.value.gameProgress.kua.proofs.amount, 1).root(tmp.value.kua.proofs.exp).add(delta).pow(tmp.value.kua.proofs.exp).sub(1);
 
                 if (data.gte(softcaps.scal[0].start)) {
                     data = scale(data, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+                    calc = scale(calc, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+                    fuck = scale(fuck, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
                     player.value.gameProgress.kua.proofs.amount = scale(player.value.gameProgress.kua.proofs.amount, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
                 }
 
                 if (data.gte(softcaps.scal[1].start)) {
                     data = scale(data, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+                    calc = scale(calc, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+                    fuck = scale(fuck, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
                     player.value.gameProgress.kua.proofs.amount = scale(player.value.gameProgress.kua.proofs.amount, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
                 }
+
+                tmp.value.kua.proofs.expPerSec = fuck.div(player.value.gameProgress.kua.proofs.amount);
             }
             break;
         case 2:
@@ -2258,8 +2266,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
             tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(tmp.value.kua.effects.bless);
             tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(tmp.value.kua.effects.bless);
-            setFactor(4, [4, 4], "Kuaraniai Upgrade 1", `×${format(tmp.value.kua.effects.bless, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, player.value.gameProgress.kua.upgrades >= 2, "kua");
-            setFactor(4, [4, 5], "Kuaraniai Upgrade 1", `×${format(tmp.value.kua.effects.bless, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, player.value.gameProgress.kua.upgrades >= 2, "kua");
+            setFactor(4, [4, 4], "Kuaraniai Upgrade 2", `×${format(tmp.value.kua.effects.bless, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, player.value.gameProgress.kua.upgrades >= 2, "kua");
+            setFactor(4, [4, 5], "Kuaraniai Upgrade 2", `×${format(tmp.value.kua.effects.bless, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, player.value.gameProgress.kua.upgrades >= 2, "kua");
 
             tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(tmp.value.kua.proofs.upgrades.effect[2].effect);
             tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(tmp.value.kua.proofs.upgrades.effect[2].effect);

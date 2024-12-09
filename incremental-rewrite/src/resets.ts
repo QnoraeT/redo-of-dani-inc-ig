@@ -7,6 +7,7 @@ import { updateAllStart } from "./components/Game/Game_Progress/Game_Main/Game_M
 import { getFinickyKPExp, getFinickyKPExpGain, getFinickySeconds, getStrangeKPExp, KUA_BLESS_UPGS, KUA_PROOF_AUTO, KUA_PROOF_UPGS, updateAllKua, type KuaProofAutoTypes, type KuaProofUpgTypes } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { format } from "./format";
 import { getSCSLAttribute, setSCSLEffectDisp } from "./softcapScaling";
+import { updateAllCol } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 
 
 export const resetTotalBestArray = (
@@ -94,15 +95,10 @@ export const reset = (layer: number) => {
                 player.value.gameProgress.main.upgrades[j].bought = D(0);
                 player.value.gameProgress.main.upgrades[j].accumulated = D(0);
             }
-
-            updateAllStart(0);
-            updateAllStart(0);
             break;
         case 1:
             player.value.gameProgress.main.prai.times = D(0);
             player.value.gameProgress.main.prai.amount = Decimal.min(10, player.value.gameProgress.main.pr2.amount);
-
-            updateAllStart(0);
             break;
         case 2:
             player.value.gameProgress.main.prai.times = D(0);
@@ -114,9 +110,6 @@ export const reset = (layer: number) => {
             for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
                 player.value.gameProgress.main.upgrades[i].boughtInReset[layer] = D(0);
             }
-
-            updateAllStart(0);
-            updateAllKua(0);
             break;
         case 3:
             player.value.gameProgress.kua.amount = D(0);
@@ -186,9 +179,6 @@ export const reset = (layer: number) => {
                     player.value.gameProgress.kua.proofs.automationBought[i as KuaProofAutoTypes][j] = false;
                 }
             }
-
-            updateAllKua(0);
-            updateAllKua(0);
             break;
         // case 4:
         //     if (tmp.value.tax.canDo || override) {
@@ -236,6 +226,25 @@ export const reset = (layer: number) => {
     resetTotalBestArray(player.value.gameProgress.kua.proofs.strange.totals, D(0), layer);
     resetTotalBestArray(player.value.gameProgress.col.best, D(0), layer);
     resetTotalBestArray(player.value.gameProgress.col.totals, D(0), layer);
+
+    for (let i = 0; i < 2; i++) {
+        switch (layer) {
+            case 0:
+                updateAllStart(0);
+                break;
+            case 1:
+                updateAllStart(0);
+                break;
+            case 2:
+                updateAllKua(0);
+                break;
+            case 3:
+                updateAllCol(0);
+                break;
+            default:
+                throw new Error(`uhh i don't think ${layer} is resettable`);
+        }
+    }
 
     reset(layer - 1);
 };

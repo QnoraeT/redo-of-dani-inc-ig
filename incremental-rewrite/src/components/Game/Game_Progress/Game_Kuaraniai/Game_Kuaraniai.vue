@@ -314,7 +314,7 @@ import { COL_CHALLENGES } from "../Game_Colosseum/Game_Colosseum";
         </div>
         <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 2">
             <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;">
-                <button v-if="Decimal.gte(player.gameProgress.kua.proofs.strange.amount, 250) || player.gameProgress.unlocks.kproofs.finicky" @click="switchSubTab(-2, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">Automation</button>
+                <button :class="{ alert: tmp.kua.proofs.canBuyUpgs.auto }" v-if="Decimal.gte(player.gameProgress.kua.proofs.strange.amount, 250) || player.gameProgress.unlocks.kproofs.finicky" @click="switchSubTab(-2, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">Automation</button>
                 <button :class="{ alert: tmp.kua.proofs.canBuyUpgs.effect }" @click="switchSubTab(-1, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">Effects</button>
                 <button :class="{ alert: tmp.kua.proofs.canBuyUpgs.kp }" @click="switchSubTab(0, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">KProof</button>
                 <button :class="{ alert: tmp.kua.proofs.canBuyUpgs.skp }" v-if="player.gameProgress.unlocks.kproofs.strange" @click="switchSubTab(1, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">Strange KP</button>
@@ -402,6 +402,7 @@ import { COL_CHALLENGES } from "../Game_Colosseum/Game_Colosseum";
                     <span v-if="Decimal.gte(player.gameProgress.kua.proofs.amount, getSCSLAttribute('kp', false)[1].start)" style="color: #f80; text-align: center; font-size: 0.7vw">
                         Your KProofs are getting outdated at <span style="font-size: 0.8vw"><b>{{ format(getSCSLAttribute("kp", false)[1].start) }}</b></span>, which is rooting your KProof gain by <span style="font-size: 0.8vw"><b>{{ getSCSLAttribute("kp", false)[1].displayedEffect }}</b></span>!
                     </span>
+                    <span class="fontVerdana whiteText" style="font-size: 0.7vw; text-align: center">KProofs are being multiplied by {{ format(tmp.kua.proofs.expPerSec, 2) }}× every second.</span>
                     <div class="flex-container" style="margin-top: 0.4vw; flex-wrap: wrap; justify-content: center;">
                         <div v-for="(item, index) in KUA_PROOF_UPGS.kp" :key="index">
                             <!-- set padding to 0vw because it auto-inserts padding -->

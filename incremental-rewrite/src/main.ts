@@ -790,6 +790,7 @@ type Tmp = {
         },
         proofs: {
             exp: Decimal,
+            expPerSec: Decimal,
             skpExp: Decimal,
             skpEff: Decimal,
             fkpExp: Decimal,
@@ -1025,6 +1026,7 @@ function initTemp(): Tmp {
             },
             proofs: {
                 exp: D(1),
+                expPerSec: D(1),
                 skpExp: D(1),
                 skpEff: D(1),
                 fkpExp: D(1),

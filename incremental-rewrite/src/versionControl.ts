@@ -1,5 +1,6 @@
 import { makeChallengeInfo, type Player } from "./main";
 import { D } from "./calc";
+import Decimal from "break_eternity.js";
 
 export const updatePlayerData = (player: Player): Player => {
     player.version = player.version || -1;
@@ -542,9 +543,26 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 29;
     }
     if (player.version === 29) {
+        if (Decimal.gt(player.gameProgress.col.power, 1)) {
+            player.gameProgress.unlocks.col = true;
+        }
+        player.displayVersion = 'v1.1.0.1 - Dec-09-2024';
+        player.version = 30;
+    }
+    if (player.version === 30) {
 
-        // player.displayVersion = 'v1.0.0.17 - Nov-27-2024';
-        // player.version = 30;
+        // player.displayVersion = 'v1.1.0.1 - Dec-09-2024';
+        // player.version = 31;
+    }
+    if (player.version === 31) {
+
+        // player.displayVersion = 'v1.1.0.1 - Dec-09-2024';
+        // player.version = 32;
+    }
+    if (player.version === 32) {
+
+        // player.displayVersion = 'v1.1.0.1 - Dec-09-2024';
+        // player.version = 33;
     }
     return player;
 };

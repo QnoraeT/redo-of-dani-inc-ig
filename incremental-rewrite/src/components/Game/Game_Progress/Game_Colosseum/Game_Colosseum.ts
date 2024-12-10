@@ -270,7 +270,7 @@ export const COL_CHALLENGES: colChallenges = {
         layer: 0,
         name: `Inverted Mechanics`,
         goal: D(1e20),
-        get resourceReq() { return player.value.gameProgress.main.points; },
+        get resourceReq() { return player.value.gameProgress.main.best[3]!; },
         get goalDesc() {
             return `PB: ${format(timesCompleted(this.id))} / ${format(this.goal)} Points.`;
         },

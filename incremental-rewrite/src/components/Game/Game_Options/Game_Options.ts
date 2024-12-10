@@ -56,6 +56,19 @@ export const makeColor = (text: string, color: string) => {
 
 export const UPDATE_LOG = [
     {
+        name: `v1.1.2 - Dec-09-2024`,
+        desc: `
+        <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
+        None.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Changes --- ></b></span><br>
+        None.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
+        Fixed when you enter a continuous ${makeColor('Colosseum', '#f62')} challenge, your point amount persists.<br>
+        `
+    },
+    {
         name: `v1.1.1 - Dec-09-2024`,
         desc: `
         <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>

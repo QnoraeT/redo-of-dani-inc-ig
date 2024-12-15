@@ -159,7 +159,7 @@ export const formatTime = (number: DecimalSource, dec = 0, expdec = 3, limit = 2
             str = `${str} ${format(prevNumber.sub(end ? 0 : 0.5), end ? dec : 0, expdec)}${timeList[i].name}`;
             number = Decimal.sub(number, prevNumber.floor().mul(timeList[i].amt));
             lim++;
-            if (timeList[i].stop || prevNumber.gte(player.value.settings.notationLimit)) {
+            if (timeList[i].stop || prevNumber.gte(Decimal.pow10(player.value.settings.notationLimit))) {
                 break;
             }
         } else {

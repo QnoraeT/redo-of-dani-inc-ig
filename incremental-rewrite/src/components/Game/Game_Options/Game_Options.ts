@@ -72,6 +72,7 @@ export const UPDATE_LOG = [
         <br>
         <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
         An attempt to hotfix any saves that were affected by negative points and reunlocking ${makeColor('Colosseum', '#f62')} if people already had ${makeColor('Colosseum', '#f62')} power.
+        Fixed weird formatting with time.
         `
     },
     {

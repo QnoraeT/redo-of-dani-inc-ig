@@ -571,9 +571,17 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 34;
     }
     if (player.version === 34) {
-
-        // player.displayVersion = 'v1.1.3.1 - Dec-15-2024';
-        // player.version = 35;
+        if (Decimal.lt(player.gameProgress.main.points, 0)) {
+            player.gameProgress.main.points = D(0);
+            player.gameProgress.main.bestEver = D(0);
+            player.gameProgress.main.totalEver = D(0);
+            player.gameProgress.main.totals = [D(0), D(0), D(0), D(0), D(0)];
+        }
+        if (Decimal.gt(player.gameProgress.col.power, 10)) {
+            player.gameProgress.unlocks.col = true;
+        }
+        player.displayVersion = 'v1.1.3.1 - Dec-15-2024';
+        player.version = 35;
     }
     if (player.version === 35) {
 

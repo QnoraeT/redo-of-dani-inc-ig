@@ -6,23 +6,23 @@ const abbSuffixes: Array<string> = ["","K","M","B","T","Qa","Qi","Sx","Sp","Oc",
 const letter: Array<string> = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
 
 const timeList = [
-    { name: "pt", stop: true, amt: 5.39e-44 },
-    { name: "qs", stop: true, amt: 1 / 1e30 },
-    { name: "rs", stop: true, amt: 1 / 1e27 },
-    { name: "ys", stop: true, amt: 1 / 1e24 },
-    { name: "zs", stop: true, amt: 1 / 1e21 },
-    { name: "as", stop: true, amt: 1 / 1e18 },
-    { name: "fs", stop: true, amt: 1 / 1e15 },
-    { name: "ps", stop: true, amt: 1 / 1e12 },
-    { name: "ns", stop: true, amt: 1 / 1e9 },
-    { name: "µs", stop: true, amt: 1 / 1e6 },
-    { name: "ms", stop: true, amt: 1 / 1e3 },
-    { name: "s", stop: true, amt: 1 },
-    { name: "m", stop: false, amt: 60 },
-    { name: "h", stop: false, amt: 3600 },
-    { name: "d", stop: false, amt: 86400 },
-    { name: "mo", stop: false, amt: 2592000 },
-    { name: "y", stop: false, amt: 3.1536e7 },
+    { name: "pt",  stop: true,  amt: 5.39e-44 },
+    { name: "qs",  stop: true,  amt: 1 / 1e30 },
+    { name: "rs",  stop: true,  amt: 1 / 1e27 },
+    { name: "ys",  stop: true,  amt: 1 / 1e24 },
+    { name: "zs",  stop: true,  amt: 1 / 1e21 },
+    { name: "as",  stop: true,  amt: 1 / 1e18 },
+    { name: "fs",  stop: true,  amt: 1 / 1e15 },
+    { name: "ps",  stop: true,  amt: 1 / 1e12 },
+    { name: "ns",  stop: true,  amt: 1 / 1e9 },
+    { name: "µs",  stop: true,  amt: 1 / 1e6 },
+    { name: "ms",  stop: true,  amt: 1 / 1e3 },
+    { name: "s",   stop: true,  amt: 1 },
+    { name: "m",   stop: false, amt: 60 },
+    { name: "h",   stop: false, amt: 3600 },
+    { name: "d",   stop: false, amt: 86400 },
+    { name: "mo",  stop: false, amt: 2592000 },
+    { name: "y",   stop: false, amt: 3.1536e7 },
     { name: "mil", stop: false, amt: 3.1536e10 },
     { name: "uni", stop: false, amt: 4.320432e17 }
 ];
@@ -57,20 +57,20 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3, notation = pl
     try {
         switch (notation) {
             case 0: // mixed
-                if (Decimal.gte(number, 1e6) && Decimal.lt(number, abbExp)) {
+                if (Decimal.gte(number, Decimal.pow10(player.value.settings.notationLimit)) && Decimal.lt(number, abbExp)) {
                     const abb = Decimal.log10(number).mul(0.33333333336666665).floor();
                     return `${Decimal.div(number, abb.mul(3).pow10()).toNumber().toFixed(expdec)} ${abbSuffixes[abb.toNumber()]}`;
                 }
                 return format(number, dec, expdec, 1);
             case 1: // sci
-                if (Decimal.lt(number, "e-1e9")) {
+                if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit).neg().pow10())) {
                     return `e${format(Decimal.log10(number), 0, expdec)}`;
                 } else if (Decimal.lt(number, 0.001)) {
                     const exp = Decimal.log10(number).mul(1.00000000001).floor();
                     return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
-                } else if (Decimal.lt(number, 1e6)) {
+                } else if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit))) {
                     return numberWithCommas(new Decimal(number).toNumber().toFixed(dec));
-                } else if (Decimal.lt(number, "ee6")) {
+                } else if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit).pow10())) {
                     const exp = Decimal.log10(number).mul(1.00000000001).floor();
                     return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
                 } else if (Decimal.lt(number, "10^^7")) {
@@ -79,7 +79,7 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3, notation = pl
                     return `F${format(Decimal.slog(number), Math.max(dec, 3), expdec)}`;
                 }
             case 2: // letters
-                if (Decimal.gte(number, 1e3) && Decimal.lt(number, "ee9")) {
+                if (Decimal.gte(number, 1e3) && Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit).pow10())) {
                     const abb = Decimal.log10(number).mul(0.33333333336666665).floor();
                     return `${Decimal.div(number, abb.mul(3).pow10()).toNumber().toFixed(expdec)} ${formatLetter(abb.sub(1), "")}`;
                 }
@@ -96,8 +96,8 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3, notation = pl
                     } else if (Decimal.lt(number, "e181502546658")) {
                         return `${format(Decimal.log10(number).div(308).sub(0.75).div(308).sub(0.7).mul(0.6989700043360187).div(4000).sub(1).pow_base(1000), expdec, expdec, 0)} ᴿᴹ`;
                     } else {
-                        const rm = Decimal.log10(number).div(308).sub(0.75).div(308).sub(0.7).mul(0.6989700043360187).div(4000).sub(1).pow_base(1000);
-                        return `${format(rm.log10().sub(1000).pow(2).mul(rm.log10().sub(100000).max(1).pow(0.2)), expdec, expdec, Decimal.lt(number, "ee148.37336") ? 0 : 3)} ᴵᴹ`;
+                        const rm = Decimal.log10(number).div(308).sub(0.75).div(308).sub(0.7).mul(0.6989700043360187).div(4000).sub(1).mul(3);
+                        return `${format(rm.sub(1000).pow(2).mul(rm.sub(100000).max(1).pow(0.2)), expdec, expdec, Decimal.lt(number, "ee148.37336") ? 0 : 3)} ᴵᴹ`;
                     }
                 }
                 return format(number, dec, expdec, 1);
@@ -111,17 +111,17 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3, notation = pl
             `There was an error trying to get player.settings.notation! Falling back to Mixed Scientific...\n\nIf you have an object that has an item that uses format() without it being a get or function, this will occurr on load!`
         );
         console.warn(e);
-        if (Decimal.lt(number, "e-1e9")) {
+        if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit).neg().pow10())) {
             return `e${format(Decimal.log10(number), 0, expdec)}`;
         } else if (Decimal.lt(number, 0.001)) {
             const exp = Decimal.log10(number).mul(1.00000000001).floor();
             return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
-        } else if (Decimal.lt(number, 1e6)) {
+        } else if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit))) {
             return numberWithCommas(new Decimal(number).toNumber().toFixed(dec));
         } else if (Decimal.lt(number, abbExp)) {
             const abb = Decimal.log10(number).mul(0.33333333336666665).floor();
             return `${Decimal.div(number, abb.mul(3).pow10()).toNumber().toFixed(expdec)} ${abbSuffixes[abb.toNumber()]}`;
-        } else if (Decimal.lt(number, "ee6")) {
+        } else if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit).pow10())) {
             const exp = Decimal.log10(number).mul(1.00000000001).floor();
             return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
         } else if (Decimal.lt(number, "10^^7")) {
@@ -148,16 +148,18 @@ export const formatTime = (number: DecimalSource, dec = 0, expdec = 3, limit = 2
     let lim = 0;
     let str = "";
     let end = false;
+    let prevNumber;
     for (let i = timeList.length - 1; i >= 0; i--) {
         if (lim >= limit) {
             break;
         }
         if (Decimal.gte(number, timeList[i].amt)) {
             end = lim + 1 >= limit || timeList[i].stop;
-            str = `${str} ${format(Decimal.div(number, timeList[i].amt).sub(end ? 0 : 0.5), end ? dec : 0, expdec)}${timeList[i].name}`;
-            number = Decimal.sub(number, Decimal.div(number, timeList[i].amt).floor().mul(timeList[i].amt));
+            prevNumber = Decimal.div(number, timeList[i].amt);
+            str = `${str} ${format(prevNumber.sub(end ? 0 : 0.5), end ? dec : 0, expdec)}${timeList[i].name}`;
+            number = Decimal.sub(number, prevNumber.floor().mul(timeList[i].amt));
             lim++;
-            if (timeList[i].stop) {
+            if (timeList[i].stop || prevNumber.gte(player.value.settings.notationLimit)) {
                 break;
             }
         } else {

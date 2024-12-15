@@ -613,16 +613,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 i = i.mul(KUA_UPGRADES.KPower[15].eff!);
             }
             setFactor(5, [1, 0, 0], "KPower Upgrade 16", `×${format(KUA_UPGRADES.KPower[15].eff!, 3)}`, `${format(i)} effective`, getKuaUpgrade('p', 16), "kua");
-
-            setFactor(6, [1, 0, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[0].bought, 2)}`, `${format(i.mul(tmp.value.main.upgrades[0].multiplier))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = i.mul(tmp.value.main.upgrades[0].multiplier);
-            }
-
-            setFactor(7, [1, 0, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(i, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
-            }
             return i;
         },
         effect(x = player.value.gameProgress.main.upgrades[0].bought) {
@@ -632,6 +622,16 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let eff = D(x)
             setFactor(0, [1, 0, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x);
+
+            setFactor(6, [1, 0, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[0].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[0].multiplier))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = eff.mul(tmp.value.main.upgrades[0].multiplier);
+            }
+
+            setFactor(7, [1, 0, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
+            }
 
             setFactor(8, [1, 0, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.pow(eff))}`, true);
             eff = this.effectBase.pow(eff);
@@ -749,16 +749,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 i = i.pow(MAIN_ONE_UPGS[6].effect);
             }
             setFactor(3, [1, 1, 0], "One-Upgrade #7", `^${format(MAIN_ONE_UPGS[6].effect, 3)}`, `${format(i)} effective`, Decimal.gte(getOMUpgrade(6), 1));
-
-            setFactor(4, [1, 1, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[1].bought, 2)}`, `${format(i.mul(tmp.value.main.upgrades[1].multiplier))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = i.mul(tmp.value.main.upgrades[1].multiplier);
-            }
-
-            setFactor(5, [1, 1, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(i, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
-            }
             return i;
         },
         effect(x = player.value.gameProgress.main.upgrades[1].bought) {
@@ -768,6 +758,16 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let eff = D(x)
             setFactor(0, [1, 1, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x)
+
+            setFactor(4, [1, 1, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[1].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[1].multiplier))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = eff.mul(tmp.value.main.upgrades[1].multiplier);
+            }
+
+            setFactor(5, [1, 1, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
+            }
 
             setFactor(6, [1, 1, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `/${format(this.effectBase.pow(eff))}`, true);
             eff = this.effectBase.pow(eff);
@@ -865,16 +865,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 i = i.mul(MAIN_ONE_UPGS[11].effect)
             }
             setFactor(5, [1, 2, 0], "One Upgrade #12", `×${format(MAIN_ONE_UPGS[11].effect, 3)}`, `${format(i)} effective`, Decimal.gte(getOMUpgrade(11), 1), "ach");
-
-            setFactor(6, [1, 2, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[2].bought, 2)}`, `${format(i.mul(tmp.value.main.upgrades[2].multiplier))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = i.mul(tmp.value.main.upgrades[2].multiplier);
-            }
-
-            setFactor(7, [1, 2, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(i, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
-            }
             return i;
         },
         effect(x = player.value.gameProgress.main.upgrades[2].bought) {
@@ -884,6 +874,16 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let eff = D(x);
             setFactor(0, [1, 2, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x);
+
+            setFactor(6, [1, 2, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[2].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[2].multiplier))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = eff.mul(tmp.value.main.upgrades[2].multiplier);
+            }
+
+            setFactor(7, [1, 2, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
+            }
 
             setFactor(8, [1, 2, 0], "Resulting Effect", `${format(this.effectBase, 3)}×${format(eff, 3)}`, `+${format(this.effectBase.mul(eff), 3)}`, true);
             eff = this.effectBase.mul(eff);
@@ -951,16 +951,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 i = i.pow(MAIN_ONE_UPGS[16].effect);
             }
             setFactor(2, [1, 3, 0], "One-Upgrade #17", `^${format(MAIN_ONE_UPGS[16].effect, 3)}`, `${format(i)} effective`, Decimal.gte(getOMUpgrade(16), 1));
-
-            setFactor(3, [1, 3, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[3].bought, 2)}`, `${format(i.mul(tmp.value.main.upgrades[3].multiplier))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = i.mul(tmp.value.main.upgrades[3].multiplier);
-            }
-
-            setFactor(4, [1, 3, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(i, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
-            }
             return i;
         },
         effect(x = player.value.gameProgress.main.upgrades[3].bought) {
@@ -970,6 +960,16 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let eff = D(x);
             setFactor(0, [1, 3, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x);
+
+            setFactor(3, [1, 3, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[3].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[3].multiplier))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = eff.mul(tmp.value.main.upgrades[3].multiplier);
+            }
+
+            setFactor(4, [1, 3, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
+            }
 
             setFactor(5, [1, 3, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.pow(eff))}`, true);
             eff = this.effectBase.pow(eff);
@@ -1038,16 +1038,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 i = i.pow(MAIN_ONE_UPGS[16].effect);
             }
             setFactor(2, [1, 4, 0], "One-Upgrade #17", `^${format(MAIN_ONE_UPGS[16].effect, 3)}`, `${format(i)} effective`, Decimal.gte(getOMUpgrade(16), 1));
-
-            setFactor(3, [1, 4, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[4].bought, 2)}`, `${format(i.mul(tmp.value.main.upgrades[4].multiplier))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = i.mul(tmp.value.main.upgrades[4].multiplier);
-            }
-
-            setFactor(4, [1, 4, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(i, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
-            }
             return i;
         },
         effect(x = player.value.gameProgress.main.upgrades[4].bought) {
@@ -1057,6 +1047,16 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let eff = D(x);
             setFactor(0, [1, 4, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x);
+
+            setFactor(3, [1, 4, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[4].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[4].multiplier))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = eff.mul(tmp.value.main.upgrades[4].multiplier);
+            }
+
+            setFactor(4, [1, 4, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
+            }
 
             setFactor(5, [1, 4, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `/${format(this.effectBase.pow(eff))}`, true);
             eff = this.effectBase.pow(eff);
@@ -1129,16 +1129,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 i = i.pow(MAIN_ONE_UPGS[16].effect);
             }
             setFactor(2, [1, 5, 0], "One-Upgrade #17", `^${format(MAIN_ONE_UPGS[16].effect, 3)}`, `${format(i)} effective`, Decimal.gte(getOMUpgrade(16), 1));
-
-            setFactor(3, [1, 5, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[5].bought, 2)}`, `${format(i.mul(tmp.value.main.upgrades[5].multiplier))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = i.mul(tmp.value.main.upgrades[5].multiplier);
-            }
-
-            setFactor(4, [1, 5, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(i, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
-            }
             return i
         },
         effect(x = player.value.gameProgress.main.upgrades[5].bought) {
@@ -1148,6 +1138,16 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let eff = D(x);
             setFactor(0, [1, 5, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x);
+
+            setFactor(3, [1, 5, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[5].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[5].multiplier))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = eff.mul(tmp.value.main.upgrades[5].multiplier);
+            }
+
+            setFactor(4, [1, 5, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
+            }
 
             setFactor(5, [1, 5, 0], "Resulting Effect", `${format(this.effectBase, 3)}×${format(eff, 3)}`, `+${format(this.effectBase.mul(eff), 3)}`, true);
             eff = this.effectBase.mul(eff);
@@ -1200,16 +1200,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         effective(x) {
             let i = D(x);
             i = i.add(this.freeExtra);
-
-            setFactor(2, [1, 6, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[6].bought, 2)}`, `${format(i.mul(tmp.value.main.upgrades[6].multiplier))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = i.mul(tmp.value.main.upgrades[6].multiplier);
-            }
-
-            setFactor(3, [1, 6, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(i, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
-            }
             return i;
         },
         effect(x = player.value.gameProgress.main.upgrades[6].bought) {
@@ -1219,6 +1209,16 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let eff = D(x);
             setFactor(0, [1, 6, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x);
+
+            setFactor(2, [1, 6, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[6].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[6].multiplier))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = eff.mul(tmp.value.main.upgrades[6].multiplier);
+            }
+
+            setFactor(3, [1, 6, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
+            }
 
             setFactor(4, [1, 6, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `^${format(this.effectBase.pow(eff), 3)}`, true);
             eff = this.effectBase.pow(eff);
@@ -1261,16 +1261,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         effective(x) {
             let i = D(x);
             i = i.add(this.freeExtra);
-
-            setFactor(2, [1, 7, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[7].bought, 2)}`, `${format(i.mul(tmp.value.main.upgrades[7].multiplier))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = i.mul(tmp.value.main.upgrades[7].multiplier);
-            }
-
-            setFactor(3, [1, 7, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(i, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
-            }
             return i
         },
         effect(x = player.value.gameProgress.main.upgrades[7].bought) {
@@ -1281,12 +1271,17 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             setFactor(0, [1, 7, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x);
 
+            setFactor(2, [1, 7, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[7].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[7].multiplier))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = eff.mul(tmp.value.main.upgrades[7].multiplier);
+            }
+
+            setFactor(3, [1, 7, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
             if (inChallenge('dc')) {
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
-            setFactor(4, [1, 7, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(eff)} effective`, inChallenge('dc'), 'col');
 
-            setFactor(5, [1, 7, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `^${format(this.effectBase.pow(eff), 3)}`, true);
+            setFactor(4, [1, 7, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `^${format(this.effectBase.pow(eff), 3)}`, true);
             eff = this.effectBase.pow(eff);
             return eff;
         },
@@ -1327,16 +1322,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         effective(x) {
             let i = D(x);
             i = i.add(this.freeExtra);
-
-            setFactor(2, [1, 8, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[8].bought, 2)}`, `${format(i.mul(tmp.value.main.upgrades[8].multiplier))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = i.mul(tmp.value.main.upgrades[8].multiplier);
-            }
-
-            setFactor(3, [1, 8, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(i, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
-            if (inChallenge('dc')) {
-                i = Decimal.add(i, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
-            }
             return i
         },
         effect(x = player.value.gameProgress.main.upgrades[8].bought) {
@@ -1347,6 +1332,15 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             setFactor(0, [1, 8, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x);
 
+            setFactor(2, [1, 8, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[8].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[8].multiplier))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = eff.mul(tmp.value.main.upgrades[8].multiplier);
+            }
+
+            setFactor(3, [1, 8, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `log10(${format(eff, 3)}+${format(1)})^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1], 2)}`, `${format(Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]))} effective`, inChallenge('dc'), 'col');
+            if (inChallenge('dc')) {
+                eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
+            }
             setFactor(4, [1, 8, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.pow(eff), 3)}`, true);
             eff = this.effectBase.pow(eff);
             return eff;

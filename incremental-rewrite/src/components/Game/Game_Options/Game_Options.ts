@@ -46,6 +46,12 @@ export const setTimeSpeed = () => {
             alert("Your set time speed is not a number...");
             return;
         }
+
+        if (numI.lt(0)) {
+            alert("Your input is not a positive number...");
+            return;
+        }
+
         player.value.setTimeSpeed = numI;
     }
 };
@@ -55,6 +61,29 @@ export const makeColor = (text: string, color: string) => {
 }
 
 export const UPDATE_LOG = [
+    {
+        name: `v1.1.3 - Dec-15-2024`,
+        desc: `
+        <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
+        Added an option to import a save as a new save file.<br>
+        Added a yellow highlight if you are accelerating time using ${makeColor('Offline Time', '#0f0')}.<br>
+        Added a setting for when notation would start.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Changes --- ></b></span><br>
+        Nerfed ${makeColor('KBlessing', '#0f0')} tetr's requirement scaling.<br>
+        Buffed ${makeColor('KBlessings', '#0f0')} generation, but added a cooldown for manual gain.<br>
+        Buffed ${makeColor('KBlessings', '#0f0')} upgrade 4's second effect.<br>
+        ${makeColor('Untimely Difference', '#ff0')} scales slightly harsher.<br>
+        ${makeColor('SKP', '#ff0')} exponent gain formula and unlock is different.<br>
+        Added decimal points to ${makeColor('Inverted Mechanics', '#f62')}'s effect in ${makeColor('KBlessing', '#0f0')}.<br>
+        Delayed ${makeColor('KProof\'s', '#0ff')} automation for row 3 upgrades, but made it unlock earlier, and lowered the costs for early upgrade automation.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
+        Fixed <b>Points</b> and <b>PPS</b> becoming negative.<br>
+        Fixed ${makeColor('KBlessings', '#0f0')} upgrade 4's second effect not showing up in stats.<br>
+        Fixed ${makeColor('Constructive Interference', '#0ff')} and ${makeColor('Infinite Staircase', '#0ff')}'s effects.<br>
+        `
+    },
     {
         name: `v1.1.2 - Dec-09-2024`,
         desc: `

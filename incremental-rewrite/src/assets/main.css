@@ -316,6 +316,10 @@ body {
     box-shadow: 0 0 1.5vw 0.24vw #c00000;
 }
 
+.warning {
+    box-shadow: 0 0 1.5vw 0.24vw #c0c000;
+}
+
 .nope {
     border: 0.24vw solid #400;
 }
@@ -446,15 +450,15 @@ body {
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none; /* Override default look */
     appearance: none;
-    width: 1.5vw; /* Set a specific slider handle width */
-    height: 1.5vw; /* Slider handle height */
+    width: 1.2vw; /* Set a specific slider handle width */
+    height: 1.2vw; /* Slider handle height */
     background: #04aa6d; /* Green background */
     cursor: pointer; /* Cursor on hover */
 }
 
 .slider::-moz-range-thumb {
-    width: 1.5vw; /* Set a specific slider handle width */
-    height: 1.5vw; /* Slider handle height */
+    width: 1.2vw; /* Set a specific slider handle width */
+    height: 1.2vw; /* Slider handle height */
     background: #04aa6d; /* Green background */
     cursor: pointer; /* Cursor on hover */
 }

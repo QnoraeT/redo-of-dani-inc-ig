@@ -21,7 +21,8 @@ import {
     setTempModes,
     resetModes,
     displayModesNonOptArray,
-    displayModes
+    displayModes,
+    importSFIntoNew
 } from "@/saving";
 import { NOTATION_LIST, setTimeSpeed, switchNotation, UPDATE_LOG } from "./Game_Options";
 import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
@@ -63,18 +64,25 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                 <Tab_Button @click="switchSubTab(1, 1)" :selected="tab.tabList[tab.currentTab][1] === 1" :name="'Creating Saves'" />
             </div>
             <div v-if="tab.tabList[tab.currentTab][1] === 0">
-                <div class="flex-container" style="flex-direction: row; justify-content: center">
-                    <Basic_Button @click="saveTheFrickingGame(true)" :html="'Save manually.'" />
-                    <Basic_Button @click="setAutosaveInterval()" :class="{ nope: game.autoSaveInterval >= 1e10, ok: game.autoSaveInterval < 1e10 }" :html="`Autosave Interval: ${formatTime( game.autoSaveInterval >= 1e10 ? Infinity : game.autoSaveInterval, 3)}`" />
-                    <Basic_Button @click="exportSaveList()" :html="'Export save list to clipboard.'" />
-                    <Basic_Button @click="importSaveList()" :html="'Import save list.'" />
-                    <Basic_Button @click="resetTheWholeGame(true)" style="color: #f00; border: 0.2vw solid #f00;" :html="'Delete save list.'" />
+                <div class="flex-container" style="flex-direction: column; justify-content: center">
+                    <div class="flex-container" style="flex-direction: row; justify-content: center">
+                        <Basic_Button @click="saveTheFrickingGame(true)" :html="'Save manually.'" />
+                        <Basic_Button @click="setAutosaveInterval()" :class="{ nope: game.autoSaveInterval >= 1e10, ok: game.autoSaveInterval < 1e10 }" :html="`Autosave Interval: ${formatTime( game.autoSaveInterval >= 1e10 ? Infinity : game.autoSaveInterval, 3)}`" />
+                    </div>
+                    <div class="flex-container" style="flex-direction: row; justify-content: center">
+                        <Basic_Button @click="exportSaveList()" :html="'Export save list to clipboard.'" />
+                        <Basic_Button @click="importSaveList()" :html="'Import save list.'">
+                            <!-- <input type="text" v-model="tmp.inputSaveList"/> -->
+                        </Basic_Button>
+                        <Basic_Button @click="importSFIntoNew()" :html="'Import save file into new slot.'" />
+                        <Basic_Button @click="resetTheWholeGame(true)" style="color: #f00; border: 0.2vw solid #f00;" :html="'Delete save list.'" />
+                    </div>
                 </div>
                 <div class="flex-container" style="align-items: center; flex-direction: column; margin-left: auto; margin-right: auto; border: 0.36vw solid #788088; background-color: #101418; width: 60vw; height: 40vw;">
                     <div class="flex-container" style="overflow: auto; overflow-y: scroll; align-items: center; flex-direction: column; border: 0.24vw solid #788088; height: 78%; width: 98%; margin-bottom: auto; margin-top: 1%;">
                         <div
                             v-for="(item, index) in game.list"
-                            :key="item.id"
+                            :key="index"
                             :style="{
                                 border: `0.24vw solid ${gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, game.currentSave === index ? 1 : 0.5, game.currentSave === index ? 1 : 0.125)}`
                             }"
@@ -184,7 +192,7 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                     </div>
                     <div class="flex-container" style="flex-direction: row; justify-content: center">
                         <div style="display: flex; width: 60vw; flex-wrap: wrap; justify-content: center;">
-                            <div v-for="(item, index) in SAVE_MODES" :key="item.id" class="flex-container">
+                            <div v-for="(item, index) in SAVE_MODES" :key="index" class="flex-container">
                                 <button
                                     @click="setTempModes(index)"
                                     class="whiteText fontVerdana tooltip"
@@ -215,6 +223,19 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                 <Basic_Button @click="switchNotation()" :html="`Switch notation. Currently: ${NOTATION_LIST[player.settings.notation]}`"/>
                 <Basic_Button @click="player.settings.scaleSoftColors = !player.settings.scaleSoftColors" :html="`Show scaling/softcap colors. Currently: ${player.settings.scaleSoftColors}`"/>
                 <Basic_Button @click="player.settings.scaledUpgBase = !player.settings.scaledUpgBase" :html="`Show the upgrade's effect base. If false, will show the upgrade's exact effect. Currently: ${player.settings.scaledUpgBase}`"/>
+                <div
+                class="whiteText fontVerdana generatorButton"
+                style="padding: 0%; margin: 0.25vw; width: 14.28vw; height: 3vw; display: flex; flex-direction: column; border: 0.24vw solid #fff;">
+                    <div class="first-cont" style="height: 40%">
+                        <span class="generic-text" style="left: 0.3vw; top: 0.3vw; font-size: 0.65vw" >Change when notation starts.</span>
+                        <span class="generic-text" style="right: 0.3vw; top: 0.3vw; font-size: 0.65vw" >{{ player.settings.notationLimit }} digits.</span>
+                    </div>
+                    <div class="second-cont" style="height: 60%">
+                        <div class="slidecontainer" style="position: absolute; left: 3%; width: 94%;">
+                            <input class="slider" style="padding: 0vw; margin: 0vw" type="range" v-model="player.settings.notationLimit" min="3" max="9"/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 4">

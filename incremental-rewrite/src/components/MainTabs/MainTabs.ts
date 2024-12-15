@@ -27,7 +27,8 @@ export const TABS_LIST = [
         if: true,
         get alert() {
             return tmp.value.main.canBuyUpg;
-        }
+        },
+        warning: false
     },
     {
         name: "Stored Time",
@@ -39,6 +40,9 @@ export const TABS_LIST = [
         if: true,
         get alert() {
             return player.value.gameProgress.dilatedTime.paused;
+        },
+        get warning() {
+            return player.value.gameProgress.dilatedTime.speedEnabled && !player.value.gameProgress.dilatedTime.paused;
         }
     },
     {
@@ -49,7 +53,8 @@ export const TABS_LIST = [
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
         if: true,
-        alert: false
+        alert: false,
+        warning: false
     },
     {
         name: "Stats",
@@ -59,7 +64,8 @@ export const TABS_LIST = [
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
         if: true,
-        alert: false
+        alert: false,
+        warning: false
     },
     {
         name: "Achievements",
@@ -69,7 +75,8 @@ export const TABS_LIST = [
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
         if: true,
-        alert: false
+        alert: false,
+        warning: false
     },
     {
         name: "Kuaraniai",
@@ -83,7 +90,8 @@ export const TABS_LIST = [
         },
         get alert() {
             return tmp.value.kua.canBuyUpg;
-        }
+        },
+        warning: false
     },
     {
         name: "Colosseum",
@@ -95,18 +103,20 @@ export const TABS_LIST = [
         get if() {
             return player.value.gameProgress.unlocks.col;
         },
-        alert: false
+        alert: false,
+        warning: false
     },
-    {
-        name: "Taxation",
-        staticName: 6,
-        backgroundColor: "#b07500",
-        textColor: "#ffffff",
-        outlineColor: "#d5c000",
-        highlightColor: "#ffff7f",
-        get if() {
-            return player.value.gameProgress.unlocks.tax;
-        },
-        alert: false
-    }
+    // {
+    //     name: "Taxation",
+    //     staticName: 6,
+    //     backgroundColor: "#b07500",
+    //     textColor: "#ffffff",
+    //     outlineColor: "#d5c000",
+    //     highlightColor: "#ffff7f",
+    //     get if() {
+    //         return player.value.gameProgress.unlocks.tax;
+    //     },
+    //     alert: false,
+    //     warning: false
+    // }
 ];

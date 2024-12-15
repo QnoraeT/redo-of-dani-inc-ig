@@ -413,8 +413,8 @@ export const COL_CHALLENGES: colChallenges = {
         ],
         cap: D(20),
         get show() {
-            return false;
             // return Decimal.gte(timesCompleted('im'), 1e33);
+            return false;
         },
         get canComplete() {
             return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);

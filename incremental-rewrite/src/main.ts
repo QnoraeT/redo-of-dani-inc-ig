@@ -4,9 +4,9 @@ import { createApp, ref, type Ref } from "vue";
 import App from "./App.vue";
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { type Tab } from "./components/MainTabs/MainTabs";
-import { D, expQuadCostGrowth, linearAdd, scale, smoothExp, smoothPoly } from "./calc";
+import { D, expQuadCostGrowth, linearAdd, mixColor, scale, smoothExp, smoothPoly } from "./calc";
 import { format } from "./format";
-import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame } from "./saving";
+import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame, decompressSave } from "./saving";
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from "./softcapScaling";
 import { updateAllStart, initAllMainUpgrades, initAllMainOneUpgrades, MAIN_ONE_UPGS, type TmpMainUpgrade } from "./components/Game/Game_Progress/Game_Main/Game_Main";
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
@@ -19,6 +19,7 @@ import { updatePlayerData } from "./versionControl";
 import { reset } from "./resets";
 import { speedToConsume, timeSpeedBoost } from "./components/Game/Game_Progress/Game_Stored_Time/Game_Stored_Time";
 import { UPDATE_LOG } from "./components/Game/Game_Options/Game_Options";
+import { compressToBase64, decompressFromBase64 } from "lz-string";
 
 // this may slow down calculations!!
 export const NAN_CHECKER = true;
@@ -112,9 +113,9 @@ export const NEXT_UNLOCKS = [
             return player.value.gameProgress.unlocks.kproofs.strange;
         },
         get dispPart1() {
-            return `${format(tmp.value.kua.proofs.exp, 2)} / ${format(12, 2)}`;
+            return `${format(player.value.gameProgress.kua.proofs.amount)} / ${format(1e24)}`;
         },
-        dispPart2: `KProof Exponent to unlock the next sub-feature.`,
+        dispPart2: `KProofs to unlock the next sub-feature.`,
         color: "#ffff00"
     },
     {
@@ -132,25 +133,25 @@ export const NEXT_UNLOCKS = [
     },
     // {
     //     get shown() {
-    //         return Decimal.gte(player.value.gameProgress.main.best[3]!, "e500");
+    //         return Decimal.gte(player.value.gameProgress.main.best[3]!, "ee3");
     //     },
     //     get done() {
     //         return player.value.gameProgress.unlocks.tax;
     //     },
     //     get dispPart1() {
-    //         return `${format(player.value.gameProgress.main.best[3]!)} / ${format("ee3")}`;
+    //         return `${format(player.value.gameProgress.main.best[3]!)} / ${format("e2000")}`;
     //     },
     //     dispPart2: `Points to unlock the next layers.`,
-    //     color: "#f0d000"
+    //     get color() {
+    //         return mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2)
+    //     }
     // }
 ];
 
 type Game = {
     currentSave: number;
     autoSaveInterval: number;
-    idGen: number;
     list: Array<{
-        id: number;
         name: string;
         modes: Array<number>;
         data: Player;
@@ -168,7 +169,8 @@ export type Player = {
     settings: {
         notation: number,
         scaleSoftColors: boolean
-        scaledUpgBase: boolean
+        scaledUpgBase: boolean,
+        notationLimit: number
     },
 
     gameProgress: {
@@ -265,6 +267,7 @@ export type Player = {
             },
             blessings: {
                 amount: DecimalSource,
+                clickCooldown: DecimalSource,
                 totals: Array<null | DecimalSource>, // null, null, null, col, tax
                 best: Array<null | DecimalSource>, // null, null, null, col, tax
                 totalEver: DecimalSource,
@@ -388,10 +391,8 @@ export const initGameBeforeSave = (): Game => {
     return {
         currentSave: 0,
         autoSaveInterval: 5,
-        idGen: 0,
         list: [
             {
-                id: 0,
                 name: "Save #1",
                 modes: [],
                 data: data
@@ -436,7 +437,8 @@ export const initPlayer = (set = false): Player => {
         settings: {
             notation: 0,
             scaleSoftColors: false,
-            scaledUpgBase: true
+            scaledUpgBase: true,
+            notationLimit: 1e6
         },
 
         gameProgress: {
@@ -534,6 +536,7 @@ export const initPlayer = (set = false): Player => {
                 },
                 blessings: {
                     amount: D(0),
+                    clickCooldown: D(0),
                     totals: [null, null, null, D(0), D(0)],
                     best: [null, null, null, D(0), D(0)],
                     totalEver: D(0),
@@ -657,8 +660,8 @@ export const initPlayer = (set = false): Player => {
     return data;
 };
 
-export const setPlayerFromSave = (save: string, id: number): void => {
-    const procSave = JSON.parse(atob(save));
+export const setPlayerFromSave = (save: { id: number; name: string; modes: number[]; data: Player; }, id: number): void => {
+    const procSave = save;
     game.value.list[id] = procSave;
     if (game.value.currentSave === id) {
         player.value = procSave.data;
@@ -666,8 +669,8 @@ export const setPlayerFromSave = (save: string, id: number): void => {
     player.value = updatePlayerData(player.value);
 };
 
-export const setGameFromSave = (save: string): void => {
-    const procSave = JSON.parse(atob(save));
+export const setGameFromSave = (save: Game): void => {
+    const procSave = save;
     game.value = procSave;
     player.value = game.value.list[game.value.currentSave].data;
     player.value = updatePlayerData(player.value);
@@ -675,6 +678,7 @@ export const setGameFromSave = (save: string): void => {
 
 type Tmp = {
     gameTimeSpeed: Decimal,
+    inputSaveList: string,
     main: {
         pps: Decimal,
         ppsNullified: boolean,
@@ -852,20 +856,8 @@ type Tmp = {
         kp: string,
         skp: string
     },
-    scaleList: Array<{
-        id: number,
-        list: Array<{
-            id: number,
-            txt: string
-        }>
-    }>,
-    softList: Array<{
-        id: number,
-        list: Array<{
-            id: number,
-            txt: string
-        }>
-    }>,
+    scaleList: Array<Array<string>>,
+    softList: Array<Array<string>>,
     achievementList: Array<Array<number>>
 };
 
@@ -878,7 +870,10 @@ type gameVars = {
     sessionTime: number,
     sessionStart: number,
     fps: number,
-    displayedFPS: string
+    displayedFPS: string,
+    warnings: {
+        negativePPS: boolean
+    }
 };
 
 export const tmp: Ref<Tmp> = ref(initTemp());
@@ -894,7 +889,10 @@ export const gameVars: Ref<gameVars> = ref({
     sessionTime: 0,
     sessionStart: 0,
     fps: 0,
-    displayedFPS: "0.0"
+    displayedFPS: "0.0",
+    warnings: {
+        negativePPS: false
+    }
 });
 
 export const tab: Ref<Tab> = ref({
@@ -915,6 +913,7 @@ export const tab: Ref<Tab> = ref({
 function initTemp(): Tmp {
     const obj: Tmp = {
         gameTimeSpeed: D(1),
+        inputSaveList: 'Input your save list here!',
         main: {
             pps: D(0),
             ppsNullified: false,
@@ -1093,10 +1092,10 @@ function initTemp(): Tmp {
         achievementList: []
     };
     for (let i = 0; i < 10; i++) {
-        obj.scaleList.push({ id: i, list: [] });
+        obj.scaleList.push([]);
     }
     for (let i = 0; i < 10; i++) {
-        obj.softList.push({ id: i, list: [] });
+        obj.softList.push([]);
     }
     for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
         obj.kua.active.blessings.upgrades[i] = true;
@@ -1127,7 +1126,7 @@ function loadGame(): void {
     gameVars.value.lastFPSCheck = 0;
     if (localStorage.getItem(saveID) !== null && localStorage.getItem(saveID) !== "null") {
         try {
-            game.value = JSON.parse(atob(localStorage.getItem(saveID)!));
+            game.value = JSON.parse(decompressSave(localStorage.getItem(saveID)!));
             player.value = updatePlayerData(game.value.list[game.value.currentSave].data);
         } catch (e) {
             console.error(`loading the game.value went wrong!`);
@@ -1485,7 +1484,7 @@ function calcPPS(): Decimal {
 }
 
 export const getEndgame = () => {
-    return D(0);
+    return Decimal.max(player.value.gameProgress.main.bestEver, 1).log10().sqrt().div(Decimal.sqrt(2000)).mul(100);
 };
 
 function gameLoop(): void {
@@ -1585,7 +1584,7 @@ function gameLoop(): void {
                 data.scal[0].basePow
             ).pow10();
 
-            generate = data.newPts.sub(data.oldPts);
+            generate = data.newPts.sub(data.oldPts).max(0); // max 0 to fix negative PPS bug, probably floating point issues
 
             tmp.value.main.pps = generate.div(gameDelta);
 
@@ -1626,6 +1625,23 @@ function gameLoop(): void {
                     data.scal[0].basePow
                 ).pow10().mul(gameDelta);
         } else {
+            if (generate.lt(0) && !gameVars.value.warnings.negativePPS) {
+                gameVars.value.warnings.negativePPS = true;
+                console.log(`generate: ${generate}`);
+                console.warn(`PPS was trying to be negative! wtf?!`);
+                console.warn(`Internal game information:`);
+                console.warn({
+                    saveFile: {
+                        save: btoa(JSON.stringify(game.value.list[game.value.currentSave])),
+                        cloggingConsole: true
+                    },
+                    gameVariables1: gameVars.value,
+                    gameVariables2: tmp.value
+                });
+                console.table(ALL_FACTORS[0].factors);
+                alert(`An error happened: your points was attempting to be negative! The error was prevented, but the game may run in an unstable state. The game's save file was automatically exported into console.`);
+            }
+            generate = generate.max(0);
             player.value.gameProgress.main.points = Decimal.add(player.value.gameProgress.main.points, generate);
 
             updateAllTotal(player.value.gameProgress.main.totals, generate);
@@ -1640,7 +1656,7 @@ function gameLoop(): void {
         player.value.gameProgress.unlocks.col = player.value.gameProgress.unlocks.col || (getKuaUpgrade('p', 2) && Decimal.gte(player.value.gameProgress.kua.amount, 100));
         player.value.gameProgress.unlocks.kblessings = player.value.gameProgress.unlocks.kblessings || (getKuaUpgrade('p', 8) && Decimal.gte(player.value.gameProgress.kua.amount, 1e6));
         player.value.gameProgress.unlocks.kproofs.main = player.value.gameProgress.unlocks.kproofs.main || getKuaUpgrade('k', 3);
-        player.value.gameProgress.unlocks.kproofs.strange = player.value.gameProgress.unlocks.kproofs.strange || Decimal.gte(tmp.value.kua.proofs.exp, 12);
+        player.value.gameProgress.unlocks.kproofs.strange = player.value.gameProgress.unlocks.kproofs.strange || Decimal.gte(player.value.gameProgress.kua.proofs.amount, 1e24);
         player.value.gameProgress.unlocks.kproofs.finicky = player.value.gameProgress.unlocks.kproofs.finicky || Decimal.gte(player.value.gameProgress.kua.proofs.strange.amount, 1e10);
         player.value.gameProgress.unlocks.tax = player.value.gameProgress.unlocks.tax || Decimal.gte(player.value.gameProgress.main.points, "10^^10^307");
 
@@ -1734,6 +1750,8 @@ declare global {
         format: typeof format;
         COL_CHALLENGES: typeof COL_CHALLENGES;
         UPDATE_LOG: typeof UPDATE_LOG;
+        compressToBase64: typeof compressToBase64;
+        decompressFromBase64: typeof decompressFromBase64;
     }
 }
 
@@ -1754,5 +1772,7 @@ window.linearAdd = linearAdd;
 window.format = format;
 window.COL_CHALLENGES = COL_CHALLENGES;
 window.UPDATE_LOG = UPDATE_LOG;
+window.compressToBase64 = compressToBase64;
+window.decompressFromBase64 = decompressFromBase64;
 
 createApp(App).mount("#app");

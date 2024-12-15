@@ -43,9 +43,9 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                             height: 2.5vw;
                         "
                     >
-                        <span class="whiteText" style="font-size: 0.9vw"
-                            >{{ format(getEndgame(), 2) }}% to ENDGAME</span
-                        >
+                        <span class="whiteText" style="font-size: 0.9vw">
+                            {{ format(getEndgame(), 2) }}% to ENDGAME
+                        </span>
                         <div style="width: 100%; position: relative; height: 100%">
                             <div style=" background-color: #404040; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"></div>
                             <div :style="{ width: `${getEndgame().toNumber()}%` }" style=" background-color: #ffffff; position: absolute; top: 0; left: 0; height: 100%;"></div>
@@ -80,9 +80,9 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                             font-size: 0.8vw;
                                         "
                                     >
-                                        <span class="centered-text" style="height: 100%">{{
-                                            item.name
-                                        }}</span>
+                                        <span class="centered-text" style="height: 100%">
+                                            {{item.name}}
+                                        </span>
                                     </div>
                                     <div
                                         :style="{ backgroundColor: item.colors.progress }"
@@ -96,10 +96,9 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                             font-size: 0.7vw;
                                         "
                                     >
-                                        <span class="centered-text" style="height: 100%"
-                                            >~{{ format(item.progress.min(1).mul(100), 2) }}%
-                                            complete</span
-                                        >
+                                        <span class="centered-text" style="height: 100%">
+                                            ~{{ format(item.progress.min(1).mul(100), 2) }}% complete
+                                        </span>
                                     </div>
                                     <div style="height: 15%; width: 100%; position: relative">
                                         <div
@@ -141,26 +140,23 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 1">
             <div class="flex-container" style="flex-direction: row; justify-content: center">
-                <div v-for="(item, index) in tmp.scaleList" :key="item.id" style="color: #fff">
-                    <div :style="{ backgroundColor: SCALE_ATTR[index].color }" v-if="item.list.length > 0" style="border-radius: 6vw; width: 6vw; height: 1.2vw; color: #fff; text-align: center; padding: 2.4vw 0; margin-left: 0.15vw; margin-right: 0.15vw; font-size: 0.8vw;" class="tooltip fontVerdana">
+                <div v-for="(item, index) in tmp.scaleList" :key="index" style="color: #fff">
+                    <div :style="{ backgroundColor: SCALE_ATTR[index].color }" v-if="item.length > 0" style="border-radius: 6vw; width: 6vw; height: 1.2vw; color: #fff; text-align: center; padding: 2.4vw 0; margin-left: 0.15vw; margin-right: 0.15vw; font-size: 0.8vw;" class="tooltip fontVerdana">
                         {{ SCALE_ATTR[index].name }}
                         <span class="tooltiptext">
-                            <span v-for="j in item.list" :key="j.id">
-                                {{ j.txt }}
+                            <span v-for="(item2, index2) in item" :key="index2">
+                                {{ item2 }}
                                 <br>
                             </span>
                         </span>
                     </div>
                 </div>
             </div>
-            <div
-                class="flex-container"
-                style="flex-direction: row; justify-content: center; margin-top: 0.15vw"
-            >
-                <div v-for="(item, index) in tmp.softList" :key="item.id" style="color: #fff">
+            <div class="flex-container" style="flex-direction: row; justify-content: center; margin-top: 0.15vw">
+                <div v-for="(item, index) in tmp.softList" :key="index" style="color: #fff">
                     <div
                         :style="{ backgroundColor: SOFT_ATTR[index].color }"
-                        v-if="item.list.length > 0"
+                        v-if="item.length > 0"
                         style="
                             border-radius: 6vw;
                             width: 6vw;
@@ -176,8 +172,8 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                     >
                         {{ SOFT_ATTR[index].name }}
                         <span class="tooltiptext">
-                            <span v-for="j in item.list" :key="j.id">
-                                {{ j.txt }}
+                            <span v-for="(item2, index2) in item" :key="index2">
+                                {{ item2 }}
                                 <br>
                             </span>
                         </span>
@@ -224,7 +220,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                         </div>
                     </div>
                     <div v-for="(item2, index2) in item.subTabs" :key="item2.name">
-                        <div v-if=" tab.tabList[tab.currentTab][2] === index2 && item2.factors !== null">
+                        <div v-if="tab.tabList[tab.currentTab][2] === index2 && item2.factors !== null">
                             <div class="flex-container cont1">
                                 <div class="flex-container cont2">
                                     <div v-for="(item3, index3) in item2.factors" :key="index3" style="display: contents; margin-top: 0.4vw">
@@ -237,7 +233,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                 </div>
                             </div>
                         </div>
-                        <div v-if=" tab.tabList[tab.currentTab][2] === index2 && item2.subTabs !== null">
+                        <div v-if="tab.tabList[tab.currentTab][2] === index2 && item2.subTabs !== null">
                             <div class="flex-container subTabLayout">
                                 <div v-for="(item3, index3) in item2.subTabs" :key="item3.name">
                                     <Tab_Button
@@ -249,7 +245,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                 </div>
                             </div>
                             <div v-for="(item3, index3) in item2.subTabs" :key="item3.name">
-                                <div v-if=" tab.tabList[tab.currentTab][3] === index3 && item3.factors !== null">
+                                <div v-if="tab.tabList[tab.currentTab][3] === index3 && item3.factors !== null">
                                     <div class="flex-container cont1">
                                         <div class="flex-container cont2">
                                             <div v-for="(item4, index4) in item3.factors" :key="index4" style="display: contents; margin-top: 0.4vw">

@@ -52,6 +52,7 @@ export const updatePlayerData = (player: Player): Player => {
     if (player.version === 6) {
         player.gameProgress.kua.blessings = {
             amount: D(0),
+            clickCooldown: D(0),
             totals: [null, null, null, D(0), D(0)],
             best: [null, null, null, D(0), D(0)],
             upgrades: [D(0), D(0), D(0), D(0)],
@@ -555,14 +556,34 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 31;
     }
     if (player.version === 31) {
-
-        // player.displayVersion = 'v1.1.0.1 - Dec-09-2024';
-        // player.version = 32;
+        player.gameProgress.kua.blessings.clickCooldown = D(0);
+        player.displayVersion = 'v1.1.2.1 - Dec-12-2024';
+        player.version = 32;
     }
     if (player.version === 32) {
+        player.settings.notationLimit = 1e6;
+        player.displayVersion = 'v1.1.2.2 - Dec-13-2024';
+        player.version = 33;
+    }
+    if (player.version === 33) {
+        player.settings.notationLimit = 6;
+        player.displayVersion = 'v1.1.3 - Dec-15-2024';
+        player.version = 34;
+    }
+    if (player.version === 34) {
 
-        // player.displayVersion = 'v1.1.0.1 - Dec-09-2024';
-        // player.version = 33;
+        // player.displayVersion = 'v1.1.3.1 - Dec-15-2024';
+        // player.version = 35;
+    }
+    if (player.version === 35) {
+
+        // player.displayVersion = 'v1.1.3.2 - Dec-15-2024';
+        // player.version = 36;
+    }
+    if (player.version === 36) {
+
+        // player.displayVersion = 'v1.1.3.3 - Dec-15-2024';
+        // player.version = 37;
     }
     return player;
 };

@@ -838,28 +838,22 @@ export const doAllScaling = (x: DecimalSource, scalList: Array<ScSlData>, inv: b
 
 export const compileScalSoftList = () => {
     for (let i = 0; i < tmp.value.scaleList.length; i++) {
-        tmp.value.scaleList[i].list = [];
+        tmp.value.scaleList[i] = [];
     }
     for (let i = 0; i < tmp.value.softList.length; i++) {
-        tmp.value.softList[i].list = [];
+        tmp.value.softList[i] = [];
     }
 
     for (let i = 0; i < ScSlItemsList.length; i++) {
         const item = LIST_OF_SCSL[ScSlItemsList[i]];
         for (let j = 0; j < item.scale.length; j++) {
             if (Decimal.gte(SCAL_VALUES[ScSlItemsList[i]], item.scale[j].start)) {
-                tmp.value.scaleList[j].list.push({
-                    id: j,
-                    txt: `${tmp.value.scaleSoftcapNames[ScSlItemsList[i]]} - ${format(item.scale[j].power.mul(100), 3)}% starting at ${format(item.scale[j].start, 3)}`
-                });
+                tmp.value.scaleList[j].push(`${tmp.value.scaleSoftcapNames[ScSlItemsList[i]]} - ${format(item.scale[j].power.mul(100), 3)}% starting at ${format(item.scale[j].start, 3)}`);
             }
         }
         for (let j = 0; j < item.soft.length; j++) {
             if (Decimal.gte(SOFT_VALUES[ScSlItemsList[i]], item.soft[j].start)) {
-                tmp.value.softList[j].list.push({
-                    id: j,
-                    txt: `${tmp.value.scaleSoftcapNames[ScSlItemsList[i]]} - ${format(item.soft[j].power.mul(100), 3)}% starting at ${format(item.soft[j].start, 3)} (${item.soft[j].displayedEffect})`
-                });
+                tmp.value.softList[j].push(`${tmp.value.scaleSoftcapNames[ScSlItemsList[i]]} - ${format(item.soft[j].power.mul(100), 3)}% starting at ${format(item.soft[j].start, 3)} (${item.soft[j].displayedEffect})`);
             }
         }
     }

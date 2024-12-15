@@ -202,21 +202,21 @@ export const KUA_PROOF_AUTO: KuaProofAuto = {
             show: true
         },
         {
-            cost: D('e890'),
+            cost: D('e3700'),
             desc: `Autobuy Ultimate Bribery.`,
             get show() {
                 return player.value.gameProgress.unlocks.kproofs.finicky;
             }
         },
         {
-            cost: D('e2140'),
+            cost: D('e9500'),
             desc: `Autobuy Constructive Interference.`,
             get show() {
                 return player.value.gameProgress.unlocks.kproofs.finicky;
             }
         },
         {
-            cost: D('e5460'),
+            cost: D('e23000'),
             desc: `Autobuy Infinite Staircase.`,
             get show() {
                 return player.value.gameProgress.unlocks.kproofs.finicky;
@@ -225,17 +225,17 @@ export const KUA_PROOF_AUTO: KuaProofAuto = {
     ],
     kp: [
         {
-            cost: D(500),
+            cost: D(50),
             desc: `Autobuy Simple Breakthrough.`,
             show: true
         },
         {
-            cost: D(4000),
+            cost: D(750),
             desc: `Autobuy Trial and Error.`,
             show: true
         },
         {
-            cost: D(2.5e4),
+            cost: D(1e4),
             desc: `Autobuy Crafted Experiments.`,
             show: true
         },
@@ -262,14 +262,14 @@ export const KUA_PROOF_AUTO: KuaProofAuto = {
             }
         },
         {
-            cost: D('e900'),
+            cost: D('e2000'),
             desc: `Autobuy Verification Trials.`,
             get show() {
                 return player.value.gameProgress.unlocks.kproofs.finicky;
             }
         },
         {
-            cost: D('e1600'),
+            cost: D('e7500'),
             desc: `Autobuy Ultimate Experiments.`,
             get show() {
                 return player.value.gameProgress.unlocks.kproofs.finicky;
@@ -387,7 +387,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             effect(x) {
                 let eff = D(2);
                 eff = eff.add(tmp.value.kua.proofs.upgrades.effect[5].effect);
-                eff = Decimal.pow(eff, x);
+                eff = eff.pow(x);
                 return eff;
             }
         },
@@ -454,7 +454,10 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return Decimal.log10(x).log(250).root(1.2).sub(1).mul(12);
             },
             effect(x) {
-                return Decimal.mul(x, 0.2);
+                let eff = D(0.2);
+                eff = eff.add(tmp.value.kua.proofs.upgrades.effect[8].effect);
+                eff = eff.mul(x);
+                return eff;
             }
         },
         {
@@ -488,7 +491,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return `+^${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[7].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.effect[7].trueLevel)), 3)} KS and KP gain from Kua and KS respectively.`;
             },
             get desc() {
-                return `+^${format(this.effect(tmp.value.kua.proofs.upgrades.effect[7].trueLevel), 3)} KS and KP gain from Kua and KS respectively.`;
+                return `+^${format(this.effect(tmp.value.kua.proofs.upgrades.effect[7].trueLevel).sub(1), 3)} KS and KP gain from Kua and KS respectively.`;
             },
             cost(x) {
                 return smoothExp(x, 1.05, false).div(9).add(1).pow_base(450000).pow10();
@@ -498,7 +501,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return smoothExp(Decimal.log10(x).log(450000).sub(1).mul(9), 1.05, true);
             },
             effect(x) {
-                return Decimal.mul(0.02, x);
+                return Decimal.mul(0.01, x).add(1);
             }
         },
         {
@@ -507,10 +510,10 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             },
             title: `Infinite Staircase`,
             get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[8].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.effect[8].trueLevel)), 2)} Holy Process effect base.`;
+                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[8].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.effect[8].trueLevel)), 2)} Hyper Heaven effect base.`;
             },
             get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.effect[8].trueLevel), 2)} Holy Process effect base.`;
+                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.effect[8].trueLevel), 2)} Hyper Heaven effect base.`;
             },
             cost(x) {
                 return smoothExp(x, 1.06, false).div(8).add(1).pow_base(2.4e6).pow10();
@@ -520,7 +523,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return smoothExp(Decimal.log10(x).log(2.4e6).sub(1).mul(8), 1.06, true);
             },
             effect(x) {
-                return Decimal.mul(x, 0.2);
+                return Decimal.mul(x, 0.04);
             }
         },
     ],
@@ -746,14 +749,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return `+${format(this.effect(tmp.value.kua.proofs.upgrades.skp[0].trueLevel), 2)} free levels to the first 3 effect upgrades.`;
             },
             cost(x) {
-                return Decimal.pow(x, 1.4).pow_base(2).mul(50);
+                return Decimal.pow(x, 1.5).pow_base(2).mul(50);
             },
             target(x) {
                 if (Decimal.lt(x, 50)) { return D(-1); }
-                return Decimal.div(x, 50).log2().root(1.4);
+                return Decimal.div(x, 50).log2().root(1.5);
             },
             effect(x) {
-                return Decimal.add(player.value.gameProgress.kua.proofs.strange.times, 1).log10().sqrt().div(10).mul(x);
+                let eff = Decimal.add(player.value.gameProgress.kua.proofs.strange.times, 1).log10().sqrt().div(10).mul(x);
+                eff = scale(eff, 1.3, true, 10, 1, 2);
+                return eff;
             }
         },
         {
@@ -806,23 +811,22 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             show: true,
             title: `Difficult Task`,
             get perDesc() {
-                if (Decimal.gt(player.value.gameProgress.main.points, 1)) {
-                    // placeholder condition
-                    return `You need something else to continue...`;
-                }
-                return `Unlock FKP Allocation and the Cyan alloc.`;
+                return `You aren't able to unlock this right now...`;
+                // return `Unlock FKP Allocation and the Cyan alloc.`;
             },
             get desc() {
                 return tmp.value.kua.proofs.upgrades.fkp[0].trueLevel.gt(0) ? 'Unlocked' : 'Locked';
             },
             cost(x) {
                 // placeholder condition
-                return Decimal.gt(x, 0) || Decimal.gt(player.value.gameProgress.main.points, 1) ? D(Infinity) : D(1);
+                return Decimal.add(x, Infinity);
+                // return Decimal.gt(x, 0) ? D(Infinity) : D(1);
             },
             target(x) {
                 // placeholder condition
-                if (Decimal.lt(x, 1) || Decimal.gt(player.value.gameProgress.main.points, 1)) { return D(-1); }
-                return D(0);
+                return Decimal.mul(x, 0).sub(1);
+                // if (Decimal.lt(x, 1)) { return D(-1); }
+                // return D(0);
             },
             effect(x) {
                 return D(x);
@@ -841,12 +845,14 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             },
             cost(x) {
                 // placeholder condition
-                return Decimal.gt(x, 0) || Decimal.gt(player.value.gameProgress.main.points, 1) ? D(Infinity) : D(10);
+                return Decimal.add(x, Infinity);
+                // return Decimal.gt(x, 0) ? D(Infinity) : D(10);
             },
             target(x) {
                 // placeholder condition
-                if (Decimal.lt(x, 10) || Decimal.gt(player.value.gameProgress.main.points, 1)) { return D(-1); }
-                return D(0);
+                return Decimal.mul(x, 0).sub(1);
+                // if (Decimal.lt(x, 10)) { return D(-1); }
+                // return D(0);
             },
             effect(x) {
                 let eff = D(0);
@@ -870,12 +876,14 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             },
             cost(x) {
                 // placeholder condition
-                return Decimal.gt(x, 0) || Decimal.gt(player.value.gameProgress.main.points, 1) ? D(Infinity) : D(50);
+                return Decimal.add(x, Infinity);
+                // return Decimal.gt(x, 0) ? D(Infinity) : D(100);
             },
             target(x) {
                 // placeholder condition
-                if (Decimal.lt(x, 50) || Decimal.gt(player.value.gameProgress.main.points, 1)) { return D(-1); }
-                return D(0);
+                return Decimal.mul(x, 0).sub(1);
+                // if (Decimal.lt(x, 100)) { return D(-1); }
+                // return D(0);
             },
             effect(x) {
                 return D(x);
@@ -993,12 +1001,12 @@ export const KUA_BLESS_TIER = {
             return Decimal.gte(tmp.value.kua.blessings.tier, 3);
         },
         req(x: DecimalSource) {
-            return Decimal.add(x, 1).log10().add(1).pow(2).sub(1).pow10().sub(1).div(4).add(4).floor();
+            return smoothExp(x, 1.01, false).pow(1.2).mul(2).add(4).floor();
         },
         target(x: DecimalSource) {
             x = Decimal.ceil(x);
             if (x.lt(4)) { return D(-1); }
-            return x.sub(4).mul(4).add(1).log10().add(1).root(2).sub(1).pow10().sub(1);
+            return smoothExp(x.sub(4).div(2).root(1.2), 1.01, true);
         },
         rounded(x: DecimalSource) {
             return this.target(x).floor().add(1);
@@ -1275,7 +1283,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return [
                 Decimal.max(player.value.gameProgress.kua.blessings.amount, 1).log10().sqrt().add(1).pow(Decimal.pow(x, 0.75)),
                 Decimal.gte(x, 6) 
-                    ? Decimal.sub(x, 5).sqrt().mul(0.25)
+                    ? Decimal.add(x, 3).sqrt().mul(1.5).sub(4.5)
                     : D(0),
                 Decimal.gte(x, 12) 
                     ? Decimal.sub(x, 11).div(50).add(1)
@@ -1298,9 +1306,12 @@ export const initAllKBlessingUpgrades = () => {
 }
 
 export const gainKPOnClick = () => {
-    player.value.gameProgress.kua.blessings.amount = Decimal.add(player.value.gameProgress.kua.blessings.amount, tmp.value.kua.blessings.perClick);
-    if (player.value.gameProgress.col.inAChallenge) {
-        player.value.gameProgress.col.time = Decimal.sub(player.value.gameProgress.col.time, 0.05);
+    if (Decimal.lt(player.value.gameProgress.kua.blessings.clickCooldown, 0)) {
+        player.value.gameProgress.kua.blessings.clickCooldown = D(0.25);
+        player.value.gameProgress.kua.blessings.amount = Decimal.add(player.value.gameProgress.kua.blessings.amount, tmp.value.kua.blessings.perClick);
+        if (player.value.gameProgress.col.inAChallenge) {
+            player.value.gameProgress.col.time = Decimal.sub(player.value.gameProgress.col.time, 0.25);
+        }
     }
 }
 
@@ -2240,12 +2251,14 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             }
             break;
         case 2:
+            player.value.gameProgress.kua.blessings.clickCooldown = Decimal.sub(player.value.gameProgress.kua.blessings.clickCooldown, delta);
+
             tmp.value.kua.blessings.rank = KUA_BLESS_TIER.rank.rounded(player.value.gameProgress.kua.blessings.best[3]!);
             tmp.value.kua.blessings.tier = KUA_BLESS_TIER.tier.rounded(tmp.value.kua.blessings.rank);
             tmp.value.kua.blessings.tetr = KUA_BLESS_TIER.tetr.rounded(tmp.value.kua.blessings.tier);
 
-            tmp.value.kua.blessings.perClick = D(0.1);
-            tmp.value.kua.blessings.perSec = D(1);
+            tmp.value.kua.blessings.perClick = D(1);
+            tmp.value.kua.blessings.perSec = D(2);
             setFactor(0, [4, 4], "Base", `${format(0.1, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, true);
             setFactor(0, [4, 5], "Base", `${format(1, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, true);
 
@@ -2577,35 +2590,39 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             if (tmp.value.kua.active.kshards.gain) {
                 i = D(player.value.gameProgress.kua.amount);
                 setFactor(0, [4, 2], "Base", `${format(player.value.gameProgress.kua.amount, 4)}`, `${format(i, 3)}`, true);
+                
+                i = i.pow(tmp.value.kua.proofs.upgrades.effect[8].effect);
+                setFactor(1, [4, 2], "Constructive Interference", `^${format(tmp.value.kua.proofs.upgrades.effect[8].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tmp.value.kua.proofs.upgrades.effect[8].effect, 1), "kp");
+
                 if (getKuaUpgrade("p", 1)) {
                     i = i.mul(2.5);
                 }
-                setFactor(1, [4, 2], "KPower Upgrade 1", `×${format(2.5, 2)}`, `${format(i, 3)}`, getKuaUpgrade("p", 1), "kua");
+                setFactor(2, [4, 2], "KPower Upgrade 1", `×${format(2.5, 2)}`, `${format(i, 3)}`, getKuaUpgrade("p", 1), "kua");
 
                 if (getKuaUpgrade("s", 13)) {
                     i = i.mul(KUA_UPGRADES.KShards[12].eff!);
                 }
-                setFactor(2, [4, 2], "KShard Upgrade 13", `×${format(KUA_UPGRADES.KShards[12].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 13), "kua");
+                setFactor(3, [4, 2], "KShard Upgrade 13", `×${format(KUA_UPGRADES.KShards[12].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 13), "kua");
 
                 if (Decimal.gte(timesCompleted("df"), 1)) {
                     i = i.mul(2);
                 }
-                setFactor(3, [4, 2], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
+                setFactor(4, [4, 2], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1)) {
                     i = i.mul(KUA_BLESS_UPGS[2].eff()[2]);
                 }
-                setFactor(4, [4, 2], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff()[2], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 12), "kb");
+                setFactor(5, [4, 2], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff()[2], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 12), "kb");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1)) {
                     i = i.mul(KUA_BLESS_UPGS[3].eff()[0]);
                 }
-                setFactor(5, [4, 2], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff()[0], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1), "kb");
+                setFactor(6, [4, 2], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff()[0], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1), "kb");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6)) {
                     i = i.mul(Decimal.max(player.value.gameProgress.kua.kpower.amount, 1).log10().pow(KUA_BLESS_UPGS[3].eff()[1]));
                 }
-                setFactor(6, [4, 2], `KBlessing Upgrade 4`, `×log10(${format(player.value.gameProgress.kua.kpower.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff()[1], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6), "kb");
+                setFactor(7, [4, 2], `KBlessing Upgrade 4`, `×log10(${format(player.value.gameProgress.kua.kpower.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff()[1], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6), "kb");
 
                 data = {
                     oldGain: i,
@@ -2613,13 +2630,13 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     newKua: D(0),
                 };
                 data.oldKua = Decimal.max(player.value.gameProgress.kua.amount, 1e-4);
-    
+
                 if (inChallenge("df")) {
                     data.newKua = scale(scale(data.oldKua, 0.2, true, 1e-4, 1, Decimal.pow(0.5, challengeDepth("df"))).add(i), 0.2, false, 1e-4, 1, Decimal.pow(0.5, challengeDepth("df")));
-    
+
                     i = data.newKua.sub(data.oldKua);
                 }
-                setFactor(6, [4, 2], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
+                setFactor(8, [4, 2], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
             }
             tmp.value.kua.shardGen = i;
 
@@ -2627,35 +2644,39 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             if (tmp.value.kua.active.kpower.gain) {
                 i = D(player.value.gameProgress.kua.kshards.amount);
                 setFactor(0, [4, 3], "Base", `${format(player.value.gameProgress.kua.kshards.amount, 4)}`, `${format(i, 3)}`, true);
+
+                i = i.pow(tmp.value.kua.proofs.upgrades.effect[8].effect);
+                setFactor(1, [4, 3], "Constructive Interference", `^${format(tmp.value.kua.proofs.upgrades.effect[8].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tmp.value.kua.proofs.upgrades.effect[8].effect, 1), "kp");
+
                 if (getKuaUpgrade("s", 10)) {
                     i = i.mul(tmp.value.kua.effects.kpower);
                 }
-                setFactor(1, [4, 3], "KShard Upgrade 10", `×${format(tmp.value.kua.effects.kpower, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 10), "kua");
+                setFactor(2, [4, 3], "KShard Upgrade 10", `×${format(tmp.value.kua.effects.kpower, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 10), "kua");
 
                 if (getKuaUpgrade("s", 14)) {
                     i = i.mul(KUA_UPGRADES.KShards[13].eff!);
                 }
-                setFactor(2, [4, 3], "KShard Upgrade 14", `×${format(KUA_UPGRADES.KShards[13].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 14), "kua");
+                setFactor(3, [4, 3], "KShard Upgrade 14", `×${format(KUA_UPGRADES.KShards[13].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 14), "kua");
 
                 if (Decimal.gte(timesCompleted("df"), 1)) {
                     i = i.mul(2);
                 }
-                setFactor(3, [4, 3], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
+                setFactor(4, [4, 3], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1)) {
                     i = i.mul(KUA_BLESS_UPGS[2].eff()[2]);
                 }
-                setFactor(4, [4, 3], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff()[2], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 12), "kb");
+                setFactor(5, [4, 3], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff()[2], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 12), "kb");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1)) {
                     i = i.mul(KUA_BLESS_UPGS[3].eff()[0]);
                 }
-                setFactor(5, [4, 3], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff()[0], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1), "kb");
+                setFactor(6, [4, 3], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff()[0], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1), "kb");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6)) {
                     i = i.mul(Decimal.max(player.value.gameProgress.kua.kshards.amount, 1).log10().pow(KUA_BLESS_UPGS[3].eff()[1]));
                 }
-                setFactor(6, [4, 3], `KBlessing Upgrade 4`, `×log10(${format(player.value.gameProgress.kua.kshards.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff()[1], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6), "kb");
+                setFactor(7, [4, 3], `KBlessing Upgrade 4`, `×log10(${format(player.value.gameProgress.kua.kshards.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff()[1], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6), "kb");
 
                 data = {
                     oldGain: i,
@@ -2669,7 +2690,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
     
                     i = data.newKua.sub(data.oldKua);
                 }
-                setFactor(6, [4, 3], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
+                setFactor(8, [4, 3], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
             }
             tmp.value.kua.powGen = i;
 

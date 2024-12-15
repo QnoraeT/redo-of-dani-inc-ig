@@ -11,7 +11,8 @@ import { tab } from "@/main";
             <div v-for="item in TABS_LIST" :key="item.staticName">
                 <button
                     :class="{
-                        alert: item.alert
+                        alert: item.alert,
+                        warning: item.warning
                     }"
                     :style="{
                         color: item.textColor,

@@ -9,11 +9,11 @@ import {
     gameVars
 } from "./main";
 import { spawnPopup } from "./popups";
+import { compressToBase64, decompressFromBase64 } from 'lz-string'
 
 export const saveID = "danidanijr_save_revamp_redo";
 export const SAVE_MODES = [
     {
-        id: 0,
         name: "Hard",
         desc: "This mode makes the game harder, meaning there will be more strategizing, and sometimes a longer wait time. Some requirements will also be tougher to satisfy. However, some other requirements have been made slightly easier to somewhat accomodate for this.",
         borderColor: "#ff8000",
@@ -22,7 +22,6 @@ export const SAVE_MODES = [
         textColor: "#ffc080"
     },
     {
-        id: 1,
         name: "Extreme",
         desc: "This mode makes the game way more difficult, meaning this does what Hard does, + you might also have to solve puzzles as well. This mode may also add in special layers to compensate.",
         borderColor: "#ff5040",
@@ -31,7 +30,6 @@ export const SAVE_MODES = [
         textColor: "#ffd0c0"
     },
     {
-        id: 2,
         name: "Easy",
         desc: "This mode makes the game easier. This increases the pace of the game, and requirements with conditions will be nerfed.",
         borderColor: "#40ff60",
@@ -40,7 +38,6 @@ export const SAVE_MODES = [
         textColor: "#80ffa0"
     },
     {
-        id: 3,
         name: "Idler's Dream",
         desc: "This mode makes the game more like an idle game instead of the hybrid it is. (At least I hope so... >_>') Many things may become slower, but you will not have to be active as much, and the difficulty will stay roughly the same.",
         borderColor: "#80c0ff",
@@ -49,7 +46,6 @@ export const SAVE_MODES = [
         textColor: "#c0d0e0"
     },
     {
-        id: 4,
         name: "Softcap Central",
         desc: "This mode adds many, many softcaps into the game. Truly a Jacorbian spectacle! There will be a few added mechanics to help you deal with these softcaps, but overall the game will be harder.",
         borderColor: "#c040ff",
@@ -58,7 +54,6 @@ export const SAVE_MODES = [
         textColor: "#e0c0ff"
     },
     {
-        id: 5,
         name: "Scaled Ruins",
         desc: 'This mode adds many, many scaling increases into the game. Is IM:R calling? This also includes scaling increases beyond the legendary "Atomic" scaling. There will be a few added mechanics to help you deal with these softcaps, but overall the game will be harder.',
         borderColor: "#6040ff",
@@ -115,7 +110,7 @@ export const displayModesNonOptArray = (modes: Array<boolean>): string => {
 };
 
 export const saveTheFrickingGame = (clicked = false): void => {
-    localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
+    localStorage.setItem(saveID, compressSave(game.value));
     if (clicked) {
         spawnPopup(0, `The game has been saved!`, `Save`, 3, `#00FF00`);
     }
@@ -155,6 +150,45 @@ export const resetThisSave = (prompt: boolean): void => {
     tmp.value.gameIsRunning = false;
 };
 
+export const importSFIntoNew = (): void => {
+    if (!confirm("Are you sure you want to do this? This will overwrite this save file!")) {
+        return;
+    }
+    const save = prompt("Paste your save file here.");
+
+    if (save === "" || save === null) {
+        return;
+    }
+
+    const convertedSave = JSON.parse(decompressSave(save));
+
+    let isSaveList = true;
+    let error;
+    try {
+        convertedSave.list[0].id;
+    } catch(e) {
+        isSaveList = false;
+        error = e;
+    }
+
+    if (isSaveList) {
+        alert("Importing save file failed because this is an export of a save list, and not a save file, or the save file is corrupted.");
+        spawnPopup(0, error as string, "Something went wrong!", 5, `#FF0000`);
+        return;
+    }
+
+    game.value.list.push({
+        name: convertedSave.name,
+        modes: convertedSave.modes,
+        data: convertedSave.data
+    });
+
+    saveTheFrickingGame();
+    tmp.value.gameIsRunning = false;
+
+    spawnPopup(0, "Successfully created and imported save file!", "Imported Save File to New", 3, `#00FF00`);
+}
+
 export const createNewSave = (modes: Array<boolean>): void => {
     const mode = [];
     for (let i = 0; i < modes.length; i++) {
@@ -163,22 +197,20 @@ export const createNewSave = (modes: Array<boolean>): void => {
         }
     }
     game.value.list.push({
-        id: game.value.idGen,
         name: `Save #${game.value.list.length + 1}`,
         modes: mode,
         data: player.value
     });
-    game.value.idGen++;
     game.value.currentSave = game.value.list.length - 1;
     game.value.list[game.value.currentSave].data = initPlayer();
-    localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
+    saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
 };
 
 export const switchToSave = (id: number): void => {
     game.value.currentSave = id;
     player.value = game.value.list[game.value.currentSave].data;
-    localStorage.setItem(saveID, btoa(JSON.stringify(game.value)));
+    saveTheFrickingGame();
     gameVars.value.lastSave = gameVars.value.sessionTime;
     tmp.value.gameIsRunning = false;
 };
@@ -227,6 +259,35 @@ export const deleteSave = (id: number): void => {
     }
 };
 
+export const compressSave = (save: any): string => {
+    return compressToBase64(JSON.stringify(save));
+}
+
+export const decompressSave = (save: string): string => {
+    let type;
+    try {
+        JSON.parse(atob(save));
+        type = 0;
+    } catch {
+        try {
+            JSON.parse(decompressFromBase64(save));
+            type = 1;
+        } catch (e) {
+            alert(`Importing and decompressing save failed! ${e}`);
+            spawnPopup(0, e as string, "Something went wrong!", 5, `#FF0000`);
+            throw new Error(`Importing and decompressing save failed! ${e}`);
+        }
+    }
+
+    let convertedSave;
+    if (type === 0) {
+        convertedSave = atob(save);
+    } else {
+        convertedSave = decompressFromBase64(save);
+    }
+    return convertedSave;
+}
+
 export const importSave = (id: number): void => {
     if (!confirm("Are you sure you want to do this? This will overwrite this save file!")) {
         return;
@@ -237,18 +298,12 @@ export const importSave = (id: number): void => {
         return;
     }
 
-    try {
-        JSON.parse(atob(save));
-    } catch (e) {
-        alert(`Importing save file failed! ${e}`);
-        spawnPopup(0, e as string, "Something went wrong!", 5, `#FF0000`);
-        return;
-    }
+    const convertedSave = JSON.parse(decompressSave(save));
 
     let isSaveList = true;
     let error;
     try {
-        JSON.parse(atob(save)).list[0].id;
+        convertedSave.list[0].id;
     } catch(e) {
         isSaveList = false;
         error = e;
@@ -260,7 +315,7 @@ export const importSave = (id: number): void => {
         return;
     }
 
-    setPlayerFromSave(save, id);
+    setPlayerFromSave(convertedSave, id);
     saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
 
@@ -268,12 +323,12 @@ export const importSave = (id: number): void => {
 };
 
 export const exportSave = (id: number): void => {
-    const str = btoa(JSON.stringify(game.value.list[id]));
+    const str = compressSave(game.value.list[id]);
     const el = document.createElement("textarea");
     el.value = str;
     document.body.appendChild(el);
     el.select();
-    el.setSelectionRange(0, 99999);
+    el.setSelectionRange(0, 999999);
     document.execCommand("copy");
     document.body.removeChild(el);
 
@@ -291,19 +346,13 @@ export const importSaveList = (): void => {
         return;
     }
 
-    try {
-        JSON.parse(atob(save));
-    } catch (e) {
-        alert(`Importing save list failed! ${e}`);
-        spawnPopup(0, e as string, "Something went wrong!", 5, `#FF0000`);
-        return;
-    }
+    const convertedSave = JSON.parse(decompressSave(save));
 
     let isSaveFile = true;
     let error;
     try {
-        JSON.parse(atob(save)).data.lastUpdated;
-        JSON.parse(atob(save)).data.offlineTime;
+        convertedSave.data.lastUpdated;
+        convertedSave.data.offlineTime;
     } catch(e) {
         isSaveFile = false;
         error = e;
@@ -315,7 +364,7 @@ export const importSaveList = (): void => {
         return;
     }
 
-    setGameFromSave(save);
+    setGameFromSave(convertedSave);
     saveTheFrickingGame();
     tmp.value.gameIsRunning = false;
 
@@ -323,12 +372,12 @@ export const importSaveList = (): void => {
 };
 
 export const exportSaveList = (): void => {
-    const str = btoa(JSON.stringify(game.value));
+    const str = compressSave(game.value);
     const el = document.createElement("textarea");
     el.value = str;
     document.body.appendChild(el);
     el.select();
-    el.setSelectionRange(0, 99999);
+    el.setSelectionRange(0, 999999);
     document.execCommand("copy");
     document.body.removeChild(el);
 

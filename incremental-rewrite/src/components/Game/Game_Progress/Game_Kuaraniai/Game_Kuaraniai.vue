@@ -245,12 +245,29 @@ import { COL_CHALLENGES } from "../Game_Colosseum/Game_Colosseum";
                         You can hold shift on these upgrades to see what their cost and effect will be next purchase.
                     </span><br>
                     <span style="color: #0f2; text-align: center; font-size: 0.7vw">
-                        This boosts Upgrade 1's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg1Base, 3) }}</b></span><span v-if="COL_CHALLENGES.im.type2ChalEff![1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg1Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff![1])) }})</span>.<br>
-                        This boosts Upgrade 2's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg2Base, 3) }}</b></span><span v-if="COL_CHALLENGES.im.type2ChalEff![1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg2Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff![1])) }})</span>.<br>
+                        This boosts Upgrade 1's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg1Base, 3) }}</b></span><span v-if="COL_CHALLENGES.im.type2ChalEff![1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg1Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff![1]), 2) }})</span>.<br>
+                        This boosts Upgrade 2's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg2Base, 3) }}</b></span><span v-if="COL_CHALLENGES.im.type2ChalEff![1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg2Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff![1]), 2) }})</span>.<br>
                         This boosts Effective Kuaraniai by ×<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.kuaEff, 2) }}</b></span>.
                     </span>
-                    <button class="whiteText fontVerdana kuaBlessingActiveButton" @click="gainKPOnClick()">
-                        Gain {{ format(tmp.kua.blessings.perClick, 3) }} KBlessings<span v-if="player.gameProgress.col.inAChallenge">, but lose {{ formatTime(0.05) }} of challenge time</span>.
+                    
+                    <button class="whiteText fontVerdana kuaBlessingActiveButton" :class="{ nope: Decimal.gt(player.gameProgress.kua.blessings.clickCooldown, 0), ok: Decimal.lte(player.gameProgress.kua.blessings.clickCooldown, 0) }" style="padding: 0vw;" :style="{ cursor: Decimal.gt(player.gameProgress.kua.blessings.clickCooldown, 0) ? 'not-allowed' : 'pointer' }" @click="gainKPOnClick()">
+                        <div class="whiteText" style="display: flex; justify-content: center; position: relative; width: 100%; height: 70%; font-size: 0.6vw;">
+                            <span class="centered-text" style="height: 100%">
+                                Gain {{ format(tmp.kua.blessings.perClick, 1) }} KBlessings.
+                            </span>
+                        </div>
+                        <div style="height: 30%; width: 100%; position: relative">
+                            <!-- does nothing, is actually the base of the bar -->
+                            <div style="position: absolute; top: 0; left: 0; background-color: #002000; height: 100%; width: 100%;"></div>
+                            <div
+                                :style="{
+                                    width: `${
+                                        Decimal.sub(1, Decimal.max(player.gameProgress.kua.blessings.clickCooldown, 0).div(0.25)).mul(100).toNumber()
+                                    }%`
+                                }"
+                                style="position: absolute; top: 0; left: 0; height: 100%; background-color: #00ff00; "
+                            ></div>
+                        </div>
                     </button>
                     <div class="flex-container" style="margin-top: 0.4vw; flex-wrap: wrap; justify-content: center;">
                         <div v-for="(item, index) in KUA_BLESS_UPGS" :key="index">
@@ -314,7 +331,7 @@ import { COL_CHALLENGES } from "../Game_Colosseum/Game_Colosseum";
         </div>
         <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 2">
             <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;">
-                <button :class="{ alert: tmp.kua.proofs.canBuyUpgs.auto }" v-if="Decimal.gte(player.gameProgress.kua.proofs.strange.amount, 250) || player.gameProgress.unlocks.kproofs.finicky" @click="switchSubTab(-2, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">Automation</button>
+                <button :class="{ alert: tmp.kua.proofs.canBuyUpgs.auto }" v-if="Decimal.gte(player.gameProgress.kua.proofs.strange.amount, 10) || player.gameProgress.unlocks.kproofs.finicky" @click="switchSubTab(-2, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">Automation</button>
                 <button :class="{ alert: tmp.kua.proofs.canBuyUpgs.effect }" @click="switchSubTab(-1, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">Effects</button>
                 <button :class="{ alert: tmp.kua.proofs.canBuyUpgs.kp }" @click="switchSubTab(0, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">KProof</button>
                 <button :class="{ alert: tmp.kua.proofs.canBuyUpgs.skp }" v-if="player.gameProgress.unlocks.kproofs.strange" @click="switchSubTab(1, 1)" class="kuaButton2 fontVerdana whiteText normalTabButton">Strange KP</button>
@@ -436,9 +453,9 @@ import { COL_CHALLENGES } from "../Game_Colosseum/Game_Colosseum";
                         times.
                     </span>
                     <button @click="resetFromSKP(true, true, true, 1)" class="whiteText fontVerdana" style="border: 0.18vw solid #ff0; background-color: #440; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.2vw; padding-top: 0.75vw; padding-bottom: 0.75vw; padding-right: 1.5vw; padding-left: 1.5vw;"> 
-                        Add <span style="font-size: 1vw"><b>{{ format(getStrangeKPExp(tmp.kua.proofs.exp.add(player.gameProgress.kua.proofs.strange.hiddenExp), false).sub(getStrangeKPExp(player.gameProgress.kua.proofs.strange.hiddenExp, false)), 2) }}</b></span> to Strange KProof's exponent and add 1 second of it.<br>
-                        <span v-if="Decimal.lte(player.gameProgress.kua.proofs.strange.cooldown, 0) && Decimal.gte(tmp.kua.proofs.exp, 12)">This will reset KProof progress, but will not reset Effects progress.<br></span>
-                        <span v-if="Decimal.lt(tmp.kua.proofs.exp, 12)">You cannot SKP reset until you get {{ format(12) }} KP exponent!<br></span>
+                        Add <span style="font-size: 1vw"><b>{{ format(getStrangeKPExp(Decimal.log10(player.gameProgress.kua.proofs.amount).div(2).add(player.gameProgress.kua.proofs.strange.hiddenExp), false).sub(getStrangeKPExp(player.gameProgress.kua.proofs.strange.hiddenExp, false)), 2) }}</b></span> to Strange KProof's exponent and add 1 second of it.<br>
+                        <span v-if="Decimal.lte(player.gameProgress.kua.proofs.strange.cooldown, 0) && Decimal.gte(player.gameProgress.kua.proofs.amount, 1e24)">This will reset KProof progress, but will not reset Effects progress.<br></span>
+                        <span v-if="Decimal.lt(player.gameProgress.kua.proofs.amount, 1e24)">You cannot SKP reset until you get {{ format(1e24) }} KProofs!<br></span>
                         <span v-if="Decimal.gt(player.gameProgress.kua.proofs.strange.cooldown, 0)">You cannot SKP reset for {{ formatTime(player.gameProgress.kua.proofs.strange.cooldown) }}!<br></span>
                     </button>
                     <div class="flex-container" style="margin-top: 0.4vw; flex-wrap: wrap; justify-content: center;">

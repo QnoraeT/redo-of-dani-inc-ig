@@ -1,6 +1,8 @@
-import { player } from "@/main";
+import { player, tmp } from "@/main";
 import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_Main";
 import { D } from "@/calc";
+import Decimal from "break_eternity.js";
+import { timesCompleted } from "../Game_Progress/Game_Colosseum/Game_Colosseum";
 
 export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "fkp" | "col" | "tax" | "sc1" | "sc2"
 export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "fkp", "col", "tax", "sc1", "sc2"]
@@ -370,8 +372,10 @@ export const STAGES = [
         name: "Main Tab",
         show: true,
         get progress() {
-            return D(0);
-            // return Decimal.max(player.value.gameProgress.main.points, 1).log(1e42);
+            let prog = D(0);
+            prog = prog.add(Decimal.div(player.value.gameProgress.main.pr2.bestEver, 10))
+            prog = prog.add(Decimal.max(player.value.gameProgress.main.prai.bestEver, 1).log10().div(10))
+            return prog.div(2);
         },
         get colors() {
             return {
@@ -390,11 +394,11 @@ export const STAGES = [
             return player.value.gameProgress.unlocks.kua;
         },
         get progress() {
-            return D(0);
-            // return Decimal.add(player.value.gameProgress.kua.amount, tmp.value.kua.pending)
-            //     .max(0.0001)
-            //     .mul(1e4)
-            //     .log(1e6);
+            let prog = D(0);
+            prog = prog.add(Decimal.add(player.value.gameProgress.kua.amount, tmp.value.kua.pending).max(0.0001).mul(1e4).log(1e30));
+            prog = prog.add(Decimal.max(player.value.gameProgress.kua.blessings.bestEver, 1).log10().div(12));
+            prog = prog.add(Decimal.max(player.value.gameProgress.kua.proofs.amount, 10).log10().log10().div(4));
+            return prog.div(3);
         },
         get colors() {
             return {
@@ -413,8 +417,13 @@ export const STAGES = [
             return player.value.gameProgress.unlocks.col;
         },
         get progress() {
-            return D(0);
-            // return Decimal.div(timesCompleted("su"), 5).add(Decimal.log(timesCompleted("im"), 1e70)).div(2)
+            let prog = D(0);
+            prog = prog.add(timesCompleted('nk'));
+            prog = prog.add(Decimal.div(timesCompleted('su'), 6));
+            prog = prog.add(timesCompleted('df'));
+            prog = prog.add(Decimal.max(timesCompleted('im'), 1).log10().div(45));
+            prog = prog.add(Decimal.div(timesCompleted('dc'), 2))
+            return prog.div(5);
         },
         get colors() {
             return {
@@ -426,24 +435,24 @@ export const STAGES = [
             };
         }
     },
-    {
-        id: 3,
-        name: "Taxation",
-        get show() {
-            return player.value.gameProgress.unlocks.tax;
-        },
-        get progress() {
-            return D(0);
-            // return Decimal.add(tmp.value.tax.pending, player.value.gameProgress.tax.amount).div(20);
-        },
-        get colors() {
-            return {
-                border: "#c7b500",
-                name: "#5a4700",
-                progress: "#705f00",
-                progressBarBase: "#453c00",
-                progressBarFill: "#ffd600"
-            };
-        }
-    }
+    // {
+    //     id: 3,
+    //     name: "Taxation",
+    //     get show() {
+    //         return player.value.gameProgress.unlocks.tax;
+    //     },
+    //     get progress() {
+    //         return D(0);
+    //         // return Decimal.add(tmp.value.tax.pending, player.value.gameProgress.tax.amount).div(20);
+    //     },
+    //     get colors() {
+    //         return {
+    //             border: "#c7b500",
+    //             name: "#5a4700",
+    //             progress: "#705f00",
+    //             progressBarBase: "#453c00",
+    //             progressBarFill: "#ffd600"
+    //         };
+    //     }
+    // }
 ];

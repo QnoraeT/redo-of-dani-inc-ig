@@ -966,10 +966,10 @@ export const KUA_BLESS_TIER = {
     tier: {
         show: true,
         req(x: DecimalSource) {
-            return smoothExp(x, 1.01, false).pow(1.2).mul(2).add(4).floor();
+            return smoothExp(x, 1.01, false).pow(1.2).mul(2).add(4).ceil();
         },
         target(x: DecimalSource) {
-            x = Decimal.ceil(x);
+            x = D(x);
             if (x.lt(4)) { return D(-1); }
             return smoothExp(x.sub(4).div(2).root(1.2), 1.01, true);
         },
@@ -1001,10 +1001,10 @@ export const KUA_BLESS_TIER = {
             return Decimal.gte(tmp.value.kua.blessings.tier, 3);
         },
         req(x: DecimalSource) {
-            return smoothExp(x, 1.01, false).pow(1.2).mul(2).add(4).floor();
+            return smoothExp(x, 1.01, false).pow(1.2).mul(2).add(4).ceil();
         },
         target(x: DecimalSource) {
-            x = Decimal.ceil(x);
+            x = D(x);
             if (x.lt(4)) { return D(-1); }
             return smoothExp(x.sub(4).div(2).root(1.2), 1.01, true);
         },

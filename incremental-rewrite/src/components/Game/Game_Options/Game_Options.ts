@@ -62,6 +62,19 @@ export const makeColor = (text: string, color: string) => {
 
 export const UPDATE_LOG = [
     {
+        name: `v1.1.4 - Dec-27-2024`,
+        desc: `
+        <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
+        None.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Changes --- ></b></span><br>
+        Rebalanced ${makeColor('KProofs', '#0ff')}.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
+        Fixed ${makeColor('Kuaraniai', '#a4f')} shard and power gain.<br>
+        `
+    },
+    {
         name: `v1.1.3.1 - Dec-15-2024`,
         desc: `
         <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
@@ -71,8 +84,8 @@ export const UPDATE_LOG = [
         None.<br>
         <br>
         <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
-        An attempt to hotfix any saves that were affected by negative points and reunlocking ${makeColor('Colosseum', '#f62')} if people already had ${makeColor('Colosseum', '#f62')} power.
-        Fixed weird formatting with time.
+        An attempt to hotfix any saves that were affected by negative points and reunlocking ${makeColor('Colosseum', '#f62')} if people already had ${makeColor('Colosseum', '#f62')} power.<br>
+        Fixed weird formatting with time.<br>
         `
     },
     {

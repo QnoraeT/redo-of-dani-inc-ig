@@ -769,7 +769,7 @@ export const getSCSLAttribute = (
                     break;
                 case "kba":
                     data.push({
-                        start: D(1000),
+                        start: D(4000),
                         basePow: D(0.5),
                         power: D(1),
                         displayedEffect: ""

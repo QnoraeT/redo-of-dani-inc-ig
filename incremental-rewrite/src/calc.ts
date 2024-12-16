@@ -1,5 +1,4 @@
 import Decimal, { type DecimalSource } from "break_eternity.js";
-import { format } from "./format";
 import { NaNCheck } from "./main";
 
 // ! DO NOT USE SCALE WHEN POWSCALE = 1 OR STR = 0, IT WILL BREAKKK
@@ -285,45 +284,6 @@ export const inverseQuad = (
                 .sqrt()
                 .sub(b)
                 .div(Decimal.mul(a, 2));
-};
-
-// ! don't use this smh
-export const inverseCube = (
-    x: DecimalSource,
-    a: DecimalSource,
-    b: DecimalSource,
-    c: DecimalSource,
-    d: DecimalSource,
-    tol = 1e-10
-) => {
-    // inverse of ax^3+bx^2+cx+d
-    x = new Decimal(x);
-    a = new Decimal(a);
-    b = new Decimal(b);
-    c = new Decimal(c);
-    d = new Decimal(d);
-    let res = x.cbrt();
-    let r;
-
-    // newton's method
-    for (let i = 0; i < 100; ++i) {
-        r = res.sub(
-            res
-                .pow(3)
-                .mul(a)
-                .add(res.pow(2).mul(b))
-                .add(res.mul(c))
-                .add(d)
-                .sub(x)
-                .div(res.pow(2).mul(a).mul(3).add(res.mul(b).mul(2)).add(c))
-        );
-        if (res.sub(r).abs().lt(tol)) {
-            return r;
-        }
-        res = r;
-    }
-    console.warn(`inverseCube couldn't finish converging! (Final value: ${format(res)})`);
-    return res;
 };
 
 export const inverseFact = (x: DecimalSource) => {

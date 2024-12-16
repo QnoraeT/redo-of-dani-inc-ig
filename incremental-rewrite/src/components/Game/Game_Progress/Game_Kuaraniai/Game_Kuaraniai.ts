@@ -225,17 +225,17 @@ export const KUA_PROOF_AUTO: KuaProofAuto = {
     ],
     kp: [
         {
-            cost: D(50),
+            cost: D(5),
             desc: `Autobuy Simple Breakthrough.`,
             show: true
         },
         {
-            cost: D(750),
+            cost: D(40),
             desc: `Autobuy Trial and Error.`,
             show: true
         },
         {
-            cost: D(1e4),
+            cost: D(200),
             desc: `Autobuy Crafted Experiments.`,
             show: true
         },
@@ -749,11 +749,11 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return `+${format(this.effect(tmp.value.kua.proofs.upgrades.skp[0].trueLevel), 2)} free levels to the first 3 effect upgrades.`;
             },
             cost(x) {
-                return Decimal.pow(x, 1.5).pow_base(2).mul(50);
+                return Decimal.pow(x, 1.5).pow_base(2).mul(5);
             },
             target(x) {
-                if (Decimal.lt(x, 50)) { return D(-1); }
-                return Decimal.div(x, 50).log2().root(1.5);
+                if (Decimal.lt(x, 5)) { return D(-1); }
+                return Decimal.div(x, 5).log2().root(1.5);
             },
             effect(x) {
                 let eff = Decimal.add(player.value.gameProgress.kua.proofs.strange.times, 1).log10().sqrt().div(10).mul(x);
@@ -763,7 +763,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             get show() {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 50);
+                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 5);
             },
             title: `Uncertain Characteristic`,
             get perDesc() {
@@ -773,19 +773,19 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return `+${format(this.effect(tmp.value.kua.proofs.upgrades.skp[1].trueLevel), 2)} free levels to the first 3 KProof upgrades.`;
             },
             cost(x) {
-                return Decimal.pow(x, 2).pow_base(5).mul(400);
+                return Decimal.pow(x, 2).pow_base(5).mul(25);
             },
             target(x) {
-                if (Decimal.lt(x, 400)) { return D(-1); }
-                return Decimal.div(x, 400).log(5).root(2);
+                if (Decimal.lt(x, 25)) { return D(-1); }
+                return Decimal.div(x, 25).log(5).root(2);
             },
             effect(x) {
-                return Decimal.add(player.value.gameProgress.kua.proofs.strange.amount, 1).log10().add(1).log10().mul(x);
+                return Decimal.add(player.value.gameProgress.kua.proofs.strange.amount, 1).log10().add(1).log10().mul(2).mul(x);
             }
         },
         {
             get show() {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 400);
+                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 25);
             },
             title: `Unstable Conclusions`,
             get perDesc() {
@@ -795,11 +795,11 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return `The first 3 KProof upgrades' costs are delayed by ${format(this.effect(tmp.value.kua.proofs.upgrades.skp[2].trueLevel), 1)}.`;
             },
             cost(x) {
-                return Decimal.pow(x, 3).pow10().mul(1e6);
+                return Decimal.pow(x, 3).pow10().mul(1e3);
             },
             target(x) {
-                if (Decimal.lt(x, 1e6)) { return D(-1); }
-                return Decimal.div(x, 1e6).log10().root(3);
+                if (Decimal.lt(x, 1e3)) { return D(-1); }
+                return Decimal.div(x, 1e3).log10().root(3);
             },
             effect(x) {
                 return Decimal.mul(x, 5);
@@ -1283,7 +1283,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return [
                 Decimal.max(player.value.gameProgress.kua.blessings.amount, 1).log10().sqrt().add(1).pow(Decimal.pow(x, 0.75)),
                 Decimal.gte(x, 6) 
-                    ? Decimal.add(x, 3).sqrt().mul(1.5).sub(4.5)
+                    ? Decimal.add(x, 4).sqrt().mul(1.5).sub(4.5)
                     : D(0),
                 Decimal.gte(x, 12) 
                     ? Decimal.sub(x, 11).div(50).add(1)
@@ -2093,7 +2093,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             player.value.gameProgress.kua.proofs.finicky.cooldown = Decimal.sub(player.value.gameProgress.kua.proofs.finicky.cooldown, delta);
 
             tmp.value.kua.proofs.skpEff = D(0);
-            tmp.value.kua.proofs.skpEff = Decimal.add(player.value.gameProgress.kua.proofs.strange.amount, 1).log2().add(1).ln().div(2).add(1).pow(2).sub(1).mul(2);
+            tmp.value.kua.proofs.skpEff = Decimal.add(player.value.gameProgress.kua.proofs.strange.amount, 1).log2().add(1).ln().div(2).add(1).pow(2).sub(1).mul(3);
 
             tmp.value.kua.proofs.fkpEff = D(0);
             tmp.value.kua.proofs.fkpEff = Decimal.add(player.value.gameProgress.kua.proofs.finicky.amount, 1).log10().sqrt()
@@ -2591,8 +2591,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 i = D(player.value.gameProgress.kua.amount);
                 setFactor(0, [4, 2], "Base", `${format(player.value.gameProgress.kua.amount, 4)}`, `${format(i, 3)}`, true);
                 
-                i = i.pow(tmp.value.kua.proofs.upgrades.effect[8].effect);
-                setFactor(1, [4, 2], "Constructive Interference", `^${format(tmp.value.kua.proofs.upgrades.effect[8].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tmp.value.kua.proofs.upgrades.effect[8].effect, 1), "kp");
+                i = i.pow(tmp.value.kua.proofs.upgrades.effect[7].effect);
+                setFactor(1, [4, 2], "Constructive Interference", `^${format(tmp.value.kua.proofs.upgrades.effect[7].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tmp.value.kua.proofs.upgrades.effect[7].effect, 1), "kp");
 
                 if (getKuaUpgrade("p", 1)) {
                     i = i.mul(2.5);
@@ -2645,8 +2645,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 i = D(player.value.gameProgress.kua.kshards.amount);
                 setFactor(0, [4, 3], "Base", `${format(player.value.gameProgress.kua.kshards.amount, 4)}`, `${format(i, 3)}`, true);
 
-                i = i.pow(tmp.value.kua.proofs.upgrades.effect[8].effect);
-                setFactor(1, [4, 3], "Constructive Interference", `^${format(tmp.value.kua.proofs.upgrades.effect[8].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tmp.value.kua.proofs.upgrades.effect[8].effect, 1), "kp");
+                i = i.pow(tmp.value.kua.proofs.upgrades.effect[7].effect);
+                setFactor(1, [4, 3], "Constructive Interference", `^${format(tmp.value.kua.proofs.upgrades.effect[7].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tmp.value.kua.proofs.upgrades.effect[7].effect, 1), "kp");
 
                 if (getKuaUpgrade("s", 10)) {
                     i = i.mul(tmp.value.kua.effects.kpower);

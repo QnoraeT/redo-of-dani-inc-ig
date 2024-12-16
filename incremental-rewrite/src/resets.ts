@@ -253,7 +253,7 @@ export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, d
     if (reset) {
         delta = D(1);
     }
-    if (tmp.value.kua.proofs.exp.gte(12) && (Decimal.lt(player.value.gameProgress.kua.proofs.strange.cooldown, 0) || !reset)) {
+    if (Decimal.gte(player.value.gameProgress.kua.proofs.amount, 1e24) && (Decimal.lt(player.value.gameProgress.kua.proofs.strange.cooldown, 0) || !reset)) {
         if (reset) { player.value.gameProgress.kua.proofs.strange.cooldown = 1; }
         if (addExp) {
             player.value.gameProgress.kua.proofs.strange.hiddenExp = Decimal.add(player.value.gameProgress.kua.proofs.strange.hiddenExp, Decimal.log10(player.value.gameProgress.kua.proofs.amount).div(2).mul(delta));

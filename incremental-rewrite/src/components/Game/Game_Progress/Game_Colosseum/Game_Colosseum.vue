@@ -48,6 +48,9 @@ import {
                 This also boosts research speed by 
                 <span style="font-size: 0.8vw"><b>{{ format(tmp.col.effects.res, 3) }}</b></span>×.
             </span>
+            <span v-if="tab.tabList[tab.currentTab][0] === 0" class="whiteText" style="font-size: 0.65vw; text-align: center; margin-top: 0.5vw">
+                If you feel stuck, you can get achievements! Some achievement rewards don't reset on Colosseum resets!
+            </span>
             <span v-if="Decimal.gte(timesCompleted('su'), 1) && tab.tabList[tab.currentTab][0] === 0" class="whiteText" style="font-size: 0.65vw; text-align: center; margin-top: 0.5vw">
                 You may change the difficulty to get achievements, or other challenges may force you into certain difficulties! Changing the difficulty will not change the rewards you already have.
             </span>

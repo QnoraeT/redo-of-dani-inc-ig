@@ -629,7 +629,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             },
             title: `Successive Trials`,
             get perDesc() {
-                return `Strange KP multiplies Trial and Error effect base by ${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[4].trueLevel, 1)).div(this.effect(tmp.value.kua.proofs.upgrades.kp[4].trueLevel)), 2)}×.`;
+                return `Strange KP multiplies Trial and Error effect base by +${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[4].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[4].trueLevel)), 2)}×.`;
             },
             get desc() {
                 return `×${format(this.effect(tmp.value.kua.proofs.upgrades.kp[4].trueLevel), 2)} to Trial and Error effect base.`;
@@ -1309,9 +1309,6 @@ export const gainKPOnClick = () => {
     if (Decimal.lt(player.value.gameProgress.kua.blessings.clickCooldown, 0)) {
         player.value.gameProgress.kua.blessings.clickCooldown = D(0.25);
         player.value.gameProgress.kua.blessings.amount = Decimal.add(player.value.gameProgress.kua.blessings.amount, tmp.value.kua.blessings.perClick);
-        if (player.value.gameProgress.col.inAChallenge) {
-            player.value.gameProgress.col.time = Decimal.sub(player.value.gameProgress.col.time, 0.25);
-        }
     }
 }
 

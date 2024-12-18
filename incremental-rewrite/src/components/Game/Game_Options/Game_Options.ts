@@ -62,7 +62,22 @@ export const makeColor = (text: string, color: string) => {
 
 export const UPDATE_LOG = [
     {
-        name: `v1.1.4 - Dec-27-2024`,
+        name: `v1.1.5 - Dec-17-2024`,
+        desc: `
+        <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
+        None.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Changes --- ></b></span><br>
+        Buffed ${makeColor('Decaying Feeling', '#f62')}'s research speed boost.<br>
+        Reformatted ${makeColor('Colosseum', '#f62')} challenges.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
+        Fixed ${makeColor('FKP', '#0f0')} gain returning nothing, screwing people over.<br>
+        Fixed ${makeColor('Colosseum', '#f62')} challenges when getting kicked out due to time.<br>
+        `
+    },
+    {
+        name: `v1.1.4 - Dec-17-2024`,
         desc: `
         <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
         None.<br>

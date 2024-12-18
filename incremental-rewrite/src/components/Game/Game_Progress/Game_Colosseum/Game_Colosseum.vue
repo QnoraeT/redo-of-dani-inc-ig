@@ -100,10 +100,10 @@ import {
                                 colButtonDescComp: completedChallenge(item.id)
                             }"
                             class="second-cont"
-                            style="height: 33.333%; font-size: 0.6vw"
+                            style="height: 33.333%; font-size: 0.55vw"
                         >
                             <span class="centered-text" style="top: 0.5vw">{{ item.goalDesc }}</span>
-                            <span class="centered-text" style="top: 2.0vw">{{ item.desc }}</span>
+                            <div class="centered-text flex-container" style="top: 2.0vw; flex-direction: column" v-html="item.desc"></div>
                         </div>
                         <div
                             :class="{
@@ -114,9 +114,9 @@ import {
                                 colButtonRewComp: completedChallenge(item.id)
                             }"
                             class="third-cont"
-                            style="height: 50%; font-size: 0.65vw"
+                            style="height: 50%; font-size: 0.55vw"
                         >
-                            <span class="centered-text" style="top: 1.6vw">{{ 
+                            <span class="centered-text" style="top: 1.2vw">{{ 
                                 item.type === 1 || item.type === 3 
                                 ? Decimal.eq(player.gameProgress.inChallenge[item.id].optionalDiff, timesCompleted(item.id)) 
                                     ? ' - Next REWARD - ' 
@@ -126,7 +126,7 @@ import {
                                 : ' - REWARD - '
                             }}
                             </span>
-                            <span class="centered-text" style="top: 4vw">{{ item.reward }}</span>
+                            <div class="centered-text flex-container" style="top: 3vw; flex-direction: column" v-html="item.reward"></div>
                         </div>
                     </button>
                     <!-- TODO: replace the slider with text input after cap > 20 or something -->

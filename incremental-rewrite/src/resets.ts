@@ -263,8 +263,8 @@ export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, d
         }
 
         tmp.value.kua.proofs.skpExp = getStrangeKPExp(player.value.gameProgress.kua.proofs.strange.hiddenExp, false);
-        let data = Decimal.add(player.value.gameProgress.kua.proofs.strange.amount, 1).root(tmp.value.kua.proofs.skpExp).add(delta).pow(tmp.value.kua.proofs.skpExp).sub(1);
-        let calc = Decimal.add(player.value.gameProgress.kua.proofs.strange.amount, 1).root(tmp.value.kua.proofs.skpExp).add(1).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        let data = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(delta).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        let calc = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(1).pow(tmp.value.kua.proofs.skpExp).sub(1);
 
         const softcaps = {
             prevEff: calc,
@@ -285,7 +285,7 @@ export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, d
             setSCSLEffectDisp('skp', false, 0, `/${format(calc.div(softcaps.prevEff), 3)}`);
         }
 
-        player.value.gameProgress.kua.proofs.strange.amount = Decimal.add(player.value.gameProgress.kua.proofs.strange.amount, 1).root(tmp.value.kua.proofs.skpExp).add(delta).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        player.value.gameProgress.kua.proofs.strange.amount = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(delta).pow(tmp.value.kua.proofs.skpExp).sub(1);
 
         if (data.gte(softcaps.scal[0].start)) {
             data = scale(data, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
@@ -325,7 +325,7 @@ export const resetFromFKP = (reset = true, addTimes: boolean, addExp: boolean, d
 
         tmp.value.kua.proofs.fkpExp = getFinickyKPExp(player.value.gameProgress.kua.proofs.finicky.hiddenExp, false);
 
-        player.value.gameProgress.kua.proofs.finicky.amount = Decimal.add(player.value.gameProgress.kua.proofs.finicky.amount, 1).root(tmp.value.kua.proofs.fkpExp).add(gain.mul(delta)).pow(tmp.value.kua.proofs.fkpExp).sub(1);
+        player.value.gameProgress.kua.proofs.finicky.amount = Decimal.max(player.value.gameProgress.kua.proofs.finicky.amount, 0).add(1).root(tmp.value.kua.proofs.fkpExp).add(gain.mul(delta)).pow(tmp.value.kua.proofs.fkpExp).sub(1);
         NaNCheck(player.value.gameProgress.kua.proofs.finicky.amount);
 
         if (reset) {

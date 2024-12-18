@@ -34,7 +34,7 @@ export const getFinickySeconds = (x: DecimalSource) => {
 export const getFinickyKPExpGain = (x: DecimalSource) => {
     let exp = x;
     if (Decimal.lt(exp, 1e10)) { return D(0); }
-    exp = Decimal.log10(exp).sub(10);
+    exp = Decimal.log10(exp).sub(9);
     return exp;
 }
 
@@ -2090,10 +2090,10 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             player.value.gameProgress.kua.proofs.finicky.cooldown = Decimal.sub(player.value.gameProgress.kua.proofs.finicky.cooldown, delta);
 
             tmp.value.kua.proofs.skpEff = D(0);
-            tmp.value.kua.proofs.skpEff = Decimal.add(player.value.gameProgress.kua.proofs.strange.amount, 1).log2().add(1).ln().div(2).add(1).pow(2).sub(1).mul(3);
+            tmp.value.kua.proofs.skpEff = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).log2().add(1).ln().div(2).add(1).pow(2).sub(1).mul(3);
 
             tmp.value.kua.proofs.fkpEff = D(0);
-            tmp.value.kua.proofs.fkpEff = Decimal.add(player.value.gameProgress.kua.proofs.finicky.amount, 1).log10().sqrt()
+            tmp.value.kua.proofs.fkpEff = Decimal.max(player.value.gameProgress.kua.proofs.finicky.amount, 0).add(1).log10().sqrt()
 
             tmp.value.kua.proofs.canBuyUpg = false;
             tmp.value.kua.proofs.canBuyUpgs.effect = false;
@@ -2203,8 +2203,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
             if (player.value.gameProgress.unlocks.kproofs.main && tmp.value.kua.active.proofs.gain) {
                 let fuck = player.value.gameProgress.kua.proofs.amount;
-                data = Decimal.add(player.value.gameProgress.kua.proofs.amount, 1).root(tmp.value.kua.proofs.exp).add(delta).pow(tmp.value.kua.proofs.exp).sub(1);
-                calc = Decimal.add(player.value.gameProgress.kua.proofs.amount, 1).root(tmp.value.kua.proofs.exp).add(1).pow(tmp.value.kua.proofs.exp).sub(1);
+                data = Decimal.max(player.value.gameProgress.kua.proofs.amount, 0).add(1).root(tmp.value.kua.proofs.exp).add(delta).pow(tmp.value.kua.proofs.exp).sub(1);
+                calc = Decimal.max(player.value.gameProgress.kua.proofs.amount, 0).add(1).root(tmp.value.kua.proofs.exp).add(1).pow(tmp.value.kua.proofs.exp).sub(1);
 
                 const softcaps = {
                     prevEff: calc,
@@ -2227,8 +2227,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     setSCSLEffectDisp('kp', false, 0, `/${format(calc.div(softcaps.prevEff), 3)}`);
                 }
 
-                fuck = Decimal.add(fuck, 1).root(tmp.value.kua.proofs.exp).add(1).pow(tmp.value.kua.proofs.exp).sub(1);
-                player.value.gameProgress.kua.proofs.amount = Decimal.add(player.value.gameProgress.kua.proofs.amount, 1).root(tmp.value.kua.proofs.exp).add(delta).pow(tmp.value.kua.proofs.exp).sub(1);
+                fuck = Decimal.max(fuck, 0).add(1).root(tmp.value.kua.proofs.exp).add(1).pow(tmp.value.kua.proofs.exp).sub(1);
+                player.value.gameProgress.kua.proofs.amount = Decimal.max(player.value.gameProgress.kua.proofs.amount, 0).add(1).root(tmp.value.kua.proofs.exp).add(delta).pow(tmp.value.kua.proofs.exp).sub(1);
 
                 if (data.gte(softcaps.scal[0].start)) {
                     data = scale(data, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
@@ -2331,7 +2331,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 player.value.gameProgress.kua.blessings.bestEver = Decimal.max(player.value.gameProgress.kua.blessings.bestEver, player.value.gameProgress.kua.blessings.amount);
             }
 
-            i = player.value.gameProgress.kua.blessings.amount;
+            i = Decimal.max(player.value.gameProgress.kua.blessings.amount, 0);
             i = Decimal.mul(i, KUA_BLESS_TIER.tier.effects.kuaBlessEff)
             if (!tmp.value.kua.active.blessings.effects) {
                 i = D(0);
@@ -2520,6 +2520,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
                 exp = exp.mul(tmp.value.kua.proofs.upgrades.effect[4].effect)
 
+                // dilate 2
+                // pow ^exp
+                // trilate 0.9
                 tmp.value.kua.effects.kshardPassive = Decimal.max(tmp.value.kua.effectiveKS, 0.01).mul(1e3).log10().pow(2).sub(1).pow10().pow(0.05).pow(exp).log10().add(1).log10().add(1).pow(0.9).sub(1).pow10().sub(1).pow10();
                 tmp.value.kua.effects.kpowerPassive = Decimal.max(tmp.value.kua.effectiveKP, 0.01).mul(1e3).log10().pow(2).sub(1).pow10().pow(0.05).pow(exp).log10().add(1).log10().add(1).pow(0.9).sub(1).pow10().sub(1).pow10();
 

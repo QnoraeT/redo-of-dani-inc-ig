@@ -1476,7 +1476,7 @@ function calcPPS(): Decimal {
         setFactor(i, [0], PPS_CALC[i].name, txt, `${format(pps, 1)}`, PPS_CALC[i].active, PPS_CALC[i].color);
     }
 
-    NaNCheck(pps);
+    NaNCheck(pps, 'PPS was NaN!');
     if (Decimal.lt(pps, 0)) {
         throw new Error(`aaa!! pps is negative`)
     }

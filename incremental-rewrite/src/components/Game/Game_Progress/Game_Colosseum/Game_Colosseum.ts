@@ -1042,6 +1042,8 @@ export const updateCol = (type: number, delta: DecimalSource) => {
         case 0:
             if (Decimal.lte(player.value.gameProgress.col.time, 0) && player.value.gameProgress.col.inAChallenge) {
                 for (let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1; i >= 0; i--) {
+                    // this is to avoid infinite loop, because exitChallenge calls reset, which calls updateCol, which calls exitChallenge again, and etc etc
+                    player.value.gameProgress.col.time = new Decimal(1);
                     exitChallenge(player.value.gameProgress.col.challengeOrder.chalID[i]);
                 }
             }

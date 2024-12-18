@@ -1158,7 +1158,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
 
             // i don't have a good feeling about this softcap, makes me feel it actually *inflates* instead of reduces
             eff = scale(eff, 1.3, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
-            NaNCheck(eff)
+
             setSCSLEffectDisp('upg6', false, 0, `/${format(data.prevEff.div(eff), 2)}`);
             setFactor(6, [1, 5, 0], "Softcap", `softcap(${format(data.prevEff)})`, `+${format(eff, 3)}`, eff.gte(data.scal[0].start), "sc1");
             return eff;
@@ -1918,7 +1918,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 player.value.gameProgress.main.prai.totalEver = Decimal.add(player.value.gameProgress.main.prai.totalEver, generate);
             }
 
-            NaNCheck(player.value.gameProgress.main.prai.amount);
+            NaNCheck(player.value.gameProgress.main.prai.amount, 'PRai amount is NaN!');
 
             j = D(4);
             if (ifAchievement(0, 5)) {

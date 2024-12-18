@@ -2196,7 +2196,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(3, [4, 6], "Finicky KProof Effect", `+${format(tmp.value.kua.proofs.fkpEff, 2)}`, `^${format(tmp.value.kua.proofs.exp, 2)}`, tmp.value.kua.proofs.fkpEff.gt(0), "fkp");
             tmp.value.kua.proofs.exp = tmp.value.kua.proofs.exp.mul(tmp.value.kua.proofs.upgrades.kp[2].effect);
             setFactor(4, [4, 6], "Crafted Experiments", `×${format(tmp.value.kua.proofs.upgrades.kp[2].effect, 2)}`, `^${format(tmp.value.kua.proofs.exp, 2)}`, tmp.value.kua.proofs.upgrades.kp[2].effect.gt(1), "kp");
-            NaNCheck(tmp.value.kua.proofs.exp, `KProof's exponent was turned NaN!`)
+            NaNCheck(tmp.value.kua.proofs.exp, `KProof's exponent turned into NaN!`)
 
             tmp.value.kua.proofs.skpExp = getStrangeKPExp(player.value.gameProgress.kua.proofs.strange.hiddenExp, true);
             tmp.value.kua.proofs.fkpExp = getFinickyKPExp(player.value.gameProgress.kua.proofs.finicky.hiddenExp, true);
@@ -2307,8 +2307,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setSCSLEffectDisp('kbi', false, 0, `${format(data.prevEff.log(tmp.value.kua.blessings.perSec), 3)}√`);
             setFactor(7, [4, 5], "Softcap", `softcap(${format(data.prevEff)})`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gt(tmp.value.kua.blessings.perSec, data.scal[0].start), "sc1");
 
-            NaNCheck(tmp.value.kua.blessings.perClick);
-            NaNCheck(tmp.value.kua.blessings.perSec);
+            NaNCheck(tmp.value.kua.blessings.perClick, 'KB per click is NaN!');
+            NaNCheck(tmp.value.kua.blessings.perSec, 'KB per second is NaN!');
 
             if (!tmp.value.kua.active.blessings.gain) {
                 tmp.value.kua.blessings.perSec = D(0);
@@ -2395,8 +2395,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.effectiveKS = tmp.value.kua.effectiveKS.pow(tmp.value.kua.proofs.upgrades.effect[1].effect);
             tmp.value.kua.effectiveKP = tmp.value.kua.effectiveKP.pow(tmp.value.kua.proofs.upgrades.effect[1].effect);
 
-            NaNCheck(tmp.value.kua.effectiveKS);
-            NaNCheck(tmp.value.kua.effectiveKP);
+            NaNCheck(tmp.value.kua.effectiveKS, 'Effective KShards are NaN!');
+            NaNCheck(tmp.value.kua.effectiveKP, 'Effective KPower is NaN!');
 
             player.value.gameProgress.kua.timeInKua = Decimal.add(player.value.gameProgress.kua.timeInKua, delta);
 

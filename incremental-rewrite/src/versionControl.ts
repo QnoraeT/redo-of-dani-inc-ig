@@ -595,22 +595,22 @@ export const updatePlayerData = (player: Player): Player => {
     }
     if (player.version === 37) {
 
-        // player.displayVersion = 'v1.1.4.2 - Dec-15-2024';
-        // player.version = 38;
+        player.displayVersion = 'v1.1.5.1 - Dec-17-2024';
+        player.version = 38;
     }
     if (player.version === 38) {
 
-        // player.displayVersion = 'v1.1.4.3 - Dec-15-2024';
+        // player.displayVersion = 'v1.1.5.2 - Dec-15-2024';
         // player.version = 39;
     }
     if (player.version === 39) {
 
-        // player.displayVersion = 'v1.1.4.4 - Dec-15-2024';
+        // player.displayVersion = 'v1.1.5.3 - Dec-15-2024';
         // player.version = 40;
     }
     if (player.version === 40) {
 
-        // player.displayVersion = 'v1.1.4.5 - Dec-15-2024';
+        // player.displayVersion = 'v1.1.5.4 - Dec-15-2024';
         // player.version = 41;
     }
     return player;

@@ -62,6 +62,19 @@ export const makeColor = (text: string, color: string) => {
 
 export const UPDATE_LOG = [
     {
+        name: `v1.1.5.1 - Dec-17-2024`,
+        desc: `
+        <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
+        None.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Changes --- ></b></span><br>
+        None.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
+        Fixed ${makeColor('Colosseum', '#f62')} challenges causing infinite loop when getting kicked out due to time.<br>
+        `
+    },
+    {
         name: `v1.1.5 - Dec-17-2024`,
         desc: `
         <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>

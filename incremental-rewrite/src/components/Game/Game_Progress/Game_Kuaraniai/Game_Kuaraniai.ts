@@ -501,7 +501,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return smoothExp(Decimal.log10(x).log(450000).sub(1).mul(9), 1.05, true);
             },
             effect(x) {
-                return Decimal.mul(0.01, x).add(1);
+                return Decimal.pow(1.05, x);
             }
         },
         {
@@ -697,7 +697,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             },
             title: `Verification Trials`,
             get perDesc() {
-                return `Make Successive Trials ${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[7].trueLevel, 1)).div(this.effect(tmp.value.kua.proofs.upgrades.kp[7].trueLevel)), 2)}× stronger based off of your KP.`;
+                return `Make Successive Trials +${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[7].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[7].trueLevel)), 2)}× stronger based off of your KP.`;
             },
             get desc() {
                 return `×${format(this.effect(tmp.value.kua.proofs.upgrades.kp[7].trueLevel), 2)} Successive Trial effect base.`;
@@ -1001,12 +1001,12 @@ export const KUA_BLESS_TIER = {
             return Decimal.gte(tmp.value.kua.blessings.tier, 3);
         },
         req(x: DecimalSource) {
-            return smoothExp(x, 1.01, false).pow(1.2).mul(2).add(4).ceil();
+            return Decimal.pow(x, 1.2).mul(2).add(4).ceil();
         },
         target(x: DecimalSource) {
             x = D(x);
             if (x.lt(4)) { return D(-1); }
-            return smoothExp(x.sub(4).div(2).root(1.2), 1.01, true);
+            return x.sub(4).div(2).root(1.2);
         },
         rounded(x: DecimalSource) {
             return this.target(x).floor().add(1);
@@ -2408,17 +2408,19 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
             tmp.value.kua.effectivePrai = Decimal.add(player.value.gameProgress.main.prai.totals[2]!, tmp.value.main.prai.pending);
             tmp.value.kua.canDo = tmp.value.kua.effectivePrai.gte(tmp.value.kua.req) && tmp.value.kua.active.gain;
-            tmp.value.kua.pending = tmp.value.kua.canDo
-                ? tmp.value.kua.effectivePrai
-                        .log(tmp.value.kua.req)
-                        .ln()
-                        .mul(1.5)
-                        .div(tmp.value.kua.exp)
-                        .add(1)
-                        .pow(tmp.value.kua.exp)
-                        .sub(5)
-                        .pow10()
-                : D(0);
+            if (tmp.value.kua.canDo) {
+                tmp.value.kua.pending = tmp.value.kua.effectivePrai.log(tmp.value.kua.req);
+                // this is to catch an edge-case, where the value above gets fucked because of floating point errors if this is way lower than the kua exponent, so i have to make an approximation here
+                if (tmp.value.kua.exp.div(tmp.value.kua.pending).gte(1e9)) {
+                    // yes i'm not joking this reduces down to a dilate 1.5 of PRai when kua exp is high enough
+                    tmp.value.kua.pending = tmp.value.kua.pending.pow(1.5).sub(5).pow10();
+                } else {
+                    tmp.value.kua.pending = tmp.value.kua.pending.mul(1.5).div(tmp.value.kua.exp).add(1).pow(tmp.value.kua.exp).sub(5).pow10();
+                }
+            } else {
+                tmp.value.kua.pending = D(0);
+            }
+
             setFactor(0, [4, 1], "Base", `~10^(ln(log(${format(tmp.value.kua.effectivePrai)})))^${format(tmp.value.kua.exp, 2)}-${format(5)}) (approx.)`, `${format(tmp.value.kua.pending, 4)}`, true);
             
             if (getKuaUpgrade("s", 1)) {

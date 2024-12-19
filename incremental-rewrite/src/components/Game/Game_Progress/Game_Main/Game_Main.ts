@@ -536,6 +536,275 @@ export type TmpMainUpgrade = {
     multiplier: Decimal
 };
 
+export class MainUpgrades {
+    index: number
+    baseCostBase: {
+        exp: Decimal
+        scale: Array<Decimal>
+    }
+    cachedCost: Decimal
+    cachedCostValid: boolean
+    cachedTarget: Decimal
+    cachedTargetValid: boolean
+    cachedEffBase: Decimal
+    cachedEffBaseValid: boolean
+    cachedFreeLvs: Decimal
+    cachedFreeLvsValid: boolean
+    cachedEffect: Decimal
+    cachedEffectValid: boolean
+    cachedEffectiveAmt: Decimal
+    cachedEffectiveAmtValid: boolean
+
+    constructor(index: number) {
+        this.index = index;
+        this.baseCostBase = [
+            {exp: D(0), scale: [D(5),    D(1.55),   D(1)     ]},
+            {exp: D(0), scale: [D(1e3),  D(1.25),   D(1)     ]},
+            {exp: D(0), scale: [D(1e10), D(100),    D(1.05)  ]},
+            {exp: D(0), scale: [D(1e33), D(1.02),   D(1.0003)]},
+            {exp: D(0), scale: [D(1e45), D(1.03),   D(1.0002)]},
+            {exp: D(0), scale: [D(1e63), D(1.25),   D(1.025) ]},
+            {exp: D(1), scale: [D(1000), D(1.01),   D(1.0001)]},
+            {exp: D(1), scale: [D(1250), D(1.0075), D(1.0002)]},
+            {exp: D(1), scale: [D(1500), D(1.025),  D(1.0005)]},
+        ][this.index];
+        this.cachedCost = D(0);
+        this.cachedCostValid = true;
+        this.cachedTarget = D(0);
+        this.cachedTargetValid = true;
+        this.cachedEffBase = D(0);
+        this.cachedEffBaseValid = true;
+        this.cachedFreeLvs = D(0);
+        this.cachedFreeLvsValid = true;
+        this.cachedEffect = D(0);
+        this.cachedEffectValid = true;
+        this.cachedEffectiveAmt = D(0);
+        this.cachedEffectiveAmtValid = true;
+    }
+
+    get autoUnlocked() {
+        let autoUnlocked = false;
+        switch (this.index) {
+            case 0:
+                autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 2);
+                break;
+            case 1:
+                autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 4);
+                break;
+            case 2:
+                autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 18);
+                break;
+            case 3:
+                autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 12);
+                break;
+            case 4:
+                autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 14);
+                break;
+            case 5:
+                autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 18);
+                break;
+            case 6:
+                autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 100);
+                break;
+            case 7:
+                autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 125);
+                break;
+            case 8:
+                autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 150);
+                break;
+            default:
+                throw new Error(`${this.index} is not a valid index for main upgrade`);
+        }
+        return autoUnlocked;
+    }
+
+    get shown() {
+        let shown = false;
+        switch (this.index) {
+            case 0:
+                shown = true;
+                break;
+            case 1:
+                shown = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 1);
+                break;
+            case 2:
+                shown = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 5);
+                break;
+            case 3:
+                shown = Decimal.gt(player.value.gameProgress.kua.amount, 0);
+                break;
+            case 4:
+                shown = Decimal.gte(player.value.gameProgress.kua.kshards.amount, 0.01);
+                break;
+            case 5:
+                shown = Decimal.gte(player.value.gameProgress.kua.kpower.amount, 1);
+                break;
+            case 6:
+                shown = getKuaUpgrade('s', 15);
+                break;
+            case 7:
+                shown = getKuaUpgrade('s', 16);
+                break;
+            case 8:
+                shown = getKuaUpgrade('s', 17);
+                break;
+            default:
+                throw new Error(`${this.index} is not a valid index for main upgrade`);
+        }
+        return shown;
+    }
+
+    get calcEB() {
+        if (Decimal.gte(player.value.gameProgress.main.upgrades[this.index].bought, 1e10) || player.value.settings.scaledUpgBase) {
+            return this.effectBase;
+        }
+
+        switch (this.index) {
+            case 0:
+            case 3:
+            case 1:
+            case 4:
+            case 6:
+            case 7:
+            case 8:
+                return this.effect(Decimal.add(player.value.gameProgress.main.upgrades[this.index].bought, 1)).div(this.effect());
+            case 2:
+            case 5:
+                return this.effect(Decimal.add(player.value.gameProgress.main.upgrades[this.index].bought, 1)).sub(this.effect());
+            default:
+                throw new Error(`${this.index} is not a valid index for main upgrade`);
+        }
+    }
+
+    get display() {
+        let txt = ``;
+        switch (this.index) {
+            case 0:
+            case 3:
+                txt = `Increase point gain by ${format(this.calcEB, 3)}×`;
+                break;
+            case 1:
+            case 4:
+                txt = `Decreases Upgrade 1's cost by /${format(this.calcEB, 3)}`;
+                break;
+            case 2:
+            case 5:
+                txt = `Increases Upgrade 1's base by +${format(this.calcEB, 3)}`;
+                break;
+            case 6:
+                txt = `Raise Upgrade 1's effect by ^${format(this.calcEB, 3)}`;
+                break;
+            case 7:
+                txt = `Raise Upgrade 1's cost by ^${format(this.calcEB, 3)}`;
+                break;
+            case 8:
+                txt = `Multiply Upgrade 1's base by ×${format(this.calcEB, 3)}`;
+                break;
+            default:
+                throw new Error(`${this.index} is not a valid index for main upgrade`);
+        }
+        return txt;
+    }
+
+    get totalDisp() {
+        let txt = ``;
+        switch (this.index) {
+            case 0:
+            case 3:
+                txt = `Total: ${format(this.effect(), 2)}× to point gain`;
+                break;
+            case 1:
+            case 4:
+                txt = `Total: /${format(this.effect(), 2)} to Upgrade 1's cost`;
+                break;
+            case 2:
+            case 5:
+                txt = `Total: +${format(this.effect(), 3)} to Upgrade 1's base`;
+                break;
+            case 6:
+                txt = `Total: ^${format(this.effect(), 3)} to Upgrade 1's effect`;
+                break;
+            case 7:
+                txt = `Total: ^${format(this.effect(), 3)} to Upgrade 1's cost`;
+                break;
+            case 8:
+                txt = `Total: ×${format(this.effect(), 3)} to Upgrade 1's base`;
+                break;
+            default:
+                throw new Error(`${this.index} is not a valid index for main upgrade`);
+        }
+        return txt;
+    }
+    
+    invalidateCostCache() {
+        this.cachedCostValid = false;
+    }
+
+    invalidateTargetCache() {
+        this.cachedTargetValid = false;
+    }
+
+    invalidateFreeLvsCache() {
+        this.cachedFreeLvsValid = false;
+    }
+
+    invalidateEffCache() {
+        this.cachedEffectValid = false;
+    }
+
+    invalidateEffectiveCache() {
+        this.cachedEffectiveAmtValid = false;
+    }
+
+    get effectBase() {
+        let i = D(0);
+        if (this.cachedEffBaseValid) {
+            return this.cachedEffBase;
+        }
+        i = this.cachedEffBase;
+        return i;
+    }
+
+    get freeExtra() {
+        let i = D(0);
+        if (this.cachedFreeLvsValid) {
+            return this.cachedFreeLvs;
+        }
+        i = this.cachedFreeLvs;
+        return i;
+    }
+
+    effective(x = player.value.gameProgress.main.upgrades[this.index].bought): Decimal {
+        let i = D(0);
+        if (this.cachedEffectiveAmtValid) {
+            return this.cachedEffectiveAmt;
+        }
+        i = this.cachedEffectiveAmt;
+        return i;
+    }
+
+    effect(x = player.value.gameProgress.main.upgrades[this.index].bought): Decimal {
+        let i = D(0);
+        if (this.cachedEffectValid) {
+            return this.cachedEffect;
+        }
+        i = this.cachedEffect;
+        return i;
+    }
+}
+
+/*
+export const PPS_CALC: Array<TrueFactor> = [
+    {
+        baseActive: true,
+        active: true,
+        name: 'Base',
+        effect: D(1),
+        color: 'norm',
+        type: 'mult'
+    },
+*/
+
 export const MAIN_UPGS: Array<MainUpgrade> = [
     { // UPG1
         shown: true,
@@ -549,10 +818,6 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 i = i.add(tmp.value.main.upgrades[1].effective.mul(tmp.value.kua.proofs.upgrades.effect[3].effect));
             }
             setFactor(2, [1, 0, 0], "Line Extruder", `+${format(tmp.value.kua.proofs.upgrades.effect[3].effect, 2)}×${format(tmp.value.main.upgrades[1].effective)}`, `+${format(tmp.value.main.upgrades[1].effective.mul(tmp.value.kua.proofs.upgrades.effect[3].effect))}`, tmp.value.kua.proofs.upgrades.effect[3].effect.gt(0), "kp");
-            if (inChallenge('dc')) {
-                i = i.add(player.value.gameProgress.main.upgrades[0].accumulated);
-            }
-            setFactor(3, [1, 0, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[0].accumulated, 1)}`, `+${format(i)}`, inChallenge('dc'), 'col');
             return i;
         },
         get effectBase() {
@@ -608,11 +873,11 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             if (ifAchievement(1, 5)) {
                 i = i.mul(getAchievementEffect(1, 5));
             }
-            setFactor(4, [1, 0, 0], "Achievement ID (1, 5)", `×${format(getAchievementEffect(1, 5), 3)}`, `${format(i)} effective`, ifAchievement(1, 5), "ach");
+            setFactor(3, [1, 0, 0], "Achievement ID (1, 5)", `×${format(getAchievementEffect(1, 5), 3)}`, `${format(i)} effective`, ifAchievement(1, 5), "ach");
             if (getKuaUpgrade('p', 16)) {
                 i = i.mul(KUA_UPGRADES.KPower[15].eff!);
             }
-            setFactor(5, [1, 0, 0], "KPower Upgrade 16", `×${format(KUA_UPGRADES.KPower[15].eff!, 3)}`, `${format(i)} effective`, getKuaUpgrade('p', 16), "kua");
+            setFactor(4, [1, 0, 0], "KPower Upgrade 16", `×${format(KUA_UPGRADES.KPower[15].eff!, 3)}`, `${format(i)} effective`, getKuaUpgrade('p', 16), "kua");
             return i;
         },
         effect(x = player.value.gameProgress.main.upgrades[0].bought) {
@@ -622,6 +887,13 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let eff = D(x)
             setFactor(0, [1, 0, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x);
+
+            // ! yes, the "freeExtra" part of the accumulated is moved HERE so that things like Basic Discoveries or other stuff that can add free levels can do something to the multiplier
+            // ! Dimension Crawler only
+            if (inChallenge('dc')) {
+                eff = eff.add(player.value.gameProgress.main.upgrades[0].accumulated);
+            }
+            setFactor(5, [1, 0, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[0].accumulated, 1)}`, `${format(eff.mul(tmp.value.main.upgrades[0].multiplier))} effective`, inChallenge('dc'), 'col');
 
             setFactor(6, [1, 0, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[0].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[0].multiplier))} effective`, inChallenge('dc'), 'col');
             if (inChallenge('dc')) {
@@ -688,11 +960,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             if (tmp.value.kua.proofs.upgrades.effect[0].effect.gt(0)) {
                 i = i.add(tmp.value.kua.proofs.upgrades.effect[0].effect);
             }
-            setFactor(1, [1, 1, 0], "Basic Discoveries", `+${format(tmp.value.kua.proofs.upgrades.effect[0].effect, 2)}`, `${format(i)} effective`, tmp.value.kua.proofs.upgrades.effect[0].effect.gt(0), "kp");
-            if (inChallenge('dc')) {
-                i = i.add(player.value.gameProgress.main.upgrades[1].accumulated);
-            }
-            setFactor(2, [1, 1, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[1].accumulated, 1)}`, `+${format(i)}`, inChallenge('dc'), 'col');
+            setFactor(1, [1, 1, 0], "Basic Discoveries", `+${format(tmp.value.kua.proofs.upgrades.effect[0].effect, 2)}`, `+${format(i)}`, tmp.value.kua.proofs.upgrades.effect[0].effect.gt(0), "kp");
             return i;
         },
         get effectBase() {
@@ -748,7 +1016,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             if (Decimal.gte(getOMUpgrade(6), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[6].effect);
             }
-            setFactor(3, [1, 1, 0], "One-Upgrade #7", `^${format(MAIN_ONE_UPGS[6].effect, 3)}`, `${format(i)} effective`, Decimal.gte(getOMUpgrade(6), 1));
+            setFactor(2, [1, 1, 0], "One-Upgrade #7", `^${format(MAIN_ONE_UPGS[6].effect, 3)}`, `${format(i)} effective`, Decimal.gte(getOMUpgrade(6), 1));
             return i;
         },
         effect(x = player.value.gameProgress.main.upgrades[1].bought) {
@@ -758,6 +1026,11 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             let eff = D(x)
             setFactor(0, [1, 1, 0], "Base", `${format(eff, 3)}`, `${format(eff)} effective`, true);
             eff = this.effective(x)
+
+            if (inChallenge('dc')) {
+                eff = eff.add(player.value.gameProgress.main.upgrades[1].accumulated);
+            }
+            setFactor(3, [1, 1, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[1].accumulated, 1)}`, `+${format(eff)}`, inChallenge('dc'), 'col');
 
             setFactor(4, [1, 1, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `×${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2)}^${format(player.value.gameProgress.main.upgrades[1].bought, 2)}`, `${format(eff.mul(tmp.value.main.upgrades[1].multiplier))} effective`, inChallenge('dc'), 'col');
             if (inChallenge('dc')) {
@@ -1567,15 +1840,15 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
 
             tmp.value.main.upgrades[upgID].costBase = [
-                {exp: D(0), scale: [D(5),    D(1.55), D(1)     ]},
-                {exp: D(0), scale: [D(1e3),  D(1.25), D(1)     ]},
-                {exp: D(0), scale: [D(1e10), D(100),  D(1.05)  ]},
-                {exp: D(0), scale: [D(1e33), D(1.02), D(1.0003)]},
-                {exp: D(0), scale: [D(1e45), D(1.03), D(1.0002)]},
-                {exp: D(0), scale: [D(1e63), D(1.25), D(1.025) ]},
-                {exp: D(1), scale: [D(1000), D(1.1),  D(1.001) ]},
-                {exp: D(1), scale: [D(1250), D(1.075),D(1.0015)]},
-                {exp: D(1), scale: [D(1500), D(1.25), D(1.005) ]},
+                {exp: D(0), scale: [D(5),    D(1.55),   D(1)     ]},
+                {exp: D(0), scale: [D(1e3),  D(1.25),   D(1)     ]},
+                {exp: D(0), scale: [D(1e10), D(100),    D(1.05)  ]},
+                {exp: D(0), scale: [D(1e33), D(1.02),   D(1.0003)]},
+                {exp: D(0), scale: [D(1e45), D(1.03),   D(1.0002)]},
+                {exp: D(0), scale: [D(1e63), D(1.25),   D(1.025) ]},
+                {exp: D(1), scale: [D(1000), D(1.01),   D(1.0001)]},
+                {exp: D(1), scale: [D(1250), D(1.0075), D(1.0002)]},
+                {exp: D(1), scale: [D(1500), D(1.025),  D(1.0005)]},
             ][upgID];
 
             if (upgID === 0) {

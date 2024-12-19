@@ -363,7 +363,7 @@ export const getSCSLAttribute = (
                         displayedEffect: ""
                     });
                     data.push({
-                        start: D(25000),
+                        start: D(5000),
                         basePow: D(2),
                         power: D(1),
                         newType: 2,
@@ -396,7 +396,7 @@ export const getSCSLAttribute = (
                         displayedEffect: ""
                     });
                     data.push({
-                        start: D(25000),
+                        start: D(5000),
                         basePow: D(2),
                         power: D(1),
                         newType: 2,
@@ -429,7 +429,7 @@ export const getSCSLAttribute = (
                         displayedEffect: ""
                     });
                     data.push({
-                        start: D(25000),
+                        start: D(5000),
                         basePow: D(2),
                         power: D(1),
                         newType: 2,

@@ -131,21 +131,21 @@ export const NEXT_UNLOCKS = [
         dispPart2: `Strange KProofs to unlock the next sub-feature.`,
         color: "#00ff00"
     },
-    {
-        get shown() {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, "ee3");
-        },
-        get done() {
-            return player.value.gameProgress.unlocks.tax;
-        },
-        get dispPart1() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format("e2000")}`;
-        },
-        dispPart2: `Points to unlock the next layers.`,
-        get color() {
-            return mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2)
-        }
-    }
+    // {
+    //     get shown() {
+    //         return Decimal.gte(player.value.gameProgress.main.best[3]!, "ee3");
+    //     },
+    //     get done() {
+    //         return player.value.gameProgress.unlocks.tax;
+    //     },
+    //     get dispPart1() {
+    //         return `${format(player.value.gameProgress.main.best[3]!)} / ${format("e2000")}`;
+    //     },
+    //     dispPart2: `Points to unlock the next layers.`,
+    //     get color() {
+    //         return mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2)
+    //     }
+    // }
 ];
 
 type Game = {
@@ -1484,7 +1484,7 @@ function calcPPS(): Decimal {
 }
 
 export const getEndgame = () => {
-    return Decimal.max(player.value.gameProgress.main.bestEver, 1).log10().sqrt().div(Decimal.sqrt(2000)).mul(100);
+    return Decimal.max(player.value.gameProgress.main.bestEver, 1).log10().sqrt().div(Decimal.sqrt(1500)).min(1).mul(100);
 };
 
 function gameLoop(): void {

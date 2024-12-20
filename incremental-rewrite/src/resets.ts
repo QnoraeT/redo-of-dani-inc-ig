@@ -4,10 +4,15 @@ import { player } from "./main";
 import { setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
 import { D, scale } from "./calc";
 import { updateAllStart } from "./components/Game/Game_Progress/Game_Main/Game_Main";
-import { getFinickyKPExp, getFinickyKPExpGain, getFinickySeconds, getStrangeKPExp, KUA_BLESS_UPGS, KUA_PROOF_AUTO, KUA_PROOF_UPGS, updateAllKua, type KuaProofAutoTypes, type KuaProofUpgTypes } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { format } from "./format";
 import { getSCSLAttribute, setSCSLEffectDisp } from "./softcapScaling";
 import { updateAllCol } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
+import { KUA_PROOF_UPGS, type KuaProofUpgTypes } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofs";
+import { KUA_PROOF_AUTO, type KuaProofAutoTypes } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofAuto/Game_KuaProofAuto";
+import { KUA_BLESS_UPGS } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
+import { updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
+import { getStrangeKPExp } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofStrange/Game_KuaProofStrange";
+import { getFinickyKPExp, getFinickyKPExpGain, getFinickySeconds } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofFinicky/Game_KuaProofFinicky";
 
 
 export const resetTotalBestArray = (

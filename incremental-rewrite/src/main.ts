@@ -8,11 +8,8 @@ import { D, expQuadCostGrowth, linearAdd, mixColor, scale, smoothExp, smoothPoly
 import { format } from "./format";
 import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame, decompressSave } from "./saving";
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from "./softcapScaling";
-import { updateAllStart, initAllMainUpgrades, initAllMainOneUpgrades, MAIN_ONE_UPGS, type TmpMainUpgrade } from "./components/Game/Game_Progress/Game_Main/Game_Main";
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
-import { getKuaUpgrade, initAllKBlessingUpgrades, initAllKProofUpgrades, KUA_BLESS_UPGS, KUA_PROOF_UPGS, updateAllKua, type KuaProofUpgTypes, type TmpKProofUpgs } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { diePopupsDie } from "./popups";
-import { challengeDepth, COL_CHALLENGES, getColResEffect, getColXPtoNext, inChallenge, timesCompleted, updateAllCol, type Challenge, type challengeIDList, type colChallengesSavedData } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 import { updateAllTax } from "./components/Game/Game_Progress/Game_Taxation/Game_Taxation";
 import { ALL_FACTORS, initStatsFactors, setFactor, type FactorColorID } from "./components/Game/Game_Stats/Game_Stats";
 import { updatePlayerData } from "./versionControl";
@@ -20,6 +17,17 @@ import { reset } from "./resets";
 import { speedToConsume, timeSpeedBoost } from "./components/Game/Game_Progress/Game_Stored_Time/Game_Stored_Time";
 import { UPDATE_LOG } from "./components/Game/Game_Options/Game_Options";
 import { compressToBase64, decompressFromBase64 } from "lz-string";
+import { challengeDepth, inChallenge, timesCompleted, type colChallengesSavedData } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
+import { COL_CHALLENGES, type Challenge, type challengeIDList } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalData";
+import { getKuaUpgrade } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
+import { getColResEffect, getColXPtoNext } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
+import { initAllKBlessingUpgrades, KUA_BLESS_UPGS } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
+import { initAllKProofUpgrades, KUA_PROOF_UPGS, type KuaProofUpgTypes, type TmpKProofUpgs } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofs";
+import { updateAllCol } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
+import { updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
+import { initAllMainUpgrades, type TmpMainUpgrade } from "./components/Game/Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
+import { initAllMainOneUpgrades, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_OneUpgrades/Game_OneUpgrades";
+import { updateAllStart } from "./components/Game/Game_Progress/Game_Main/Game_Main";
 
 // this may slow down calculations!!
 export const NAN_CHECKER = true;
@@ -1233,7 +1241,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: 'One-Upgrade #10',
         get effect() {
-            return MAIN_ONE_UPGS[9].effect!;
+            return MAIN_ONE_UPGS[9].effect.value;
         },
         color: 'norm',
         type: 'mult'
@@ -1423,7 +1431,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: 'One Upgrade #20',
         get effect() {
-            return MAIN_ONE_UPGS[19].effect;
+            return MAIN_ONE_UPGS[19].effect.value;
         },
         color: 'norm',
         type: 'pow'
@@ -1752,6 +1760,7 @@ declare global {
         UPDATE_LOG: typeof UPDATE_LOG;
         compressToBase64: typeof compressToBase64;
         decompressFromBase64: typeof decompressFromBase64;
+        tab: typeof tab;
     }
 }
 
@@ -1774,5 +1783,6 @@ window.COL_CHALLENGES = COL_CHALLENGES;
 window.UPDATE_LOG = UPDATE_LOG;
 window.compressToBase64 = compressToBase64;
 window.decompressFromBase64 = decompressFromBase64;
+window.tab = tab;
 
 createApp(App).mount("#app");

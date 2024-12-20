@@ -3,7 +3,7 @@ import Decimal from "break_eternity.js";
 import { tab, player, tmp } from "@/main";
 import { format, formatTime } from "@/format";
 import { STAGES } from "./Game_Stats";
-import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_Main";
+import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 
 defineProps<{
     id: number;
@@ -34,7 +34,7 @@ defineProps<{
                 {{ `<--- Upgrades --- >` }}<br>
             </span>
             <span v-for="(item, index) of MAIN_UPGS" :key="index">
-                <span v-if="item.shown">
+                <span v-if="tmp.main.upgrades[index].shown">
                     Best Upgrade {{ index + 1 }}:
                     {{ format(player.gameProgress.main.upgrades[index].best) }}<br>
                 </span>

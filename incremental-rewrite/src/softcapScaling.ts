@@ -6,13 +6,10 @@ import {
     getAchievementEffect,
     ifAchievement
 } from "./components/Game/Game_Achievements/Game_Achievements";
-import {
-    getKuaUpgrade,
-    KUA_BLESS_UPGS,
-    KUA_UPGRADES
-} from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
-import { getOMUpgrade, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_Main";
-import { getColChalRewEffects, inChallenge, timesCompleted } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
+import { getKuaUpgrade, KUA_UPGRADES } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
+import { getColChalRewEffects, inChallenge, timesCompleted } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
+import { getOMUpgrade, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_OneUpgrades/Game_OneUpgrades";
+import { KUA_BLESS_UPGS } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
 
 export const SCALE_ATTR = [
     { pow: 2, type: 0, name: "Scaled", color: `#3080FF` },
@@ -211,7 +208,7 @@ export const getSCSLAttribute = (
                     }
 
                     if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[2], 1)) {
-                        data[0].start = data[0].start.add(MAIN_ONE_UPGS[2].effect!);
+                        data[0].start = data[0].start.add(MAIN_ONE_UPGS[2].effect.value);
                     }
 
                     if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 7)) {
@@ -244,7 +241,7 @@ export const getSCSLAttribute = (
                     data[2].power = data[2].power.mul(getColChalRewEffects("su")[1])
 
                     if (Decimal.gte(getOMUpgrade(14), 1)) {
-                        data[2].power = data[2].power.div(MAIN_ONE_UPGS[14].effect!);
+                        data[2].power = data[2].power.div(MAIN_ONE_UPGS[14].effect.value);
                     }
 
                     if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 1)) {
@@ -299,7 +296,7 @@ export const getSCSLAttribute = (
                     }
 
                     if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[7], 1)) {
-                        data[0].start = data[0].start.add(MAIN_ONE_UPGS[7].effect!);
+                        data[0].start = data[0].start.add(MAIN_ONE_UPGS[7].effect.value);
                     }
 
                     if (getKuaUpgrade("s", 6)) {
@@ -345,7 +342,7 @@ export const getSCSLAttribute = (
                     });
 
                     if (Decimal.gte(getOMUpgrade(12), 1)) {
-                        data[0].start = data[0].start.add(MAIN_ONE_UPGS[12].effect!);
+                        data[0].start = data[0].start.add(MAIN_ONE_UPGS[12].effect.value);
                     }
                     data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff()[2]);
 

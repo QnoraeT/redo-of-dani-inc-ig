@@ -1,8 +1,8 @@
 import { player, tmp } from "@/main";
-import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_Main";
 import { D } from "@/calc";
 import Decimal from "break_eternity.js";
-import { timesCompleted } from "../Game_Progress/Game_Colosseum/Game_Colosseum";
+import { timesCompleted } from "../Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
+import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 
 export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "fkp" | "col" | "tax" | "sc1" | "sc2"
 export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "fkp", "col", "tax", "sc1", "sc2"]
@@ -155,7 +155,7 @@ export const initStatsFactors = () => {
         arr.push({
             name: `Upgrade ${i + 1}`,
             get show() {
-                return MAIN_UPGS[i].shown;
+                return tmp.value.main.upgrades[i].shown;
             },
             subTabs: [
                 {

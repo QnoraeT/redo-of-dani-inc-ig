@@ -13,8 +13,8 @@ import { popupList } from "./popups";
 import { colorChange, gRC } from "./calc";
 import { getSCSLAttribute } from "./softcapScaling";
 import Decimal from "break_eternity.js";
-import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 import Game_Stored_Time from "./components/Game/Game_Progress/Game_Stored_Time/Game_Stored_Time.vue";
+import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalData";
 </script>
 
 <template>

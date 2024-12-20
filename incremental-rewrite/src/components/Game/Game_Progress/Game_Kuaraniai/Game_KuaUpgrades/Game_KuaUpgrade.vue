@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { format } from "@/format";
-import type { Kua_Upgrade } from "./Game_Kuaraniai";
+import type { Kua_Upgrade } from "./Game_KuaUpgrades";
 
 defineProps<{
     item: Kua_Upgrade;

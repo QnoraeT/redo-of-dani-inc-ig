@@ -2,9 +2,10 @@ import Decimal from "break_eternity.js";
 import { format, formatPerc, formatTime } from "@/format";
 import { player, tmp } from "@/main";
 import { D } from "@/calc";
-import { getKuaUpgrade } from "../Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { spawnPopup } from "@/popups";
-import { challengeDepth, getColResLevel, inChallenge, timesCompleted } from "../Game_Progress/Game_Colosseum/Game_Colosseum";
+import { challengeDepth, inChallenge, timesCompleted } from "../Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
+import { getColResLevel } from "../Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
+import { getKuaUpgrade } from "../Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
 
 export type Ach_Types = "main" | "kua" | "col" |"tax";
 export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "tax"];

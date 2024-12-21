@@ -3,6 +3,7 @@ import { player } from "@/main";
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { getColChalDisplayedDifficulty, getColChalSelectedCond, getColChalSelectedRew, timesCompleted } from "./Game_ColChalHandler";
 import { format } from "@/format";
+import { computed, type ComputedRef } from "vue";
 
 export type challengeIDList = "nk" | "su" | "df" | "im" | "dc" | 'sn';
 export const challengeIDListArr: Array<challengeIDList> = ["nk", "su", "df", "im", "dc", "sn"];
@@ -43,20 +44,20 @@ export type colChallengeData = {
     id: challengeIDList;
     layer: number;
     name: string;
-    goal: Decimal;
-    resourceReq?: DecimalSource;
-    goalDesc: string;
-    desc: string;
-    reward: string;
+    goal: ComputedRef<Decimal>;
+    resourceReq?: ComputedRef<DecimalSource>;
+    goalDesc: ComputedRef<string>;
+    desc: ComputedRef<string>;
+    reward: ComputedRef<string>;
     cap: Decimal;
-    show: boolean;
-    canComplete: boolean;
-    progress: Decimal;
-    progDisplay: string;
+    show: ComputedRef<boolean>;
+    canComplete: ComputedRef<boolean>;
+    progress: ComputedRef<Decimal>;
+    progDisplay: ComputedRef<string>;
     type1ChalCond?: Array<Array<Decimal>>
     type1ChalEff?: Array<Array<Decimal>>
     // there's no type2Cond because that's gonna screw things up when stuff goes retroactively, see the "reducing points by ^0.5 but it overflows first tick and screws up" issue
-    type2ChalEff?: Array<Decimal>
+    type2ChalEff?: ComputedRef<Array<Decimal>>
     // use type 3 when you want a repeatable challenge to be endless at some point
     type3ChalCond?: (x: DecimalSource) => Array<Decimal>
     type3ChalEff?: (x: DecimalSource) => Array<Decimal>
@@ -79,26 +80,26 @@ export const COL_CHALLENGES: colChallenges = {
         id: "nk",
         layer: 0,
         name: `No Kuaraniai`,
-        goal: D(1e25),
-        get goalDesc() {
-            return `Reach ${format(this.goal)} Points.`;
-        },
-        desc: `All Kuaraniai resources and upgrades are disabled.`,
-        reward: `Unlock another tab in Colosseum, and unlock another challenge.`,
+        goal: computed(() => { return D(1e25); }),
+        goalDesc: computed(() => {
+            return `Reach ${format(COL_CHALLENGES.nk.goal.value)} Points.`;
+        }),
+        desc: computed(() => { return `All Kuaraniai resources and upgrades are disabled.`; }),
+        reward: computed(() => { return `Unlock another tab in Colosseum, and unlock another challenge.`; }),
         cap: D(1),
-        show: true,
-        get canComplete() {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
-        },
-        get progress() {
+        show: computed(() => { return true; }),
+        canComplete: computed(() => {
+            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.nk.goal.value);
+        }),
+        progress: computed(() => {
             return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
                 .log10()
-                .div(this.goal.log10())
+                .div(COL_CHALLENGES.nk.goal.value.log10())
                 .min(1);
-        },
-        get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
-        }
+        }),
+        progDisplay: computed(() => {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.nk.goal.value)} (${format(COL_CHALLENGES.nk.progress.value.mul(100), 3)}%)`;
+        })
     },
     su: {
         type: 1,
@@ -106,7 +107,7 @@ export const COL_CHALLENGES: colChallenges = {
         id: "su",
         layer: 0,
         name: `Sabotaged Upgrades`,
-        get goal() {
+        goal: computed(() => {
             return [
                 D(1e24),
                 D(1e33),
@@ -120,49 +121,49 @@ export const COL_CHALLENGES: colChallenges = {
                 D(1e300),
                 D(Infinity)
             ][new Decimal(getColChalDisplayedDifficulty("su")).toNumber()];
-        },
-        get goalDesc() {
-            return `Reach ${format(this.goal)} Points.`;
-        },
-        get desc() {
-            if (Decimal.gte(getColChalDisplayedDifficulty("su"), this.cap)) {
+        }),
+        goalDesc: computed(() => {
+            return `Reach ${format(COL_CHALLENGES.su.goal.value)} Points.`;
+        }),
+        desc: computed(() => {
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), COL_CHALLENGES.su.cap)) {
                 return `winner you complete it all`;
             }
             let txt = `<li>Your PPS is restricted to only Upgrades, PRai, PR2, and Dotgenous.</li>`;
-            txt += `<li>All upgrades scale ${format(getColChalSelectedCond(this.id, 0), 1)}× faster.</li>`;
+            txt += `<li>All upgrades scale ${format(getColChalSelectedCond(COL_CHALLENGES.su.id, 0), 1)}× faster.</li>`;
             if (Decimal.gte(getColChalDisplayedDifficulty("su"), 1)) {
-                txt += `<li>Upgrade 1's base is reduced by -${format(getColChalSelectedCond(this.id, 1), 3)}.</li>`;
+                txt += `<li>Upgrade 1's base is reduced by -${format(getColChalSelectedCond(COL_CHALLENGES.su.id, 1), 3)}.</li>`;
             }
             if (Decimal.gte(getColChalDisplayedDifficulty("su"), 4)) {
-                txt += `<li>Upgrade 2's effect is dilated to the ^${format(getColChalSelectedCond(this.id, 2), 2)}.</li>`;
+                txt += `<li>Upgrade 2's effect is dilated to the ^${format(getColChalSelectedCond(COL_CHALLENGES.su.id, 2), 2)}.</li>`;
             }
             if (Decimal.gte(getColChalDisplayedDifficulty("su"), 7)) {
                 txt += `<li>Upgrades 4, 5, and 6 are disabled.</li>`;
             }
             if (Decimal.gte(getColChalDisplayedDifficulty("su"), 8)) {
-                txt += `<li>PRai's effect is raised to the ^${format(getColChalSelectedCond(this.id, 3), 2)}.</li>`;
+                txt += `<li>PRai's effect is raised to the ^${format(getColChalSelectedCond(COL_CHALLENGES.su.id, 3), 2)}.</li>`;
             }
             return txt;
-        },
-        get reward() {
-            if (Decimal.gte(getColChalDisplayedDifficulty("su"), this.cap)) {
+        }),
+        reward: computed(() => {
+            if (Decimal.gte(getColChalDisplayedDifficulty("su"), COL_CHALLENGES.su.cap)) {
                 return `winner you complete it all`;
             }
-            let txt = `<li>Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(getColChalSelectedRew(this.id, 0).mul(100), 1)}%)</li>`;
+            let txt = `<li>Colosseum Power weakens the Upgrade 1 and 2 softcaps. (Effectiveness: ${format(getColChalSelectedRew(COL_CHALLENGES.su.id, 0).mul(100), 1)}%)</li>`;
             if (Decimal.gte(getColChalDisplayedDifficulty("su"), 3)) {
-                txt += `<li>Upgrade 1's Hyper scaling is ${format(Decimal.sub(1, getColChalSelectedRew(this.id, 1)).mul(100), 1)}% weaker.</li>`;
+                txt += `<li>Upgrade 1's Hyper scaling is ${format(Decimal.sub(1, getColChalSelectedRew(COL_CHALLENGES.su.id, 1)).mul(100), 1)}% weaker.</li>`;
             }
             if (Decimal.gte(getColChalDisplayedDifficulty("su"), 5)) {
-                txt += `<li>Upgrade 2's base is increased by +${format(getColChalSelectedRew(this.id, 2).sub(1).mul(100))}%.</li>`;
+                txt += `<li>Upgrade 2's base is increased by +${format(getColChalSelectedRew(COL_CHALLENGES.su.id, 2).sub(1).mul(100))}%.</li>`;
             }
             if (Decimal.gte(getColChalDisplayedDifficulty("su"), 7)) {
-                txt += `<li>Point taxation starts ${format(getColChalSelectedRew(this.id, 3))}× later.</li>`;
+                txt += `<li>Point taxation starts ${format(getColChalSelectedRew(COL_CHALLENGES.su.id, 3))}× later.</li>`;
             }
             if (Decimal.eq(getColChalDisplayedDifficulty("su"), 0)) {
                 txt += `<li>Unlock a new challenge.</li>`;
             }
             return txt;
-        },
+        }),
         type1ChalCond: [
             [D(1.5), D(0),     D(1),    D(1)],    // difficulty 1
             [D(2),   D(0.1),   D(1),    D(1)],    // difficulty 2
@@ -191,21 +192,21 @@ export const COL_CHALLENGES: colChallenges = {
             [D(1),     D(0.8),   D(1.35),  D(1e10)], // reward 11 (repeat cuz cap)
         ],
         cap: D(10),
-        get show() {
+        show: computed(() => {
             return Decimal.gte(timesCompleted("nk"), 1);
-        },
-        get canComplete() {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
-        },
-        get progress() {
+        }),
+        canComplete: computed(() => {
+            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.su.goal.value);
+        }),
+        progress: computed(() => {
             return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
                 .log10()
-                .div(this.goal.log10())
+                .div(COL_CHALLENGES.su.goal.value.log10())
                 .min(1);
-        },
-        get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
-        }
+        }),
+        progDisplay: computed(() => {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.su.goal.value)} (${format(COL_CHALLENGES.su.progress.value.mul(100), 3)}%)`;
+        })
     },
     df: {
         type: 0,
@@ -213,30 +214,30 @@ export const COL_CHALLENGES: colChallenges = {
         id: "df",
         layer: 0,
         name: `Decaying Feeling`,
-        goal: D(1e20),
-        get goalDesc() {
-            return `Reach ${format(this.goal)} Points.`;
-        },
-        get desc() { return `
+        goal: computed(() => { return D(1e20); }),
+        goalDesc: computed(() => {
+            return `Reach ${format(COL_CHALLENGES.df.goal.value)} Points.`;
+        }),
+        desc: computed(() => { return `
             <li>Points, PRai, and all Kuaraniai resources gain less the more you have.</li>
-            <li>However, PRai's auto-generator is always unlocked, and always runs at ${format(100)}%.</li>`; },
-        get reward() { return `Colosseum Power speeds up research, increase all Kuaraniai resources by ${format(2)}×, boost Points and PRai by ${format(10)}×, and unlock another challenge.`; },
+            <li>However, PRai's auto-generator is always unlocked, and always runs at ${format(100)}%.</li>`; }),
+        reward: computed(() => { return `Colosseum Power speeds up research, increase all Kuaraniai resources by ${format(2)}×, boost Points and PRai by ${format(10)}×, and unlock another challenge.`; }),
         cap: D(1),
-        get show() {
+        show: computed(() => {
             return Decimal.gte(timesCompleted("su"), 1);
-        },
-        get canComplete() {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
-        },
-        get progress() {
+        }),
+        canComplete: computed(() => {
+            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.df.goal.value);
+        }),
+        progress: computed(() => {
             return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
                 .log10()
-                .div(this.goal.log10())
+                .div(COL_CHALLENGES.df.goal.value.log10())
                 .min(1);
-        },
-        get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
-        }
+        }),
+        progDisplay: computed(() => {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.df.goal.value)} (${format(COL_CHALLENGES.df.progress.value.mul(100), 3)}%)`;
+        })
     },
     im: {
         type: 2,
@@ -244,47 +245,47 @@ export const COL_CHALLENGES: colChallenges = {
         id: "im",
         layer: 0,
         name: `Inverted Mechanics`,
-        goal: D(1e20),
-        get resourceReq() { return player.value.gameProgress.main.best[3]!; },
-        get goalDesc() {
-            return `PB: ${format(timesCompleted(this.id))} / ${format(this.goal)} Points.`;
-        },
-        get desc() { return `
+        goal: computed(() => { return D(1e20); }),
+        resourceReq: computed(() => { return player.value.gameProgress.main.best[3]!; }),
+        goalDesc: computed(() => {
+            return `PB: ${format(timesCompleted(COL_CHALLENGES.im.id))} / ${format(COL_CHALLENGES.im.goal.value)} Points.`;
+        }),
+        desc: computed(() => { return `
             <li>All Upgrades can only be bought once, but One-Upgrades are repeatable.</li>
             <li>Upgrade 2 and 5 change to boosting point gain.</li>
-            <li>Point and PRai gain are raised to the ^${format(0.8, 3)} and PR2 scales ${format(1.2, 2)}× faster.</li>`; },
-        get reward() {
+            <li>Point and PRai gain are raised to the ^${format(0.8, 3)} and PR2 scales ${format(1.2, 2)}× faster.</li>`; }),
+        reward: computed(() => {
             let txt = ``;
             // txt += `<li>Unlock the 4th research and 5th challenge.</li>`
-            txt += `Unlock the 4th research.`
-            if (Decimal.gte(timesCompleted(this.id), 1e20)) {
-                txt += `<li>Boost research speed based off of your Personal Best in this challenge. Currently: ×${format(this.type2ChalEff![0], 3)}</li>`
-                txt += Decimal.gte(timesCompleted(this.id), 1e33)
-                        ? `<li>Unlock the 5th and 6th research and make KBlessings directly boost Upgrades' effects. Effectiveness: ^${format(this.type2ChalEff![1], 1)}</li>`
+            txt += `<li>Unlock the 4th research.</li>`
+            if (Decimal.gte(timesCompleted(COL_CHALLENGES.im.id), 1e20)) {
+                txt += `<li>Boost research speed based off of your Personal Best in this challenge. Currently: ×${format(COL_CHALLENGES.im.type2ChalEff!.value[0], 3)}</li>`
+                txt += Decimal.gte(timesCompleted(COL_CHALLENGES.im.id), 1e33)
+                        ? `<li>Unlock the 5th and 6th research and make KBlessings directly boost Upgrades' effects. Effectiveness: ^${format(COL_CHALLENGES.im.type2ChalEff!.value[1], 1)}</li>`
                         : `<li>Unlock another reward at a Personal Best of ${format(1e33)}.</li>`
             }
             return txt;
-        },
-        get type2ChalEff() {
+        }),
+        type2ChalEff: computed(() => {
             return [
-                Decimal.gte(timesCompleted(this.id), 1e20) ? Decimal.max(timesCompleted(this.id), 1e20).log10().sub(4).sqrt().div(2) : D(1),
-                Decimal.max(timesCompleted(this.id), 1e33).div(1e33).log2()
+                Decimal.gte(timesCompleted(COL_CHALLENGES.im.id), 1e20) ? Decimal.max(timesCompleted(COL_CHALLENGES.im.id), 1e20).log10().sub(4).sqrt().div(2) : D(1),
+                Decimal.max(timesCompleted(COL_CHALLENGES.im.id), 1e33).div(1e33).log2()
             ]
-        },
+        }),
         cap: D(Infinity),
-        get show() {
+        show: computed(() => {
             return Decimal.gte(timesCompleted("df"), 1);
-        },
-        canComplete: false,
-        get progress() {
+        }),
+        canComplete: computed(() => { return false; }),
+        progress: computed(() => {
             return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
                 .log10()
-                .div(Decimal.log10(Decimal.max(timesCompleted(this.id), 10).max(this.goal)))
+                .div(Decimal.log10(Decimal.max(timesCompleted(COL_CHALLENGES.im.id), 10).max(COL_CHALLENGES.im.goal.value)))
                 .min(1);
-        },
-        get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(Decimal.max(this.goal, timesCompleted(this.id)))} (${format(this.progress.mul(100), 3)}%)`;
-        }
+        }),
+        progDisplay: computed(() => {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(Decimal.max(COL_CHALLENGES.im.goal.value, timesCompleted(COL_CHALLENGES.im.id)))} (${format(COL_CHALLENGES.im.progress.value.mul(100), 3)}%)`;
+        })
     },
     dc: {
         type: 3,
@@ -292,7 +293,7 @@ export const COL_CHALLENGES: colChallenges = {
         id: "dc",
         layer: 0,
         name: `Dimension Crawler`,
-        get goal() {
+        goal: computed(() => {
             if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 20)) {
                 return Decimal.sub(getColChalDisplayedDifficulty("dc"), 20).pow_base(1.02012).pow_base(1600).pow10();
             }
@@ -319,12 +320,12 @@ export const COL_CHALLENGES: colChallenges = {
                 D('e1600'), // difficulty 20
                 D(Infinity)
             ][new Decimal(getColChalDisplayedDifficulty("dc")).toNumber()];
-        },
-        get goalDesc() {
-            return `Reach ${format(this.goal)} Points.`;
-        },
-        get desc() {
-            if (Decimal.gte(getColChalDisplayedDifficulty("dc"), this.cap)) {
+        }),
+        goalDesc: computed(() => {
+            return `Reach ${format(COL_CHALLENGES.dc.goal.value)} Points.`;
+        }),
+        desc: computed(() => {
+            if (Decimal.gte(getColChalDisplayedDifficulty("dc"), COL_CHALLENGES.dc.cap)) {
                 return `winner you complete it all`;
             }
             let txt = `
@@ -332,27 +333,27 @@ export const COL_CHALLENGES: colChallenges = {
             <li>Multipliers to PPS and PRai other than Upgrade 1 and Points (respectively) are dilated to the ^${format(0.5, 2)}.</li>`;
             txt += `<li>Upgrades' effective costs are significantly increased.</li>`;
             if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 10)) {
-                txt += `<li>Upgrades' multipliers are raised to the ^${format(this.type3ChalCond!(Decimal.add(getColChalDisplayedDifficulty("dc"), 1))[2], 2)}.</li>`;
+                txt += `<li>Upgrades' multipliers are raised to the ^${format(COL_CHALLENGES.dc.type3ChalCond!(Decimal.add(getColChalDisplayedDifficulty("dc"), 1))[2], 2)}.</li>`;
             }
             // let txt = `
-            // All upgrades now generate the previous upgrade and all Upgrade scalings and softcaps are removed, however, their effects are vastly reduced down to log(Effective+1)^${format(this.type3ChalCond!(getColChalDisplayedDifficulty("dc"))[1], 2)}.
+            // All upgrades now generate the previous upgrade and all Upgrade scalings and softcaps are removed, however, their effects are vastly reduced down to log(Effective+1)^${format(COL_CHALLENGES.dc.type3ChalCond!(getColChalDisplayedDifficulty("dc"))[1], 2)}.
             // Every multiplier to points other than Upgrade 1 are dilated.
-            // Every bought upgrade gives a ${format(this.type3ChalCond!(getColChalDisplayedDifficulty("dc"))[0], 2)}× multiplier.`;
+            // Every bought upgrade gives a ${format(COL_CHALLENGES.dc.type3ChalCond!(getColChalDisplayedDifficulty("dc"))[0], 2)}× multiplier.`;
             // if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 10)) {
-            //     txt += `All upgrades' multipliers are raised to the ^${format(this.type3ChalCond!(getColChalDisplayedDifficulty("dc"))[2], 3)}.`;
+            //     txt += `All upgrades' multipliers are raised to the ^${format(COL_CHALLENGES.dc.type3ChalCond!(getColChalDisplayedDifficulty("dc"))[2], 3)}.`;
             // }
             // if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 15)) {
-            //     txt += `All upgrades' effective costs are raised to the ^${format(this.type3ChalCond!(getColChalDisplayedDifficulty("dc"))[3], 2)}.`;
+            //     txt += `All upgrades' effective costs are raised to the ^${format(COL_CHALLENGES.dc.type3ChalCond!(getColChalDisplayedDifficulty("dc"))[3], 2)}.`;
             // }
             return txt;
-        },
-        get reward() {
-            if (Decimal.gte(getColChalDisplayedDifficulty("dc"), this.cap)) {
+        }),
+        reward: computed(() => {
+            if (Decimal.gte(getColChalDisplayedDifficulty("dc"), COL_CHALLENGES.dc.cap)) {
                 return `winner you complete it all`;
             }
-            const txt = `Total upgrades bought boosts PRai gain. Currently: ×(${format(this.type3ChalEff!(timesCompleted('dc'))[0], 3)}^sqrt(x))`;
+            const txt = `<li>Total upgrades bought boosts PRai gain. Currently: ×(${format(COL_CHALLENGES.dc.type3ChalEff!(timesCompleted('dc'))[0], 3)}^sqrt(x))</li>`;
             return txt;
-        },
+        }),
         type3ChalCond(x) {
             if (Decimal.gte(x, 20)) {
                 return [
@@ -392,22 +393,22 @@ export const COL_CHALLENGES: colChallenges = {
             return arr;
         },
         cap: D(20),
-        get show() {
-            // return Decimal.gte(timesCompleted('im'), 1e20);
-            return false;
-        },
-        get canComplete() {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
-        },
-        get progress() {
+        show: computed(() => {
+            return Decimal.gte(timesCompleted('im'), 1e20);
+            // return false;
+        }),
+        canComplete: computed(() => {
+            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.dc.goal.value);
+        }),
+        progress: computed(() => {
             return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
                 .log10()
-                .div(this.goal.log10())
+                .div(COL_CHALLENGES.dc.goal.value.log10())
                 .min(1);
-        },
-        get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
-        }
+        }),
+        progDisplay: computed(() => {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.dc.goal.value)} (${format(COL_CHALLENGES.dc.progress.value.mul(100), 3)}%)`;
+        })
     },
     sn: {
         type: 0,
@@ -415,29 +416,33 @@ export const COL_CHALLENGES: colChallenges = {
         id: "sn",
         layer: 0,
         name: `Simple Nerfs`,
-        goal: D('9.999e999'),
-        get goalDesc() {
-            return `Reach ${format(this.goal)} Points.`;
-        },
-        get desc() {
-            return `Point gain is raised ^${format(0.5, 2)}, PRai gain is raised ^${format(2/3, 2)}, Kuaraniai gain is decreased by /${format(10)}, KBlessing gain is decreased by /${format(10)}, and KProof exponent is decreased by /${format(2)}.`;
-        },
-        reward: `???`,
+        goal: computed(() => { return D('9.999e999'); }),
+        goalDesc: computed(() => {
+            return `Reach ${format(COL_CHALLENGES.sn.goal.value)} Points.`;
+        }),
+        desc: computed(() => {
+            return `<li>Point gain is raised ^${format(0.5, 2)}.</li>
+            <li>PRai gain is raised ^${format(2/3, 2)}.</li>
+            <li>Kuaraniai gain is decreased by /${format(10)}.</li>
+            <li>KBlessing gain is decreased by /${format(10)}.</li>
+            <li>KProof exponent is decreased by /${format(2)}.</li>`;
+        }),
+        reward: computed(() => { return 'Unlock The Color Wheel.'; }),
         cap: D(1),
-        get show() {
+        show: computed(() => {
             return false;
-        },
-        get canComplete() {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, this.goal);
-        },
-        get progress() {
+        }),
+        canComplete: computed(() => {
+            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.sn.goal.value);
+        }),
+        progress: computed(() => {
             return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
                 .log10()
-                .div(this.goal.log10())
+                .div(COL_CHALLENGES.sn.goal.value.log10())
                 .min(1);
-        },
-        get progDisplay() {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(this.goal)} (${format(this.progress.mul(100), 3)}%)`;
-        }
+        }),
+        progDisplay: computed(() => {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.sn.goal.value)} (${format(COL_CHALLENGES.sn.progress.value.mul(100), 3)}%)`;
+        })
     },
 };

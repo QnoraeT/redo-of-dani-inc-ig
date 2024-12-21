@@ -2,6 +2,7 @@ import { D, scale, smoothExp } from "@/calc";
 import { format } from "@/format";
 import { player, tmp } from "@/main";
 import Decimal, { type DecimalSource } from "break_eternity.js";
+import { computed, type ComputedRef } from "vue";
 
 export type TmpKProofUpgs = {
     canBuy: boolean,
@@ -63,10 +64,10 @@ export type KuaProofUpgAllType = {
 }
 
 export type KuaProofUpgType = {
-    show: boolean,
+    show: ComputedRef<boolean>,
     title: string,
-    perDesc: string,
-    desc: string,
+    perDesc: ComputedRef<string>,
+    desc: ComputedRef<string>,
     cost: (x: DecimalSource) => Decimal
     target: (x: DecimalSource) => Decimal
     effect: (x: DecimalSource) => Decimal
@@ -75,14 +76,14 @@ export type KuaProofUpgType = {
 export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
     effect: [
         {
-            show: true,
+            show: computed(() => { return true; }),
             title: `Basic Discoveries`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[0].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.effect[0].trueLevel)), 2)} free levels to Upgrades 1-3.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.effect[0].trueLevel), 2)} free levels to Upgrades 1-3.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[0].effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[0].trueLevel, 1)).sub(KUA_PROOF_UPGS.effect[0].effect(tmp.value.kua.proofs.upgrades.effect[0].trueLevel)), 2)} free levels to Upgrades 1-3.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[0].effect(tmp.value.kua.proofs.upgrades.effect[0].trueLevel), 2)} free levels to Upgrades 1-3.`;
+            }),
             cost(x) {
                 return Decimal.pow(x, 0.75).pow_base(2).mul(12).pow10();
             },
@@ -95,14 +96,14 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            show: true,
+            show: computed(() => { return true; }),
             title: `Exotic Laboratory`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[1].trueLevel, 1)).div(this.effect(tmp.value.kua.proofs.upgrades.effect[1].trueLevel)).sub(1).mul(100), 1)}% effect power to KS and KP.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.effect[1].trueLevel).sub(1).mul(100), 1)}% effect power to KS and KP.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[1].effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[1].trueLevel, 1)).div(KUA_PROOF_UPGS.effect[1].effect(tmp.value.kua.proofs.upgrades.effect[1].trueLevel)).sub(1).mul(100), 1)}% effect power to KS and KP.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[1].effect(tmp.value.kua.proofs.upgrades.effect[1].trueLevel).sub(1).mul(100), 1)}% effect power to KS and KP.`;
+            }),
             cost(x) {
                 return Decimal.pow(x, 0.825).pow_base(2).mul(24).pow10();
             },
@@ -115,14 +116,14 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            show: true,
+            show: computed(() => { return true; }),
             title: `Holy Process`,
-            get perDesc() {
-                return `×${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[2].trueLevel, 1)).div(this.effect(tmp.value.kua.proofs.upgrades.effect[2].trueLevel)))} KBlessing gain.`;
-            },
-            get desc() {
-                return `×${format(this.effect(tmp.value.kua.proofs.upgrades.effect[2].trueLevel))} KBlessing gain.`;
-            },
+            perDesc: computed(() => {
+                return `×${format(KUA_PROOF_UPGS.effect[2].effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[2].trueLevel, 1)).div(KUA_PROOF_UPGS.effect[2].effect(tmp.value.kua.proofs.upgrades.effect[2].trueLevel)))} KBlessing gain.`;
+            }),
+            desc: computed(() => {
+                return `×${format(KUA_PROOF_UPGS.effect[2].effect(tmp.value.kua.proofs.upgrades.effect[2].trueLevel))} KBlessing gain.`;
+            }),
             cost(x) {
                 return Decimal.pow(x, 0.9).pow_base(2).mul(40).pow10();
             },
@@ -138,16 +139,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
-            },
+            }),
             title: `Line Extruder`,
-            get perDesc() {
-                return `Each Upgrade 2 gives +${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[3].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.effect[3].trueLevel)), 3)} free levels to Upgrade 1.`;
-            },
-            get desc() {
-                return `Each Upgrade 2 gives +${format(this.effect(tmp.value.kua.proofs.upgrades.effect[3].trueLevel), 3)} free levels to Upgrade 1.`;
-            },
+            perDesc: computed(() => {
+                return `Each Upgrade 2 gives +${format(KUA_PROOF_UPGS.effect[3].effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[3].trueLevel, 1)).sub(KUA_PROOF_UPGS.effect[3].effect(tmp.value.kua.proofs.upgrades.effect[3].trueLevel)), 3)} free levels to Upgrade 1.`;
+            }),
+            desc: computed(() => {
+                return `Each Upgrade 2 gives +${format(KUA_PROOF_UPGS.effect[3].effect(tmp.value.kua.proofs.upgrades.effect[3].trueLevel), 3)} free levels to Upgrade 1.`;
+            }),
             cost(x) {
                 return Decimal.div(x, 20).add(1).pow_base(125).pow10();
             },
@@ -160,16 +161,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
-            },
+            }),
             title: `Violent Violet`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[4].trueLevel, 1)).div(this.effect(tmp.value.kua.proofs.upgrades.effect[4].trueLevel)).sub(1).mul(100), 1)}% to KS and KP's PRai and Point exponents.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.effect[4].trueLevel).sub(1).mul(100), 1)}% to KS and KP's PRai and Point exponents.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[4].effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[4].trueLevel, 1)).div(KUA_PROOF_UPGS.effect[4].effect(tmp.value.kua.proofs.upgrades.effect[4].trueLevel)).sub(1).mul(100), 1)}% to KS and KP's PRai and Point exponents.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[4].effect(tmp.value.kua.proofs.upgrades.effect[4].trueLevel).sub(1).mul(100), 1)}% to KS and KP's PRai and Point exponents.`;
+            }),
             cost(x) {
                 return Decimal.div(x, 12).add(1).pow(1.1).pow_base(180).pow10();
             },
@@ -182,16 +183,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
-            },
+            }),
             title: `Hyper Heaven`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[5].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.effect[5].trueLevel)), 2)} Holy Process effect base.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.effect[5].trueLevel), 2)} Holy Process effect base.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[5].effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[5].trueLevel, 1)).sub(KUA_PROOF_UPGS.effect[5].effect(tmp.value.kua.proofs.upgrades.effect[5].trueLevel)), 2)} Holy Process effect base.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[5].effect(tmp.value.kua.proofs.upgrades.effect[5].trueLevel), 2)} Holy Process effect base.`;
+            }),
             cost(x) {
                 return Decimal.div(x, 12).add(1).pow(1.2).pow_base(250).pow10();
             },
@@ -207,16 +208,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
-            },
+            }),
             title: `Ultimate Bribery`,
-            get perDesc() {
-                return `KProofs delay point taxation by ×${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[6].trueLevel, 1)).div(this.effect(tmp.value.kua.proofs.upgrades.effect[6].trueLevel)))}.`;
-            },
-            get desc() {
-                return `KProofs delay point taxation by ×${format(this.effect(tmp.value.kua.proofs.upgrades.effect[6].trueLevel))}.`;
-            },
+            perDesc: computed(() => {
+                return `KProofs delay point taxation by ×${format(KUA_PROOF_UPGS.effect[6].effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[6].trueLevel, 1)).div(KUA_PROOF_UPGS.effect[6].effect(tmp.value.kua.proofs.upgrades.effect[6].trueLevel)))}.`;
+            }),
+            desc: computed(() => {
+                return `KProofs delay point taxation by ×${format(KUA_PROOF_UPGS.effect[6].effect(tmp.value.kua.proofs.upgrades.effect[6].trueLevel))}.`;
+            }),
             cost(x) {
                 return smoothExp(x, 1.04, false).div(10).add(1).pow_base(75000).pow10();
             },
@@ -229,16 +230,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
-            },
+            }),
             title: `Constructive Interference`,
-            get perDesc() {
-                return `+^${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[7].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.effect[7].trueLevel)), 3)} KS and KP gain from Kua and KS respectively.`;
-            },
-            get desc() {
-                return `+^${format(this.effect(tmp.value.kua.proofs.upgrades.effect[7].trueLevel).sub(1), 3)} KS and KP gain from Kua and KS respectively.`;
-            },
+            perDesc: computed(() => {
+                return `+^${format(KUA_PROOF_UPGS.effect[7].effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[7].trueLevel, 1)).sub(KUA_PROOF_UPGS.effect[7].effect(tmp.value.kua.proofs.upgrades.effect[7].trueLevel)), 3)} KS and KP gain from Kua and KS respectively.`;
+            }),
+            desc: computed(() => {
+                return `+^${format(KUA_PROOF_UPGS.effect[7].effect(tmp.value.kua.proofs.upgrades.effect[7].trueLevel).sub(1), 3)} KS and KP gain from Kua and KS respectively.`;
+            }),
             cost(x) {
                 return smoothExp(x, 1.05, false).div(9).add(1).pow_base(450000).pow10();
             },
@@ -251,16 +252,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
-            },
+            }),
             title: `Infinite Staircase`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[8].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.effect[8].trueLevel)), 2)} Hyper Heaven effect base.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.effect[8].trueLevel), 2)} Hyper Heaven effect base.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[8].effect(Decimal.add(tmp.value.kua.proofs.upgrades.effect[8].trueLevel, 1)).sub(KUA_PROOF_UPGS.effect[8].effect(tmp.value.kua.proofs.upgrades.effect[8].trueLevel)), 2)} Hyper Heaven effect base.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.effect[8].effect(tmp.value.kua.proofs.upgrades.effect[8].trueLevel), 2)} Hyper Heaven effect base.`;
+            }),
             cost(x) {
                 return smoothExp(x, 1.06, false).div(8).add(1).pow_base(2.4e6).pow10();
             },
@@ -275,14 +276,14 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
     ],
     kp: [
         {
-            show: true,
+            show: computed(() => { return true; }),
             title: `Simple Breakthrough`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[0].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[0].trueLevel)), 2)} to KProof Exponent.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.kp[0].trueLevel), 2)} to KProof Exponent.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[0].effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[0].trueLevel, 1)).sub(KUA_PROOF_UPGS.kp[0].effect(tmp.value.kua.proofs.upgrades.kp[0].trueLevel)), 2)} to KProof Exponent.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[0].effect(tmp.value.kua.proofs.upgrades.kp[0].trueLevel), 2)} to KProof Exponent.`;
+            }),
             cost(x) {
                 return Decimal.add(x, 1).mul(x).div(2).pow10();
             },
@@ -299,14 +300,14 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            show: true,
+            show: computed(() => { return true; }),
             title: `Trial and Error`,
-            get perDesc() {
-                return `KProof amount adds +${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[1].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[1].trueLevel)), 2)} to KProof Exponent.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.kp[1].trueLevel), 2)} to KProof Exponent.`;
-            },
+            perDesc: computed(() => {
+                return `KProof amount adds +${format(KUA_PROOF_UPGS.kp[1].effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[1].trueLevel, 1)).sub(KUA_PROOF_UPGS.kp[1].effect(tmp.value.kua.proofs.upgrades.kp[1].trueLevel)), 2)} to KProof Exponent.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[1].effect(tmp.value.kua.proofs.upgrades.kp[1].trueLevel), 2)} to KProof Exponent.`;
+            }),
             cost(x) {
                 return Decimal.pow(x, 2.5).pow_base(100).mul(1e5);
             },
@@ -322,14 +323,14 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            show: true,
+            show: computed(() => { return true; }),
             title: `Crafted Experiments`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[2].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[2].trueLevel)).mul(100), 1)}% (additive) to KProof Exponent.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.kp[2].trueLevel).sub(1).mul(100), 1)}% to KProof Exponent.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[2].effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[2].trueLevel, 1)).sub(KUA_PROOF_UPGS.kp[2].effect(tmp.value.kua.proofs.upgrades.kp[2].trueLevel)).mul(100), 1)}% (additive) to KProof Exponent.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[2].effect(tmp.value.kua.proofs.upgrades.kp[2].trueLevel).sub(1).mul(100), 1)}% to KProof Exponent.`;
+            }),
             cost(x) {
                 return Decimal.pow(x, 3).pow10().mul(1e9);
             },
@@ -345,16 +346,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
-            },
+            }),
             title: `Complex Breakthrough`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[3].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[3].trueLevel)), 2)} to Simple Breakthrough effect base.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.kp[3].trueLevel), 2)} to Simple Breakthrough effect base.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[3].effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[3].trueLevel, 1)).sub(KUA_PROOF_UPGS.kp[3].effect(tmp.value.kua.proofs.upgrades.kp[3].trueLevel)), 2)} to Simple Breakthrough effect base.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[3].effect(tmp.value.kua.proofs.upgrades.kp[3].trueLevel), 2)} to Simple Breakthrough effect base.`;
+            }),
             cost(x) {
                 return Decimal.add(x, 1).log10().add(1).pow(2).sub(1).pow10().sub(1).pow10().mul(1e30);
             },
@@ -370,16 +371,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
-            },
+            }),
             title: `Successive Trials`,
-            get perDesc() {
-                return `Strange KP multiplies Trial and Error effect base by +${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[4].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[4].trueLevel)), 2)}×.`;
-            },
-            get desc() {
-                return `×${format(this.effect(tmp.value.kua.proofs.upgrades.kp[4].trueLevel), 2)} to Trial and Error effect base.`;
-            },
+            perDesc: computed(() => {
+                return `Strange KP multiplies Trial and Error effect base by +${format(KUA_PROOF_UPGS.kp[4].effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[4].trueLevel, 1)).sub(KUA_PROOF_UPGS.kp[4].effect(tmp.value.kua.proofs.upgrades.kp[4].trueLevel)), 2)}×.`;
+            }),
+            desc: computed(() => {
+                return `×${format(KUA_PROOF_UPGS.kp[4].effect(tmp.value.kua.proofs.upgrades.kp[4].trueLevel), 2)} to Trial and Error effect base.`;
+            }),
             cost(x) {
                 return Decimal.add(x, 1).log10().add(1).pow(2.5).sub(1).pow10().sub(1).pow10().mul(1e50);
             },
@@ -394,16 +395,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
-            },
+            }),
             title: `Meta Experiments`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[5].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[5].trueLevel)).mul(100), 1)}% (additive) to Crafted Experiments effect base`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.kp[5].trueLevel).mul(100), 1)}% (additive) to Crafted Experiments effect base`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[5].effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[5].trueLevel, 1)).sub(KUA_PROOF_UPGS.kp[5].effect(tmp.value.kua.proofs.upgrades.kp[5].trueLevel)).mul(100), 1)}% (additive) to Crafted Experiments effect base`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[5].effect(tmp.value.kua.proofs.upgrades.kp[5].trueLevel).mul(100), 1)}% (additive) to Crafted Experiments effect base`;
+            }),
             cost(x) {
                 return Decimal.add(x, 1).log10().add(1).pow(3).sub(1).pow10().sub(1).pow10().mul(1e80);
             },
@@ -416,16 +417,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
-            },
+            }),
             title: `Million Dollar Breakthrough`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[6].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[6].trueLevel)), 2)} to Simple and Complex Breakthrough effect base.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.kp[6].trueLevel), 2)} to Simple and Complex Breakthrough effect base.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[6].effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[6].trueLevel, 1)).sub(KUA_PROOF_UPGS.kp[6].effect(tmp.value.kua.proofs.upgrades.kp[6].trueLevel)), 2)} to Simple and Complex Breakthrough effect base.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[6].effect(tmp.value.kua.proofs.upgrades.kp[6].trueLevel), 2)} to Simple and Complex Breakthrough effect base.`;
+            }),
             cost(x) {
                 return Decimal.add(x, 1).pow(0.2).pow_base(4000).pow10();
             },
@@ -438,16 +439,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
-            },
+            }),
             title: `Verification Trials`,
-            get perDesc() {
-                return `Make Successive Trials +${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[7].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[7].trueLevel)), 2)}× stronger based off of your KP.`;
-            },
-            get desc() {
-                return `×${format(this.effect(tmp.value.kua.proofs.upgrades.kp[7].trueLevel), 2)} Successive Trial effect base.`;
-            },
+            perDesc: computed(() => {
+                return `Make Successive Trials +${format(KUA_PROOF_UPGS.kp[7].effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[7].trueLevel, 1)).sub(KUA_PROOF_UPGS.kp[7].effect(tmp.value.kua.proofs.upgrades.kp[7].trueLevel)), 2)}× stronger based off of your KP.`;
+            }),
+            desc: computed(() => {
+                return `×${format(KUA_PROOF_UPGS.kp[7].effect(tmp.value.kua.proofs.upgrades.kp[7].trueLevel), 2)} Successive Trial effect base.`;
+            }),
             cost(x) {
                 return Decimal.add(x, 1).pow(0.225).pow_base(20000).pow10();
             },
@@ -460,16 +461,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
-            },
+            }),
             title: `Ultimate Experiments`,
-            get perDesc() {
-                return `+${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[8].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.kp[8].trueLevel)), 2)} free upgrades to KP Upgrades 4-6.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.kp[8].trueLevel), 2)} free upgrades to KP Upgrades 4-6.`;
-            },
+            perDesc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[8].effect(Decimal.add(tmp.value.kua.proofs.upgrades.kp[8].trueLevel, 1)).sub(KUA_PROOF_UPGS.kp[8].effect(tmp.value.kua.proofs.upgrades.kp[8].trueLevel)), 2)} free upgrades to KP Upgrades 4-6.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.kp[8].effect(tmp.value.kua.proofs.upgrades.kp[8].trueLevel), 2)} free upgrades to KP Upgrades 4-6.`;
+            }),
             cost(x) {
                 return Decimal.add(x, 1).pow(0.25).pow_base(80000).pow10();
             },
@@ -484,16 +485,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
     ],
     skp: [
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
-            },
+            }),
             title: `Untimely Difference`,
-            get perDesc() {
-                return `Times you have SKP reset adds +${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.skp[0].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.skp[0].trueLevel)), 2)} free levels to the first 3 effect upgrades.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.skp[0].trueLevel), 2)} free levels to the first 3 effect upgrades.`;
-            },
+            perDesc: computed(() => {
+                return `Times you have SKP reset adds +${format(KUA_PROOF_UPGS.skp[0].effect(Decimal.add(tmp.value.kua.proofs.upgrades.skp[0].trueLevel, 1)).sub(KUA_PROOF_UPGS.skp[0].effect(tmp.value.kua.proofs.upgrades.skp[0].trueLevel)), 2)} free levels to the first 3 effect upgrades.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.skp[0].effect(tmp.value.kua.proofs.upgrades.skp[0].trueLevel), 2)} free levels to the first 3 effect upgrades.`;
+            }),
             cost(x) {
                 return Decimal.pow(x, 1.5).pow_base(2).mul(5);
             },
@@ -508,16 +509,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 5);
-            },
+            }),
             title: `Uncertain Characteristic`,
-            get perDesc() {
-                return `SKP adds +${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.skp[1].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.skp[1].trueLevel)), 2)} free levels to the first 3 KProof upgrades.`;
-            },
-            get desc() {
-                return `+${format(this.effect(tmp.value.kua.proofs.upgrades.skp[1].trueLevel), 2)} free levels to the first 3 KProof upgrades.`;
-            },
+            perDesc: computed(() => {
+                return `SKP adds +${format(KUA_PROOF_UPGS.skp[1].effect(Decimal.add(tmp.value.kua.proofs.upgrades.skp[1].trueLevel, 1)).sub(KUA_PROOF_UPGS.skp[1].effect(tmp.value.kua.proofs.upgrades.skp[1].trueLevel)), 2)} free levels to the first 3 KProof upgrades.`;
+            }),
+            desc: computed(() => {
+                return `+${format(KUA_PROOF_UPGS.skp[1].effect(tmp.value.kua.proofs.upgrades.skp[1].trueLevel), 2)} free levels to the first 3 KProof upgrades.`;
+            }),
             cost(x) {
                 return Decimal.pow(x, 2).pow_base(5).mul(25);
             },
@@ -530,16 +531,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 25);
-            },
+            }),
             title: `Unstable Conclusions`,
-            get perDesc() {
-                return `The first 3 KProof upgrades' costs are delayed by ${format(this.effect(Decimal.add(tmp.value.kua.proofs.upgrades.skp[2].trueLevel, 1)).sub(this.effect(tmp.value.kua.proofs.upgrades.skp[2].trueLevel)), 1)}.`;
-            },
-            get desc() {
-                return `The first 3 KProof upgrades' costs are delayed by ${format(this.effect(tmp.value.kua.proofs.upgrades.skp[2].trueLevel), 1)}.`;
-            },
+            perDesc: computed(() => {
+                return `The first 3 KProof upgrades' costs are delayed by ${format(KUA_PROOF_UPGS.skp[2].effect(Decimal.add(tmp.value.kua.proofs.upgrades.skp[2].trueLevel, 1)).sub(KUA_PROOF_UPGS.skp[2].effect(tmp.value.kua.proofs.upgrades.skp[2].trueLevel)), 1)}.`;
+            }),
+            desc: computed(() => {
+                return `The first 3 KProof upgrades' costs are delayed by ${format(KUA_PROOF_UPGS.skp[2].effect(tmp.value.kua.proofs.upgrades.skp[2].trueLevel), 1)}.`;
+            }),
             cost(x) {
                 return Decimal.pow(x, 3).pow10().mul(1e3);
             },
@@ -554,15 +555,15 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
     ],
     fkp: [
         {
-            show: true,
+            show: computed(() => { return true; }),
             title: `Difficult Task`,
-            get perDesc() {
+            perDesc: computed(() => {
                 return `You aren't able to unlock this right now...`;
                 // return `Unlock FKP Allocation and the Cyan alloc.`;
-            },
-            get desc() {
+            }),
+            desc: computed(() => {
                 return tmp.value.kua.proofs.upgrades.fkp[0].trueLevel.gt(0) ? 'Unlocked' : 'Locked';
-            },
+            }),
             cost(x) {
                 // placeholder condition
                 return Decimal.add(x, Infinity);
@@ -579,16 +580,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return tmp.value.kua.proofs.upgrades.fkp[0].trueLevel.gt(0);
-            },
+            }),
             title: `Upgrade Refactor`,
-            get perDesc() {
+            perDesc: computed(() => {
                 return `Every KP upgrade delays stale KP by ${format(2)}× and unlock the Yellow alloc.`;
-            },
-            get desc() {
-                return `Stale KP is delayed by ×${format(this.effect(tmp.value.kua.proofs.upgrades.fkp[1].trueLevel), 1)}.`;
-            },
+            }),
+            desc: computed(() => {
+                return `Stale KP is delayed by ×${format(KUA_PROOF_UPGS.fkp[1].effect(tmp.value.kua.proofs.upgrades.fkp[1].trueLevel), 1)}.`;
+            }),
             cost(x) {
                 // placeholder condition
                 return Decimal.add(x, Infinity);
@@ -610,16 +611,16 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             }
         },
         {
-            get show() {
+            show: computed(() => {
                 return tmp.value.kua.proofs.upgrades.fkp[1].trueLevel.gt(0);
-            },
+            }),
             title: `Stupid Hinderances`,
-            get perDesc() {
+            perDesc: computed(() => {
                 return `Stale KProofs are weakened by ${format(5)}% and unlock the White alloc.`;
-            },
-            get desc() {
+            }),
+            desc: computed(() => {
                 return tmp.value.kua.proofs.upgrades.fkp[2].trueLevel.gt(0) ? 'Unlocked' : 'Locked';
-            },
+            }),
             cost(x) {
                 // placeholder condition
                 return Decimal.add(x, Infinity);

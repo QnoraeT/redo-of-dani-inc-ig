@@ -1263,7 +1263,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Achievement Tier 1'; }),
         effect: computed(() => {
-            return ACHIEVEMENT_DATA[0].eff;
+            return ACHIEVEMENT_DATA[0].eff.value;
         }),
         color: 'ach',
         type: 'mult'
@@ -1409,7 +1409,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Achievement Tier 3'; }),
         effect: computed(() => {
-            return ACHIEVEMENT_DATA[2].eff
+            return ACHIEVEMENT_DATA[2].eff.value
             .mul(
                 Decimal.pow(
                     0.25,
@@ -1744,6 +1744,7 @@ declare global {
         player: typeof player;
         game: typeof game;
         tmp: typeof tmp;
+        gameVars: typeof gameVars;
         Decimal: typeof Decimal;
         ACHIEVEMENT_DATA: typeof ACHIEVEMENT_DATA;
         expQuadCostGrowth: typeof expQuadCostGrowth;
@@ -1767,6 +1768,7 @@ declare global {
 window.player = player;
 window.game = game;
 window.tmp = tmp;
+window.gameVars = gameVars;
 window.Decimal = Decimal;
 window.ACHIEVEMENT_DATA = ACHIEVEMENT_DATA;
 window.expQuadCostGrowth = expQuadCostGrowth;

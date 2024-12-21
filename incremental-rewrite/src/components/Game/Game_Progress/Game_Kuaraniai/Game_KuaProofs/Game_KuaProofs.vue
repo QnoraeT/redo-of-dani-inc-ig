@@ -4,10 +4,10 @@ import { tab } from "@/main";
 import { tmp, player } from "@/main";
 import { switchSubTab } from "@/components/MainTabs/MainTabs";
 import Game_KuaProofAuto from "./Game_KuaProofAuto/Game_KuaProofAuto.vue";
-import Game_KuaProofEffect from "./Game_KuaProofAuto/Game_KuaProofAuto.vue";
-import Game_KuaProofNormal from "./Game_KuaProofAuto/Game_KuaProofAuto.vue";
-import Game_KuaProofStrange from "./Game_KuaProofAuto/Game_KuaProofAuto.vue";
-import Game_KuaProofFinicky from "./Game_KuaProofAuto/Game_KuaProofAuto.vue";
+import Game_KuaProofEffect from "./Game_KuaProofEffect/Game_KuaProofEffect.vue";
+import Game_KuaProofNormal from "./Game_KuaProofNormal/Game_KuaProofNormal.vue";
+import Game_KuaProofStrange from "./Game_KuaProofStrange/Game_KuaProofStrange.vue";
+import Game_KuaProofFinicky from "./Game_KuaProofFinicky/Game_KuaProofFinicky.vue";
 </script>
 <template>
     <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;">

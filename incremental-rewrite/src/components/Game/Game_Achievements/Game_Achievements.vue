@@ -58,7 +58,7 @@ import {
                                         ACH_DEF_COLORS[Ach_Types_List[index]][
                                             ifAchievement(index, item2)
                                                 ? 'complete'
-                                                : item.list[item2].status === true
+                                                : item.list[item2].status.value === true
                                                     ? 'canComplete'
                                                     : 'unable'
                                         ],
@@ -66,7 +66,7 @@ import {
                                         ACH_DEF_COLORS[Ach_Types_List[index]][
                                             ifAchievement(index, item2)
                                                 ? 'complete'
-                                                : item.list[item2].status === true
+                                                : item.list[item2].status.value === true
                                                     ? 'canComplete'
                                                     : 'unable'
                                         ],
@@ -92,7 +92,7 @@ import {
                                                 ACH_DEF_COLORS[Ach_Types_List[index]][
                                                     ifAchievement(index, item2)
                                                         ? 'complete'
-                                                        : item.list[item2].status === true
+                                                        : item.list[item2].status.value === true
                                                             ? 'canComplete'
                                                             : 'unable'
                                                 ],
@@ -113,11 +113,11 @@ import {
                                     </span>
                                     <span style="font-size: 1vw">{{ item.list[item2].name }}</span>
                                     <br><br>{{ item.list[item2].desc }} <br>{{
-                                        item.list[item2].reward === ""
+                                        item.list[item2].reward.value === ""
                                             ? ""
                                             : `Reward: ${item.list[item2].reward}`
                                     }}
-                                    <span :style="{ color: colorChange(ACH_DEF_COLORS[Ach_Types_List[index]].unable, 1.0, 0.5) }"  v-if="item.list[item2].status !== true && !ifAchievement(index, item2)"><br>{{ item.list[item2].status }}</span >
+                                    <span :style="{ color: colorChange(ACH_DEF_COLORS[Ach_Types_List[index]].unable, 1.0, 0.5) }"  v-if="item.list[item2].status.value !== true && !ifAchievement(index, item2)"><br>{{ item.list[item2].status }}</span >
                                     <span style="font-size: 0.6vw; color: #ccc" v-if="item.list[item2].extra" ><br>{{ item.list[item2].extra }}</span >
                                 </span>
                             </div>

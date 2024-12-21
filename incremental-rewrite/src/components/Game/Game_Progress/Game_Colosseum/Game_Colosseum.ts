@@ -25,8 +25,8 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             setFactor(0, [5, 1], "Base", `${format(1, 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, true);
             tmp.value.col.researchSpeed = tmp.value.col.researchSpeed.mul(tmp.value.col.effects.res);
             setFactor(1, [5, 1], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(tmp.value.col.effects.res, 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gte(timesCompleted("df"), 1), "col");
-            tmp.value.col.researchSpeed = tmp.value.col.researchSpeed.mul(COL_CHALLENGES.im.type2ChalEff![0]);
-            setFactor(2, [5, 1], `I. Mechanics PB: ${format(timesCompleted('im'))}`, `×${format(COL_CHALLENGES.im.type2ChalEff![0], 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gt(COL_CHALLENGES.im.type2ChalEff![0], 1), "col");
+            tmp.value.col.researchSpeed = tmp.value.col.researchSpeed.mul(COL_CHALLENGES.im.type2ChalEff!.value[0]);
+            setFactor(2, [5, 1], `I. Mechanics PB: ${format(timesCompleted('im'))}`, `×${format(COL_CHALLENGES.im.type2ChalEff!.value[0], 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gt(COL_CHALLENGES.im.type2ChalEff!.value[0], 1), "col");
             tmp.value.col.researchSpeed = tmp.value.col.researchSpeed.mul(getColResEffect(3));
             setFactor(3, [5, 1], `Coliescence`, `×${format(getColResEffect(3), 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gte(timesCompleted("im"), 1e20), "col");
 
@@ -126,7 +126,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 player.value.gameProgress.inChallenge[chalID].depths = j;
 
                 if (COL_CHALLENGES[chalID].type === 2 && player.value.gameProgress.inChallenge[chalID].entered) {
-                    player.value.gameProgress.col.completed[chalID] = Decimal.max(player.value.gameProgress.col.completed[chalID], COL_CHALLENGES[chalID].resourceReq!);
+                    player.value.gameProgress.col.completed[chalID] = Decimal.max(player.value.gameProgress.col.completed[chalID], COL_CHALLENGES[chalID].resourceReq!.value);
                 }
 
                 if (COL_CHALLENGES[chalID].type === 2) {
@@ -158,7 +158,7 @@ export const challengeToggle = (id: challengeIDList) => {
         }
 
         player.value.gameProgress.inChallenge[id].name = COL_CHALLENGES[id].name;
-        player.value.gameProgress.inChallenge[id].goalDesc = COL_CHALLENGES[id].goalDesc;
+        player.value.gameProgress.inChallenge[id].goalDesc = COL_CHALLENGES[id].goalDesc.value;
         player.value.gameProgress.inChallenge[id].entered = true;
         player.value.gameProgress.inChallenge[id].enteredDiff = player.value.gameProgress.inChallenge[id].optionalDiff;
 

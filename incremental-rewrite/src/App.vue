@@ -59,7 +59,7 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
                 style="text-align: center"
                 :style="{
                     color: gRC(
-                        2 * COL_CHALLENGES[index].progress.toNumber() +
+                        2 * COL_CHALLENGES[index].progress.value.toNumber() +
                             (COL_CHALLENGES[index].canComplete ? 1.5 : 0.0),
                         1.0,
                         1.0

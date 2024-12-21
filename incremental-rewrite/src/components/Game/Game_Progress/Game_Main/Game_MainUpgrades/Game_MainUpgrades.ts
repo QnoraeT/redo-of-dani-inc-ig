@@ -13,6 +13,7 @@ import { getAchievementEffect, ifAchievement } from "@/components/Game/Game_Achi
 import { KUA_ENHANCERS } from "../../Game_Kuaraniai/Game_KuaEnhancers/Game.KuaEnhancers";
 import { getKuaUpgrade, KUA_UPGRADES } from "../../Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
 import { KUA_BLESS_UPGS } from "../../Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
+import { computed, type ComputedRef } from "vue";
 
 export const buyGenUPG = (id: number): void => {
     if (Decimal.gte(player.value.gameProgress.main.points, tmp.value.main.upgrades[id].cost)) {
@@ -29,9 +30,9 @@ export const buyGenUPG = (id: number): void => {
 }
 
 export type MainUpgrade = {
-    freeExtra: Decimal
+    freeExtra: ComputedRef<Decimal>
+    effectBase: ComputedRef<Decimal>
     effective: (x: DecimalSource) => Decimal
-    effectBase: Decimal
     effect: (x?: DecimalSource) => Decimal
 };
 
@@ -60,7 +61,7 @@ export type TmpMainUpgrade = {
 
 export const MAIN_UPGS: Array<MainUpgrade> = [
     { // UPG1
-        get freeExtra() {
+        freeExtra: computed(() => {
             let i = D(0);
             if (tmp.value.kua.proofs.upgrades.effect[0].effect.gt(0)) {
                 i = i.add(tmp.value.kua.proofs.upgrades.effect[0].effect);
@@ -71,8 +72,8 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             }
             setFactor(2, [1, 0, 0], "Line Extruder", `+${format(tmp.value.kua.proofs.upgrades.effect[3].effect, 2)}×${format(tmp.value.main.upgrades[1].effective)}`, `+${format(tmp.value.main.upgrades[1].effective.mul(tmp.value.kua.proofs.upgrades.effect[3].effect))}`, tmp.value.kua.proofs.upgrades.effect[3].effect.gt(0), "kp");
             return i;
-        },
-        get effectBase() {
+        }),
+        effectBase: computed(() => {
             let i = D(1.5);
             setFactor(0, [1, 0, 2], "Base", `${format(1.5, 3)}`, `${format(i, 3)}`, true);
 
@@ -118,10 +119,10 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             }
             setFactor(8, [1, 0, 2], `Sabotaged Upgrades ×${format(challengeDepth("su"))}`, `-${format(getColChalCondEffects("su")[1], 3)}`, `${format(i, 3)}`, inChallenge("su") && Decimal.gte(challengeDepth("su"), 2), "col");
             return i;
-        },
+        }),
         effective(x) {
             let i = D(x);
-            i = i.add(this.freeExtra)
+            i = i.add(this.freeExtra.value)
             if (ifAchievement(1, 5)) {
                 i = i.mul(getAchievementEffect(1, 5));
             }
@@ -157,11 +158,11 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
 
-            setFactor(8, [1, 0, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.pow(eff))}`, true);
-            eff = this.effectBase.pow(eff);
+            setFactor(8, [1, 0, 0], "Resulting Effect", `${format(this.effectBase.value, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.value.pow(eff))}`, true);
+            eff = this.effectBase.value.pow(eff);
 
-            eff = eff.mul(tmp.value.kua.blessings.upg1Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff![1]));
-            setFactor(9, [1, 0, 0], `I. Mechanics PB: ${format(timesCompleted('im'))}`, `×${format(tmp.value.kua.blessings.upg1Base.add(1), 3)}^${format(COL_CHALLENGES.im.type2ChalEff![1], 3)}`, `×${format(eff)}`, Decimal.gt(COL_CHALLENGES.im.type2ChalEff![1], 1), "col");
+            eff = eff.mul(tmp.value.kua.blessings.upg1Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff!.value[1]));
+            setFactor(9, [1, 0, 0], `I. Mechanics PB: ${format(timesCompleted('im'))}`, `×${format(tmp.value.kua.blessings.upg1Base.add(1), 3)}^${format(COL_CHALLENGES.im.type2ChalEff!.value[1], 3)}`, `×${format(eff)}`, Decimal.gt(COL_CHALLENGES.im.type2ChalEff!.value[1], 1), "col");
 
             if (Decimal.gte(player.value.gameProgress.main.upgrades[6].bought, 1)) {
                 eff = eff.pow(tmp.value.main.upgrades[6].effect ?? 0);
@@ -191,15 +192,15 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         }
     },
     { // UPG2
-        get freeExtra() {
+        freeExtra: computed(() => {
             let i = D(0);
             if (tmp.value.kua.proofs.upgrades.effect[0].effect.gt(0)) {
                 i = i.add(tmp.value.kua.proofs.upgrades.effect[0].effect);
             }
             setFactor(1, [1, 1, 0], "Basic Discoveries", `+${format(tmp.value.kua.proofs.upgrades.effect[0].effect, 2)}`, `+${format(i)}`, tmp.value.kua.proofs.upgrades.effect[0].effect.gt(0), "kp");
             return i;
-        },
-        get effectBase() {
+        }),
+        effectBase: computed(() => {
             let i = D(1.2);
             setFactor(0, [1, 1, 2], "Base", `${format(1.2, 3)}`, `${format(i, 3)}`, true);
 
@@ -245,10 +246,10 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             }
             setFactor(8, [1, 1, 2], `Sabotaged Upgrades ×${format(timesCompleted('su'))}`, `×${format(getColChalRewEffects("su")[2], 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("su"), 6), "col");
             return i;
-        },
+        }),
         effective(x) {
             let i = D(x);
-            i = i.add(this.freeExtra);
+            i = i.add(this.freeExtra.value);
             if (Decimal.gte(getOMUpgrade(6), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[6].effect.value);
             }
@@ -278,11 +279,11 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
 
-            setFactor(6, [1, 1, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `/${format(this.effectBase.pow(eff))}`, true);
-            eff = this.effectBase.pow(eff);
+            setFactor(6, [1, 1, 0], "Resulting Effect", `${format(this.effectBase.value, 3)}^${format(eff, 3)}`, `/${format(this.effectBase.value.pow(eff))}`, true);
+            eff = this.effectBase.value.pow(eff);
 
-            eff = eff.mul(tmp.value.kua.blessings.upg2Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff![1]));
-            setFactor(7, [1, 1, 0], `I. Mechanics PB: ${format(timesCompleted('im'))}`, `×${format(tmp.value.kua.blessings.upg2Base.add(1), 3)}^${format(COL_CHALLENGES.im.type2ChalEff![1], 3)}`, `/${format(eff)}`, Decimal.gt(COL_CHALLENGES.im.type2ChalEff![1], 1), "col");
+            eff = eff.mul(tmp.value.kua.blessings.upg2Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff!.value[1]));
+            setFactor(7, [1, 1, 0], `I. Mechanics PB: ${format(timesCompleted('im'))}`, `×${format(tmp.value.kua.blessings.upg2Base.add(1), 3)}^${format(COL_CHALLENGES.im.type2ChalEff!.value[1], 3)}`, `/${format(eff)}`, Decimal.gt(COL_CHALLENGES.im.type2ChalEff!.value[1], 1), "col");
 
             if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[0], 1)) {
                 eff = eff.pow(KUA_BLESS_UPGS[0].eff()[0]);
@@ -316,7 +317,7 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         }
     },
     { // UPG3
-        get freeExtra() {
+        freeExtra: computed(() => {
             let i = D(0);
             if (tmp.value.kua.proofs.upgrades.effect[0].effect.gt(0)) {
                 i = i.add(tmp.value.kua.proofs.upgrades.effect[0].effect);
@@ -327,8 +328,8 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             }
             setFactor(2, [1, 2, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[2].accumulated, 1)}`, `+${format(i)}`, inChallenge('dc'), 'col');
             return i;
-        },
-        get effectBase() {
+        }),
+        effectBase: computed(() => {
             let i = D(0.01);
             setFactor(0, [1, 2, 2], "Base", `${format(0.01, 3)}`, `${format(i, 3)}`, true);
 
@@ -339,10 +340,10 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             }
             setFactor(1, [1, 2, 2], "Achievement ID (1, 10)", `×${format(1.01, 3)}`, `${format(i, 3)}`, ifAchievement(1, 10), "ach");
             return i;
-        },
+        }),
         effective(x) {
             let i = D(x);
-            i = i.add(this.freeExtra);
+            i = i.add(this.freeExtra.value);
             if (getKuaUpgrade("p", 2)) {
                 i = i.mul(KUA_UPGRADES.KPower[1].eff!);
             }
@@ -375,8 +376,8 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
 
-            setFactor(8, [1, 2, 0], "Resulting Effect", `${format(this.effectBase, 3)}×${format(eff, 3)}`, `+${format(this.effectBase.mul(eff), 3)}`, true);
-            eff = this.effectBase.mul(eff);
+            setFactor(8, [1, 2, 0], "Resulting Effect", `${format(this.effectBase.value, 3)}×${format(eff, 3)}`, `+${format(this.effectBase.value.mul(eff), 3)}`, true);
+            eff = this.effectBase.value.mul(eff);
             const data = {
                 prevEff: eff,
                 scal: getSCSLAttribute('upg3', false)
@@ -389,15 +390,15 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         }
     },
     { // UPG4
-        get freeExtra() {
+        freeExtra: computed(() => {
             let i = D(0);
             if (inChallenge('dc')) {
                 i = i.add(player.value.gameProgress.main.upgrades[3].accumulated);
             }
             setFactor(1, [1, 3, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[3].accumulated, 1)}`, `+${format(i)}`, inChallenge('dc'), 'col');
             return i;
-        },
-        get effectBase() {
+        }),
+        effectBase: computed(() => {
             let i = tmp.value.kua.effects.upg4;
             setFactor(0, [1, 3, 2], "Base", `${format(tmp.value.kua.effects.upg4, 3)}`, `${format(tmp.value.kua.effects.upg4, 3)}`, true);
             if (ifAchievement(1, 10)) {
@@ -414,10 +415,10 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             setSCSLEffectDisp('kuaupg4base', false, 0, `/${format(data.prevEff.div(i), 3)}`);
             setFactor(2, [1, 3, 2], "Softcap", `softcap(${format(data.prevEff)})`, `${format(i, 3)}`, i.gte(data.scal[0].start), "sc1");
             return i;
-        },
+        }),
         effective(x) {
             let i = D(x);
-            i = i.add(this.freeExtra);
+            i = i.add(this.freeExtra.value);
             if (Decimal.gte(getOMUpgrade(16), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[16].effect.value);
             }
@@ -442,8 +443,8 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
 
-            setFactor(5, [1, 3, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.pow(eff))}`, true);
-            eff = this.effectBase.pow(eff);
+            setFactor(5, [1, 3, 0], "Resulting Effect", `${format(this.effectBase.value, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.value.pow(eff))}`, true);
+            eff = this.effectBase.value.pow(eff);
 
             const data = {
                 prevEff: eff,
@@ -457,15 +458,15 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         }
     },
     { // UPG5
-        get freeExtra() {
+        freeExtra: computed(() => {
             let i = D(0);
             if (inChallenge('dc')) {
                 i = i.add(player.value.gameProgress.main.upgrades[4].accumulated);
             }
             setFactor(1, [1, 4, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[4].accumulated, 1)}`, `+${format(i)}`, inChallenge('dc'), 'col');
             return i;
-        },
-        get effectBase() {
+        }),
+        effectBase: computed(() => {
             let i = tmp.value.kua.effects.upg5;
             setFactor(0, [1, 4, 2], "Base", `${format(tmp.value.kua.effects.upg5, 3)}`, `${format(tmp.value.kua.effects.upg5, 3)}`, true);
             if (ifAchievement(1, 10)) {
@@ -482,10 +483,10 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             setSCSLEffectDisp('kuaupg5base', false, 0, `/${format(data.prevEff.div(i), 2)}`);
             setFactor(2, [1, 4, 2], "Softcap", `softcap(${format(data.prevEff)})`, `${format(i, 3)}`, i.gte(data.scal[0].start), "sc1");
             return i;
-        },
+        }),
         effective(x) {
             let i = D(x);
-            i = i.add(this.freeExtra);
+            i = i.add(this.freeExtra.value);
             if (Decimal.gte(getOMUpgrade(16), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[16].effect.value);
             }
@@ -510,8 +511,8 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
 
-            setFactor(5, [1, 4, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `/${format(this.effectBase.pow(eff))}`, true);
-            eff = this.effectBase.pow(eff);
+            setFactor(5, [1, 4, 0], "Resulting Effect", `${format(this.effectBase.value, 3)}^${format(eff, 3)}`, `/${format(this.effectBase.value.pow(eff))}`, true);
+            eff = this.effectBase.value.pow(eff);
             const data = {
                 prevEff: eff,
                 scal: getSCSLAttribute('upg5', false)
@@ -524,15 +525,15 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         }
     },
     { // UPG6
-        get freeExtra() {
+        freeExtra: computed(() => {
             let i = D(0);
             if (inChallenge('dc')) {
                 i = i.add(player.value.gameProgress.main.upgrades[5].accumulated);
             }
             setFactor(1, [1, 5, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[5].accumulated, 1)}`, `+${format(i)}`, inChallenge('dc'), 'col');
             return i;
-        },
-        get effectBase() {
+        }),
+        effectBase: computed(() => {
             let i = tmp.value.kua.effects.upg6;
             setFactor(0, [1, 5, 2], "Base", `${format(tmp.value.kua.effects.upg6, 3)}`, `${format(tmp.value.kua.effects.upg6, 3)}`, true);
             if (ifAchievement(1, 10)) {
@@ -554,10 +555,10 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             setSCSLEffectDisp('kuaupg6base', false, 0, `/${format(data.prevEff.div(i), 2)}`);
             setFactor(3, [1, 5, 2], "Softcap", `softcap(${format(data.prevEff, 3)})`, `${format(i, 3)}`, i.gte(data.scal[0].start), "sc1");
             return i;
-        },
+        }),
         effective(x) {
             let i = D(x);
-            i = i.add(this.freeExtra);
+            i = i.add(this.freeExtra.value);
             if (Decimal.gte(getOMUpgrade(16), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[16].effect.value);
             }
@@ -582,8 +583,8 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
 
-            setFactor(5, [1, 5, 0], "Resulting Effect", `${format(this.effectBase, 3)}×${format(eff, 3)}`, `+${format(this.effectBase.mul(eff), 3)}`, true);
-            eff = this.effectBase.mul(eff);
+            setFactor(5, [1, 5, 0], "Resulting Effect", `${format(this.effectBase.value, 3)}×${format(eff, 3)}`, `+${format(this.effectBase.value.mul(eff), 3)}`, true);
+            eff = this.effectBase.value.mul(eff);
             const data = {
                 prevEff: eff,
                 scal: getSCSLAttribute('upg6', false)
@@ -598,22 +599,22 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
         }
     },
     { // UPG7
-        get freeExtra() {
+        freeExtra: computed(() => {
             let i = D(0);
             if (inChallenge('dc')) {
                 i = i.add(player.value.gameProgress.main.upgrades[6].accumulated);
             }
             setFactor(1, [1, 6, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[6].accumulated, 1)}`, `+${format(i)}`, inChallenge('dc'), 'col');
             return i;
-        },
-        get effectBase() {
+        }),
+        effectBase: computed(() => {
             const i = D(1.01);
             setFactor(0, [1, 6, 2], "Base", `${format(i, 3)}`, `${format(i, 3)}`, true);
             return i;
-        },
+        }),
         effective(x) {
             let i = D(x);
-            i = i.add(this.freeExtra);
+            i = i.add(this.freeExtra.value);
             return i;
         },
         effect(x = player.value.gameProgress.main.upgrades[6].bought) {
@@ -634,28 +635,28 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
 
-            setFactor(4, [1, 6, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `^${format(this.effectBase.pow(eff), 3)}`, true);
-            eff = this.effectBase.pow(eff);
+            setFactor(4, [1, 6, 0], "Resulting Effect", `${format(this.effectBase.value, 3)}^${format(eff, 3)}`, `^${format(this.effectBase.value.pow(eff), 3)}`, true);
+            eff = this.effectBase.value.pow(eff);
             return eff;
         }
     },
     { // UPG8
-        get freeExtra() {
+        freeExtra: computed(() => {
             let i = D(0);
             if (inChallenge('dc')) {
                 i = i.add(player.value.gameProgress.main.upgrades[7].accumulated);
             }
             setFactor(1, [1, 7, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[7].accumulated, 1)}`, `+${format(i)}`, inChallenge('dc'), 'col');
             return i;
-        },
-        get effectBase() {
+        }),
+        effectBase: computed(() => {
             const i = D(0.99);
             setFactor(0, [1, 7, 2], "Base", `${format(i, 3)}`, `${format(i, 3)}`, true);
             return i;
-        },
+        }),
         effective(x) {
             let i = D(x);
-            i = i.add(this.freeExtra);
+            i = i.add(this.freeExtra.value);
             return i
         },
         effect(x = player.value.gameProgress.main.upgrades[7].bought) {
@@ -676,28 +677,28 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
 
-            setFactor(4, [1, 7, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `^${format(this.effectBase.pow(eff), 3)}`, true);
-            eff = this.effectBase.pow(eff);
+            setFactor(4, [1, 7, 0], "Resulting Effect", `${format(this.effectBase.value, 3)}^${format(eff, 3)}`, `^${format(this.effectBase.value.pow(eff), 3)}`, true);
+            eff = this.effectBase.value.pow(eff);
             return eff;
         }
     },
     { // UPG9
-        get freeExtra() {
+        freeExtra: computed(() => {
             let i = D(0);
             if (inChallenge('dc')) {
                 i = i.add(player.value.gameProgress.main.upgrades[8].accumulated);
             }
             setFactor(1, [1, 8, 0], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `+${format(player.value.gameProgress.main.upgrades[8].accumulated, 1)}`, `+${format(i)}`, inChallenge('dc'), 'col');
             return i;
-        },
-        get effectBase() {
+        }),
+        effectBase: computed(() => {
             const i = D(1.01);
             setFactor(0, [1, 8, 2], "Base", `${format(i, 3)}`, `${format(i, 3)}`, true);
             return i;
-        },
+        }),
         effective(x) {
             let i = D(x);
-            i = i.add(this.freeExtra);
+            i = i.add(this.freeExtra.value);
             return i
         },
         effect(x = player.value.gameProgress.main.upgrades[8].bought) {
@@ -717,8 +718,8 @@ export const MAIN_UPGS: Array<MainUpgrade> = [
             if (inChallenge('dc')) {
                 eff = Decimal.add(eff, 1).log10().pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[1]);
             }
-            setFactor(4, [1, 8, 0], "Resulting Effect", `${format(this.effectBase, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.pow(eff), 3)}`, true);
-            eff = this.effectBase.pow(eff);
+            setFactor(4, [1, 8, 0], "Resulting Effect", `${format(this.effectBase.value, 3)}^${format(eff, 3)}`, `×${format(this.effectBase.value.pow(eff), 3)}`, true);
+            eff = this.effectBase.value.pow(eff);
             return eff;
         }
     },

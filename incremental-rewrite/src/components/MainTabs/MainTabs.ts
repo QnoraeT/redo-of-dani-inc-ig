@@ -1,4 +1,5 @@
 import { tab, player, tmp } from "@/main";
+import { computed } from "vue";
 
 export const switchTab = (where: number) => {
     tab.value.currentTab = where;
@@ -24,11 +25,11 @@ export const TABS_LIST = [
         textColor: "#000000",
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
-        if: true,
-        get alert() {
+        if: computed(() => { return true }),
+        alert: computed(() => {
             return tmp.value.main.canBuyUpg;
-        },
-        warning: false
+        }),
+        warning: computed(() => { return false }),
     },
     {
         name: "Stored Time",
@@ -37,13 +38,13 @@ export const TABS_LIST = [
         textColor: "#00FF00",
         outlineColor: "#008000",
         highlightColor: "#00FF00",
-        if: true,
-        get alert() {
+        if: computed(() => { return true }),
+        alert: computed(() => {
             return player.value.gameProgress.dilatedTime.paused;
-        },
-        get warning() {
+        }),
+        warning: computed(() => {
             return player.value.gameProgress.dilatedTime.speedEnabled && !player.value.gameProgress.dilatedTime.paused;
-        }
+        })
     },
     {
         name: "Options",
@@ -52,9 +53,9 @@ export const TABS_LIST = [
         textColor: "#000000",
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
-        if: true,
-        alert: false,
-        warning: false
+        if: computed(() => { return true }),
+        alert: computed(() => { return false }),
+        warning: computed(() => { return false })
     },
     {
         name: "Stats",
@@ -63,9 +64,9 @@ export const TABS_LIST = [
         textColor: "#000000",
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
-        if: true,
-        alert: false,
-        warning: false
+        if: computed(() => { return true }),
+        alert: computed(() => { return false }),
+        warning: computed(() => { return false })
     },
     {
         name: "Achievements",
@@ -74,9 +75,9 @@ export const TABS_LIST = [
         textColor: "#000000",
         outlineColor: "#00000000",
         highlightColor: "#FFFFFF",
-        if: true,
-        alert: false,
-        warning: false
+        if: computed(() => { return true }),
+        alert: computed(() => { return false }),
+        warning: computed(() => { return false })
     },
     {
         name: "Kuaraniai",
@@ -85,13 +86,13 @@ export const TABS_LIST = [
         textColor: "#ffffff",
         outlineColor: "#7958ff",
         highlightColor: "#ff81cb",
-        get if() {
+        if: computed(() => {
             return player.value.gameProgress.unlocks.kua;
-        },
-        get alert() {
+        }),
+        alert: computed(() => {
             return tmp.value.kua.canBuyUpg;
-        },
-        warning: false
+        }),
+        warning: computed(() => { return false })
     },
     {
         name: "Colosseum",
@@ -100,11 +101,11 @@ export const TABS_LIST = [
         textColor: "#ffffff",
         outlineColor: "#ff3600",
         highlightColor: "#ff9b7f",
-        get if() {
+        if: computed(() => {
             return player.value.gameProgress.unlocks.col;
-        },
-        alert: false,
-        warning: false
+        }),
+        alert: computed(() => { return false }),
+        warning: computed(() => { return false })
     },
     // {
     //     name: "Taxation",
@@ -113,10 +114,10 @@ export const TABS_LIST = [
     //     textColor: "#ffffff",
     //     outlineColor: "#d5c000",
     //     highlightColor: "#ffff7f",
-    //     get if() {
+    //     if: computed(() => {
     //         return player.value.gameProgress.unlocks.tax;
-    //     },
-    //     alert: false,
-    //     warning: false
+    //     }),
+    //     alert: computed(() => { return false }),
+    //     warning: computed(() => { return false })
     // }
 ];

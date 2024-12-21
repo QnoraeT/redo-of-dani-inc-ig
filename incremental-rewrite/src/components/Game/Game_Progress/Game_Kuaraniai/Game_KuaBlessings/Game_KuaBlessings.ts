@@ -2,10 +2,68 @@ import { D, scale, smoothExp, smoothPoly } from "@/calc";
 import { format, formatPerc } from "@/format";
 import { player, tmp } from "@/main";
 import Decimal, { type DecimalSource } from "break_eternity.js";
+import { computed, type ComputedRef } from "vue";
 
-export const KUA_BLESS_TIER = {
+export type KuaBlessTiers = {
     rank: {
-        show: true,
+        show: ComputedRef<boolean>,
+        req: (x: DecimalSource) => Decimal,
+        target: (x: DecimalSource) => Decimal,
+        rounded: (x: DecimalSource) => Decimal,
+        base: {
+            kuaBlessGainIdle: ComputedRef<Decimal>,
+            kuaBlessGainActive: ComputedRef<Decimal>,
+        },
+        effects: {
+            kuaBlessGainIdle: ComputedRef<Decimal>,
+            kuaBlessGainActive: ComputedRef<Decimal>,
+        },
+        desc: {
+            kuaBlessGainIdle: ComputedRef<string>,
+            kuaBlessGainActive: ComputedRef<string>,
+        }
+    },
+    tier: {
+        show: ComputedRef<boolean>,
+        req: (x: DecimalSource) => Decimal,
+        target: (x: DecimalSource) => Decimal,
+        rounded: (x: DecimalSource) => Decimal,
+        base: {
+            kuaBlessEff: ComputedRef<Decimal>,
+        },
+        effects: {
+            kuaBlessEff: ComputedRef<Decimal>,
+        },
+        desc: {
+            kuaBlessEff: ComputedRef<string>,
+        }
+    },
+    tetr: {
+        show: ComputedRef<boolean>,
+        req: (x: DecimalSource) => Decimal,
+        target: (x: DecimalSource) => Decimal,
+        rounded: (x: DecimalSource) => Decimal,
+        base: {
+            kuaRankActive: ComputedRef<Decimal>,
+            kuaRankIdle: ComputedRef<Decimal>,
+            pr2Eff: ComputedRef<Decimal>
+        },
+        effects: {
+            kuaRankActive: ComputedRef<Decimal>,
+            kuaRankIdle: ComputedRef<Decimal>,
+            pr2Eff: ComputedRef<Decimal>
+        },
+        desc: {
+            kuaRankActive: ComputedRef<string>,
+            kuaRankIdle: ComputedRef<string>,
+            pr2Eff: ComputedRef<string>
+        }
+    },
+}
+
+export const KUA_BLESS_TIER: KuaBlessTiers = {
+    rank: {
+        show: computed(() => { return true; }),
         req(x: DecimalSource) {
             let i = D(x);
             i = i.div(KUA_BLESS_UPGS[3].eff()[2]);
@@ -21,44 +79,44 @@ export const KUA_BLESS_TIER = {
             return this.target(x).floor().add(1);
         },
         base: {
-            get kuaBlessGainIdle() {
+            kuaBlessGainIdle: computed(() => {
                 let i = D(1.15);
-                i = i.add(KUA_BLESS_TIER.tetr.effects.kuaRankIdle);
+                i = i.add(KUA_BLESS_TIER.tetr.effects.kuaRankIdle.value);
                 return i;
-            },
-            get kuaBlessGainActive() {
+            }),
+            kuaBlessGainActive: computed(() => {
                 let i = D(1.2);
-                i = i.add(KUA_BLESS_TIER.tetr.effects.kuaRankActive);
+                i = i.add(KUA_BLESS_TIER.tetr.effects.kuaRankActive.value);
                 return i;
-            }
+            })
         },
         effects: {
-            get kuaBlessGainIdle() {
-                let eff = KUA_BLESS_TIER.rank.rounded(player.value.gameProgress.kua.blessings.best[3]!).pow_base(KUA_BLESS_TIER.rank.base.kuaBlessGainIdle);
+            kuaBlessGainIdle: computed(() => {
+                let eff = KUA_BLESS_TIER.rank.rounded(player.value.gameProgress.kua.blessings.best[3]!).pow_base(KUA_BLESS_TIER.rank.base.kuaBlessGainIdle.value);
                 if (!tmp.value.kua.active.blessings.ranks.rank) {
                     eff = D(1);
                 }
                 return eff;
-            },
-            get kuaBlessGainActive() {
-                let eff = KUA_BLESS_TIER.rank.rounded(player.value.gameProgress.kua.blessings.best[3]!).pow_base(KUA_BLESS_TIER.rank.base.kuaBlessGainActive);
+            }),
+            kuaBlessGainActive: computed(() => {
+                let eff = KUA_BLESS_TIER.rank.rounded(player.value.gameProgress.kua.blessings.best[3]!).pow_base(KUA_BLESS_TIER.rank.base.kuaBlessGainActive.value);
                 if (!tmp.value.kua.active.blessings.ranks.rank) {
                     eff = D(1);
                 }
                 return eff;
-            }
+            })
         },
         desc: {
-            get kuaBlessGainIdle() {
-                return `Increase KBlessing's idle generation by +${format(KUA_BLESS_TIER.rank.base.kuaBlessGainIdle.sub(1).mul(100))}%. Currently: +${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.sub(1).mul(100))}%`;
-            },
-            get kuaBlessGainActive() {
-                return `Increase KBlessing's active generation by +${format(KUA_BLESS_TIER.rank.base.kuaBlessGainActive.sub(1).mul(100))}%. Currently: +${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.sub(1).mul(100))}%`;
-            }
+            kuaBlessGainIdle: computed(() => {
+                return `Increase KBlessing's idle generation by +${format(KUA_BLESS_TIER.rank.base.kuaBlessGainIdle.value.sub(1).mul(100))}%. Currently: +${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value.sub(1).mul(100))}%`;
+            }),
+            kuaBlessGainActive: computed(() => {
+                return `Increase KBlessing's active generation by +${format(KUA_BLESS_TIER.rank.base.kuaBlessGainActive.value.sub(1).mul(100))}%. Currently: +${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value.sub(1).mul(100))}%`;
+            })
         }
     },
     tier: {
-        show: true,
+        show: computed(() => { return true; }),
         req(x: DecimalSource) {
             return smoothExp(x, 1.01, false).pow(1.2).mul(2).add(4).ceil();
         },
@@ -71,29 +129,29 @@ export const KUA_BLESS_TIER = {
             return this.target(x).floor().add(1);
         },
         base: {
-            get kuaBlessEff() {
+            kuaBlessEff: computed(() => {
                 return D(0.25);
-            },
+            }),
         },
         effects: {
-            get kuaBlessEff() {
-                let eff = KUA_BLESS_TIER.tier.rounded(tmp.value.kua.blessings.rank).mul(KUA_BLESS_TIER.tier.base.kuaBlessEff).add(1);
+            kuaBlessEff: computed(() => {
+                let eff = KUA_BLESS_TIER.tier.rounded(tmp.value.kua.blessings.rank).mul(KUA_BLESS_TIER.tier.base.kuaBlessEff.value).add(1);
                 if (!tmp.value.kua.active.blessings.ranks.tier) {
                     eff = D(1);
                 }
                 return eff;
-            },
+            }),
         },
         desc: {
-            get kuaBlessEff() {
-                return `Increase KBlessing's effects by +${format(KUA_BLESS_TIER.tier.base.kuaBlessEff.mul(100))}% (additive). Currently: +${format(KUA_BLESS_TIER.tier.effects.kuaBlessEff.sub(1).mul(100))}%`;
-            },
+            kuaBlessEff: computed(() => {
+                return `Increase KBlessing's effects by +${format(KUA_BLESS_TIER.tier.base.kuaBlessEff.value.mul(100))}% (additive). Currently: +${format(KUA_BLESS_TIER.tier.effects.kuaBlessEff.value.sub(1).mul(100))}%`;
+            }),
         }
     },
     tetr: {
-        get show() {
+        show: computed(() => {
             return Decimal.gte(tmp.value.kua.blessings.tier, 3);
-        },
+        }),
         req(x: DecimalSource) {
             return Decimal.pow(x, 1.2).mul(2).add(4).ceil();
         },
@@ -106,55 +164,55 @@ export const KUA_BLESS_TIER = {
             return this.target(x).floor().add(1);
         },
         base: {
-            get kuaRankActive() {
+            kuaRankActive: computed(() => {
                 return D(0.05);
-            },
-            get kuaRankIdle() {
+            }),
+            kuaRankIdle: computed(() => {
                 return D(0.05);
-            },
-            get pr2Eff() {
+            }),
+            pr2Eff: computed(() => {
                 return KUA_BLESS_TIER.tetr.rounded(tmp.value.kua.blessings.tier).mul(0.004).add(1);
-            },
+            }),
         },
         effects: {
-            get kuaRankActive() {
-                let eff = KUA_BLESS_TIER.tetr.rounded(tmp.value.kua.blessings.tier).mul(KUA_BLESS_TIER.tetr.base.kuaRankActive);
+            kuaRankActive: computed(() => {
+                let eff = KUA_BLESS_TIER.tetr.rounded(tmp.value.kua.blessings.tier).mul(KUA_BLESS_TIER.tetr.base.kuaRankActive.value);
                 if (!tmp.value.kua.active.blessings.ranks.tetr) {
                     eff = D(0);
                 }
                 return eff;
-            },
-            get kuaRankIdle() {
-                let eff = KUA_BLESS_TIER.tetr.rounded(tmp.value.kua.blessings.tier).mul(KUA_BLESS_TIER.tetr.base.kuaRankIdle);
+            }),
+            kuaRankIdle: computed(() => {
+                let eff = KUA_BLESS_TIER.tetr.rounded(tmp.value.kua.blessings.tier).mul(KUA_BLESS_TIER.tetr.base.kuaRankIdle.value);
                 if (!tmp.value.kua.active.blessings.ranks.tetr) {
                     eff = D(0);
                 }
                 return eff;
-            },
-            get pr2Eff() {
-                let eff = Decimal.pow(KUA_BLESS_TIER.tetr.base.pr2Eff, player.value.gameProgress.main.pr2.amount);
+            }),
+            pr2Eff: computed(() => {
+                let eff = Decimal.pow(KUA_BLESS_TIER.tetr.base.pr2Eff.value, player.value.gameProgress.main.pr2.amount);
                 if (!tmp.value.kua.active.blessings.ranks.tetr) {
                     eff = D(1);
                 }
                 return eff;
-            },
+            }),
         },
         desc: {
-            get kuaRankActive() {
-                return `Increase KB Rank's active base by +${format(KUA_BLESS_TIER.tetr.base.kuaRankActive.mul(100))}% (additive). Currently: +${format(KUA_BLESS_TIER.tetr.effects.kuaRankActive.mul(100))}%`;
-            },
-            get kuaRankIdle() {
-                return `Increase KB Rank's idle base by +${format(KUA_BLESS_TIER.tetr.base.kuaRankIdle.mul(100))}% (additive). Currently: +${format(KUA_BLESS_TIER.tetr.effects.kuaRankIdle.mul(100))}%`;
-            },
-            get pr2Eff() {
-                return `Increase KB gain by ${format(KUA_BLESS_TIER.tetr.base.pr2Eff, 3)}× for each PR2. Currently: ${format(KUA_BLESS_TIER.tetr.effects.pr2Eff, 2)}×`;
-            },
+            kuaRankActive: computed(() => {
+                return `Increase KB Rank's active base by +${format(KUA_BLESS_TIER.tetr.base.kuaRankActive.value.mul(100))}% (additive). Currently: +${format(KUA_BLESS_TIER.tetr.effects.kuaRankActive.value.mul(100))}%`;
+            }),
+            kuaRankIdle: computed(() => {
+                return `Increase KB Rank's idle base by +${format(KUA_BLESS_TIER.tetr.base.kuaRankIdle.value.mul(100))}% (additive). Currently: +${format(KUA_BLESS_TIER.tetr.effects.kuaRankIdle.value.mul(100))}%`;
+            }),
+            pr2Eff: computed(() => {
+                return `Increase KB gain by ${format(KUA_BLESS_TIER.tetr.base.pr2Eff.value, 3)}× for each PR2. Currently: ${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}×`;
+            }),
         }
     },
 }
 
 export type KuaBlessUpg = {
-    show: boolean,
+    show: ComputedRef<boolean>,
     cost: (x?: DecimalSource) => Decimal,
     target: (x: DecimalSource) => Decimal,
     desc: (x?: DecimalSource) => string,
@@ -164,7 +222,7 @@ export type KuaBlessUpg = {
 
 export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
     {
-        show: true,
+        show: computed(() => { return true; }),
         cost(x = player.value.gameProgress.kua.blessings.upgrades[0]) {
             let cost = smoothExp(smoothPoly(x, 2, 35, false), 1.02, false).pow_base(2.5).mul(10);
             if (cost.lt("ee6")) {
@@ -220,9 +278,9 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
         }
     },
     {
-        get show() {
+        show: computed(() => {
             return Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[0], 1);
-        },
+        }),
         cost(x = player.value.gameProgress.kua.blessings.upgrades[1]) {
             let cost = smoothExp(smoothPoly(x, 3, 50, false), 1.03, false).pow_base(3).mul(100);
             if (cost.lt("ee6")) {
@@ -278,9 +336,9 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
         }
     },
     {
-        get show() {
+        show: computed(() => {
             return Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 1);
-        },
+        }),
         cost(x = player.value.gameProgress.kua.blessings.upgrades[2]) {
             let cost = smoothExp(smoothPoly(x, 4, 75, false), 1.04, false).pow_base(4).mul(250);
             if (cost.lt("ee6")) {
@@ -332,9 +390,9 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
         }
     },
     {
-        get show() {
+        show: computed(() => {
             return Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1);
-        },
+        }),
         cost(x = player.value.gameProgress.kua.blessings.upgrades[3]) {
             let cost = smoothExp(smoothPoly(x, 5, 100, false), 1.05, false).pow_base(5).mul(1000);
             if (cost.lt("ee6")) {

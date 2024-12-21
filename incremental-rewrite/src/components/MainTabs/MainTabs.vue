@@ -11,8 +11,8 @@ import { tab } from "@/main";
             <div v-for="item in TABS_LIST" :key="item.staticName">
                 <button
                     :class="{
-                        alert: item.alert,
-                        warning: item.warning
+                        alert: item.alert.value,
+                        warning: item.warning.value
                     }"
                     :style="{
                         color: item.textColor,
@@ -21,7 +21,7 @@ import { tab } from "@/main";
                         backgroundColor: item.backgroundColor,
                         border: `0.18vw solid ${tab.currentTab === item.staticName ? item.highlightColor : item.outlineColor}`
                     }"
-                    v-if="item.if"
+                    v-if="item.if.value"
                     class="mediumText fontTrebuchetMS"
                     @click="switchTab(item.staticName)"
                 >

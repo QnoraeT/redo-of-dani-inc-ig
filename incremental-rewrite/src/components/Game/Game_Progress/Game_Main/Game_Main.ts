@@ -475,8 +475,8 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
 
             tmp.value.main.upgrades[upgID].effect = MAIN_UPGS[upgID].effect();
             tmp.value.main.upgrades[upgID].effective = MAIN_UPGS[upgID].effective(player.value.gameProgress.main.upgrades[upgID].bought);
-            tmp.value.main.upgrades[upgID].freeExtra = MAIN_UPGS[upgID].freeExtra;
-            tmp.value.main.upgrades[upgID].effectBase = MAIN_UPGS[upgID].effectBase;
+            tmp.value.main.upgrades[upgID].freeExtra = MAIN_UPGS[upgID].freeExtra.value;
+            tmp.value.main.upgrades[upgID].effectBase = MAIN_UPGS[upgID].effectBase.value;
 
             tmp.value.main.upgrades[upgID].calcEB = tmp.value.main.upgrades[upgID].effectBase;
             switch (upgID) {

@@ -8,9 +8,8 @@ import { challengeToggle } from "../Game_Colosseum";
 </script>
 <template>
     <div v-for="item in COL_CHALLENGES" class="flex-container" :key="item.id">
-        <div v-if="item.show" class="flex-container" style="flex-direction: column">
+        <div v-if="item.show.value" class="flex-container" style="flex-direction: column">
             <button
-                v-if="item.show"
                 :class="{
                     colButton: !completedChallenge(item.id) && !inChallenge(item.id),
                     colButtonProg: completedChallenge(item.id) ? false : inChallenge(item.id),
@@ -54,7 +53,7 @@ import { challengeToggle } from "../Game_Colosseum";
                     style="height: 33.333%; font-size: 0.55vw"
                 >
                     <span class="centered-text" style="top: 0.5vw">{{ item.goalDesc }}</span>
-                    <div class="centered-text flex-container" style="top: 2.0vw; flex-direction: column" v-html="item.desc"></div>
+                    <div class="centered-text flex-container" style="top: 2.0vw; flex-direction: column" v-html="item.desc.value"></div>
                 </div>
                 <div
                     :class="{
@@ -77,7 +76,7 @@ import { challengeToggle } from "../Game_Colosseum";
                         : ' - REWARD - '
                     }}
                     </span>
-                    <div class="centered-text flex-container" style="top: 3vw; flex-direction: column" v-html="item.reward"></div>
+                    <div class="centered-text flex-container" style="top: 3vw; flex-direction: column" v-html="item.reward.value"></div>
                 </div>
             </button>
             <!-- TODO: replace the slider with text input after cap > 20 or something -->

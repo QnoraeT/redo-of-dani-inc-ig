@@ -6,6 +6,7 @@ import { spawnPopup } from "@/popups";
 import { challengeDepth, inChallenge, timesCompleted } from "../Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
 import { getColResLevel } from "../Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
 import { getKuaUpgrade } from "../Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
+import { computed, type ComputedRef } from "vue";
 
 export type Ach_Types = "main" | "kua" | "col" |"tax";
 export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "tax"];
@@ -35,277 +36,278 @@ export const ACH_DEF_COLORS = {
 
 type Ach_Data = Array<{
     type: Ach_Types;
-    show: boolean;
+    show: ComputedRef<boolean>;
     list: Array<{
         ordering: number;
-        name: string;
-        desc: string;
-        cond: boolean;
+        name: ComputedRef<string>;
+        desc: ComputedRef<string>;
+        cond: ComputedRef<boolean>;
         autoComplete?: boolean;
-        reward: string;
-        eff?: Decimal;
-        show: boolean;
-        status: boolean | string;
+        reward: ComputedRef<string>;
+        eff?: ComputedRef<Decimal>;
+        show: ComputedRef<boolean>;
+        status: ComputedRef<boolean | string>;
         extra?: string;
     }>;
-    rewAll: string;
-    eff: Decimal;
+    rewAll: ComputedRef<string>;
+    eff: ComputedRef<Decimal>;
 }>;
+
 
 export const ACHIEVEMENT_DATA: Ach_Data = [
     {
         type: "main",
-        show: true,
+        show: computed(() => { return true; }),
         list: [
             // ! ordering is for display only! do not change the ordering inside of the array as that will break mechanics! change the ordering instead!
             {
                 // id: 0
                 ordering: 0,
-                get name() {
+                name: computed(() => {
                     return `Starting off?`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Get ${format(1)} UP1.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 1);
-                },
-                reward: ``,
-                show: true,
-                status: true
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => { return true; }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 1
                 ordering: 1,
-                get name() {
+                name: computed(() => {
                     return `Let me show you how cruel I was with this...`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Get ${format(20)} UP1.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 20);
-                },
-                reward: ``,
-                show: true,
-                status: true
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => { return true; }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 2
                 ordering: 2,
-                get name() {
+                name: computed(() => {
                     return `Not my progress!`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Do your first PRai reset.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 1);
-                },
-                reward: ``,
-                show: true,
-                status: true
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => { return true; }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 3
                 ordering: 3,
-                get name() {
+                name: computed(() => {
                     return `Are you rich now?`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have at least ${format(10)} PRai.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 10);
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `Increase your number generation by ${format(20)}%.`;
-                },
-                show: true,
-                status: true
+                }),
+                show: computed(() => { return true; }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 4
                 ordering: 4,
-                get name() {
+                name: computed(() => {
                     return `No! Not again! This is not Distance Incremental!`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Get your first softcap.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[1].effect, 10);
-                },
-                reward: ``,
-                show: true,
-                status: true
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => { return true; }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 5
                 ordering: 5,
-                get name() {
+                name: computed(() => {
                     return `All that time wasted...`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have ${format(1e18)} points without doing a PRai reset.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e18) && Decimal.lt(player.value.gameProgress.main.prai.times, 1);
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `Your PRai's multiplier goes from ${format(4)}× -> ${format(5)}×.`;
-                },
-                show: true,
-                get status() { return Decimal.lt(player.value.gameProgress.main.prai.times, 1) ? true : `Failed due to having PRai reset ${format(player.value.gameProgress.main.prai.times)} times.`; },
+                }),
+                show: computed(() => { return true; }),
+                status: computed(() => { return Decimal.lt(player.value.gameProgress.main.prai.times, 1) ? true : `Failed due to having PRai reset ${format(player.value.gameProgress.main.prai.times)} times.`; }),
                 extra: `This may require you to do a higher level reset (like PR2) if you had already done a PRai reset!`
             },
             {
                 // id: 6
                 ordering: 6,
-                get name() {
+                name: computed(() => {
                     return `This cannot be endgame.`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Do a PR2 reset twice.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 2);
-                },
-                get reward() {
-                    return `UP1's scaling is weakened based off of PRai. Currently: ${formatPerc(this.eff!, 3)} weaker.`;
-                },
-                get eff() {
+                }),
+                reward: computed(() => {
+                    return `UP1's scaling is weakened based off of PRai. Currently: ${formatPerc(ACHIEVEMENT_DATA[0].list[6].eff!.value, 3)} weaker.`;
+                }),
+                eff: computed(() => {
                     return Decimal.max(player.value.gameProgress.main.prai.amount, 10)
                         .log10()
                         .root(3)
                         .sub(1)
                         .div(4)
                         .add(1);
-                },
-                show: true,
-                status: true
+                }),
+                show: computed(() => { return true; }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 7
                 ordering: 7,
-                get name() {
+                name: computed(() => {
                     return `Instant gratification.`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Receive ${format(1e3)} PRai in a single PRai reset.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(tmp.value.main.prai.pending, 1e3);
-                },
+                }),
                 autoComplete: false,
-                get reward() {
+                reward: computed(() => {
                     return `PR2 requirement is reduced by ${formatPerc(1.5)}.`;
-                },
-                show: true,
-                status: true
+                }),
+                show: computed(() => { return true; }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 8
                 ordering: 8,
-                get name() {
+                name: computed(() => {
                     return `This really is a clone of Distance Incremental!`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have at least ${format(100)} UP1.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100);
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `PRai effect is increased by ${format(100)}%.`;
-                },
-                show: true,
-                status: true
+                }),
+                show: computed(() => { return true; }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 9
                 ordering: 9,
-                get name() {
+                name: computed(() => {
                     return `What once was part of a bygone era...`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Do a PR2 reset ${format(4)} times in total.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 4);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 9.5);
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 10
                 ordering: 10,
-                get name() {
+                name: computed(() => {
                     return `Going even further beyond!`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Do a PR2 reset ${format(11)} times.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 11);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 9.5);
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 11
                 ordering: 11,
-                get name() {
+                name: computed(() => {
                     return `A prelude 1`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have ${format(1e45)} points without buying Upgrade 3.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e45) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
                     );
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 9.5);
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     return Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
                         ? true
                         : `Failed due to having Upgrade 3`;
-                }
+                })
             },
             {
                 // id: 12
                 ordering: 12,
-                get name() {
+                name: computed(() => {
                     return `A prelude 2`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have ${format(1e63)} points without buying Upgrade 2 and 3.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e63) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
                     );
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `Increase UP2's base by +${format(0.05, 3)}.`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return ifAchievement(0, 11);
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     if (
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
@@ -328,30 +330,30 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         }
                     }
                     return txt;
-                }
+                })
             },
             {
                 // id: 13
                 ordering: 13,
-                get name() {
+                name: computed(() => {
                     return `A prelude 3`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have ${format(1e90)} points without buying Upgrades 1, 2, and 3 in the current PRai run.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e90) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
                     );
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return ifAchievement(0, 12);
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     if (
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
@@ -375,94 +377,94 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         txt += `${fail[0] + 1}.`;
                     }
                     return txt;
-                }
+                })
             },
             {
                 // id: 14
                 ordering: 14,
-                get name() {
+                name: computed(() => {
                     return `Enhancing 1`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Make Upgrade 1's base reach ×${format(1.6, 3)}`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 1.6);
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `PR2's cost base is decreased from ${format(10)} to ${format(9)}.`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 5);
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 15
                 ordering: 15,
-                get name() {
+                name: computed(() => {
                     return `Enhancing 2`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Make Upgrade 1's base reach ×${format(2, 3)}`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 2);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return ifAchievement(0, 14);
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 16
                 ordering: 16,
-                get name() {
+                name: computed(() => {
                     return `Enhancing 3`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Make Upgrade 1's base reach ×${format(3, 3)}`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 3);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return ifAchievement(0, 15);
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 17
                 ordering: 17,
-                get name() {
+                name: computed(() => {
                     return `Apparently Upgrades 4-6 are all you need.`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Get ${format(1e30)} points without having Upgrades 1-3 and without more than ${format(10)} PRai for this Kuaraniai run.`;
-                },
+                }),
                 autoComplete: false,
-                get cond() {
+                cond: computed(() => {
                     return Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                     Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
                     Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0) &&
                     Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10) &&
                     Decimal.gte(player.value.gameProgress.main.best[2]!, 1e30);
-                },
-                get reward() {
-                    return `PRai's effect is slightly boosted by ×${format(this.eff!, 2)} based off your time in PRai.`;
-                },
-                get eff() {
+                }),
+                reward: computed(() => {
+                    return `PRai's effect is slightly boosted by ×${format(ACHIEVEMENT_DATA[0].list[17].eff!.value, 2)} based off your time in PRai.`;
+                }),
+                eff: computed(() => {
                     return Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 1)
                         .sqrt()
                         .pow_base(1.5)
                         .min(10);
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 10);
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     if (
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
@@ -496,49 +498,49 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         txt += ` Failed due to having more than ${format(10)} PRai.`;
                     }
                     return txt;
-                },
+                }),
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
                 // id: 18
                 ordering: 18,
-                get name() {
+                name: computed(() => {
                     return `You can't escape the IRS, fool!`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(Number.MAX_VALUE)} points.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.bestEver, Number.MAX_VALUE);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.bestEver, 1e100);
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 19
                 ordering: 19,
-                get name() {
+                name: computed(() => {
                     return `Ordered`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Every upgrade from 1-6 must have #×${format(10)} of themselves. (Upgrade 1 must be bought ${format(10)} times, Upgrade 2 ${format(20)} times, etc.)`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 10) &&
                         Decimal.eq(player.value.gameProgress.main.upgrades[1].bought, 20) &&
                         Decimal.eq(player.value.gameProgress.main.upgrades[2].bought, 30) &&
                         Decimal.eq(player.value.gameProgress.main.upgrades[3].bought, 40) &&
                         Decimal.eq(player.value.gameProgress.main.upgrades[4].bought, 50) &&
                         Decimal.eq(player.value.gameProgress.main.upgrades[5].bought, 60)
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     const fail: Array<number> = [];
                     for (let i = 0; i < 6; i++) {
                         if (Decimal.neq(player.value.gameProgress.main.upgrades[i].bought, 10*(i+1))) {
@@ -559,139 +561,139 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     }
                     txt += ` not meeting their target value.`
                     return txt;
-                },
+                }),
                 extra: `Hint: What resets Upgrades 4-6?`
             },
             {
                 // id: 20
                 ordering: 20,
-                get name() {
+                name: computed(() => {
                     return `Jumping to conclusions.`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(1e100)} PRai while doing no more than ${format(5)} PRai resets.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e100) && Decimal.lte(player.value.gameProgress.main.prai.times, 5);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     return Decimal.lte(player.value.gameProgress.main.prai.times, 5) ? true : `Failed due to having PRai reset ${format(player.value.gameProgress.main.prai.times)} times.`
-                }
+                })
             },
             {
                 // id: 21
                 ordering: 21,
-                get name() {
+                name: computed(() => {
                     return `Reach Infinity, again!`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(Decimal.pow(Number.MAX_VALUE, 2))} Points.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.points, Decimal.pow(Number.MAX_VALUE, 2));
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                status: true,
+                }),
+                status: computed(() => { return true; }),
             },
             {
                 // id: 22
                 ordering: 22,
-                get name() {
+                name: computed(() => {
                     return `I wonder why this wasn't here for so long?`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have over ${format(10)} effective Upgrade 1s without buying any.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gt(tmp.value.main.upgrades[0].effective, 10) && Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 0);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     return Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 0) ? true : `Failed due to having bought Upgrade 1.`
-                }
+                })
             },
             // {
             //     // id: 23
             //     ordering: 23,
-            //     get name() {
+            //     name: computed(() => {
             //         return `There are 2 constants in life. Death, and Taxes. Evade one of them.`;
-            //     },
-            //     get desc() {
+            //     }),
+            //     desc: computed(() => {
             //         return `Delay the tax man by ${format(1e50)}×!`;
-            //     },
-            //     get cond() {
+            //     }),
+            //     cond: computed(() => {
             //         return getSCSLAttribute('points', false)[0].start.gte(Decimal.mul(Number.MAX_VALUE, 1e50));
-            //     },
-            //     reward: ``,
-            //     get show() {
+            //     }),
+            //     reward: computed(() => { return ``; }),
+            //     show: computed(() => {
             //         return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
-            //     },
-            //     get status() {
+            //     }),
+            //     status: computed(() => {
             //         return `You need to evade your taxes by ${format(Decimal.mul(Number.MAX_VALUE, 1e50).div(getSCSLAttribute('points', false)[0].start), 2)}× more! (In layman's terms, delay the points softcap.)`
-            //     }
+            //     })
             // },
         ],
-        get rewAll() {
-            return `Point gain is increased by ${format(this.eff.sub(1).mul(100), 2)}%. (×1.1 per main achievement)`;
-        },
-        get eff() {
+        rewAll: computed(() => {
+            return `Point gain is increased by ${format(ACHIEVEMENT_DATA[0].eff.value.sub(1).mul(100), 2)}%. (×1.1 per main achievement)`;
+        }),
+        eff: computed(() => {
             let eff = D(1.1);
             eff = Decimal.pow(eff, player.value.gameProgress.achievements[0].length);
             return eff;
-        }
+        })
     },
     {
         type: "kua",
-        get show() {
+        show: computed(() => {
             return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 10);
-        },
+        }),
         list: [
             {
                 // id: 0
                 ordering: 0,
-                get name() {
+                name: computed(() => {
                     return `What even is this thing? Why do I have so little of it?`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Convert all of your PRai to Kuaraniai.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gt(player.value.gameProgress.kua.amount, 0);
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `Your number generation is increased by ${format(1e2)}%.`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 1
                 ordering: 1,
-                get name() {
+                name: computed(() => {
                     return `Stockpiler`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Save up ${format(1e12)} PRai on a Kuaraniai run.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e12);
-                },
-                get reward() {
-                    return `UP2 also boosts number gain at a reduced rate. Currently: ×${format(this.eff!, 2)}`;
-                },
-                get eff() {
+                }),
+                reward: computed(() => {
+                    return `UP2 also boosts number gain at a reduced rate. Currently: ×${format(ACHIEVEMENT_DATA[1].list[1].eff!.value, 2)}`;
+                }),
+                eff: computed(() => {
                     let pow = D(0.2);
                     if (ifAchievement(1, 12)) {
                         pow = pow.add(0.05);
@@ -707,103 +709,103 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     eff = eff.pow(pow);
 
                     return eff;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 2
                 ordering: 2,
-                get name() {
+                name: computed(() => {
                     return `Gathering Pieces Together`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have ${format(0.01, 3)} Kuaraniai.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.amount, 0.01);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 3
                 ordering: 3,
-                get name() {
+                name: computed(() => {
                     return `You like making progress, don't you?`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have ${format(0.1, 2)} Kuaraniai.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.amount, 0.095);
-                },
-                get reward() {
-                    return `Kuaraniai gain is increased by ${format(50)}%, and KShards produce another point multiplier. Currently: ×${format(this.eff!, 2)}`;
-                },
-                get eff() {
+                }),
+                reward: computed(() => {
+                    return `Kuaraniai gain is increased by ${format(50)}%, and KShards produce another point multiplier. Currently: ×${format(ACHIEVEMENT_DATA[1].list[3].eff!.value, 2)}`;
+                }),
+                eff: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.kshards.totals[3]!, 5e11)
                         ? Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).div(50).root(5).mul(10000)
                         : Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).mul(8).add(1).sqrt().sub(1).div(2).add(1);
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 4
                 ordering: 4,
-                get name() {
+                name: computed(() => {
                     return `This upgrade was unnecessary`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have ${format(1e80)} points without Upgrade 3 in the current Kuaraniai run.`;
-                },
+                }),
                 autoComplete: false,
-                get cond() {
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e80) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
                     );
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `Upgrade 3 gets a small ${format(1, 2)}% boost to effectiveness.`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     return Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
                         ? true
                         : `Failed due to having Upgrade 3.`;
-                },
+                }),
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
                 // id: 5
                 ordering: 5,
-                get name() {
+                name: computed(() => {
                     return `Quite interesting`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Get ${format(1e2)} Upgrade 1 without having over ${format(10)} PRai.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100) &&
                         Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10)
                     );
-                },
-                get reward() {
-                    return `Upgrade 1's effectiveness is slightly increased based off of your PRai. Currently: ${format(this.eff!.sub(1).mul(1e2), 3)}%`;
-                },
-                get eff() {
+                }),
+                reward: computed(() => {
+                    return `Upgrade 1's effectiveness is slightly increased based off of your PRai. Currently: ${format(ACHIEVEMENT_DATA[1].list[5].eff!.value.sub(1).mul(1e2), 3)}%`;
+                }),
+                eff: computed(() => {
                     let eff = D(player.value.gameProgress.main.prai.amount);
                     if (eff.gte(1e216)) {
                         eff = eff.log10().log(6).div(300).add(1)
@@ -811,46 +813,46 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         eff = eff.max(10).log10().cbrt().sub(1).div(500).add(1);
                     }
                     return eff;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     return Decimal.lte(player.value.gameProgress.main.prai.amount, 10)
                         ? true
                         : `Failed due to having more than ${format(10)} PRai.`;
-                }
+                })
             },
             {
                 // id: 6
                 ordering: 6,
-                get name() {
+                name: computed(() => {
                     return `Actually, these are useless!`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(1e20)} PRai without Upgrades 1, 2, and 3 in the current Kuaraniai run.`;
-                },
+                }),
                 autoComplete: false,
-                get cond() {
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.prai.best[2]!, 1e20) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
                     );
-                },
-                get reward() {
-                    return `All upgrades' cost scaling is slightly slowed down based off of your time in this PRai reset. Currently: ${formatPerc(this.eff!, 3)} slower`;
-                },
-                get eff() {
+                }),
+                reward: computed(() => {
+                    return `All upgrades' cost scaling is slightly slowed down based off of your time in this PRai reset. Currently: ${formatPerc(ACHIEVEMENT_DATA[1].list[6].eff!.value, 3)} slower`;
+                }),
+                eff: computed(() => {
                     let eff = Decimal.div(player.value.gameProgress.main.prai.timeInPRai, 60);
                     eff = eff.div(eff.mul(198).add(1)).add(1);
                     return eff;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     if (Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)) {
                         return true;
                     }
@@ -870,110 +872,110 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         txt += `${fail[0] + 1}.`;
                     }
                     return txt;
-                },
+                }),
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
                 // id: 7
                 ordering: 7,
-                get name() {
+                name: computed(() => {
                     return `This softcap won't hurt me!`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Upgrade 2's effect must reach /${format(1e17)}.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[1].effect, 1e17);
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `Upgrade 2's softcap is ${format(5)}% weaker.`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 8
                 ordering: 8,
-                get name() {
+                name: computed(() => {
                     return `Make this obsolete, I dare you. >:3`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Gain ${format(2.5, 2)} Kuaraniai without doing a single PRai reset.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return (
                         Decimal.gte(tmp.value.kua.pending, 2.5) &&
                         Decimal.lte(player.value.gameProgress.main.prai.times, 0)
                     );
-                },
+                }),
                 autoComplete: false,
-                get reward() {
+                reward: computed(() => {
                     return `Increase PRai's gain exponent from ^${format(1 / 3, 3)} to ^${format(0.335, 3)}`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     return Decimal.lte(player.value.gameProgress.main.prai.times, 0)
                         ? true
                         : `Failed due to having reset PRai ${format(player.value.gameProgress.main.prai.times)} times.`;
-                },
+                }),
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
                 // id: 9
                 ordering: 9,
-                get name() {
+                name: computed(() => {
                     return `oh we might make this obsolete`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have ${format(300)} Upgrade 1 without having more than ${format(10)} PRai.`;
-                },
+                }),
                 autoComplete: false,
-                get cond() {
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 300) &&
                         Decimal.lte(player.value.gameProgress.main.prai.amount, 10)
                     );
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     return Decimal.lte(player.value.gameProgress.main.prai.amount, 10)
                         ? true
                         : `Failed due to having more than ${format(10)} PRai.`;
-                },
+                }),
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
                 // id: 10
                 ordering: 10,
-                get name() {
+                name: computed(() => {
                     return `"End-game" pass filter`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(1e80)} points without buying Upgrades 1, 2, and 3 in the current Kuaraniai run.`;
-                },
+                }),
                 autoComplete: false,
-                get cond() {
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.best[2]!, 1e80) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
                     );
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `Every upgrades' base is increased by ${format(1, 2)}%.`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     if (
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
@@ -997,70 +999,70 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         txt += `${fail[0] + 1}.`;
                     }
                     return txt;
-                },
+                }),
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
                 // id: 11
                 ordering: 11,
-                get name() {
+                name: computed(() => {
                     return `I don't think this does much`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(300)} Upgrade 1 without Upgrade 2 in the current Kuaraniai run.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 300) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
                     );
-                },
+                }),
                 autoComplete: false,
-                get reward() {
-                    return `Upgrade 2 also boosts PRai gain at a drastically reduced rate. Currently: ×${format(this.eff!, 2)}`;
-                },
-                get eff() {
+                reward: computed(() => {
+                    return `Upgrade 2 also boosts PRai gain at a drastically reduced rate. Currently: ×${format(ACHIEVEMENT_DATA[1].list[11].eff!.value, 2)}`;
+                }),
+                eff: computed(() => {
                     let eff = Decimal.max(tmp.value.main.upgrades[1].effect, 1e10);
                     if (getKuaUpgrade("p", 7)) {
                         eff = eff.root(3).max(1e10);
                     }
                     eff = eff.div(1e10).pow(0.015);
                     return eff;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     return Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0)
                         ? true
                         : `Failed due to having Upgrade 2.`;
-                },
+                }),
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
                 // id: 12
                 ordering: 12,
-                get name() {
+                name: computed(() => {
                     return `What if the upgrades didn't chain boost each other and instead also directly boosted the thing`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Get ${format(1e35)} points without Upgrades 1 and 2 in the current Kuaraniai run.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.best[2]!, 1e35) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
                     );
-                },
+                }),
                 autoComplete: false,
-                get reward() {
+                reward: computed(() => {
                     return `Achievement "Stockpiler" is boosted.`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     if (
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
@@ -1083,136 +1085,136 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         }
                     }
                     return txt;
-                },
+                }),
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
                 // id: 13
                 ordering: 13,
-                get name() {
+                name: computed(() => {
                     return `speedrun? :o`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(1e260)} points in the first ${format(5, 2)} seconds in a Kuaraniai run.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e260) &&
                         Decimal.lte(player.value.gameProgress.kua.timeInKua, 5)
                     );
-                },
-                get reward() {
-                    return `Point gain is boosted but it decays over the next ${format(60, 2)} seconds. Currently: ×${format(this.eff!, 2)}`;
-                },
-                get eff() {
+                }),
+                reward: computed(() => {
+                    return `Point gain is boosted but it decays over the next ${format(60, 2)} seconds. Currently: ×${format(ACHIEVEMENT_DATA[1].list[13].eff!.value, 2)}`;
+                }),
+                eff: computed(() => {
                     let eff = Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 5).min(60);
                     eff = Decimal.pow(1e2, Decimal.sub(55, eff.sub(5)).div(0.55).div(1e2).pow(2));
                     return eff;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     return Decimal.lte(player.value.gameProgress.kua.timeInKua, 5)
                         ? true
                         : `Failed due to taking ${formatTime(player.value.gameProgress.kua.timeInKua)} / ${formatTime(5)} in the current Kuaraniai run.`;
-                }
+                })
             },
             {
                 // id: 14
                 ordering: 14,
-                get name() {
+                name: computed(() => {
                     return `imagine PR3 as "tiers" if PR2 is "ranks"`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(25)} PR2.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 25);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 15
                 ordering: 15,
-                get name() {
+                name: computed(() => {
                     return `Stockpiler 2`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Save up ${format(1e85)} PRai on a Kuaraniai run.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 1e85);
-                },
-                get reward() {
+                }),
+                reward: computed(() => {
                     return `Achievement "Stockpiler" is boosted again.`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 16
                 ordering: 16,
-                get name() {
+                name: computed(() => {
                     return `:softcapkisser:`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Get ${format(1e7)} Kuaraniai.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.amount, 1e7);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 17
                 ordering: 17,
-                get name() {
+                name: computed(() => {
                     return `Collector`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Buy 10 KShard and KPower upgrades.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return player.value.gameProgress.kua.kshards.upgrades >= 10 && player.value.gameProgress.kua.kpower.upgrades >= 10;
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 18
                 ordering: 18,
-                get name() {
+                name: computed(() => {
                     return `Don't need em.`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(1e130)} points while buying only KShard or KPower upgrades.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.points, 1e130) &&
                         (player.value.gameProgress.kua.upgrades === 0 &&
                         (player.value.gameProgress.kua.kshards.upgrades >= 0 && player.value.gameProgress.kua.kpower.upgrades === 0) ||
                         (player.value.gameProgress.kua.kpower.upgrades >= 0 && player.value.gameProgress.kua.kshards.upgrades === 0));
-                },
+                }),
                 autoComplete: false,
-                reward: ``,
-                get show() {
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     if (player.value.gameProgress.kua.upgrades !== 0) {
                         return `Failed due to buying Kuaraniai upgrades.`;
                     }
@@ -1226,111 +1228,111 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         }
                     }
                     return true;
-                },
+                }),
                 extra: `You must do a Kuaraniai reset to earn this achievement!`
             },
             {
                 // id: 19
                 ordering: 19,
-                get name() {
+                name: computed(() => {
                     return `Wait what?`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Have your KProof amount higher than your points.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.proofs.amount, player.value.gameProgress.main.points);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
         ],
-        get rewAll() {
-            return `Kuaraniai's effects are ${format(this.eff.sub(1).mul(100), 2)}% stronger. (+1% per Kuaraniai achievement)`;
-        },
-        get eff() {
+        rewAll: computed(() => {
+            return `Kuaraniai's effects are ${format(ACHIEVEMENT_DATA[1].eff.value.sub(1).mul(100), 2)}% stronger. (+1% per Kuaraniai achievement)`;
+        }),
+        eff: computed(() => {
             let eff = D(0.01);
             eff = Decimal.mul(eff, player.value.gameProgress.achievements[1].length);
             eff = eff.add(1);
             return eff;
-        }
+        })
     },
     {
         type: "col",
-        get show() {
+        show: computed(() => {
             return player.value.gameProgress.unlocks.col;
-        },
+        }),
         list: [
             {
                 // id: 0
                 ordering: 0,
-                get name() {
+                name: computed(() => {
                     return `Does every incremental game need to have a challenge like this? Probably.`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Complete Colosseum Challenge 'No Kuaraniai.'`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(player.value.gameProgress.col.completed.nk, 1);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 1
                 ordering: 1,
-                get name() {
+                name: computed(() => {
                     return `In a time crunch.`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Fully complete a challenge with less than ${formatTime(10)} to spare.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.lte(player.value.gameProgress.col.time, 10);
-                },
+                }),
                 autoComplete: false,
-                get reward() {
+                reward: computed(() => {
                     return `PRai gain is multiplied by ${format(5)}×.`;
-                },
-                get show() {
+                }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 2
                 ordering: 2,
-                get name() {
-                    return `this challenge is only gonna get more difficult`;
-                },
-                get desc() {
+                name: computed(() => {
+                    return `this challenge is only gonna more: computed( d =>ifficult`;
+                }),
+                desc: computed(() => {
                     return `Complete "Sabotaged Upgrades" 5 times.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(timesCompleted("su"), 5);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 3
                 ordering: 3,
-                get name() {
+                name: computed(() => {
                     return `Ruining the point`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Complete "Sabotaged Upgrades" on difficulty 1 without buying any upgrade.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return inChallenge('su') && Decimal.eq(challengeDepth('su'), 1) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
@@ -1341,13 +1343,13 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         Decimal.lte(player.value.gameProgress.main.upgrades[6].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[7].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[8].bought, 0)
-                },
+                }),
                 autoComplete: false,
-                reward: ``,
-                get show() {
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                get status() {
+                }),
+                status: computed(() => {
                     if (!inChallenge('su')) {
                         return `Failed due to not being in challenge 'Sabotaged Upgrades'.`
                     }
@@ -1374,114 +1376,114 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                         txt += `${fail[0] + 1}.`;
                     }
                     return txt;
-                },
-                extra: `Complete the challenge to get this achievement!`
+                }),
+                extra: `Complete the challenge to this: computed( a =>chievement!`
             },
             {
                 // id: 4
                 ordering: 4,
-                get name() {
+                name: computed(() => {
                     return `There wasn't any point in doing that.`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach ${format(1e100)} points in No Kuaraniai.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return (
                         player.value.gameProgress.inChallenge.nk.overall &&
                         Decimal.gte(player.value.gameProgress.main.best[3]!, 1e100)
                     );
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 5
                 ordering: 5,
-                get name() {
+                name: computed(() => {
                     return `smort`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach Level ${format(1e2)} in Dotgenous.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(getColResLevel(0), 100);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
             {
                 // id: 6
                 ordering: 6,
-                get name() {
+                name: computed(() => {
                     return `This is weird wtf`;
-                },
-                get desc() {
+                }),
+                desc: computed(() => {
                     return `Reach a PB of ${format(1e35)} in Inverted Mechanics.`;
-                },
-                get cond() {
+                }),
+                cond: computed(() => {
                     return Decimal.gte(timesCompleted('im'), 1e35);
-                },
-                reward: ``,
-                get show() {
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => {
                     return player.value.gameProgress.unlocks.col;
-                },
-                status: true
+                }),
+                status: computed(() => { return true; })
             },
         ],
-        get rewAll() {
-            return `Points gain in colosseum challenges are increased the lower your time is. (100%: ^${format(this.eff.mul(0.25).add(1), 3)}, 50%: ^${format(this.eff.mul(0.5).add(1), 3)}, 0%: ^${format(this.eff.add(1), 3)})`;
-        },
-        get eff() {
+        rewAll: computed(() => {
+            return `Points gain in colosseum challenges are increased the lower your time is. (100%: ^${format(ACHIEVEMENT_DATA[2].eff.value.mul(0.25).add(1), 3)}, 50%: ^${format(ACHIEVEMENT_DATA[2].eff.value.mul(0.5).add(1), 3)}, 0%: ^${format(ACHIEVEMENT_DATA[2].eff.value.add(1), 3)})`;
+        }),
+        eff: computed(() => {
             let eff = D(0.004);
             eff = Decimal.mul(eff, player.value.gameProgress.achievements[2].length);
             return eff;
-        }
+        })
     },
     // {
     //     type: "tax",
-    //     get show() {
+    //     show: computed(() => {
     //         return player.value.gameProgress.unlocks.tax;
-    //     },
+    //     }),
     //     list: [
     //         {
     //             // id: 0
     //             ordering: 0,
-    //             get name() {
+    //             name: computed(() => {
     //                 return `The same issue as before, why so little of it?!`;
-    //             },
-    //             get desc() {
+    //             }),
+    //             desc: computed(() => {
     //                 return `Obtain at least ${format(1)} KBlessing.`;
-    //             },
-    //             get cond() {
+    //             }),
+    //             cond: computed(() => {
     //                 return Decimal.gte(player.value.gameProgress.kua.blessings.amount, 1);
-    //             },
-    //             reward: ``,
-    //             show: true,
-    //             status: true
+    //             }),
+    //             reward: computed(() => { return ``; }),
+    //             show: computed(() => { return true; }),
+    //             status: computed(() => { return true; })
     //         },
     //     ],
-    //     get rewAll() {
+    //     rewAll: computed(() => {
     //         return `KBlessings gain is increased by ${format(this.eff.sub(1).mul(100), 2)}%. (×1.051 per KB achievement)`;
-    //     },
-    //     get eff() {
+    //     }),
+    //     eff: computed(() => {
     //         let eff = D(1.05);
-    //         eff = Decimal.pow(eff, player.value.gameProgress.achievements[3].length);
+    //      )   eff = Decimal.pow(eff, player.value.gameProgress.achievements[3].length);
     //         return eff;
     //     }
     // }
 ];
 
 export const setAchievement = (type: number, id: number) => {
-    if (!ifAchievement(type, id) && ACHIEVEMENT_DATA[type].list[id].cond) {
+    if (!ifAchievement(type, id) && ACHIEVEMENT_DATA[type].list[id].cond.value) {
         player.value.gameProgress.achievements[type].push(id);
-        spawnPopup(0, ACHIEVEMENT_DATA[type].list[id].desc, ACHIEVEMENT_DATA[type].list[id].name, 3, `#FFFF00`);
+        spawnPopup(0, ACHIEVEMENT_DATA[type].list[id].desc.value, ACHIEVEMENT_DATA[type].list[id].name.value, 3, `#FFFF00`);
     }
     // return [ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].cond, ifAchievement(type, id), tmp.value.achievementList[type][id], player.value.gameProgress.achievements[type]]
 };
@@ -1514,14 +1516,11 @@ export const fixAchievements = () => {
 };
 
 export const getAchievementEffect = (type: number, id: number) => {
-    if (Decimal.isNaN(ACHIEVEMENT_DATA[type].list[id].eff!) || ACHIEVEMENT_DATA[type].list[id].eff! === undefined) {
-        throw new Error(`Achievement ${type}, ${id}`);
+    if (Decimal.isNaN(ACHIEVEMENT_DATA[type].list[id].eff!.value) || ACHIEVEMENT_DATA[type].list[id].eff!.value === undefined) {
+        console.error(ACHIEVEMENT_DATA[type].list[id]);
+        throw new Error(`Achievement ${type}, ${id}'s effect either does not exist or is NaN!`);
     }
-    return ACHIEVEMENT_DATA[type].list[id].eff!;
-};
-
-export const getAchievementData = (type: number, id: number) => {
-    return ACHIEVEMENT_DATA[type].list[id];
+    return ACHIEVEMENT_DATA[type].list[id].eff!.value;
 };
 
 export const ifAchievement = (type: number, id: number) => {

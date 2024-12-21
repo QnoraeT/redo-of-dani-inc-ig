@@ -10,6 +10,7 @@ import { getKuaUpgrade, KUA_UPGRADES } from "./components/Game/Game_Progress/Gam
 import { getColChalRewEffects, inChallenge, timesCompleted } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
 import { getOMUpgrade, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_OneUpgrades/Game_OneUpgrades";
 import { KUA_BLESS_UPGS } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
+import { computed } from "vue";
 
 export const SCALE_ATTR = [
     { pow: 2, type: 0, name: "Scaled", color: `#3080FF` },
@@ -844,12 +845,12 @@ export const compileScalSoftList = () => {
     for (let i = 0; i < ScSlItemsList.length; i++) {
         const item = LIST_OF_SCSL[ScSlItemsList[i]];
         for (let j = 0; j < item.scale.length; j++) {
-            if (Decimal.gte(SCAL_VALUES[ScSlItemsList[i]], item.scale[j].start)) {
+            if (Decimal.gte(SCAL_VALUES[ScSlItemsList[i]].value, item.scale[j].start)) {
                 tmp.value.scaleList[j].push(`${tmp.value.scaleSoftcapNames[ScSlItemsList[i]]} - ${format(item.scale[j].power.mul(100), 3)}% starting at ${format(item.scale[j].start, 3)}`);
             }
         }
         for (let j = 0; j < item.soft.length; j++) {
-            if (Decimal.gte(SOFT_VALUES[ScSlItemsList[i]], item.soft[j].start)) {
+            if (Decimal.gte(SOFT_VALUES[ScSlItemsList[i]].value, item.soft[j].start)) {
                 tmp.value.softList[j].push(`${tmp.value.scaleSoftcapNames[ScSlItemsList[i]]} - ${format(item.soft[j].power.mul(100), 3)}% starting at ${format(item.soft[j].start, 3)} (${item.soft[j].displayedEffect})`);
             }
         }
@@ -857,118 +858,118 @@ export const compileScalSoftList = () => {
 };
 
 const SOFT_VALUES = {
-    get points() {
+    points: computed(() => {
         return player.value.gameProgress.main.points;
-    },
-    get upg1() {
+    }),
+    upg1: computed(() => {
         return tmp.value.main.upgrades[0].effect;
-    },
-    get upg2() {
+    }),
+    upg2: computed(() => {
         return tmp.value.main.upgrades[1].effect;
-    },
-    get upg3() {
+    }),
+    upg3: computed(() => {
         return tmp.value.main.upgrades[2].effect;
-    },
-    get upg4() {
+    }),
+    upg4: computed(() => {
         return tmp.value.main.upgrades[3].effect;
-    },
-    get upg5() {
+    }),
+    upg5: computed(() => {
         return tmp.value.main.upgrades[4].effect;
-    },
-    get upg6() {
+    }),
+    upg6: computed(() => {
         return tmp.value.main.upgrades[5].effect;
-    },
-    get upg7() {
+    }),
+    upg7: computed(() => {
         return tmp.value.main.upgrades[6].effect;
-    },
-    get upg8() {
+    }),
+    upg8: computed(() => {
         return tmp.value.main.upgrades[7].effect;
-    },
-    get upg9() {
+    }),
+    upg9: computed(() => {
         return tmp.value.main.upgrades[8].effect;
-    },
-    get prai() {
+    }),
+    prai: computed(() => {
         return tmp.value.main.prai.effect;
-    },
-    get pr2() {
+    }),
+    pr2: computed(() => {
         return tmp.value.main.pr2.effect;
-    },
-    get kuaupg4base() {
+    }),
+    kuaupg4base: computed(() => {
         return tmp.value.kua.effects.upg4;
-    },
-    get kuaupg5base() {
+    }),
+    kuaupg5base: computed(() => {
         return tmp.value.kua.effects.upg5;
-    },
-    get kuaupg6base() {
+    }),
+    kuaupg6base: computed(() => {
         return tmp.value.kua.effects.upg6;
-    },
-    get kba() {
+    }),
+    kba: computed(() => {
         return tmp.value.kua.blessings.perClick;
-    },
-    get kbi() {
+    }),
+    kbi: computed(() => {
         return tmp.value.kua.blessings.perSec;
-    },
-    get kp() {
+    }),
+    kp: computed(() => {
         return player.value.gameProgress.kua.proofs.amount;
-    },
-    get skp() {
+    }),
+    skp: computed(() => {
         return player.value.gameProgress.kua.proofs.strange.amount;
-    }
+    })
 };
 
 const SCAL_VALUES = {
-    get points() {
+    points: computed(() => {
         return D(0);
-    },
-    get upg1() {
+    }),
+    upg1: computed(() => {
         return player.value.gameProgress.main.upgrades[0].bought;
-    },
-    get upg2() {
+    }),
+    upg2: computed(() => {
         return player.value.gameProgress.main.upgrades[1].bought;
-    },
-    get upg3() {
+    }),
+    upg3: computed(() => {
         return player.value.gameProgress.main.upgrades[2].bought;
-    },
-    get upg4() {
+    }),
+    upg4: computed(() => {
         return player.value.gameProgress.main.upgrades[3].bought;
-    },
-    get upg5() {
+    }),
+    upg5: computed(() => {
         return player.value.gameProgress.main.upgrades[4].bought;
-    },
-    get upg6() {
+    }),
+    upg6: computed(() => {
         return player.value.gameProgress.main.upgrades[5].bought;
-    },
-    get upg7() {
+    }),
+    upg7: computed(() => {
         return player.value.gameProgress.main.upgrades[6].bought;
-    },
-    get upg8() {
+    }),
+    upg8: computed(() => {
         return player.value.gameProgress.main.upgrades[7].bought;
-    },
-    get upg9() {
+    }),
+    upg9: computed(() => {
         return player.value.gameProgress.main.upgrades[8].bought;
-    },
-    get pr2() {
+    }),
+    pr2: computed(() => {
         return player.value.gameProgress.main.pr2.amount;
-    },
-    get kuaupg4base() {
+    }),
+    kuaupg4base: computed(() => {
         return D(0);
-    },
-    get kuaupg5base() {
+    }),
+    kuaupg5base: computed(() => {
         return D(0);
-    },
-    get kuaupg6base() {
+    }),
+    kuaupg6base: computed(() => {
         return D(0);
-    },
-    get kba() {
+    }),
+    kba: computed(() => {
         return D(0);
-    },
-    get kbi() {
+    }),
+    kbi: computed(() => {
         return D(0);
-    },
-    get kp() {
+    }),
+    kp: computed(() => {
         return D(0);
-    },
-    get skp() {
+    }),
+    skp: computed(() => {
         return D(0);
-    }
+    })
 };

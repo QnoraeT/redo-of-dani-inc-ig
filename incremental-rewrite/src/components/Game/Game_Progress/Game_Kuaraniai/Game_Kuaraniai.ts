@@ -119,7 +119,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     tmp.value.kua.proofs.upgrades[k][j].target = scal;
                     NaNCheck(tmp.value.kua.proofs.upgrades[k][j].target, `KProof ${k} Upgrade #${j+1} was able to buy NaN levels by autobuying!`);
 
-                    tmp.value.kua.proofs.upgrades[k][j].canBuy = Decimal.gte(data, tmp.value.kua.proofs.upgrades[k][j].cost) && KUA_PROOF_UPGS[k][j].show;
+                    tmp.value.kua.proofs.upgrades[k][j].canBuy = Decimal.gte(data, tmp.value.kua.proofs.upgrades[k][j].cost) && KUA_PROOF_UPGS[k][j].show.value;
 
                     data = player.value.gameProgress.kua.proofs.automationBought[k][j] && player.value.gameProgress.kua.proofs.automationEnabled[k][j];
                     tmp.value.kua.proofs.canBuyUpg = tmp.value.kua.proofs.canBuyUpg || (tmp.value.kua.proofs.upgrades[k][j].canBuy && !data);
@@ -253,20 +253,20 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(0, [4, 4], "Base", `${format(0.1, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, true);
             setFactor(0, [4, 5], "Base", `${format(1, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, true);
 
-            tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive);
-            tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle);
-            setFactor(1, [4, 4], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, true, "kb");
-            setFactor(1, [4, 5], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, true, "kb");
+            tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value);
+            tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value);
+            setFactor(1, [4, 4], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, true, "kb");
+            setFactor(1, [4, 5], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, true, "kb");
 
             tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(KUA_BLESS_UPGS[1].eff()[1]);
             tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(KUA_BLESS_UPGS[1].eff()[1]);
             setFactor(2, [4, 4], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff()[1], 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 6), "kb");
             setFactor(2, [4, 5], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff()[1], 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 6), "kb");
 
-            tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff);
-            tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff);
-            setFactor(3, [4, 4], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(tmp.value.kua.blessings.tetr, 1), "kb");
-            setFactor(3, [4, 5], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(tmp.value.kua.blessings.tetr, 1), "kb");
+            tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
+            tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
+            setFactor(3, [4, 4], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(tmp.value.kua.blessings.tetr, 1), "kb");
+            setFactor(3, [4, 5], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(tmp.value.kua.blessings.tetr, 1), "kb");
 
             tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(tmp.value.kua.effects.bless);
             tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(tmp.value.kua.effects.bless);
@@ -326,7 +326,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             }
 
             i = Decimal.max(player.value.gameProgress.kua.blessings.amount, 0);
-            i = Decimal.mul(i, KUA_BLESS_TIER.tier.effects.kuaBlessEff)
+            i = Decimal.mul(i, KUA_BLESS_TIER.tier.effects.kuaBlessEff.value)
             if (!tmp.value.kua.active.blessings.effects) {
                 i = D(0);
             }
@@ -484,8 +484,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             }
             setFactor(1, [4, 0], "KBlessings", `×${format(tmp.value.kua.blessings.kuaEff, 2)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, player.value.gameProgress.unlocks.kblessings, "kb");
 
-            k = k.mul(ACHIEVEMENT_DATA[1].eff);
-            setFactor(2, [4, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].eff, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true, "ach");
+            k = k.mul(ACHIEVEMENT_DATA[1].eff.value);
+            setFactor(2, [4, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].eff.value, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true, "ach");
 
             if (getKuaUpgrade("s", 11)) {
                 k = k.mul(KUA_UPGRADES.KShards[10].eff!);

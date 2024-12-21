@@ -81,7 +81,7 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
             </div>
         </div>
         <div class="flex-container" style="flex-direction: column; align-items: center; margin-top: 0.5vw; margin-bottom: 0.5vw;">
-            <div v-for="(item, index) in NEXT_UNLOCKS" :key="index" :style="{ color: item.color }">
+            <div v-for="(item, index) in NEXT_UNLOCKS" :key="index" :style="{ color: item.color.value }">
                 <span v-if="item.shown && !item.done" style="font-size: 1.2vw; text-align: center" class="fontVerdana">
                     You must reach <span style="font-size: 1.6vw" ><b>{{ item.dispPart1 }}</b></span> {{ item.dispPart2 }}
                 </span>

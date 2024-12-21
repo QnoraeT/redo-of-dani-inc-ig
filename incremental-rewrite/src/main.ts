@@ -1,6 +1,6 @@
 import "./assets/main.css";
 
-import { createApp, ref, type Ref } from "vue";
+import { computed, createApp, ref, type ComputedRef, type Ref } from "vue";
 import App from "./App.vue";
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { type Tab } from "./components/MainTabs/MainTabs";
@@ -42,117 +42,117 @@ export const NaNCheck = (num: DecimalSource, error = 'NaN detected!') => {
 
 export const NEXT_UNLOCKS = [
     {
-        get shown() {
+        shown: computed(() => {
             return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 3);
-        },
-        get done() {
+        }),
+        done: computed(() => {
             return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 9.5);
-        },
-        get dispPart1() {
+        }),
+        dispPart1: computed(() => {
             return `${format(player.value.gameProgress.main.prai.bestEver)} / ${format(10)}`;
-        },
+        }),
         dispPart2: `PRai to unlock the next layer.`,
-        color: "#ffffff"
+        color: computed(() => { return "#ffffff"; })
     },
     {
-        get shown() {
+        shown: computed(() => {
             return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 3);
-        },
-        get done() {
+        }),
+        done: computed(() => {
             return player.value.gameProgress.unlocks.kua;
-        },
-        get dispPart1() {
+        }),
+        dispPart1: computed(() => {
             return `${format(player.value.gameProgress.main.pr2.bestEver)} / ${format(10)}`;
-        },
+        }),
         dispPart2: `PR2 to unlock the next layer.`,
-        color: "#7958ff"
+        color: computed(() => { return "#7958ff"; })
     },
     // {
-    //     get shown() { return player.value.gameProgress.kua.kpower.upgrades >= 2; },
-    //     get done() { return player.value.gameProgress.unlocks.kuaEnhancers; },
-    //     get dispPart1() { return `${format(player.value.gameProgress.kua.amount, 3)} / ${format(0.01, 2)}`; },
+    //     shown: computed(() => { return player.value.gameProgress.kua.kpower.upgrades >= 2; }),
+    //     done: computed(() => { return player.value.gameProgress.unlocks.kuaEnhancers; }),
+    //     dispPart1: computed(() => { return `${format(player.value.gameProgress.kua.amount, 3)} / ${format(0.01, 2)}`; }),
     //     dispPart2: `Kuaraniai to unlock the next feature.`,
     //     color: "#a040ff"
     // },
     {
-        get shown() {
+        shown: computed(() => {
             return player.value.gameProgress.kua.kpower.upgrades >= 2;
-        },
-        get done() {
+        }),
+        done: computed(() => {
             return player.value.gameProgress.unlocks.col;
-        },
-        get dispPart1() {
+        }),
+        dispPart1: computed(() => {
             return `${format(player.value.gameProgress.kua.amount, 3)} / ${format(100)}`;
-        },
+        }),
         dispPart2: `Kuaraniai to unlock the next feature.`,
-        color: "#ff6000"
+        color: computed(() => { return "#ff6000"; })
     },
     {
-        get shown() {
+        shown: computed(() => {
             return player.value.gameProgress.kua.kpower.upgrades >= 8;
-        },
-        get done() {
+        }),
+        done: computed(() => {
             return player.value.gameProgress.unlocks.kblessings;
-        },
-        get dispPart1() {
+        }),
+        dispPart1: computed(() => {
             return `${format(player.value.gameProgress.kua.amount)} / ${format(1e6)}`;
-        },
+        }),
         dispPart2: `Kuaraniai to unlock the next feature.`,
-        color: "#00ff00"
+        color: computed(() => { return "#00ff00"; })
     },
     {
-        get shown() {
+        shown: computed(() => {
             return player.value.gameProgress.unlocks.kblessings;
-        },
-        get done() {
+        }),
+        done: computed(() => {
             return player.value.gameProgress.kua.upgrades >= 3 || (player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main);
-        },
-        get dispPart1() {
+        }),
+        dispPart1: computed(() => {
             return `${player.value.gameProgress.kua.upgrades} / 3`;
-        },
+        }),
         dispPart2: `Kuaraniai Upgrades to unlock the next feature.`,
-        color: "#00ffff"
+        color: computed(() => { return "#00ffff"; })
     },
     {
-        get shown() {
+        shown: computed(() => {
             return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
-        },
-        get done() {
+        }),
+        done: computed(() => {
             return player.value.gameProgress.unlocks.kproofs.strange;
-        },
-        get dispPart1() {
+        }),
+        dispPart1: computed(() => {
             return `${format(player.value.gameProgress.kua.proofs.amount)} / ${format(1e24)}`;
-        },
+        }),
         dispPart2: `KProofs to unlock the next sub-feature.`,
-        color: "#ffff00"
+        color: computed(() => { return "#ffff00"; })
     },
     {
-        get shown() {
+        shown: computed(() => {
             return Decimal.gte(player.value.gameProgress.unlocks.kproofs === undefined ? 0 : player.value.gameProgress.kua.proofs.strange.amount, 1e6);
-        },
-        get done() {
+        }),
+        done: computed(() => {
             return player.value.gameProgress.unlocks.kproofs.finicky;
-        },
-        get dispPart1() {
+        }),
+        dispPart1: computed(() => {
             return `${format(player.value.gameProgress.kua.proofs.strange.amount)} / ${format(1e10)}`;
-        },
+        }),
         dispPart2: `Strange KProofs to unlock the next sub-feature.`,
-        color: "#00ff00"
+        color: computed(() => { return "#00ff00"; })
     },
     {
-        get shown() {
+        shown: computed(() => {
             return Decimal.gte(player.value.gameProgress.main.best[3]!, "ee3");
-        },
-        get done() {
+        }),
+        done: computed(() => {
             return player.value.gameProgress.unlocks.tax;
-        },
-        get dispPart1() {
+        }),
+        dispPart1: computed(() => {
             return `${format(player.value.gameProgress.main.best[3]!)} / ${format("e2000")}`;
-        },
+        }),
         dispPart2: `Points to unlock the next layers.`,
-        get color() {
-            return mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2)
-        }
+        color: computed(() => {
+            return mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2);
+        })
     }
 ];
 
@@ -1157,258 +1157,258 @@ function loadGame(): void {
 }
 
 export type TrueFactor = {
-    baseActive: boolean,
+    baseActive: ComputedRef<boolean>,
     active: boolean,
-    name: string,
-    effect: Decimal,
+    name: ComputedRef<string>,
+    effect: ComputedRef<Decimal>,
     color: FactorColorID,
     type: 'add' | 'mult' | 'pow' | 'dil'
 }
 
 export const PPS_CALC: Array<TrueFactor> = [
     {
-        baseActive: true,
+        baseActive: computed(() => { return true; }),
         active: true,
-        name: 'Base',
-        effect: D(1),
+        name: computed(() => { return 'Base'; }),
+        effect: computed(() => { return D(1); }),
         color: 'norm',
         type: 'mult'
     },
     {
-        baseActive: true,
+        baseActive: computed(() => { return true; }),
         active: true,
-        name: 'Upgrade 1',
-        get effect() {
+        name: computed(() => { return 'Upgrade 1'; }),
+        effect: computed(() => {
             return tmp.value.main.upgrades[0].effect;
-        },
+        }),
         color: 'norm',
         type: 'mult'
     },
     {
-        baseActive: false,
+        baseActive: computed(() => { return false; }),
         active: true,
-        name: 'Upgrade 2',
-        get effect() {
+        name: computed(() => { return 'Upgrade 2'; }),
+        effect: computed(() => {
             return tmp.value.main.upgrades[1].effect;
-        },
+        }),
         color: 'col',
         type: 'mult'
     },
     {
-        baseActive: true,
+        baseActive: computed(() => { return true; }),
         active: true,
-        name: 'Upgrade 4',
-        get effect() {
+        name: computed(() => { return 'Upgrade 4'; }),
+        effect: computed(() => {
             return tmp.value.main.upgrades[3].effect;
-        },
+        }),
         color: 'norm',
         type: 'mult'
     },
     {
-        baseActive: false,
+        baseActive: computed(() => { return false; }),
         active: true,
-        name: 'Upgrade 5',
-        get effect() {
+        name: computed(() => { return 'Upgrade 5'; }),
+        effect: computed(() => {
             return tmp.value.main.upgrades[4].effect;
-        },
+        }),
         color: 'col',
         type: 'mult'
     },
     {
-        baseActive: true,
+        baseActive: computed(() => { return true; }),
         active: true,
-        name: 'PRai',
-        get effect() {
+        name: computed(() => { return 'PRai'; }),
+        effect: computed(() => {
             return tmp.value.main.prai.effActive ? tmp.value.main.prai.effect : D(1);
-        },
+        }),
         color: 'norm',
         type: 'mult'
     },
     {
-        baseActive: true,
+        baseActive: computed(() => { return true; }),
         active: true,
-        name: 'PR2',
-        get effect() {
+        name: computed(() => { return 'PR2'; }),
+        effect: computed(() => {
             return tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : D(1);
-        },
+        }),
         color: 'norm',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1);
-        },
+        }),
         active: true,
-        name: 'One-Upgrade #10',
-        get effect() {
+        name: computed(() => { return 'One-Upgrade #10'; }),
+        effect: computed(() => {
             return MAIN_ONE_UPGS[9].effect.value;
-        },
+        }),
         color: 'norm',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return ifAchievement(0, 3);
-        },
+        }),
         active: true,
-        name: 'Achievement ID (0, 3)',
-        get effect() {
+        name: computed(() => { return 'Achievement ID (0, 3)'; }),
+        effect: computed(() => {
             return D(1.2);
-        },
+        }),
         color: 'ach',
         type: 'mult'
     },
     {
-        baseActive: true,
+        baseActive: computed(() => { return true; }),
         active: true,
-        name: 'Achievement Tier 1',
-        get effect() {
+        name: computed(() => { return 'Achievement Tier 1'; }),
+        effect: computed(() => {
             return ACHIEVEMENT_DATA[0].eff;
-        },
+        }),
         color: 'ach',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return player.value.gameProgress.unlocks.kua;
-        },
+        }),
         active: true,
-        name: 'KPower Base Effect',
-        get effect() {
+        name: computed(() => { return 'KPower Base Effect'; }),
+        effect: computed(() => {
             return tmp.value.kua.effects.kpowerPassive;
-        },
+        }),
         color: 'kua',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return getKuaUpgrade("s", 7);
-        },
+        }),
         active: true,
-        name: 'KShard Upgrade 7',
-        get effect() {
+        name: computed(() => { return 'KShard Upgrade 7'; }),
+        effect: computed(() => {
             return tmp.value.kua.effects.pts;
-        },
+        }),
         color: 'kua',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return ifAchievement(1, 0);
-        },
+        }),
         active: true,
-        name: 'Achievement ID (1, 0)',
-        get effect() {
+        name: computed(() => { return 'Achievement ID (1, 0)'; }),
+        effect: computed(() => {
             return D(2);
-        },
+        }),
         color: 'ach',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return ifAchievement(1, 1);
-        },
+        }),
         active: true,
-        name: 'Achievement ID (1, 1)',
-        get effect() {
+        name: computed(() => { return 'Achievement ID (1, 1)'; }),
+        effect: computed(() => {
             return getAchievementEffect(1, 1);
-        },
+        }),
         color: 'ach',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return ifAchievement(1, 3);
-        },
+        }),
         active: true,
-        name: 'Achievement ID (1, 3)',
-        get effect() {
+        name: computed(() => { return 'Achievement ID (1, 3)'; }),
+        effect: computed(() => {
             return getAchievementEffect(1, 3);
-        },
+        }),
         color: 'ach',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return ifAchievement(1, 13);
-        },
+        }),
         active: true,
-        name: 'Achievement ID (1, 13)',
-        get effect() {
+        name: computed(() => { return 'Achievement ID (1, 13)'; }),
+        effect: computed(() => {
             return getAchievementEffect(1, 13);
-        },
+        }),
         color: 'ach',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return Decimal.gte(timesCompleted("nk"), 1);
-        },
+        }),
         active: true,
-        name: 'Dotgenous',
-        get effect() {
+        name: computed(() => { return 'Dotgenous'; }),
+        effect: computed(() => {
             return getColResEffect(0);
-        },
+        }),
         color: 'col',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return Decimal.gte(timesCompleted("df"), 1);
-        },
+        }),
         active: true,
-        get name() {
+        name: computed(() => {
             return `Decaying Feeling Completion ×${format(timesCompleted('df'))}`;
-        },
-        get effect() {
+        }),
+        effect: computed(() => {
             return D(10);
-        },
+        }),
         color: 'col',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return player.value.gameProgress.unlocks.tax;
-        },
+        }),
         active: true,
-        name: 'Taxed Coins',
-        get effect() {
+        name: computed(() => { return 'Taxed Coins'; }),
+        effect: computed(() => {
             return tmp.value.tax.ptsEff;
-        },
+        }),
         color: 'tax',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return getKuaUpgrade("p", 3);
-        },
+        }),
         active: true,
-        name: 'KPower Upgrade 3',
-        get effect() {
+        name: computed(() => { return 'KPower Upgrade 3'; }),
+        effect: computed(() => {
             return tmp.value.kua.effects.ptPower;
-        },
+        }),
         color: 'kua',
         type: 'pow'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 12);
-        },
+        }),
         active: true,
-        name: 'KBlessing Upgrade 2',
-        get effect() {
+        name: computed(() => { return 'KBlessing Upgrade 2'; }),
+        effect: computed(() => {
             return KUA_BLESS_UPGS[1].eff()[2];
-        },
+        }),
         color: 'kb',
         type: 'pow'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return player.value.gameProgress.col.inAChallenge;
-        },
+        }),
         active: true,
-        name: 'Achievement Tier 3',
-        get effect() {
+        name: computed(() => { return 'Achievement Tier 3'; }),
+        effect: computed(() => {
             return ACHIEVEMENT_DATA[2].eff
             .mul(
                 Decimal.pow(
@@ -1420,33 +1420,33 @@ export const PPS_CALC: Array<TrueFactor> = [
                 )
             )
             .add(1);
-        },
+        }),
         color: 'ach',
         type: 'pow'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return Decimal.gte(player.value.gameProgress.main.oneUpgrades[19], 1);
-        },
+        }),
         active: true,
-        name: 'One Upgrade #20',
-        get effect() {
+        name: computed(() => { return 'One Upgrade #20'; }),
+        effect: computed(() => {
             return MAIN_ONE_UPGS[19].effect.value;
-        },
+        }),
         color: 'norm',
         type: 'pow'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return inChallenge("im");
-        },
+        }),
         active: true,
-        get name() {
+        name: computed(() => {
             return `Inverted Mechanics ×${format(challengeDepth("im"))}`;
-        },
-        get effect() {
+        }),
+        effect: computed(() => {
             return Decimal.pow(0.8, challengeDepth("im"));
-        },
+        }),
         color: 'col',
         type: 'pow'
     },
@@ -1456,8 +1456,8 @@ function calcPPS(): Decimal {
     let pps = D(1), eff, txt;
 
     for (let i = 0; i < PPS_CALC.length; i++) {
-        PPS_CALC[i].active = PPS_CALC[i].baseActive;
-        if (inChallenge("su") && !(i >= 0 && i <= 6 || PPS_CALC[i].name === 'Dotgenous')) {
+        PPS_CALC[i].active = PPS_CALC[i].baseActive.value;
+        if (inChallenge("su") && !(i >= 0 && i <= 6 || PPS_CALC[i].name.value === 'Dotgenous')) {
             PPS_CALC[i].active = false;
         }
         if (inChallenge("im") && !(i === 2 || i === 4)) {
@@ -1466,10 +1466,10 @@ function calcPPS(): Decimal {
 
         txt = '';
         if (PPS_CALC[i].active) {
-            eff = PPS_CALC[i].effect;
+            eff = PPS_CALC[i].effect.value;
 
             if (PPS_CALC[i].type === 'mult') {
-                if (inChallenge('dc') && PPS_CALC[i].name !== 'Upgrade 1') {
+                if (inChallenge('dc') && PPS_CALC[i].name.value !== 'Upgrade 1') {
                     eff = eff.max(1).log10().add(1).pow(0.5).sub(1).pow10();
                 }
 
@@ -1481,7 +1481,7 @@ function calcPPS(): Decimal {
                 txt = `^${format(eff, 3)}`;
             }
         }
-        setFactor(i, [0], PPS_CALC[i].name, txt, `${format(pps, 1)}`, PPS_CALC[i].active, PPS_CALC[i].color);
+        setFactor(i, [0], PPS_CALC[i].name.value, txt, `${format(pps, 1)}`, PPS_CALC[i].active, PPS_CALC[i].color);
     }
 
     NaNCheck(pps, 'PPS was NaN!');

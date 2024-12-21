@@ -114,124 +114,124 @@ export const PR2_EFF = [
 
 export const PRAI_GAIN_CALC: Array<TrueFactor> = [
     {
-        baseActive: true,
+        baseActive: computed(() => { return true; }),
         active: true,
-        name: 'Base',
-        get effect() {
+        name: computed(() => { return 'Base'; }),
+        effect: computed(() => {
             return Decimal.max(player.value.gameProgress.main.totals[0]!, 0).div(tmp.value.main.prai.req).pow(tmp.value.main.prai.gainExp).sub(1).mul(tmp.value.main.prai.gainExp).add(1).log10().pow(0.9).pow10();
-        },
+        }),
         color: 'norm',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return player.value.gameProgress.unlocks.pr2;
-        },
+        }),
         active: true,
-        name: 'PR2',
-        get effect() {
+        name: computed(() => { return 'PR2'; }),
+        effect: computed(() => {
             return tmp.value.main.pr2.effActive ? tmp.value.main.pr2.effect : D(1);
-        },
+        }),
         color: 'norm',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return Decimal.gte(player.value.gameProgress.main.oneUpgrades[3], 1);
-        },
+        }),
         active: true,
-        name: 'One Upgrade #4',
-        get effect() {
+        name: computed(() => { return 'One Upgrade #4'; }),
+        effect: computed(() => {
             return MAIN_ONE_UPGS[3].effect.value;
-        },
+        }),
         color: 'norm',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return Decimal.gt(player.value.gameProgress.kua.kshards.amount, 0);
-        },
+        }),
         active: true,
-        name: 'KShard Base Effect',
-        get effect() {
+        name: computed(() => { return 'KShard Base Effect'; }),
+        effect: computed(() => {
             return tmp.value.kua.effects.kshardPassive;
-        },
+        }),
         color: 'kua',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return getKuaUpgrade("s", 8);
-        },
+        }),
         active: true,
-        name: 'KShard Upgrade 8',
-        get effect() {
+        name: computed(() => { return 'KShard Upgrade 8'; }),
+        effect: computed(() => {
             return KUA_UPGRADES.KShards[7].eff!;
-        },
+        }),
         color: 'kua',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return ifAchievement(1, 11);
-        },
+        }),
         active: true,
-        name: 'Achievement ID (1, 11)',
-        get effect() {
+        name: computed(() => { return 'Achievement ID (1, 11)'; }),
+        effect: computed(() => {
             return getAchievementEffect(1, 11);
-        },
+        }),
         color: 'ach',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return ifAchievement(2, 1);
-        },
+        }),
         active: true,
-        name: 'Achievement ID (2, 1)',
-        get effect() {
+        name: computed(() => { return 'Achievement ID (2, 1)'; }),
+        effect: computed(() => {
             return D(5);
-        },
+        }),
         color: 'ach',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return Decimal.gte(getColResEffect(1), 1);
-        },
+        }),
         active: true,
-        name: 'Firsterious',
-        get effect() {
+        name: computed(() => { return 'Firsterious'; }),
+        effect: computed(() => {
             return getColResEffect(1);
-        },
+        }),
         color: 'col',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return Decimal.gte(timesCompleted("df"), 1);
-        },
+        }),
         active: true,
-        get name() {
+        name: computed(() => {
             return `Decaying Feeling Completion ×${format(timesCompleted('df'))}`;
-        },
-        get effect() {
+        }),
+        effect: computed(() => {
             return D(10);
-        },
+        }),
         color: 'col',
         type: 'mult'
     },
     {
-        get baseActive() {
+        baseActive: computed(() => {
             return inChallenge("im");
-        },
+        }),
         active: true,
-        get name() {
+        name: computed(() => {
             return `Inverted Mechanics ×${format(challengeDepth("im"))}`;
-        },
-        get effect() {
+        }),
+        effect: computed(() => {
             return Decimal.pow(0.8, challengeDepth("im"));
-        },
+        }),
         color: 'col',
         type: 'pow'
     },
@@ -637,14 +637,14 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 i = D(1);
 
                 for (let j = 0; j < PRAI_GAIN_CALC.length; j++) {
-                    PRAI_GAIN_CALC[j].active = PRAI_GAIN_CALC[j].baseActive;
+                    PRAI_GAIN_CALC[j].active = PRAI_GAIN_CALC[j].baseActive.value;
 
                     txt = '';
                     if (PRAI_GAIN_CALC[j].active) {
-                        eff = PRAI_GAIN_CALC[j].effect;
+                        eff = PRAI_GAIN_CALC[j].effect.value;
 
                         if (PRAI_GAIN_CALC[j].type === 'mult') {
-                            if (inChallenge('dc') && PRAI_GAIN_CALC[j].name !== 'Base') {
+                            if (inChallenge('dc') && PRAI_GAIN_CALC[j].name.value !== 'Base') {
                                 eff = eff.max(1).log10().add(1).pow(0.5).sub(1).pow10();
                             }
                             i = i.mul(eff);
@@ -656,10 +656,10 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                         }
                     }
 
-                    if (PRAI_GAIN_CALC[j].name === 'Base') {
+                    if (PRAI_GAIN_CALC[j].name.value === 'Base') {
                         txt = `(1+${format(tmp.value.main.prai.gainExp, 3)}(${format(player.value.gameProgress.main.totals[0]!)}/${format(tmp.value.main.prai.req)})^${format(tmp.value.main.prai.gainExp, 3)}-1) dilate ${format(0.9, 2)}`;
                     }
-                    setFactor(j, [2, 0], PRAI_GAIN_CALC[j].name, txt, `${format(i, 1)}`, PRAI_GAIN_CALC[j].active, PRAI_GAIN_CALC[j].color);
+                    setFactor(j, [2, 0], PRAI_GAIN_CALC[j].name.value, txt, `${format(i, 1)}`, PRAI_GAIN_CALC[j].active, PRAI_GAIN_CALC[j].color);
                 }
 
                 const data = {

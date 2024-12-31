@@ -3,7 +3,7 @@ import { tab } from "@/main";
 import { tmp, player } from "@/main";
 import { format } from "@/format";
 import { switchSubTab } from "@/components/MainTabs/MainTabs";
-import { buyGroEqu, buyGroTick, buyMaxAllGroEqu, GROWAN_DATA } from "./Game_Growan";
+import { buyGroEqu, buyGroEquCancel, buyGroTick, buyMaxAllGroEqu, GROWAN_DATA } from "./Game_Growan";
 import Decimal from "break_eternity.js";
 import { resetStage } from "@/resets";
 </script>
@@ -53,6 +53,10 @@ import { resetStage } from "@/resets";
                         </button>
                     </div>
                 </div>
+                <button @click="buyGroEquCancel()" v-if="Decimal.gte(player.gameProgress.layer4.gro.growanEqu[3].bought, 1) || Decimal.gte(player.gameProgress.layer4.gro.equCancel, 1)" class="whiteText smallGroBorder groButton fontVerdana" :class="{ nope: Decimal.lt(player.gameProgress.layer4.gro.growanEqu[Decimal.add(player.gameProgress.layer4.gro.equCancel, 3).min(7).toNumber()].bought, GROWAN_DATA.equCancel.cost.value), ok: Decimal.gte(player.gameProgress.layer4.gro.growanEqu[Decimal.add(player.gameProgress.layer4.gro.equCancel, 3).min(7).toNumber()].bought, GROWAN_DATA.equCancel.cost.value) }" style="font-size: 0.8vw; height: 3vw; width: 50vw; margin-left: auto; margin-right: auto; text-align: center; margin-top: 1.0vw">
+                    Decrease Grōwan Equation {{ Decimal.gt(player.gameProgress.layer4.gro.equCancel, 0) ? `1-${new Decimal(player.gameProgress.layer4.gro.equCancel).min(7).toNumber() + 1}` : '1' }} costs<span v-if="Decimal.lt(player.gameProgress.layer4.gro.equCancel, 4)">, and decrease Grōwan Equation {{ format(Decimal.add(player.gameProgress.layer4.gro.equCancel, 5)) }}'s cost greatly.</span><br>
+                    Cost: {{ format(GROWAN_DATA.equCancel.cost.value) }} Grōwan Equation {{ format(Decimal.add(player.gameProgress.layer4.gro.equCancel, 4).min(8)) }}
+                </button>
             </div>
             <!-- <div
                 class="flex-container"

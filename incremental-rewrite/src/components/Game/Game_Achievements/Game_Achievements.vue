@@ -23,13 +23,13 @@ import {
                         align-items: center;
                     "
                     :style="{
-                        border: `0.2vw solid ${player.gameProgress.achievements[index].length >= item.list.length ? ACH_DEF_COLORS[item.type].complete : mixColor(ACH_DEF_COLORS[item.type].unable, ACH_DEF_COLORS[item.type].canComplete, 'Linear', player.gameProgress.achievements[index].length / item.list.length)}`,
+                        border: `0.2vw solid ${player.gameProgress.achievements[index].length >= item.list.length ? ACH_DEF_COLORS[item.type].complete.value : mixColor(ACH_DEF_COLORS[item.type].unable.value, ACH_DEF_COLORS[item.type].canComplete.value, 'Linear', player.gameProgress.achievements[index].length / item.list.length)}`,
                         backgroundColor: colorChange(
                             player.gameProgress.achievements[index].length >= item.list.length
-                                ? ACH_DEF_COLORS[item.type].complete
+                                ? ACH_DEF_COLORS[item.type].complete.value
                                 : mixColor(
-                                        ACH_DEF_COLORS[item.type].unable,
-                                        ACH_DEF_COLORS[item.type].canComplete,
+                                        ACH_DEF_COLORS[item.type].unable.value,
+                                        ACH_DEF_COLORS[item.type].canComplete.value,
                                         'Linear',
                                         player.gameProgress.achievements[index].length / item.list.length
                                     ),
@@ -60,7 +60,7 @@ import {
                                                 : item.list[item2].status.value === true
                                                     ? 'canComplete'
                                                     : 'unable'
-                                        ],
+                                        ].value,
                                     border: `0.18vw solid ${colorChange(
                                         ACH_DEF_COLORS[Ach_Types_List[index]][
                                             ifAchievement(index, item2)
@@ -68,7 +68,7 @@ import {
                                                 : item.list[item2].status.value === true
                                                     ? 'canComplete'
                                                     : 'unable'
-                                        ],
+                                        ].value,
                                         0.5,
                                         1
                                     )}`,
@@ -94,7 +94,7 @@ import {
                                                         : item.list[item2].status.value === true
                                                             ? 'canComplete'
                                                             : 'unable'
-                                                ],
+                                                ].value,
                                                 0.25,
                                                 1
                                             )
@@ -116,7 +116,7 @@ import {
                                             ? ""
                                             : `Reward: ${item.list[item2].reward.value}`
                                     }}
-                                    <span :style="{ color: colorChange(ACH_DEF_COLORS[Ach_Types_List[index]].unable, 1.0, 0.5) }"  v-if="item.list[item2].status.value !== true && !ifAchievement(index, item2)"><br>{{ item.list[item2].status }}</span >
+                                    <span :style="{ color: colorChange(ACH_DEF_COLORS[Ach_Types_List[index]].unable.value, 1.0, 0.5) }"  v-if="item.list[item2].status.value !== true && !ifAchievement(index, item2)"><br>{{ item.list[item2].status }}</span >
                                     <span style="font-size: 0.6vw; color: #ccc" v-if="item.list[item2].extra" ><br>{{ item.list[item2].extra }}</span >
                                 </span>
                             </div>

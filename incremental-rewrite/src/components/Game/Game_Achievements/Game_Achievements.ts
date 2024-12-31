@@ -1,36 +1,36 @@
 import Decimal from "break_eternity.js";
 import { format, formatPerc, formatTime } from "@/format";
-import { player, tmp } from "@/main";
-import { D } from "@/calc";
+import { gameVars, player, tmp } from "@/main";
+import { colorChange, D, mixColor } from "@/calc";
 import { spawnPopup } from "@/popups";
 import { challengeDepth, inChallenge, timesCompleted } from "../Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
 import { getColResLevel } from "../Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
 import { getKuaUpgrade } from "../Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
 import { computed, type ComputedRef } from "vue";
 
-export type Ach_Types = "main" | "kua" | "col" |"tax";
-export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "tax"];
+export type Ach_Types = "main" | "kua" | "col" | "l4";
+export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "l4"];
 
 export const ACH_DEF_COLORS = {
     main: {
-        unable: "#ff3333",
-        canComplete: "#aaaaaa",
-        complete: "#19ff33"
+        unable: computed(() => { return "#ff3333"; }),
+        canComplete: computed(() => { return "#aaaaaa"; }),
+        complete: computed(() => { return "#19ff33"; })
     },
     kua: {
-        unable: "#1f0099",
-        canComplete: "#400077",
-        complete: "#a019ff"
+        unable: computed(() => { return "#1f0099"; }),
+        canComplete: computed(() => { return "#400077"; }),
+        complete: computed(() => { return "#a019ff"; })
     },
     col: {
-        unable: "#500000",
-        canComplete: "#771500",
-        complete: "#ff2300"
+        unable: computed(() => { return "#500000"; }),
+        canComplete: computed(() => { return "#771500"; }),
+        complete: computed(() => { return "#ff2300"; })
     },
-    tax: {
-        unable: "#807000",
-        canComplete: "#a06500",
-        complete: "#d5c000"
+    l4: {
+        unable: computed(() => { return colorChange(mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2), 0.75, 0.5); }),
+        canComplete: computed(() => { return colorChange(mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2), 0.75, 1.0); }),
+        complete: computed(() => { return mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2); })
     }
 };
 
@@ -1446,38 +1446,38 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             return eff;
         })
     },
-    // {
-    //     type: "tax",
-    //     show: computed(() => {
-    //         return player.value.gameProgress.unlocks.tax;
-    //     }),
-    //     list: [
-    //         {
-    //             // id: 0
-    //             ordering: 0,
-    //             name: computed(() => {
-    //                 return `The same issue as before, why so little of it?!`;
-    //             }),
-    //             desc: computed(() => {
-    //                 return `Obtain at least ${format(1)} KBlessing.`;
-    //             }),
-    //             cond: computed(() => {
-    //                 return Decimal.gte(player.value.gameProgress.kua.blessings.amount, 1);
-    //             }),
-    //             reward: computed(() => { return ``; }),
-    //             show: computed(() => { return true; }),
-    //             status: computed(() => { return true; })
-    //         },
-    //     ],
-    //     rewAll: computed(() => {
-    //         return `KBlessings gain is increased by ${format(this.eff.sub(1).mul(100), 2)}%. (×1.051 per KB achievement)`;
-    //     }),
-    //     eff: computed(() => {
-    //         let eff = D(1.05);
-    //      )   eff = Decimal.pow(eff, player.value.gameProgress.achievements[3].length);
-    //         return eff;
-    //     }
-    // }
+    {
+        type: "l4",
+        show: computed(() => {
+            return player.value.gameProgress.layer4.timeInL4R !== 0;
+        }),
+        list: [
+            {
+                // id: 0
+                ordering: 0,
+                name: computed(() => {
+                    return `Antimatter dimensions ripoff real`;
+                }),
+                desc: computed(() => {
+                    return `Gain at least ${format(1e12)} Grōwan Solutions.`;
+                }),
+                cond: computed(() => {
+                    return Decimal.gte(player.value.gameProgress.layer4.gro.gEAmount, 1e12);
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => { return player.value.gameProgress.layer4.timeInL4R === 1; }),
+                status: computed(() => { return true; })
+            },
+        ],
+        rewAll: computed(() => {
+            return `KBlessings gain is increased by ${format(ACHIEVEMENT_DATA[3].eff.value.sub(1).mul(100), 2)}%. (×1.05 per Layer 4 achievement)`;
+        }),
+        eff: computed(() => {
+            let eff = D(1.05);
+            eff = Decimal.pow(eff, player.value.gameProgress.achievements[3].length);
+            return eff;
+        })
+    }
 ];
 
 export const setAchievement = (type: number, id: number) => {

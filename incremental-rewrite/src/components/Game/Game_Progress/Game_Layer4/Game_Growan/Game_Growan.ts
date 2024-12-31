@@ -214,10 +214,14 @@ export const GROWAN_DATA = {
             i = doAllScaling(i, getSCSLAttribute('gtick', true), true);
             return i;
         }),
+        effPer: computed(() => {
+            let i = D(1.11);
+            i = i.pow(GROWAN_DATA.gal.eff.value);
+            return i;
+        }),
         eff: computed(() => {
             let i = player.value.gameProgress.layer4.gro.tick
-            i = Decimal.pow(1.11, i);
-            i = i.pow(GROWAN_DATA.gal.eff.value);
+            i = Decimal.pow(GROWAN_DATA.tick.effPer.value, i);
             return i;
         })
     },
@@ -225,14 +229,14 @@ export const GROWAN_DATA = {
         cost: computed(() => {
             let i = player.value.gameProgress.layer4.gro.equCancel;
             i = doAllScaling(i, getSCSLAttribute('ec', true), false);
-            i = i.mul(25);
-            i = i.add(40);
+            i = i.mul(2.5);
+            i = i.add(4);
             return i;
         }),
         target: computed(() => {
             let i = player.value.gameProgress.layer4.gro.growanEqu[7].bought;
-            i = Decimal.sub(i, 40);
-            i = i.div(25);
+            i = Decimal.sub(i, 4);
+            i = i.div(2.5);
             i = doAllScaling(i, getSCSLAttribute('ec', true), true);
             return i;
         }),
@@ -244,16 +248,16 @@ export const GROWAN_DATA = {
     gal: {
         cost: computed(() => {
             let i = player.value.gameProgress.layer4.gro.gal;
-            i = smoothExp(Decimal.pow(i, 0.5), 1.05, false).pow(2).mul(55).add(70);
+            i = smoothExp(Decimal.pow(i, 0.5), 1.05, false).pow(2).mul(5.5).add(7);
             return i;
         }),
         target: computed(() => {
             let i = player.value.gameProgress.layer4.gro.growanEqu[7].bought;
-            if (Decimal.lt(i, 70)) {
+            if (Decimal.lt(i, 7)) {
                 return D(-1);
             }
-            i = Decimal.sub(i, 70);
-            i = i.div(55);
+            i = Decimal.sub(i, 7);
+            i = i.div(5.5);
             i = smoothExp(i.root(2), 1.05, true).root(0.5);
             return i;
         }),
@@ -262,5 +266,38 @@ export const GROWAN_DATA = {
             i = Decimal.div(i, 8).add(1);
             return i;
         })
+    }
+}
+
+export const buyGroEqu = (index: number, max = false) => {
+    if (Decimal.gte(player.value.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.equ.list[index].cost.value)) {
+        if (max) {
+            player.value.gameProgress.layer4.gro.growanEqu[index].bought = Decimal.max(player.value.gameProgress.layer4.gro.growanEqu[index].bought, GROWAN_DATA.equ.list[index].target.value.floor());
+            player.value.gameProgress.layer4.gro.gEAmount = Decimal.sub(player.value.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.equ.list[index].cost.value);
+            player.value.gameProgress.layer4.gro.growanEqu[index].bought = Decimal.add(player.value.gameProgress.layer4.gro.growanEqu[index].bought, 1);
+        } else {
+            player.value.gameProgress.layer4.gro.gEAmount = Decimal.sub(player.value.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.equ.list[index].cost.value);
+            player.value.gameProgress.layer4.gro.growanEqu[index].bought = Decimal.add(player.value.gameProgress.layer4.gro.growanEqu[index].bought, 1);
+        }
+    }
+}
+
+export const buyMaxAllGroEqu = () => {
+    buyGroTick(true);
+    for (let i = 7; i >= 0; i--) {
+        buyGroEqu(i, true);
+    }
+}
+
+export const buyGroTick = (max = false) => {
+    if (Decimal.gte(player.value.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.tick.cost.value)) {
+        if (max) {
+            player.value.gameProgress.layer4.gro.tick = Decimal.max(player.value.gameProgress.layer4.gro.tick, GROWAN_DATA.tick.target.value.floor());
+            player.value.gameProgress.layer4.gro.gEAmount = Decimal.sub(player.value.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.tick.cost.value);
+            player.value.gameProgress.layer4.gro.tick = Decimal.add(player.value.gameProgress.layer4.gro.tick, 1);
+        } else {
+            player.value.gameProgress.layer4.gro.gEAmount = Decimal.sub(player.value.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.tick.cost.value);
+            player.value.gameProgress.layer4.gro.tick = Decimal.add(player.value.gameProgress.layer4.gro.tick, 1);
+        }
     }
 }

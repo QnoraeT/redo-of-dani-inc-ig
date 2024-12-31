@@ -47,7 +47,8 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             player.value.gameProgress.layer4.gro.bestEver = Decimal.max(player.value.gameProgress.layer4.gro.bestEver, player.value.gameProgress.layer4.gro.totalAmt);
 
             i = D(1);
-            i = i.mul(GROWAN_DATA.equ.list[0].mult.value.mul(Decimal.mul(player.value.gameProgress.layer4.gro.growanEqu[0].bought, 10).add(player.value.gameProgress.layer4.gro.growanEqu[0].accumulated)));
+            i = i.mul(GROWAN_DATA.equ.list[0].mult.value.mul(Decimal.add(player.value.gameProgress.layer4.gro.growanEqu[0].bought, player.value.gameProgress.layer4.gro.growanEqu[0].accumulated)));
+            i = i.add(tmp.value.layer4.growan.eff.groMult);
             generate = i.mul(delta);
 
             player.value.gameProgress.layer4.gro.gEAmount = Decimal.add(player.value.gameProgress.layer4.gro.gEAmount, generate);
@@ -59,7 +60,7 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
 
             for (i = 7; i >= 1; i--) {
                 generate = D(1);
-                generate = generate.mul(GROWAN_DATA.equ.list[i].mult.value.mul(Decimal.mul(player.value.gameProgress.layer4.gro.growanEqu[i].bought, 10).add(player.value.gameProgress.layer4.gro.growanEqu[i].accumulated)));
+                generate = generate.mul(GROWAN_DATA.equ.list[i].mult.value.mul(Decimal.add(player.value.gameProgress.layer4.gro.growanEqu[i].bought, player.value.gameProgress.layer4.gro.growanEqu[i].accumulated)));
                 generate = generate.mul(delta);
                 player.value.gameProgress.layer4.gro.growanEqu[i - 1].accumulated = Decimal.add(player.value.gameProgress.layer4.gro.growanEqu[i - 1].accumulated, generate);
             }

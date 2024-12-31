@@ -13,6 +13,10 @@ import { KUA_BLESS_UPGS } from "./components/Game/Game_Progress/Game_Kuaraniai/G
 import { updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { getStrangeKPExp } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofStrange/Game_KuaProofStrange";
 import { getFinickyKPExp, getFinickyKPExpGain, getFinickySeconds } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofFinicky/Game_KuaProofFinicky";
+import { MAIN_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
+import { updateAllLayer4 } from "./components/Game/Game_Progress/Game_Layer4/Game_Layer4";
+import { COL_RESEARCH } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
+import { COL_CHALLENGES, type challengeIDList } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalData";
 
 
 export const resetTotalBestArray = (
@@ -81,8 +85,37 @@ export const resetStage = (resets: "prai" | "pr2" | "kua" | "col" | "tax" | "gro
             // there isn't anything to gain directly by doing a col reset
             reset(3);
             break;
+        case "growan":
+            if (tmp.value.layer4.growan.canDo || override) {
+                if (!override) {
+                    player.value.gameProgress.layer4.gro.totalAmt = Decimal.add(player.value.gameProgress.layer4.gro.totalAmt, tmp.value.layer4.growan.pending);
+                    player.value.gameProgress.layer4.gro.amount = Decimal.add(player.value.gameProgress.layer4.gro.amount, tmp.value.layer4.growan.pending);
+
+                    player.value.gameProgress.layer4.timeInL4R = D(0);
+                    if (player.value.gameProgress.layer4.pickedFirst === 0) {
+                        player.value.gameProgress.layer4.pickedFirst = 1;
+                    }
+                }
+
+                reset(4);
+            }
+            break;
         default:
             throw new Error(`uhh i don't think ${resets} is resettable`);
+    }
+
+    const len = {
+        prai: 0,
+        pr2: 1,
+        kua: 2,
+        col: 3,
+        tax: 4,
+        growan: 4
+    }[resets]
+    for (let j = len; j >= 0; j--) {
+        for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
+            player.value.gameProgress.main.upgrades[i].boughtInReset[j] = D(0);
+        }
     }
 }
 
@@ -98,6 +131,8 @@ export const reset = (layer: number) => {
 
             for (let j = 0; j < 3; j++) {
                 player.value.gameProgress.main.upgrades[j].bought = D(0);
+            }
+            for (let j = 0; j < MAIN_UPGS.length; j++) {
                 player.value.gameProgress.main.upgrades[j].accumulated = D(0);
             }
             break;
@@ -126,13 +161,13 @@ export const reset = (layer: number) => {
             player.value.gameProgress.kua.kpower.amount = D(0);
             player.value.gameProgress.kua.kpower.upgrades = 0;
             player.value.gameProgress.main.pr2.amount = D(0);
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i < MAIN_UPGS.length; i++) {
                 player.value.gameProgress.main.upgrades[i].auto = false;
             }
             player.value.gameProgress.main.prai.auto = false;
             player.value.gameProgress.kua.auto = false;
 
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i < MAIN_UPGS.length; i++) {
                 player.value.gameProgress.main.upgrades[i].bought = D(0);
                 player.value.gameProgress.main.upgrades[i].boughtInReset[3] = D(0);
             }
@@ -185,31 +220,25 @@ export const reset = (layer: number) => {
                 }
             }
             break;
-        // case 4:
-        //     if (tmp.value.tax.canDo || override) {
-        //         if (!override) {
-        //             player.value.gameProgress.tax.amount = Decimal.add(player.value.gameProgress.tax.amount, tmp.value.tax.pending);
-        //             player.value.gameProgress.tax.times = Decimal.add(player.value.gameProgress.tax.times, 1);
-        //         }
+        case 4:
+            // TODO: add an extra setting where col power and time do not reset on layer 1+ col challenges
+            // both colPower and colTime
+            // colTime should automatically exit all challenges
+            player.value.gameProgress.col.power = D(0);
+            player.value.gameProgress.col.time = D(0);
 
-        //         player.value.gameProgress.col.power = D(0);
-        //         player.value.gameProgress.col.time = D(0);
-        //         for (const i in COL_CHALLENGES) {
-        //             player.value.gameProgress.col.completed[i as challengeIDList] = D(0);
-        //         }
-        //         for (let i = 0; i < COL_RESEARCH.length; i++) {
-        //             player.value.gameProgress.col.research.xpTotal[i] = D(0);
-        //             player.value.gameProgress.col.research.enabled[i] = false;
-        //         }
-        //         updateAllCol(0);
-        //     }
-        //     break;
+            for (const i in COL_CHALLENGES) {
+                if (COL_CHALLENGES[i as challengeIDList].layer === 0) {
+                    player.value.gameProgress.col.completed[i as challengeIDList] = D(0);
+                }
+            }
+            for (let i = 0; i < COL_RESEARCH.length; i++) {
+                player.value.gameProgress.col.research.xpTotal[i] = D(0);
+                player.value.gameProgress.col.research.enabled[i] = false;
+            }
+            break;
         default:
             throw new Error(`uhh i don't think ${layer} is resettable`);
-    }
-
-    for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
-        player.value.gameProgress.main.upgrades[i].boughtInReset[layer] = D(0);
     }
 
     resetTotalBestArray(player.value.gameProgress.main.totals, D(0), layer);
@@ -232,7 +261,7 @@ export const reset = (layer: number) => {
     resetTotalBestArray(player.value.gameProgress.col.best, D(0), layer);
     resetTotalBestArray(player.value.gameProgress.col.totals, D(0), layer);
 
-    for (let i = 0; i < 2; i++) {
+    // for (let i = 0; i < 2; i++) {
         switch (layer) {
             case 0:
                 updateAllStart(0);
@@ -246,10 +275,13 @@ export const reset = (layer: number) => {
             case 3:
                 updateAllCol(0);
                 break;
+            case 4:
+                updateAllLayer4(0);
+                break;
             default:
                 throw new Error(`uhh i don't think ${layer} is resettable`);
         }
-    }
+    // }
 
     reset(layer - 1);
 };
@@ -319,7 +351,7 @@ export const resetFromFKP = (reset = true, addTimes: boolean, addExp: boolean, d
     if (reset) {
         delta = D(1);
     }
-    if (Decimal.gte(player.value.gameProgress.kua.proofs.strange.amount, 1e10) && (Decimal.lt(player.value.gameProgress.kua.proofs.finicky.cooldown, 0) || !reset)) {
+    if (Decimal.gte(player.value.gameProgress.kua.proofs.strange.amount, 1e7) && (Decimal.lt(player.value.gameProgress.kua.proofs.finicky.cooldown, 0) || !reset)) {
         if (reset) { player.value.gameProgress.kua.proofs.finicky.cooldown = 1; }
         if (addExp) {
             player.value.gameProgress.kua.proofs.finicky.hiddenExp = Decimal.add(player.value.gameProgress.kua.proofs.finicky.hiddenExp, getFinickyKPExpGain(player.value.gameProgress.kua.proofs.strange.amount).mul(delta));

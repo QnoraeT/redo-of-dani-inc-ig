@@ -20,11 +20,13 @@ export const getColChalCondEffects = (id: challengeIDList) => {
 }
 
 export const getColChalRewEffects = (id: challengeIDList) => {
-    return COL_CHALLENGES[id].type1ChalEff![new Decimal(timesCompleted(id)).max(0).toNumber()]
+    return COL_CHALLENGES[id].type === 3
+        ? COL_CHALLENGES[id].type3ChalEff!(Decimal.sub(timesCompleted(id), 1))
+        : COL_CHALLENGES[id].type1ChalEff![new Decimal(timesCompleted(id)).max(0).toNumber()]
 }
 
 export const getColChalCondEffectsDec = (id: challengeIDList) => {
-    return COL_CHALLENGES[id].type1ChalCond!
+    return COL_CHALLENGES[id].type1ChalCond!;
 }
 
 export const getColChalSelectedRew = (id: challengeIDList, which: number) => {

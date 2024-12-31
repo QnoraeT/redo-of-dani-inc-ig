@@ -8,7 +8,7 @@ import Game_Stats from "./components/Game/Game_Stats/Game_Stats.vue";
 import Game_Achievements from "./components/Game/Game_Achievements/Game_Achievements.vue";
 import Game_Kuaraniai from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai.vue";
 import Game_Colosseum from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum.vue";
-import Game_Taxation from "./components/Game/Game_Progress/Game_Taxation/Game_Taxation.vue";
+import Game_Layer4 from "./components/Game/Game_Progress/Game_Layer4/Game_Layer4.vue";
 import { popupList } from "./popups";
 import { colorChange, gRC } from "./calc";
 import { getSCSLAttribute } from "./softcapScaling";
@@ -24,13 +24,19 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
             <div style="flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana">
                 {{ format(player.gameProgress.main.points) }} Points
             </div>
-            <div style="flex-grow: 1; flex-basis: 0; text-align: center; text-shadow: #ffff00 0vw 0vw 0.18vw;" class="mediumBigText yellowText fontVerdana">
+            <div style="flex-grow: 0.5; flex-basis: 0; text-align: center; text-shadow: #ffff00 0vw 0vw 0.18vw;" class="mediumBigText yellowText fontVerdana">
                 FPS: {{ gameVars.displayedFPS }}
             </div>
             <div style="flex-grow: 1; flex-basis: 0; text-align: right; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana">
                 {{ `${tmp.main.ppsNullified ? '~' : ''}${format(tmp.main.pps, 1)}` }}/s
             </div>
         </div>
+        <div class="flex-container" v-if="tmp.gameIsRunning">
+            <div style="font-size: 1.0vw" class="whiteText grayShadow fontVerdana">
+                Time since last save: {{ formatTime(gameVars.sessionTime - gameVars.lastSave) }}
+            </div>
+        </div>
+        
         <div class="flex-container" style="background-color: #ffffff20" v-if="!tmp.gameIsRunning">
             <div style="flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana">
                 Loading...
@@ -53,36 +59,80 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
                 You have <b>{{ formatTime(player.gameProgress.col.time, 3) }}</b> left within these
                 challenges:
             </span>
+            <div v-if="player.gameProgress.col.inAChallenge" style="height: 1.0vw; width: 40vw; position: relative; margin-left: auto; margin-right: auto; margin-bottom: 1vw;">
+                    <!-- does nothing, is actually the base of the bar -->
+                    <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
+                    :style="{
+                        backgroundColor: player.gameProgress.col.completedAll ? '#001452' : '#521400'
+                    }"></div>
+                    <div
+                        :style="{
+                            backgroundColor: player.gameProgress.col.completedAll ? '#0080FF' : '#FF4000',
+                            width: `${
+                                100 * Decimal.sub(1, Decimal.div(player.gameProgress.col.time, player.gameProgress.col.maxTime)).toNumber()
+                            }%`
+                        }"
+                        style="position: absolute; top: 0; left: 0; height: 100%"
+                    ></div>
+                </div>
             <div
                 v-for="(item, index) in player.gameProgress.inChallenge"
-                :key="item.id"
-                style="text-align: center"
+                :key="index"
+                class="flex-container"
+                style="align-items: center; flex-direction: column; text-align: center"
                 :style="{
                     color: gRC(
                         2 * COL_CHALLENGES[index].progress.value.toNumber() +
-                            (COL_CHALLENGES[index].canComplete ? 1.5 : 0.0),
+                            (COL_CHALLENGES[index].canComplete.value ? 1.5 : 0.0),
                         1.0,
                         1.0
                     )
                 }"
             >
-                <span v-if="player.gameProgress.inChallenge[index].overall" class="fontVerdana" style="font-size: 1.07vw; margin: 0vw">
+                <span v-if="item.overall" class="fontVerdana" style="font-size: 1.07vw; margin: 0vw">
                     {{
                         item.name +
-                        (Decimal.gt(player.gameProgress.inChallenge[index].depths, 1)
-                            ? ` ×${format(player.gameProgress.inChallenge[index].depths)}`
+                        (Decimal.gt(item.depths, 1)
+                            ? ` ×${format(item.depths)}`
                             : "")
                     }}{{
-                        player.gameProgress.inChallenge[index].overall
-                            ? `: ${COL_CHALLENGES[index].progDisplay}`
+                        item.overall
+                            ? `: ${COL_CHALLENGES[index].progDisplay.value}`
                             : ""
                     }}
                 </span>
+                <div v-if="item.overall" style="height: 0.6vw; width: 25vw; position: relative">
+                    <!-- does nothing, is actually the base of the bar -->
+                    <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
+                    :style="{
+                            backgroundColor: gRC(
+                                2 * COL_CHALLENGES[index].progress.value.toNumber() +
+                                    (COL_CHALLENGES[index].canComplete.value ? 1.5 : 0.0),
+                                0.35,
+                                1.0
+                            )
+                            }"
+                    ></div>
+                    <div
+                        :style="{
+                            backgroundColor: gRC(
+                                2 * COL_CHALLENGES[index].progress.value.toNumber() +
+                                    (COL_CHALLENGES[index].canComplete.value ? 1.5 : 0.0),
+                                1.0,
+                                1.0
+                            ),
+                            width: `${
+                                100 * COL_CHALLENGES[index].progress.value.toNumber()
+                            }%`
+                        }"
+                        style="position: absolute; top: 0; left: 0; height: 100%"
+                    ></div>
+                </div>
             </div>
         </div>
         <div class="flex-container" style="flex-direction: column; align-items: center; margin-top: 0.5vw; margin-bottom: 0.5vw;">
             <div v-for="(item, index) in NEXT_UNLOCKS" :key="index" :style="{ color: item.color.value }">
-                <span v-if="item.shown && !item.done" style="font-size: 1.2vw; text-align: center" class="fontVerdana">
+                <span v-if="item.shown.value && !item.done.value" style="font-size: 1.2vw; text-align: center" class="fontVerdana">
                     You must reach <span style="font-size: 1.6vw" ><b>{{ item.dispPart1 }}</b></span> {{ item.dispPart2 }}
                 </span>
             </div>
@@ -95,6 +145,6 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
         <Game_Achievements />
         <Game_Kuaraniai />
         <Game_Colosseum />
-        <Game_Taxation />
+        <Game_Layer4 />
     </div>
 </template>

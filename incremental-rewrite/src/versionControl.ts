@@ -1,6 +1,7 @@
 import { makeChallengeInfo, type Player } from "./main";
 import { D } from "./calc";
 import Decimal from "break_eternity.js";
+import { initGroEquations } from "./components/Game/Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 
 export const updatePlayerData = (player: Player): Player => {
     player.version = player.version || -1;
@@ -604,14 +605,151 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 39;
     }
     if (player.version === 39) {
+        if ('tax' in player.gameProgress) {
+            delete player.gameProgress.tax
+        }
 
-        // player.displayVersion = 'v1.1.5.3 - Dec-15-2024';
-        // player.version = 40;
+        player.gameProgress.layer4 = {
+            timeInL4R: D(0),
+            pickedFirst: 0, // gro = false, tax = true
+            gro: {
+                best: [null, null, null, null, null],
+                bestEver: D(0),
+                totalAmt: D(0),
+                amount: D(0),
+                auto: false,
+                upgrades: [0, 0, 0],
+                gEAmount: D(0),
+                groAmountStats: {
+                    totals: [null, null, null, null, null],
+                    best: [null, null, null, null, null],
+                    totalEver: D(0),
+                    bestEver: D(0)
+                },
+                growanEqu: initGroEquations(),
+                equCancel: D(0),
+                tick: D(0),
+                gal: D(0)
+            },
+            tax: {
+                auto: false,
+                amount: D(0),
+                totals: [null, null, null, null, null],
+                best: [null, null, null, null, null],
+                totalEver: D(0),
+                bestEver: D(0),
+                times: D(0),
+                upgrades: [],
+                invest: [ 
+                    { alloc: D(0), produced: D(0) }, 
+                    { alloc: D(0), produced: D(0) }, 
+                    { alloc: D(0), produced: D(0) }
+                ]
+            }
+        }
+
+        player.displayVersion = 'v1.1.5.3 - Dec-28-2024';
+        player.version = 40;
     }
     if (player.version === 40) {
 
-        // player.displayVersion = 'v1.1.5.4 - Dec-15-2024';
-        // player.version = 41;
+        player.displayVersion = 'v1.1.5.4 - Dec-28-2024';
+        player.version = 41;
     }
+    if (player.version === 41) {
+        player.gameProgress.col.timeInCol = D(0);
+        player.displayVersion = 'v1.1.5.5 - Dec-29-2024';
+        player.version = 42;
+    }
+    if (player.version === 42) {
+        player.gameProgress.layer4 = {
+            timeInL4R: D(0),
+            pickedFirst: 0, // gro = false, tax = true
+            gro: {
+                best: [null, null, null, null, null],
+                bestEver: D(0),
+                totalAmt: D(0),
+                amount: D(0),
+                auto: false,
+                upgrades: [0, 0, 0],
+                gEAmount: D(0),
+                groAmountStats: {
+                    totals: [null, null, null, null, null],
+                    best: [null, null, null, null, null],
+                    totalEver: D(0),
+                    bestEver: D(0)
+                },
+                growanEqu: initGroEquations(),
+                equCancel: D(0),
+                tick: D(0),
+                gal: D(0)
+            },
+            tax: {
+                auto: false,
+                amount: D(0),
+                totals: [null, null, null, null, null],
+                best: [null, null, null, null, null],
+                totalEver: D(0),
+                bestEver: D(0),
+                times: D(0),
+                upgrades: [],
+                invest: [ 
+                    { alloc: D(0), produced: D(0) }, 
+                    { alloc: D(0), produced: D(0) }, 
+                    { alloc: D(0), produced: D(0) }
+                ]
+            }
+        }
+        player.displayVersion = 'v1.1.5.6 - Dec-30-2024';
+        player.version = 43;
+    }
+    if (player.version === 43) {
+        player.gameProgress.layer4 = {
+            timeInL4R: D(0),
+            pickedFirst: 0, // gro = false, tax = true
+            gro: {
+                best: [null, null, null, null, null],
+                bestEver: D(0),
+                totalAmt: D(0),
+                amount: D(0),
+                auto: false,
+                upgrades: [0, 0, 0],
+                gEAmount: D(0),
+                groAmountStats: {
+                    totals: [null, null, null, null, null],
+                    best: [null, null, null, null, null],
+                    totalEver: D(0),
+                    bestEver: D(0)
+                },
+                growanEqu: initGroEquations(),
+                equCancel: D(0),
+                tick: D(0),
+                gal: D(0)
+            },
+            tax: {
+                auto: false,
+                amount: D(0),
+                totals: [null, null, null, null, null],
+                best: [null, null, null, null, null],
+                totalEver: D(0),
+                bestEver: D(0),
+                times: D(0),
+                upgrades: [],
+                invest: [ 
+                    { alloc: D(0), produced: D(0) }, 
+                    { alloc: D(0), produced: D(0) }, 
+                    { alloc: D(0), produced: D(0) }
+                ]
+            }
+        }
+        player.displayVersion = 'v1.1.5.7 - Dec-30-2024';
+        player.version = 44;
+    }
+    if (player.version === 44) {
+
+        // player.displayVersion = 'v1.1.5.8 - Dec-27-2024';
+        // player.version = 45;
+    }
+    
     return player;
 };

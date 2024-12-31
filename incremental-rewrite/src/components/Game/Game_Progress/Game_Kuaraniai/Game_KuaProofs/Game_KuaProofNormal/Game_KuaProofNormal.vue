@@ -22,7 +22,7 @@ import { buyKProofUpg, KUA_PROOF_UPGS } from "../Game_KuaProofs";
         <div class="flex-container" style="margin-top: 0.4vw; flex-wrap: wrap; justify-content: center;">
             <div v-for="(item, index) in KUA_PROOF_UPGS.kp" :key="index">
                 <!-- set padding to 0vw because it auto-inserts padding -->
-                <button @click="buyKProofUpg(index, 'kp')" :class="{ nope: !tmp.kua.proofs.upgrades.kp[index].canBuy, ok: tmp.kua.proofs.upgrades.kp[index].canBuy}" :style="{ cursor: tmp.kua.proofs.upgrades.kp[index].canBuy ? 'pointer' : 'not-allowed' }" v-if="item.show" style="width: 12vw; height: 8vw; margin-left: 0.15vw; margin-right: 0.15vw; margin-bottom: 0.3vw; font-size: 0.55vw; transition: 0.2s; background-color: #003030" class="fontVerdana whiteText">
+                <button @click="buyKProofUpg(index, 'kp')" :class="{ nope: !tmp.kua.proofs.upgrades.kp[index].canBuy, ok: tmp.kua.proofs.upgrades.kp[index].canBuy}" :style="{ cursor: tmp.kua.proofs.upgrades.kp[index].canBuy ? 'pointer' : 'not-allowed' }" v-if="item.show.value" style="width: 12vw; height: 8vw; margin-left: 0.15vw; margin-right: 0.15vw; margin-bottom: 0.3vw; font-size: 0.55vw; transition: 0.2s; background-color: #003030" class="fontVerdana whiteText">
                     <span style="margin-right: 0.5vw; color: #0ff; font-size: 0.65vw"><b>{{item.title}}</b></span><span class="whiteText">×{{ format(player.gameProgress.kua.proofs.upgrades.kp[index]) }}</span><span v-if="Decimal.gt(tmp.kua.proofs.upgrades.kp[index].freeExtra, 0)">+{{ format(tmp.kua.proofs.upgrades.kp[index].freeExtra, 2) }}</span><br>
                     <span>{{item.perDesc}}</span>
                     <br><br>

@@ -6,7 +6,7 @@ import { getSCSLAttribute, SCALE_ATTR, SOFT_ATTR, doAllScaling, type ScSlItems }
 import { getAchievementEffect, ifAchievement } from '../../Game_Achievements/Game_Achievements'
 import { setFactor } from '../../Game_Stats/Game_Stats'
 import { computed } from 'vue'
-import { challengeDepth, getColChalCondEffects, inChallenge, timesCompleted } from '../Game_Colosseum/Game_ColChallenges/Game_ColChalHandler'
+import { challengeDepth, getColChalCondEffects, getColChalRewEffects, inChallenge, timesCompleted } from '../Game_Colosseum/Game_ColChallenges/Game_ColChalHandler'
 import { getKuaUpgrade, KUA_UPGRADES } from '../Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades'
 import { KUA_ENHANCERS } from '../Game_Kuaraniai/Game_KuaEnhancers/Game.KuaEnhancers'
 import { COL_CHALLENGES } from '../Game_Colosseum/Game_ColChallenges/Game_ColChalData'
@@ -166,7 +166,7 @@ export const PRAI_GAIN_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'KShard Upgrade 8'; }),
         effect: computed(() => {
-            return KUA_UPGRADES.KShards[7].eff!;
+            return KUA_UPGRADES.KShards[7].eff!.value;
         }),
         color: 'kua',
         type: 'mult'
@@ -217,6 +217,24 @@ export const PRAI_GAIN_CALC: Array<TrueFactor> = [
         }),
         effect: computed(() => {
             return D(10);
+        }),
+        color: 'col',
+        type: 'mult'
+    },
+    {
+        baseActive: computed(() => {
+            return Decimal.gte(timesCompleted("dc"), 1);
+        }),
+        active: true,
+        name: computed(() => {
+            return `Dimension Crawler Comp. ×${format(timesCompleted('df'))}`;
+        }),
+        effect: computed(() => {
+            let total = D(0);
+            for (let i = 0; i < tmp.value.main.upgrades.length; i++) {
+                total = total.add(player.value.gameProgress.main.upgrades[i].bought);
+            }
+            return total.sqrt().pow_base(getColChalRewEffects("dc")[0]);
         }),
         color: 'col',
         type: 'mult'
@@ -320,20 +338,20 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 setFactor(2, [1, upgID, 1], "PR2 20", `×${format(0.975, 2)}`, `${format(scal, 2)} effective`, Decimal.gte(player.value.gameProgress.main.pr2.amount, 20));
 
                 if (getKuaUpgrade("p", 10)) {
-                    scal = scal.div(KUA_UPGRADES.KPower[9].eff!);
+                    scal = scal.div(KUA_UPGRADES.KPower[9].eff!.value);
                 }
-                setFactor(2, [1, upgID, 1], "KPower Upgrade 10", `/${format(KUA_UPGRADES.KPower[9].eff!, 2)}`, `${format(scal, 2)} effective`, getKuaUpgrade("p", 10), "kua");
+                setFactor(2, [1, upgID, 1], "KPower Upgrade 10", `/${format(KUA_UPGRADES.KPower[9].eff!.value, 2)}`, `${format(scal, 2)} effective`, getKuaUpgrade("p", 10), "kua");
             }
             if (upgID === 1) {
                 if (getKuaUpgrade("s", 9)) {
-                    scal = scal.sub(KUA_UPGRADES.KShards[8].eff!);
+                    scal = scal.sub(KUA_UPGRADES.KShards[8].eff!.value);
                 }
-                setFactor(3, [1, upgID, 1], "KShard Upgrade 9", `-${format(KUA_UPGRADES.KShards[8].eff!, 2)}`, `${format(scal, 2)} effective`, getKuaUpgrade("s", 9), "kua");
+                setFactor(3, [1, upgID, 1], "KShard Upgrade 9", `-${format(KUA_UPGRADES.KShards[8].eff!.value, 2)}`, `${format(scal, 2)} effective`, getKuaUpgrade("s", 9), "kua");
 
                 if (getKuaUpgrade("p", 10)) {
-                    scal = scal.div(KUA_UPGRADES.KPower[9].eff!);
+                    scal = scal.div(KUA_UPGRADES.KPower[9].eff!.value);
                 }
-                setFactor(4, [1, upgID, 1], "KPower Upgrade 10", `/${format(KUA_UPGRADES.KPower[9].eff!, 2)}`, `${format(scal, 2)} effective`, getKuaUpgrade("p", 10), "kua");
+                setFactor(4, [1, upgID, 1], "KPower Upgrade 10", `/${format(KUA_UPGRADES.KPower[9].eff!.value, 2)}`, `${format(scal, 2)} effective`, getKuaUpgrade("p", 10), "kua");
             }
             if (upgID === 2) {
                 if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 11)) {
@@ -449,15 +467,15 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 }
                 if (upgID === 1) {
                     if (getKuaUpgrade("p", 10)) {
-                        scal = scal.mul(KUA_UPGRADES.KPower[9].eff!)
+                        scal = scal.mul(KUA_UPGRADES.KPower[9].eff!.value)
                     }
                     if (getKuaUpgrade("s", 9)) {
-                        scal = scal.add(KUA_UPGRADES.KShards[8].eff!);
+                        scal = scal.add(KUA_UPGRADES.KShards[8].eff!.value);
                     }
                 }
                 if (upgID === 0) {
                     if (getKuaUpgrade("p", 10)) {
-                        scal = scal.mul(KUA_UPGRADES.KPower[9].eff!)
+                        scal = scal.mul(KUA_UPGRADES.KPower[9].eff!.value)
                     }
                     if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 20)) {
                         scal = scal.div(0.975)
@@ -578,7 +596,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             tmp.value.main.upgrades[upgID].multiplier = D(1);
             if (inChallenge('dc')) {
                 i = COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0];
-                tmp.value.main.upgrades[upgID].multiplier = tmp.value.main.upgrades[upgID].multiplier.mul(i.pow(player.value.gameProgress.main.upgrades[upgID].bought));
+                tmp.value.main.upgrades[upgID].multiplier = tmp.value.main.upgrades[upgID].multiplier.mul(i.pow(tmp.value.main.upgrades[upgID].effective));
 
                 tmp.value.main.upgrades[upgID].multiplier = tmp.value.main.upgrades[upgID].multiplier.pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[2]);
 
@@ -689,7 +707,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                     i = i.div(getAchievementEffect(1, 11));
                 }
                 if (getKuaUpgrade("s", 8)) {
-                    i = i.div(KUA_UPGRADES.KShards[7].eff!);
+                    i = i.div(KUA_UPGRADES.KShards[7].eff!.value);
                 }
                 if (Decimal.gt(player.value.gameProgress.kua.kshards.amount, 0)) {
                     i = i.div(tmp.value.kua.effects.kshardPassive);
@@ -748,14 +766,14 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             setFactor(3, [2, 1], "Achievement ID: (0, 17)", `×${format(getAchievementEffect(0, 17), 2)}`, `×${format(i, 2)}`, ifAchievement(0, 17), "ach");
 
             if (getKuaUpgrade("s", 2)) {
-                i = i.mul(KUA_UPGRADES.KShards[1].eff!);
+                i = i.mul(KUA_UPGRADES.KShards[1].eff!.value);
             }
-            setFactor(4, [2, 1], "KShard Upgrade 2", `×${format(KUA_UPGRADES.KShards[1].eff!, 2)}`, `×${format(i, 2)}`, getKuaUpgrade("s", 2), "kua");
+            setFactor(4, [2, 1], "KShard Upgrade 2", `×${format(KUA_UPGRADES.KShards[1].eff!.value, 2)}`, `×${format(i, 2)}`, getKuaUpgrade("s", 2), "kua");
 
             if (getKuaUpgrade("p", 5)) {
-                i = i.pow(KUA_UPGRADES.KPower[4].eff!);
+                i = i.pow(KUA_UPGRADES.KPower[4].eff!.value);
             }
-            setFactor(5, [2, 1], "KPower Upgrade 5", `^${format(KUA_UPGRADES.KPower[4].eff!, 3)}`, `×${format(i, 2)}`, getKuaUpgrade("p", 5), "kua");
+            setFactor(5, [2, 1], "KPower Upgrade 5", `^${format(KUA_UPGRADES.KPower[4].eff!.value, 3)}`, `×${format(i, 2)}`, getKuaUpgrade("p", 5), "kua");
 
             if (inChallenge("su") && Decimal.gte(challengeDepth("su"), 9)) {
                 i = i.pow(getColChalCondEffects("su")[3]);
@@ -773,10 +791,10 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 i = i.mul(getAchievementEffect(0, 17));
             }
             if (getKuaUpgrade("p", 2)) {
-                i = i.mul(KUA_UPGRADES.KShards[1].eff!);
+                i = i.mul(KUA_UPGRADES.KShards[1].eff!.value);
             } 
             if (getKuaUpgrade("p", 5)) {
-                i = i.pow(KUA_UPGRADES.KPower[4].eff!);
+                i = i.pow(KUA_UPGRADES.KPower[4].eff!.value);
             }
             if (inChallenge("su") && Decimal.gte(challengeDepth("su"), 9)) {
                 i = i.pow(getColChalCondEffects("su")[3]);
@@ -861,7 +879,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 // this feels cursed not putting a "let i"
                 for (i = 0; i < PR2_EFF.length; i++) {
                     // console.log(`${format(player.value.gameProgress.main.pr2.amount)} < ${PR2_EFF[i].when} & ${PR2_EFF[i].show}`)
-                    if (Decimal.lt(player.value.gameProgress.main.pr2.amount, PR2_EFF[i].when) && PR2_EFF[i].show) {
+                    if (Decimal.lt(player.value.gameProgress.main.pr2.amount, PR2_EFF[i].when) && PR2_EFF[i].show.value) {
                         tmp.value.main.pr2.textEffect = {when: PR2_EFF[i].when, txt: PR2_EFF[i].text.value};
                         break;
                     }

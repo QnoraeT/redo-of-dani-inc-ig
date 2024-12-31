@@ -107,17 +107,30 @@ export const TABS_LIST = [
         alert: computed(() => { return false }),
         warning: computed(() => { return false })
     },
-    // {
-    //     name: "Taxation",
-    //     staticName: 6,
-    //     backgroundColor: "#b07500",
-    //     textColor: "#ffffff",
-    //     outlineColor: "#d5c000",
-    //     highlightColor: "#ffff7f",
-    //     if: computed(() => {
-    //         return player.value.gameProgress.unlocks.tax;
-    //     }),
-    //     alert: computed(() => { return false }),
-    //     warning: computed(() => { return false })
-    // }
+    {
+        name: "Taxation",
+        staticName: 6,
+        backgroundColor: "#b07500",
+        textColor: "#ffffff",
+        outlineColor: "#d5c000",
+        highlightColor: "#ffff7f",
+        if: computed(() => {
+            return tmp.value.layer4.tax.active;
+        }),
+        alert: computed(() => { return false }),
+        warning: computed(() => { return false })
+    },
+    {
+        name: "Grōwan",
+        staticName: 7,
+        backgroundColor: "#613b00",
+        textColor: "#ffffff",
+        outlineColor: "#a36200",
+        highlightColor: "#ffe3b9",
+        if: computed(() => {
+            return tmp.value.layer4.growan.active;
+        }),
+        alert: computed(() => { return false }),
+        warning: computed(() => { return false })
+    },
 ];

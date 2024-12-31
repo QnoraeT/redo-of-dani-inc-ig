@@ -274,7 +274,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
         }),
         effect: computed(() => { 
             let j = D(60);
-            j = j.mul(Decimal.add(getOMUpgrade(8), 1));
+            j = j.mul(Decimal.max(getOMUpgrade(8), 1));
             let i = Decimal.sub(j, Decimal.clamp(player.value.gameProgress.kua.timeInKua, 0, j)).div(15);
             if (Decimal.gte(getOMUpgrade(13), 1)) {
                 i = Decimal.gte(player.value.gameProgress.kua.timeInKua, j) 
@@ -334,7 +334,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     { // 12
         cost: computed(() => { return D(1e180); }),
         effect: computed(() => { 
-            let i = Decimal.max(player.value.gameProgress.tax.timeInTax, 1).log(60).mul(0.01).add(1);
+            let i = Decimal.max(player.value.gameProgress.col.timeInCol, 1).log(60).mul(0.01).add(1);
             if (Decimal.gte(getOMUpgrade(15), 1)) {
                 i = i.sub(1).mul(MAIN_ONE_UPGS[15].effect.value).add(1);
             }
@@ -379,39 +379,39 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 16
         cost: computed(() => { return D('e500'); }),
-        effect: computed(() => { return Decimal.add(player.value.gameProgress.tax.amount, 1).log2().sqrt().mul(0.01).add(1) }),
+        effect: computed(() => { return D(1); /* return Decimal.add(player.value.gameProgress.tax.amount, 1).log2().sqrt().mul(0.01).add(1); */ }),
         desc: computed(() => { return `Make all previous One-Upgrades stronger based off of your Taxed Coins.`; }),
         effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[15].effect.value.sub(1).mul(100), 2)}%`; }),
-        show: computed(() => { return player.value.gameProgress.unlocks.tax; })
+        show: computed(() => { return false; })
     },
     { // 17
         cost: computed(() => { return D('e750'); }),
         effect: computed(() => { return D(1.005) }),
         desc: computed(() => { return `Raise Upgrade 4-6’s effective amount.`; }),
         effectDesc: computed(() => { return `^${format(MAIN_ONE_UPGS[16].effect.value, 3)}`; }),
-        show: computed(() => { return player.value.gameProgress.unlocks.tax; })
+        show: computed(() => { return false; })
     },
     { // 18
         cost: computed(() => { return D('ee3'); }),
         effect: computed(() => { return D(1) }),
         desc: computed(() => { return `Remove Upgrade 4-6’s Linear scaling.`; }),
         effectDesc: computed(() => { return `^${format(Decimal.sub(1, MAIN_ONE_UPGS[17].effect.value), 3)}`; }),
-        show: computed(() => { return player.value.gameProgress.unlocks.tax; })
+        show: computed(() => { return false; })
     },
     { // 19
         implemented: false,
         cost: computed(() => { return D('e1500'); }),
-        effect: computed(() => { return Decimal.mul(player.value.gameProgress.tax.times, 0.1).add(1).ln().mul(0.01) }),
+        effect: computed(() => { return D(0); /* Decimal.mul(player.value.gameProgress.tax.times, 0.1).add(1).ln().mul(0.01); */ }),
         desc: computed(() => { return `Increase Kua’s gain exponent based on how many times you taxed.`; }),
         effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[18].effect.value, 3)}`; }),
-        show: computed(() => { return player.value.gameProgress.unlocks.tax; })
+        show: computed(() => { return false; })
     },
     { // 20
         cost: computed(() => { return D('e2000'); }),
         effect: computed(() => { return tmp.value.main.upgrades[0].effective.mul(Decimal.ln(tmp.value.main.upgrades[0].effectBase)).mul(0.00001).add(1).root(3).sub(1).mul(3).add(1) }),
         desc: computed(() => { return `Upgrade 1 also raises point gain.`; }),
         effectDesc: computed(() => { return `^${format(MAIN_ONE_UPGS[19].effect.value, 3)}`; }),
-        show: computed(() => { return player.value.gameProgress.unlocks.tax; })
+        show: computed(() => { return false; })
     },
 ]
 

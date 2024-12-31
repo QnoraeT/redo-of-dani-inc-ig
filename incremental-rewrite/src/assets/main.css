@@ -165,6 +165,22 @@ body {
     border: 0.36vw solid #fff2a7;
 }
 
+.smallGroBorder {
+    border: 0.15vw solid #c36100;
+}
+
+.smallGroBorder:hover {
+    border: 0.15vw solid #ffa060;
+}
+
+.normGroBorder {
+    border: 0.36vw solid #c36100;
+}
+
+.normGroBorder:hover {
+    border: 0.36vw solid #ffa060;
+}
+
 .normColBorderProg {
     border: 0.36vw solid #fffb00;
 }
@@ -296,6 +312,18 @@ body {
 .taxButton:hover {
     background-color: #7a6800;
     box-shadow: 0 0 1.5vw 0.24vw #8f7a00;
+    cursor: pointer;
+}
+
+.groButton {
+    transition-duration: 0.2s;
+    background-color: #632f00;
+    box-shadow: 0 0 0.8vw 0.24vw rgb(66, 26, 0);
+}
+
+.groButton:hover {
+    background-color: #7a3900;
+    box-shadow: 0 0 1.5vw 0.24vw #8f3f00;
     cursor: pointer;
 }
 

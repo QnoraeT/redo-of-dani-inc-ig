@@ -6,15 +6,15 @@ import Decimal from "break_eternity.js";
 
 export const getFinickySeconds = (x: DecimalSource) => {
     let sec = x;
-    if (Decimal.lt(sec, 1e10)) { return D(0); }
-    sec = Decimal.log10(sec).sub(1).sqrt().div(3).sub(1).pow10();
+    if (Decimal.lt(sec, 1e7)) { return D(0); }
+    sec = Decimal.log10(sec).add(2).sqrt().div(3).sub(1).pow10();
     return sec;
 }
 
 export const getFinickyKPExpGain = (x: DecimalSource) => {
     let exp = x;
-    if (Decimal.lt(exp, 1e10)) { return D(0); }
-    exp = Decimal.log10(exp).sub(9);
+    if (Decimal.lt(exp, 1e7)) { return D(0); }
+    exp = Decimal.log10(exp).sub(6);
     return exp;
 }
 

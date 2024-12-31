@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { format } from "@/format";
-import { player, shiftDown, tmp } from "@/main";
+import { player, tmp } from "@/main";
 import { buyKBUpg, gainKBOnClick, KUA_BLESS_TIER, KUA_BLESS_UPGS } from "./Game_KuaBlessings";
 import Decimal from "break_eternity.js";
 import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_ColChalData";
@@ -14,9 +14,6 @@ import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_Col
                 Kuaraniai Blessings. 
                 <span style="font-size: 1vw">({{ format(tmp.kua.blessings.perSec, 2) }}/s)</span>
             </span>
-            <span style="color: #0f2; text-align: center; font-size: 0.8vw">
-                You can hold shift on these upgrades to see what their cost and effect will be next purchase.
-            </span><br>
             <span style="color: #0f2; text-align: center; font-size: 0.7vw">
                 This boosts Upgrade 1's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg1Base, 3) }}</b></span><span v-if="COL_CHALLENGES.im.type2ChalEff!.value[1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg1Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff!.value[1]), 2) }})</span>.<br>
                 This boosts Upgrade 2's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg2Base, 3) }}</b></span><span v-if="COL_CHALLENGES.im.type2ChalEff!.value[1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg2Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff!.value[1]), 2) }})</span>.<br>
@@ -47,13 +44,10 @@ import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_Col
                     <button @click="buyKBUpg(index)" :class="{ nope: !tmp.kua.blessings.upgrades[index].canBuy, ok: tmp.kua.blessings.upgrades[index].canBuy}" :style="{ cursor: tmp.kua.blessings.upgrades[index].canBuy ? 'pointer' : 'not-allowed' }" v-if="item.show" style="width: 12vw; height: 8vw; margin-left: 0.15vw; margin-right: 0.15vw; margin-bottom: 0.3vw; font-size: 0.55vw; transition: 0.2s; background-color: #00300a" class="fontVerdana whiteText">
                         <span style="margin-right: 0.5vw; color: #0d3"><b>#{{index + 1}}</b></span><span class="whiteText">×{{ format(player.gameProgress.kua.blessings.upgrades[index]) }}</span><br>
                         <!-- <br><span v-if="!item.implemented" style="color: #ff0; font-size: 0.5vw"><b>[ NOT IMPLEMENTED ]</b><br></span> -->
-                        <span v-if="!shiftDown">{{item.desc(player.gameProgress.kua.blessings.upgrades[index])}}</span>
-                        <span v-if="shiftDown">{{item.desc(Decimal.add(player.gameProgress.kua.blessings.upgrades[index], 1))}}</span>
+                        <span >{{item.desc.value}}</span>
                         <br><br>
-                        <span v-if="!shiftDown">Currently: <b style="font-size: 0.65vw;">{{item.effDesc(player.gameProgress.kua.blessings.upgrades[index])}}</b><br></span>
-                        <span v-if="!shiftDown">Cost: <b style="font-size: 0.65vw;">{{format(item.cost(player.gameProgress.kua.blessings.upgrades[index]).ceil())}}</b> KBlessings.</span>
-                        <span v-if="shiftDown">Next: <b style="font-size: 0.65vw;">{{item.effDesc(Decimal.add(player.gameProgress.kua.blessings.upgrades[index], 1))}}</b><br></span>
-                        <span v-if="shiftDown">Next Cost: <b style="font-size: 0.65vw;">{{format(item.cost(Decimal.add(player.gameProgress.kua.blessings.upgrades[index], 1)).ceil())}}</b> KBlessings.</span>
+                        <span >Currently: <b style="font-size: 0.65vw;">{{item.effDesc}}</b><br></span>
+                        <span >Cost: <b style="font-size: 0.65vw;">{{format(item.cost.value)}}</b> KBlessings.</span>
                     </button>
                 </div>
             </div>
@@ -63,7 +57,7 @@ import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_Col
                 <div class="flex-container fontVerdana whiteText" style="width: 95%; height: 80%; top: 7.5%; font-size: 0.6vw; position: relative; border: 0.18vw solid #0f4; background-color: #005014; align-items: center">
                     <div style="text-align: center; position: relative; width: 30%; left: 0%">
                         You are in KBlessing Rank <span style="font-size: 0.9vw"><b>{{ format(tmp.kua.blessings.rank) }}</b></span>.<br>
-                        Next at: <span style="font-size: 0.9vw"><b>{{ format(KUA_BLESS_TIER.rank.req(tmp.kua.blessings.rank)) }}</b></span> KBlessings.
+                        Next at: <span style="font-size: 0.9vw"><b>{{ format(KUA_BLESS_TIER.rank.req.value) }}</b></span> KBlessings.
                     </div>
                     <div style="text-align: center; position: relative; font-size: 0.6vw; width: 70%; right: 0%">
                         Your KBlessing Ranks:
@@ -76,7 +70,7 @@ import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_Col
                 <div class="flex-container fontVerdana whiteText" style="width: 95%; height: 80%; top: 7.5%; font-size: 0.6vw; position: relative; border: 0.18vw solid #0f4; background-color: #006018; align-items: center">
                     <div style="text-align: center; position: relative; width: 30%; left: 0%">
                         You are in KBlessing Tier <span style="font-size: 0.9vw"><b>{{ format(tmp.kua.blessings.tier) }}</b></span>.<br>
-                        Next at: <span style="font-size: 0.9vw"><b>{{ format(KUA_BLESS_TIER.tier.req(tmp.kua.blessings.tier)) }}</b></span> Ranks.
+                        Next at: <span style="font-size: 0.9vw"><b>{{ format(KUA_BLESS_TIER.tier.req.value) }}</b></span> Ranks.
                     </div>
                     <div style="text-align: center; position: relative; font-size: 0.6vw; width: 70%; right: 0%">
                         Your KBlessing Tiers:
@@ -88,7 +82,7 @@ import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_Col
                 <div class="flex-container fontVerdana whiteText" style="width: 95%; height: 80%; top: 7.5%; font-size: 0.6vw; position: relative; border: 0.18vw solid #0f4; background-color: #005014; align-items: center">
                     <div style="text-align: center; position: relative; width: 30%; left: 0%">
                         You are in KBlessing Tetr <span style="font-size: 0.9vw"><b>{{ format(tmp.kua.blessings.tetr) }}</b></span>.<br>
-                        Next at: <span style="font-size: 0.9vw"><b>{{ format(KUA_BLESS_TIER.tetr.req(tmp.kua.blessings.tetr)) }}</b></span> Tiers.
+                        Next at: <span style="font-size: 0.9vw"><b>{{ format(KUA_BLESS_TIER.tetr.req.value) }}</b></span> Tiers.
                     </div>
                     <div style="text-align: center; position: relative; font-size: 0.6vw; width: 70%; right: 0%">
                         Your KBlessing Tetr:

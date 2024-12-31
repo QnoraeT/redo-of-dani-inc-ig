@@ -27,7 +27,6 @@ export type colChallenges = {
 };
 
 export type ChallengeData = {
-    id: number,
     name: string,
     goalDesc: string,
     entered: boolean,
@@ -252,7 +251,7 @@ export const COL_CHALLENGES: colChallenges = {
         }),
         desc: computed(() => { return `
             <li>All Upgrades can only be bought once, but One-Upgrades are repeatable.</li>
-            <li>Upgrade 2 and 5 change to boosting point gain.</li>
+            <li>Upgrade 2 and 5 boosts point gain.</li>
             <li>Point and PRai gain are raised to the ^${format(0.8, 3)} and PR2 scales ${format(1.2, 2)}× faster.</li>`; }),
         reward: computed(() => {
             let txt = ``;
@@ -261,7 +260,7 @@ export const COL_CHALLENGES: colChallenges = {
             if (Decimal.gte(timesCompleted(COL_CHALLENGES.im.id), 1e20)) {
                 txt += `<li>Boost research speed based off of your Personal Best in this challenge. Currently: ×${format(COL_CHALLENGES.im.type2ChalEff!.value[0], 3)}</li>`
                 txt += Decimal.gte(timesCompleted(COL_CHALLENGES.im.id), 1e33)
-                        ? `<li>Unlock the 5th and 6th research and make KBlessings directly boost Upgrades' effects. Effectiveness: ^${format(COL_CHALLENGES.im.type2ChalEff!.value[1], 1)}</li>`
+                        ? `<li>Unlock the 5th challenge, 5th and 6th research, and make KBlessings directly boost Upgrades' effects. Effectiveness: ^${format(COL_CHALLENGES.im.type2ChalEff!.value[1], 1)}</li>`
                         : `<li>Unlock another reward at a Personal Best of ${format(1e33)}.</li>`
             }
             return txt;
@@ -351,7 +350,16 @@ export const COL_CHALLENGES: colChallenges = {
             if (Decimal.gte(getColChalDisplayedDifficulty("dc"), COL_CHALLENGES.dc.cap)) {
                 return `winner you complete it all`;
             }
-            const txt = `<li>Total upgrades bought boosts PRai gain. Currently: ×(${format(COL_CHALLENGES.dc.type3ChalEff!(timesCompleted('dc'))[0], 3)}^sqrt(x))</li>`;
+            let txt = `<li>Total upgrades bought boosts PRai gain. Currently: ×(${format(COL_CHALLENGES.dc.type3ChalEff!(getColChalDisplayedDifficulty("dc"))[0], 3)}^sqrt(x))</li>`;
+            if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 2)) {
+                txt += `<li>Upgrades 1-6 gain +${format(COL_CHALLENGES.dc.type3ChalEff!(getColChalDisplayedDifficulty("dc"))[1])} free levels outside of Colosseum challenges.</li>`
+            }
+            if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 5)) {
+                txt += `<li>Upgrade 3's base is increased based off of your Colosseum Power. Currently: +${format(COL_CHALLENGES.dc.type3ChalEff!(getColChalDisplayedDifficulty("dc"))[2], 3)}</li>`
+            }
+            if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 10)) {
+                txt += `<li>All upgrades now accumulate outside of this challenge with reduced effect. Currently: ${format(COL_CHALLENGES.dc.type3ChalEff!(getColChalDisplayedDifficulty("dc"))[3], 3)}× per bought, ${format(COL_CHALLENGES.dc.type3ChalEff!(timesCompleted('dc'))[4].mul(100))}% eff.</li>`
+            }
             return txt;
         }),
         type3ChalCond(x) {
@@ -390,11 +398,33 @@ export const COL_CHALLENGES: colChallenges = {
         type3ChalEff(x) {
             const arr: Array<Decimal> = [];
             arr.push(Decimal.mul(x, 0.5).add(1));
+            arr.push(
+                Decimal.gte(x, 2)
+                    ? Decimal.gte(x, 10)
+                        ? Decimal.mul(x, 5).sub(5)
+                        : Decimal.sub(x, 1).mul(x).div(2)
+                    : D(0)
+            )
+            arr.push(
+                Decimal.gte(x, 5)
+                    ? Decimal.max(player.value.gameProgress.col.power, 1000).cbrt().mul(Decimal.sub(x, 4)).div(20000)
+                    : D(0)
+            )
+            arr.push(
+                Decimal.gte(x, 10)
+                    ? Decimal.sub(x, 10).pow_base(1.01)
+                    : D(0)
+            )
+            arr.push(
+                Decimal.gte(x, 10)
+                    ? Decimal.sub(x, 10).pow_base(1.1)
+                    : D(0)
+            )
             return arr;
         },
         cap: D(20),
         show: computed(() => {
-            return Decimal.gte(timesCompleted('im'), 1e20);
+            return Decimal.gte(timesCompleted('im'), 1e33);
             // return false;
         }),
         canComplete: computed(() => {

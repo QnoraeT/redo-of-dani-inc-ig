@@ -1,5 +1,5 @@
 import Decimal, { type DecimalSource } from "break_eternity.js";
-import { NaNCheck, player, shiftDown, tmp, updateAllBest, updateAllTotal } from "@/main";
+import { NaNCheck, player, tmp, updateAllBest, updateAllTotal } from "@/main";
 import { format } from "@/format";
 import { D, scale } from "@/calc";
 import { ACHIEVEMENT_DATA } from "../../Game_Achievements/Game_Achievements";
@@ -87,7 +87,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.proofs.skpEff = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).log2().add(1).ln().div(2).add(1).pow(2).sub(1).mul(3);
 
             tmp.value.kua.proofs.fkpEff = D(0);
-            tmp.value.kua.proofs.fkpEff = Decimal.max(player.value.gameProgress.kua.proofs.finicky.amount, 0).add(1).log10().sqrt()
+            tmp.value.kua.proofs.fkpEff = Decimal.max(player.value.gameProgress.kua.proofs.finicky.amount, 0).add(1).log10().sqrt();
 
             tmp.value.kua.proofs.canBuyUpg = false;
             tmp.value.kua.proofs.canBuyUpgs.effect = false;
@@ -244,9 +244,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
         case 2:
             player.value.gameProgress.kua.blessings.clickCooldown = Decimal.sub(player.value.gameProgress.kua.blessings.clickCooldown, delta);
 
-            tmp.value.kua.blessings.rank = KUA_BLESS_TIER.rank.rounded(player.value.gameProgress.kua.blessings.best[3]!);
-            tmp.value.kua.blessings.tier = KUA_BLESS_TIER.tier.rounded(tmp.value.kua.blessings.rank);
-            tmp.value.kua.blessings.tetr = KUA_BLESS_TIER.tetr.rounded(tmp.value.kua.blessings.tier);
+            tmp.value.kua.blessings.rank = KUA_BLESS_TIER.rank.rounded.value;
+            tmp.value.kua.blessings.tier = KUA_BLESS_TIER.tier.rounded.value;
+            tmp.value.kua.blessings.tetr = KUA_BLESS_TIER.tetr.rounded.value;
 
             tmp.value.kua.blessings.perClick = D(1);
             tmp.value.kua.blessings.perSec = D(2);
@@ -258,10 +258,10 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(1, [4, 4], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, true, "kb");
             setFactor(1, [4, 5], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, true, "kb");
 
-            tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(KUA_BLESS_UPGS[1].eff()[1]);
-            tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(KUA_BLESS_UPGS[1].eff()[1]);
-            setFactor(2, [4, 4], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff()[1], 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 6), "kb");
-            setFactor(2, [4, 5], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff()[1], 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 6), "kb");
+            tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(KUA_BLESS_UPGS[1].eff.value[1]);
+            tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(KUA_BLESS_UPGS[1].eff.value[1]);
+            setFactor(2, [4, 4], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 6), "kb");
+            setFactor(2, [4, 5], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 6), "kb");
 
             tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
             tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
@@ -311,8 +311,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
             tmp.value.kua.blessings.canBuyUpg = false;
             for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
-                tmp.value.kua.blessings.upgrades[i].canBuy = Decimal.gte(player.value.gameProgress.kua.blessings.amount, KUA_BLESS_UPGS[i].cost(Decimal.add(player.value.gameProgress.kua.blessings.upgrades[i], shiftDown ? 1 : 0)));
-                tmp.value.kua.blessings.canBuyUpg = tmp.value.kua.blessings.canBuyUpg || Decimal.gte(player.value.gameProgress.kua.blessings.amount, KUA_BLESS_UPGS[i].cost());
+                tmp.value.kua.blessings.upgrades[i].canBuy = Decimal.gte(player.value.gameProgress.kua.blessings.amount, KUA_BLESS_UPGS[i].cost.value);
+                tmp.value.kua.blessings.canBuyUpg = tmp.value.kua.blessings.canBuyUpg || Decimal.gte(player.value.gameProgress.kua.blessings.amount, KUA_BLESS_UPGS[i].cost.value);
                 tmp.value.kua.canBuyUpg = tmp.value.kua.canBuyUpg || tmp.value.kua.blessings.upgrades[i].canBuy;
             }
 
@@ -325,7 +325,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 player.value.gameProgress.kua.blessings.bestEver = Decimal.max(player.value.gameProgress.kua.blessings.bestEver, player.value.gameProgress.kua.blessings.amount);
             }
 
-            i = Decimal.max(player.value.gameProgress.kua.blessings.amount, 0);
+            i = Decimal.max(player.value.gameProgress.kua.blessings.totals[3]!, 0);
             i = Decimal.mul(i, KUA_BLESS_TIER.tier.effects.kuaBlessEff.value)
             if (!tmp.value.kua.active.blessings.effects) {
                 i = D(0);
@@ -378,12 +378,12 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.effectiveKS = Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0);
             tmp.value.kua.effectiveKP = Decimal.max(player.value.gameProgress.kua.kpower.totals[3]!, 0);
 
-            tmp.value.kua.effectiveKS = tmp.value.kua.effectiveKS.mul(KUA_BLESS_UPGS[0].eff()[1]);
-            tmp.value.kua.effectiveKP = tmp.value.kua.effectiveKP.mul(KUA_BLESS_UPGS[0].eff()[1]);
+            tmp.value.kua.effectiveKS = tmp.value.kua.effectiveKS.mul(KUA_BLESS_UPGS[0].eff.value[1]);
+            tmp.value.kua.effectiveKP = tmp.value.kua.effectiveKP.mul(KUA_BLESS_UPGS[0].eff.value[1]);
             
             if (getKuaUpgrade('p', 17)) {
-                tmp.value.kua.effectiveKS = tmp.value.kua.effectiveKS.pow(KUA_UPGRADES.KPower[16].eff!);
-                tmp.value.kua.effectiveKP = tmp.value.kua.effectiveKP.pow(KUA_UPGRADES.KPower[16].eff2!);
+                tmp.value.kua.effectiveKS = tmp.value.kua.effectiveKS.pow(KUA_UPGRADES.KPower[16].eff!.value);
+                tmp.value.kua.effectiveKP = tmp.value.kua.effectiveKP.pow(KUA_UPGRADES.KPower[16].eff2!.value);
             }
 
             tmp.value.kua.effectiveKS = tmp.value.kua.effectiveKS.pow(tmp.value.kua.proofs.upgrades.effect[1].effect);
@@ -398,7 +398,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.exp = D(3);
 
             tmp.value.kua.exp = tmp.value.kua.exp.add(getColResEffect(2));
-            tmp.value.kua.exp = tmp.value.kua.exp.add(KUA_BLESS_UPGS[2].eff()[1]);
+            tmp.value.kua.exp = tmp.value.kua.exp.add(KUA_BLESS_UPGS[2].eff.value[1]);
 
             tmp.value.kua.effectivePrai = Decimal.add(player.value.gameProgress.main.prai.totals[2]!, tmp.value.main.prai.pending);
             tmp.value.kua.canDo = tmp.value.kua.effectivePrai.gte(tmp.value.kua.req) && tmp.value.kua.active.gain;
@@ -422,9 +422,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(1, [4, 1], "KShard Upgrade 1", `×${format(1.5, 2)}`, `${format(tmp.value.kua.pending, 4)}`, getKuaUpgrade("s", 1), "kua");
 
             if (getKuaUpgrade("s", 12)) {
-                tmp.value.kua.pending = tmp.value.kua.pending.mul(KUA_UPGRADES.KShards[11].eff!);
+                tmp.value.kua.pending = tmp.value.kua.pending.mul(KUA_UPGRADES.KShards[11].eff!.value);
             }
-            setFactor(2, [4, 1], "KShard Upgrade 12", `×${format(KUA_UPGRADES.KShards[11].eff!, 2)}`, `${format(tmp.value.kua.pending, 4)}`, getKuaUpgrade("s", 12), "kua");
+            setFactor(2, [4, 1], "KShard Upgrade 12", `×${format(KUA_UPGRADES.KShards[11].eff!.value, 2)}`, `${format(tmp.value.kua.pending, 4)}`, getKuaUpgrade("s", 12), "kua");
 
             if (Decimal.gte(timesCompleted("df"), 1)) {
                 tmp.value.kua.pending = tmp.value.kua.pending.mul(2);
@@ -432,9 +432,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(3, [4, 1], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(tmp.value.kua.pending, 1)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
             if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1)) {
-                tmp.value.kua.pending = tmp.value.kua.pending.mul(KUA_BLESS_UPGS[2].eff()[0]);
+                tmp.value.kua.pending = tmp.value.kua.pending.mul(KUA_BLESS_UPGS[2].eff.value[0]);
             }
-            setFactor(4, [4, 1], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff()[0], 2)}`, `${format(tmp.value.kua.pending, 1)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1), "kb");
+            setFactor(4, [4, 1], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[0], 2)}`, `${format(tmp.value.kua.pending, 1)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1), "kb");
 
             data = {
                 oldGain: tmp.value.kua.pending,
@@ -488,9 +488,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(2, [4, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].eff.value, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true, "ach");
 
             if (getKuaUpgrade("s", 11)) {
-                k = k.mul(KUA_UPGRADES.KShards[10].eff!);
+                k = k.mul(KUA_UPGRADES.KShards[10].eff!.value);
             }
-            setFactor(3, [4, 0], "KShard Upgrade 11", `^${format(KUA_UPGRADES.KShards[10].eff!, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, getKuaUpgrade("s", 11), "kua");
+            setFactor(3, [4, 0], "KShard Upgrade 11", `^${format(KUA_UPGRADES.KShards[10].eff!.value, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, getKuaUpgrade("s", 11), "kua");
 
             if (getKuaUpgrade("p", 15)) {
                 k = k.mul(1.05);
@@ -595,9 +595,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 setFactor(2, [4, 2], "KPower Upgrade 1", `×${format(2.5, 2)}`, `${format(i, 3)}`, getKuaUpgrade("p", 1), "kua");
 
                 if (getKuaUpgrade("s", 13)) {
-                    i = i.mul(KUA_UPGRADES.KShards[12].eff!);
+                    i = i.mul(KUA_UPGRADES.KShards[12].eff!.value);
                 }
-                setFactor(3, [4, 2], "KShard Upgrade 13", `×${format(KUA_UPGRADES.KShards[12].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 13), "kua");
+                setFactor(3, [4, 2], "KShard Upgrade 13", `×${format(KUA_UPGRADES.KShards[12].eff!.value, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 13), "kua");
 
                 if (Decimal.gte(timesCompleted("df"), 1)) {
                     i = i.mul(2);
@@ -605,19 +605,19 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 setFactor(4, [4, 2], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1)) {
-                    i = i.mul(KUA_BLESS_UPGS[2].eff()[2]);
+                    i = i.mul(KUA_BLESS_UPGS[2].eff.value[2]);
                 }
-                setFactor(5, [4, 2], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff()[2], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 12), "kb");
+                setFactor(5, [4, 2], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[2], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 12), "kb");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1)) {
-                    i = i.mul(KUA_BLESS_UPGS[3].eff()[0]);
+                    i = i.mul(KUA_BLESS_UPGS[3].eff.value[0]);
                 }
-                setFactor(6, [4, 2], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff()[0], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1), "kb");
+                setFactor(6, [4, 2], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff.value[0], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1), "kb");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6)) {
-                    i = i.mul(Decimal.max(player.value.gameProgress.kua.kpower.amount, 1).log10().add(1).pow(KUA_BLESS_UPGS[3].eff()[1]));
+                    i = i.mul(Decimal.max(player.value.gameProgress.kua.kpower.amount, 1).log10().add(1).pow(KUA_BLESS_UPGS[3].eff.value[1]));
                 }
-                setFactor(7, [4, 2], `KBlessing Upgrade 4`, `×log10(${format(player.value.gameProgress.kua.kpower.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff()[1], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6), "kb");
+                setFactor(7, [4, 2], `KBlessing Upgrade 4`, `×log10(${format(player.value.gameProgress.kua.kpower.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff.value[1], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6), "kb");
 
                 data = {
                     oldGain: i,
@@ -649,9 +649,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 setFactor(2, [4, 3], "KShard Upgrade 10", `×${format(tmp.value.kua.effects.kpower, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 10), "kua");
 
                 if (getKuaUpgrade("s", 14)) {
-                    i = i.mul(KUA_UPGRADES.KShards[13].eff!);
+                    i = i.mul(KUA_UPGRADES.KShards[13].eff!.value);
                 }
-                setFactor(3, [4, 3], "KShard Upgrade 14", `×${format(KUA_UPGRADES.KShards[13].eff!, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 14), "kua");
+                setFactor(3, [4, 3], "KShard Upgrade 14", `×${format(KUA_UPGRADES.KShards[13].eff!.value, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 14), "kua");
 
                 if (Decimal.gte(timesCompleted("df"), 1)) {
                     i = i.mul(2);
@@ -659,19 +659,19 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                 setFactor(4, [4, 3], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1)) {
-                    i = i.mul(KUA_BLESS_UPGS[2].eff()[2]);
+                    i = i.mul(KUA_BLESS_UPGS[2].eff.value[2]);
                 }
-                setFactor(5, [4, 3], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff()[2], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 12), "kb");
+                setFactor(5, [4, 3], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[2], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 12), "kb");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1)) {
-                    i = i.mul(KUA_BLESS_UPGS[3].eff()[0]);
+                    i = i.mul(KUA_BLESS_UPGS[3].eff.value[0]);
                 }
-                setFactor(6, [4, 3], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff()[0], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1), "kb");
+                setFactor(6, [4, 3], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff.value[0], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 1), "kb");
 
                 if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6)) {
-                    i = i.mul(Decimal.max(player.value.gameProgress.kua.kshards.amount, 1).log10().add(1).pow(KUA_BLESS_UPGS[3].eff()[1]));
+                    i = i.mul(Decimal.max(player.value.gameProgress.kua.kshards.amount, 1).log10().add(1).pow(KUA_BLESS_UPGS[3].eff.value[1]));
                 }
-                setFactor(7, [4, 3], `KBlessing Upgrade 4`, `×log10(${format(player.value.gameProgress.kua.kshards.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff()[1], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6), "kb");
+                setFactor(7, [4, 3], `KBlessing Upgrade 4`, `×log10(${format(player.value.gameProgress.kua.kshards.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff.value[1], 2)}`, `${format(i, 3)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[3], 6), "kb");
 
                 data = {
                     oldGain: i,

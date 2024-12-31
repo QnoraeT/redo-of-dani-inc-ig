@@ -72,6 +72,9 @@ export type ScSlItems =
     | "kbi"
     | "kp"
     | "skp"
+    | "ge"
+    | "gtick"
+    | "ec"
     ;
 const ScSlItemsList: Array<ScSlItems> = [
     "points",
@@ -92,6 +95,9 @@ const ScSlItemsList: Array<ScSlItems> = [
     "kbi",
     "kp",
     "skp",
+    "ge",
+    "gtick",
+    "ec"
 ];
 
 type DataofScSlCategory = {
@@ -119,6 +125,9 @@ type ListOfScSl = {
     kbi: DataofScSlCategory,
     kp: DataofScSlCategory,
     skp: DataofScSlCategory,
+    ge: DataofScSlCategory,
+    gtick: DataofScSlCategory,
+    ec: DataofScSlCategory
 };
 
 export const makeDataofScSl = (id: number): DataofScSlCategory => {
@@ -148,6 +157,9 @@ export const LIST_OF_SCSL: ListOfScSl = {
     kbi: makeDataofScSl(12),
     kp: makeDataofScSl(13),
     skp: makeDataofScSl(14),
+    ge: makeDataofScSl(15),
+    gtick: makeDataofScSl(16),
+    ec: makeDataofScSl(17)
 };
 
 export const setSCSLEffectDisp = (
@@ -236,7 +248,7 @@ export const getSCSLAttribute = (
                     data[1].power = data[1].power.div(tmp.value.kua.effects.upg1SuperScaling);
 
                     if (getKuaUpgrade("p", 9)) {
-                        data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff!);
+                        data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff!.value);
                     }
 
                     data[2].power = data[2].power.mul(getColChalRewEffects("su")[1])
@@ -246,10 +258,10 @@ export const getSCSLAttribute = (
                     }
 
                     if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 1)) {
-                        data[2].start = data[2].start.add(KUA_BLESS_UPGS[1].eff()[0]);
+                        data[2].start = data[2].start.add(KUA_BLESS_UPGS[1].eff.value[0]);
                     }
 
-                    data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff()[2]);
+                    data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff.value[2]);
 
                     if (inChallenge('dc')) {
                         for (let i = 0; i < data.length; i++) {
@@ -293,7 +305,7 @@ export const getSCSLAttribute = (
                     }
 
                     if (getKuaUpgrade("s", 3)) {
-                        data[0].power = data[0].power.div(KUA_UPGRADES.KShards[2].eff!);
+                        data[0].power = data[0].power.div(KUA_UPGRADES.KShards[2].eff!.value);
                     }
 
                     if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[7], 1)) {
@@ -305,10 +317,10 @@ export const getSCSLAttribute = (
                     }
 
                     if (getKuaUpgrade("p", 9)) {
-                        data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff!);
+                        data[2].power = data[2].power.div(KUA_UPGRADES.KPower[8].eff!.value);
                     }
 
-                    data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff()[2]);
+                    data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff.value[2]);
 
                     if (inChallenge('dc')) {
                         for (let i = 0; i < data.length; i++) {
@@ -345,7 +357,7 @@ export const getSCSLAttribute = (
                     if (Decimal.gte(getOMUpgrade(12), 1)) {
                         data[0].start = data[0].start.add(MAIN_ONE_UPGS[12].effect.value);
                     }
-                    data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff()[2]);
+                    data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff.value[2]);
 
                     if (inChallenge('dc')) {
                         for (let i = 0; i < data.length; i++) {
@@ -573,6 +585,44 @@ export const getSCSLAttribute = (
                 case "skp":
                     // empty
                     break;
+                case "ge":
+                    data.push({
+                        start: D(102),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e5),
+                        basePow: D(2),
+                        power: D(1),
+                        newType: 2,
+                        displayedEffect: ""
+                    });
+                    break;
+                case "gtick":
+                    data.push({
+                        start: D(305),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    data.push({
+                        start: D(1e5),
+                        basePow: D(2),
+                        power: D(1),
+                        newType: 2,
+                        displayedEffect: ""
+                    });
+                    break;
+                case "ec":
+                    data.push({
+                        start: D(100),
+                        basePow: D(2),
+                        power: D(1),
+                        displayedEffect: ""
+                    });
+                    break;
                 default:
                     throw new Error(`scaling item ${type} doesn't exist!`);
             }
@@ -631,7 +681,7 @@ export const getSCSLAttribute = (
                     });
 
                     if (getKuaUpgrade("p", 4)) {
-                        data[0].start = data[0].start.mul(KUA_UPGRADES.KPower[3].eff!);
+                        data[0].start = data[0].start.mul(KUA_UPGRADES.KPower[3].eff!.value);
                         data[0].power = data[0].power.mul(0.6);
                     }
 
@@ -809,6 +859,15 @@ export const getSCSLAttribute = (
                         displayedEffect: ""
                     });
                     break;
+                case "ge":
+                    // empty
+                    break;
+                case "gtick":
+                    // empty
+                    break;
+                case "ec":
+                    // empty
+                    break;
                 default:
                     throw new Error(`softcap item ${type} doesn't exist!`);
             }
@@ -914,6 +973,15 @@ const SOFT_VALUES = {
     }),
     skp: computed(() => {
         return player.value.gameProgress.kua.proofs.strange.amount;
+    }),
+    ge: computed(() => {
+        return D(0);
+    }),
+    gtick: computed(() => {
+        return D(0);
+    }),
+    ec: computed(() => {
+        return D(0);
     })
 };
 
@@ -971,5 +1039,18 @@ const SCAL_VALUES = {
     }),
     skp: computed(() => {
         return D(0);
+    }),
+    ge: computed(() => {
+        let max = D(0);
+        for (let i = 0; i < player.value.gameProgress.layer4.gro.growanEqu.length; i++) {
+            max = Decimal.max(max, player.value.gameProgress.layer4.gro.growanEqu[i].bought);
+        }
+        return max;
+    }),
+    gtick: computed(() => {
+        return player.value.gameProgress.layer4.gro.tick;
+    }),
+    ec: computed(() => {
+        return player.value.gameProgress.layer4.gro.equCancel;
     })
 };

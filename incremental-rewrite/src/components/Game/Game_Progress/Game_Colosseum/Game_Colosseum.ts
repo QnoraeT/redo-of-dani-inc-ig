@@ -107,7 +107,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
                 }
 
                 if (j) {
-                    if (COL_CHALLENGES[chalID].canComplete) {
+                    if (COL_CHALLENGES[chalID].canComplete.value) {
                         k++;
                     }
                     l++;
@@ -145,6 +145,7 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             } else {
                 player.value.gameProgress.col.time = player.value.gameProgress.col.maxTime;
             }
+            player.value.gameProgress.col.timeInCol = Decimal.add(player.value.gameProgress.col.timeInCol, delta);
             break;
         default:
             throw new Error(`Colosseum area of the game does not contain ${type}`);
@@ -179,7 +180,7 @@ export const challengeToggle = (id: challengeIDList) => {
             }
             return;
         }
-        if (COL_CHALLENGES[id].canComplete) {
+        if (COL_CHALLENGES[id].canComplete.value) {
             if (COL_CHALLENGES[id].type === 1 || COL_CHALLENGES[id].type === 3) {
                 if (Decimal.eq(player.value.gameProgress.inChallenge[id].enteredDiff, player.value.gameProgress.col.completed[id])) {
                     player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);

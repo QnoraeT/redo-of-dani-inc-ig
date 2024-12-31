@@ -1,4 +1,4 @@
-import { D, linearAdd, sumHarmonicSeries } from "@/calc";
+import { D, linearAdd, scale, sumHarmonicSeries } from "@/calc";
 import { format } from "@/format";
 import type { DecimalSource } from "break_eternity.js";
 import Decimal from "break_eternity.js";
@@ -47,10 +47,17 @@ export const COL_RESEARCH = [
             if (Decimal.lt(score, 2)) {
                 return D(0);
             }
-            const level = linearAdd(score, 2, 2, true);
+            let level = linearAdd(score, 2, 2, true);
+            if (Decimal.gte(level, 100000)) {
+                level = scale(level, 2.1, true, D(100000), D(1), D(2));
+            }
             return level;
         },
         levelToScore(level: DecimalSource) {
+            // i love doing a little trolling, the game doesn't need this scaling, but i'm doing this just to spite ppl who beaten SU10 on v1.1.5.1 when endgame was SU6 >:3
+            if (Decimal.gte(level, 100000)) {
+                level = scale(level, 2.1, false, D(100000), D(1), D(2));
+            }
             const score = linearAdd(level, 2, 2, false);
             return score;
         }
@@ -114,7 +121,7 @@ export const COL_RESEARCH = [
             return `Increase Research Speed by ${format(this.effect(level), 3)}×.`;
         },
         effectDescLevel(level: DecimalSource) {
-            return `×${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)} Research Speed for this level.`;
+            return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}× Research Speed for this level.`;
         },
         effect(level: DecimalSource) {
             const exp = D(14.75)
@@ -142,7 +149,7 @@ export const COL_RESEARCH = [
             return `Increase KBlessing Idle generation by ${format(this.effect(level), 3)}×.`;
         },
         effectDescLevel(level: DecimalSource) {
-            return `×${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)} KB per second for this level.`;
+            return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}× KB per second for this level.`;
         },
         effect(level: DecimalSource) {
             const effect = Decimal.mul(level, 0.05).add(1);
@@ -169,7 +176,7 @@ export const COL_RESEARCH = [
             return `Increase KBlessing Active generation by ${format(this.effect(level), 3)}×.`;
         },
         effectDescLevel(level: DecimalSource) {
-            return `×${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)} KB per click for this level.`;
+            return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}× KB per click for this level.`;
         },
         effect(level: DecimalSource) {
             const effect = Decimal.mul(level, 0.05).add(1);

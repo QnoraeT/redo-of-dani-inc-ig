@@ -68,9 +68,9 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
                 <li>Boosts PRai gain by {{ format(tmp.kua.effects.kshardPassive, 3) }}×.</li>
                 <li>Generate {{ format(tmp.kua.powGen, 3) }} Kuaraniai Power (KPower) per second.</li>
                 <li v-if="Decimal.gt(player.gameProgress.kua.kshards.amount, 0)">Adds Upgrade 5, and makes it's base ×{{format(tmp.kua.effects.upg5, 4)}}/bought.</li>
-                <li v-if="player.gameProgress.kua.kshards.upgrades >= 2">Multiply PRai's effect by {{ format(KUA_UPGRADES.KShards[1].eff!, 2) }}×.</li>
-                <li v-if="player.gameProgress.kua.kshards.upgrades >= 8">Multiply PRai gain by {{ format(KUA_UPGRADES.KShards[7].eff!, 2) }}×.</li>
-                <li v-if="player.gameProgress.kua.kshards.upgrades >= 9">Delays Upgrade 2's cost growth (after scaling costs) by +{{format(KUA_UPGRADES.KShards[8].eff!, 2)}} purchases.</li>
+                <li v-if="player.gameProgress.kua.kshards.upgrades >= 2">Multiply PRai's effect by {{ format(KUA_UPGRADES.KShards[1].eff!.value, 2) }}×.</li>
+                <li v-if="player.gameProgress.kua.kshards.upgrades >= 8">Multiply PRai gain by {{ format(KUA_UPGRADES.KShards[7].eff!.value, 2) }}×.</li>
+                <li v-if="player.gameProgress.kua.kshards.upgrades >= 9">Delays Upgrade 2's cost growth (after scaling costs) by +{{format(KUA_UPGRADES.KShards[8].eff!.value, 2)}} purchases.</li>
             </div>
         </div>
         <div class="flex-container" style="flex-direction: row; justify-content: center">
@@ -99,10 +99,10 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
             <div v-if="tmp.kua.active.kpower.effects" class="fontVerdana">
                 <li>Boosts Point gain by {{ format(tmp.kua.effects.kpowerPassive, 3) }}×.</li>
                 <li v-if="Decimal.gt(player.gameProgress.kua.kpower.amount, 1)">Adds Upgrade 6, and makes it's base +{{format(tmp.kua.effects.upg6, 5)}}/bought.</li>
-                <li v-if="player.gameProgress.kua.kpower.upgrades >= 1">Increases Upgrade 2's base by +{{format(KUA_UPGRADES.KPower[0].eff!, 3)}}.</li>
-                <li v-if="player.gameProgress.kua.kpower.upgrades >= 2">Makes Upgrade 3 {{ format(KUA_UPGRADES.KPower[1].eff!.sub(1).mul(100), 3) }}% more effective.</li>
-                <li v-if="player.gameProgress.kua.kpower.upgrades >= 4">Delays Upgrade 2's softcap by {{ format(KUA_UPGRADES.KPower[3].eff!, 2) }}×.</li>
-                <li v-if="player.gameProgress.kua.kpower.upgrades >= 5">Raises PRai's effect to ^{{format(KUA_UPGRADES.KPower[4].eff!, 4)}}.</li>
+                <li v-if="player.gameProgress.kua.kpower.upgrades >= 1">Increases Upgrade 2's base by +{{format(KUA_UPGRADES.KPower[0].eff!.value, 3)}}.</li>
+                <li v-if="player.gameProgress.kua.kpower.upgrades >= 2">Makes Upgrade 3 {{ format(KUA_UPGRADES.KPower[1].eff!.value.sub(1).mul(100), 3) }}% more effective.</li>
+                <li v-if="player.gameProgress.kua.kpower.upgrades >= 4">Delays Upgrade 2's softcap by {{ format(KUA_UPGRADES.KPower[3].eff!.value, 2) }}×.</li>
+                <li v-if="player.gameProgress.kua.kpower.upgrades >= 5">Raises PRai's effect to ^{{format(KUA_UPGRADES.KPower[4].eff!.value, 4)}}.</li>
             </div>
         </div>
         <div class="flex-container" style="flex-direction: row; justify-content: center">

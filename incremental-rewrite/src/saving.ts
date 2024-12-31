@@ -110,6 +110,7 @@ export const displayModesNonOptArray = (modes: Array<boolean>): string => {
 };
 
 export const saveTheFrickingGame = (clicked = false): void => {
+    gameVars.value.lastSave = gameVars.value.sessionTime;
     localStorage.setItem(saveID, compressSave(game.value));
     if (clicked) {
         spawnPopup(0, `The game has been saved!`, `Save`, 3, `#00FF00`);

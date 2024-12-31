@@ -14,7 +14,7 @@ import {
         <div style="display: flex; flex-direction: column; align-items: center">
             <div v-for="(item, index) in ACHIEVEMENT_DATA" :key="index">
                 <div
-                    v-if="item.show"
+                    v-if="item.show.value"
                     style="
                         width: 42.5vw;
                         padding-bottom: 2vw;
@@ -31,8 +31,7 @@ import {
                                         ACH_DEF_COLORS[item.type].unable,
                                         ACH_DEF_COLORS[item.type].canComplete,
                                         'Linear',
-                                        player.gameProgress.achievements[index].length /
-                                            item.list.length
+                                        player.gameProgress.achievements[index].length / item.list.length
                                     ),
                             0.25,
                             1
@@ -46,13 +45,13 @@ import {
                             {{ item.list.length }}
                         </span>
                         <span style="font-size: 0.9vw; margin-top: 0.3vw; text-align: center" class="fontVerdana whiteText">
-                            {{ item.rewAll }}
+                            {{ item.rewAll.value }}
                         </span>
                     </div>
                     <div style="display: flex; flex-wrap: wrap; margin-top: 0.75vw; width: 40vw; justify-content: center;">
                         <div v-for="(item2, index2) in tmp.achievementList[index]" :key="index2">
                             <div
-                                v-if="item.list[item2].show || ifAchievement(index, item2)"
+                                v-if="item.list[item2].show.value || ifAchievement(index, item2)"
                                 :style="{
                                     backgroundColor:
                                         ACH_DEF_COLORS[Ach_Types_List[index]][
@@ -111,11 +110,11 @@ import {
                                     <span v-if="shiftDown" style="font-size: 0.6vw"
                                         >ID: ({{ index }}, {{ item2 }})
                                     </span>
-                                    <span style="font-size: 1vw">{{ item.list[item2].name }}</span>
-                                    <br><br>{{ item.list[item2].desc }} <br>{{
+                                    <span style="font-size: 1vw">{{ item.list[item2].name.value }}</span>
+                                    <br><br>{{ item.list[item2].desc.value }} <br>{{
                                         item.list[item2].reward.value === ""
                                             ? ""
-                                            : `Reward: ${item.list[item2].reward}`
+                                            : `Reward: ${item.list[item2].reward.value}`
                                     }}
                                     <span :style="{ color: colorChange(ACH_DEF_COLORS[Ach_Types_List[index]].unable, 1.0, 0.5) }"  v-if="item.list[item2].status.value !== true && !ifAchievement(index, item2)"><br>{{ item.list[item2].status }}</span >
                                     <span style="font-size: 0.6vw; color: #ccc" v-if="item.list[item2].extra" ><br>{{ item.list[item2].extra }}</span >

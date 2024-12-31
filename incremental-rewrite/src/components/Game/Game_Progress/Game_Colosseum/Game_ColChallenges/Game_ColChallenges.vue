@@ -89,7 +89,7 @@ import { challengeToggle } from "../Game_Colosseum";
                 </div>
                 <div class="second-cont" style="height: 60%">
                     <div class="slidecontainer" style="position: absolute; left: 3%; width: 94%;">
-                        <input class="slider colSlider" style="padding: 0vw; margin: 0vw" type="range" v-model="player.gameProgress.inChallenge[item.id].optionalDiff" min="0" :max="new Decimal(timesCompleted(item.id)).toNumber()"/>
+                        <input class="slider colSlider" style="position: absolute; padding: 0vw; margin: 0vw; top: 0.6vw;" type="range" v-model="player.gameProgress.inChallenge[item.id].optionalDiff" min="0" :max="new Decimal(timesCompleted(item.id)).toNumber()"/>
                     </div>
                 </div>
             </div>

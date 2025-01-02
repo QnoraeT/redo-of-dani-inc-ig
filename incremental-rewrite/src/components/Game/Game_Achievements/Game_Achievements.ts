@@ -7,6 +7,7 @@ import { challengeDepth, inChallenge, timesCompleted } from "../Game_Progress/Ga
 import { getColResLevel } from "../Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
 import { getKuaUpgrade } from "../Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
 import { computed, type ComputedRef } from "vue";
+import { GROWAN_DATA } from "../Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 
 export type Ach_Types = "main" | "kua" | "col" | "l4";
 export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "l4"];
@@ -28,9 +29,9 @@ export const ACH_DEF_COLORS = {
         complete: computed(() => { return "#ff2300"; })
     },
     l4: {
-        unable: computed(() => { return colorChange(mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2), 0.75, 0.5); }),
-        canComplete: computed(() => { return colorChange(mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2), 0.75, 1.0); }),
-        complete: computed(() => { return mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2); })
+        unable: computed(() => { return colorChange(mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI / 2) + 1) / 2), 0.5, 0.5); }),
+        canComplete: computed(() => { return colorChange(mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI / 2) + 1) / 2), 0.5, 1.0); }),
+        complete: computed(() => { return mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI / 2) + 1) / 2); })
     }
 };
 
@@ -1465,8 +1466,41 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     return Decimal.gte(player.value.gameProgress.layer4.gro.gEAmount, 1e12);
                 }),
                 reward: computed(() => { return ``; }),
-                show: computed(() => { return player.value.gameProgress.layer4.timeInL4R === 1; }),
+                show: computed(() => { return player.value.gameProgress.layer4.pickedFirst === 1; }),
                 status: computed(() => { return true; })
+            },
+            {
+                // id: 1
+                ordering: 1,
+                name: computed(() => {
+                    return `The 'Dimension Boosts' be acting different`;
+                }),
+                desc: computed(() => {
+                    return `Reduce Grōwan Equation costs by -${format(2)}.`;
+                }),
+                cond: computed(() => {
+                    return Decimal.gte(GROWAN_DATA.equCancel.eff.value, 2);
+                }),
+                reward: computed(() => { return ``; }),
+                show: computed(() => { return player.value.gameProgress.layer4.pickedFirst === 1; }),
+                status: computed(() => { return true; })
+            },
+            {
+                // id: 2
+                ordering: 2,
+                name: computed(() => {
+                    return `Taking advantage of the start?`;
+                }),
+                desc: computed(() => {
+                    return `Complete No Kuaraniai in the first ${formatTime(240)} of a layer 4 reset.`;
+                }),
+                cond: computed(() => {
+                    return Decimal.gte(player.value.gameProgress.col.completed.nk, 1) && Decimal.lt(player.value.gameProgress.layer4.timeInL4R, 240);
+                }),
+                autoComplete: false,
+                reward: computed(() => { return ``; }),
+                show: computed(() => { return player.value.gameProgress.layer4.pickedFirst === 1; }),
+                status: computed(() => { return Decimal.lt(player.value.gameProgress.layer4.timeInL4R, 240) ? true : `Failed due to taking ${formatTime(240)} in a layer 4 reset.`; })
             },
         ],
         rewAll: computed(() => {

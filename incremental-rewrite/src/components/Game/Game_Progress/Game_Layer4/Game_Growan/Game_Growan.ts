@@ -206,12 +206,12 @@ export const GROWAN_DATA = {
             let i = player.value.gameProgress.layer4.gro.tick;
             i = doAllScaling(i, getSCSLAttribute('gtick', true), false);
             i = i.pow10();
-            i = i.mul(1000);
+            i = i.mul(1e8);
             return i;
         }),
         target: computed(() => {
             let i = player.value.gameProgress.layer4.gro.gEAmount;
-            i = Decimal.div(i, 1000);
+            i = Decimal.div(i, 1e8);
             i = i.log10();
             i = doAllScaling(i, getSCSLAttribute('gtick', true), true);
             return i;
@@ -254,8 +254,12 @@ export const GROWAN_DATA = {
             i = i.add(4);
             return i;
         }),
+        effPer: computed(() => {
+            return D(1);
+        }),
         eff: computed(() => {
-            const i = player.value.gameProgress.layer4.gro.equCancel;
+            let i = D(player.value.gameProgress.layer4.gro.equCancel);
+            i = i.mul(GROWAN_DATA.equCancel.effPer.value)
             return i;
         })
     },

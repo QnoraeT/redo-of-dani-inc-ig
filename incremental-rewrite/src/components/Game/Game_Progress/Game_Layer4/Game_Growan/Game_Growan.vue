@@ -3,7 +3,7 @@ import { tab } from "@/main";
 import { tmp, player } from "@/main";
 import { format } from "@/format";
 import { switchSubTab } from "@/components/MainTabs/MainTabs";
-import { buyGroEqu, buyGroEquCancel, buyGroTick, buyMaxAllGroEqu, GROWAN_DATA } from "./Game_Growan";
+import { buyGroEqu, buyGroEquCancel, buyGroTick, buyMaxAllGroEqu, GROWAN_DATA, GROWAN_UPGS } from "./Game_Growan";
 import Decimal from "break_eternity.js";
 import { resetStage } from "@/resets";
 </script>
@@ -32,11 +32,17 @@ import { resetStage } from "@/resets";
             <span style="text-shadow: #840 0vw 0vw 0.8vw; color: #840; text-align: center; font-size: 0.9vw; margin-top: 1vw" class="fontVerdana">
                 You have <span style="font-size: 1.2vw" ><b>{{ format(player.gameProgress.layer4.gro.gEAmount) }}</b></span> grōwan solutions, which boosts PRai effect by <b><span style="font-size: 1.2vw">^{{ format(tmp.layer4.growan.solEff.prai, 3) }}</span></b>.
             </span>
-            <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: column; width: 60vw; margin-top: 1vw;">
+            <span style="text-shadow: #840 0vw 0vw 0.8vw; color: #840; text-align: center; font-size: 0.9vw; margin-top: 0.3vw" class="fontVerdana">
+                Mult per bought: {{ format(GROWAN_DATA.equ.multPerBought.value, 2) }}×
+            </span>
+            <span style="text-shadow: #840 0vw 0vw 0.8vw; color: #840; text-align: center; font-size: 0.9vw; margin-top: 0.3vw" class="fontVerdana">
+                Grōwan Cancellation Effect: -{{ format(GROWAN_DATA.equCancel.eff.value, 2) }} (-{{ format(GROWAN_DATA.equCancel.effPer.value, 2) }} per.)
+            </span>
+            <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: column; width: 66.7vw; margin-top: 1vw;">
                 <button @click="buyMaxAllGroEqu()" class="whiteText smallGroBorder groButton fontVerdana" style="font-size: 0.8vw; height: 1.5vw; width: 8vw; margin-left: auto; margin-right: auto; margin-bottom: 1.0vw">
                     Buy Max
                 </button>
-                <button @click="buyGroTick()" v-if="Decimal.gte(player.gameProgress.layer4.gro.growanEqu[3].bought, 1)" class="whiteText smallGroBorder groButton fontVerdana" :class="{ nope: Decimal.lt(player.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.tick.cost.value), ok: Decimal.gte(player.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.tick.cost.value) }" style="font-size: 0.8vw; height: 3vw; width: 30vw; margin-left: auto; margin-right: auto; text-align: center; margin-bottom: 1.0vw">
+                <button @click="buyGroTick()" v-if="Decimal.gte(player.gameProgress.layer4.gro.growanEqu[3].bought, 1)" class="whiteText smallGroBorder groButton fontVerdana" :class="{ nope: Decimal.lt(player.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.tick.cost.value), ok: Decimal.gte(player.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.tick.cost.value) }" style="font-size: 0.8vw; height: 3vw; margin-left: auto; margin-right: auto; text-align: center; margin-bottom: 1.0vw">
                     Multiply all equations by {{ format(GROWAN_DATA.tick.eff.value, 3) }}×. ({{ format(GROWAN_DATA.tick.effPer.value, 3) }}× per.)<br>
                     Cost: {{ format(GROWAN_DATA.tick.cost.value) }} Grōwan Solutions
                 </button>
@@ -48,14 +54,18 @@ import { resetStage } from "@/resets";
                         <span class="fontVerdana" style="font-size: 1.0vw; color: #fa8; flex-grow: 1; flex-basis: 0; text-align: center;">
                             ×{{ format(GROWAN_DATA.equ.list[index - 1].mult.value, 2) }}
                         </span>
-                        <button @click="buyGroEqu(index - 1)" :class="{ nope: Decimal.lt(player.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.equ.list[index - 1].cost.value), ok: Decimal.gte(player.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.equ.list[index - 1].cost.value) }" class="whiteText smallGroBorder groButton fontVerdana" style="font-size: 0.8vw; height: 1.5vw; width: 30%; flex-grow: 1; flex-basis: 0; text-align: right; margin-left: auto;">
+                        <button @click="buyGroEqu(index - 1)" :class="{ nope: Decimal.lt(player.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.equ.list[index - 1].cost.value), ok: Decimal.gte(player.gameProgress.layer4.gro.gEAmount, GROWAN_DATA.equ.list[index - 1].cost.value) }" class="whiteText smallGroBorder groButton fontVerdana" style="font-size: 0.8vw; height: 1.5vw; flex-grow: 1; flex-basis: 0; text-align: right; margin-left: auto;">
                             Cost: {{ format(GROWAN_DATA.equ.list[index - 1].cost.value) }} Grōwan Solutions
                         </button>
                     </div>
                 </div>
-                <button @click="buyGroEquCancel()" v-if="Decimal.gte(player.gameProgress.layer4.gro.growanEqu[3].bought, 1) || Decimal.gte(player.gameProgress.layer4.gro.equCancel, 1)" class="whiteText smallGroBorder groButton fontVerdana" :class="{ nope: Decimal.lt(player.gameProgress.layer4.gro.growanEqu[Decimal.add(player.gameProgress.layer4.gro.equCancel, 3).min(7).toNumber()].bought, GROWAN_DATA.equCancel.cost.value), ok: Decimal.gte(player.gameProgress.layer4.gro.growanEqu[Decimal.add(player.gameProgress.layer4.gro.equCancel, 3).min(7).toNumber()].bought, GROWAN_DATA.equCancel.cost.value) }" style="font-size: 0.8vw; height: 3vw; width: 50vw; margin-left: auto; margin-right: auto; text-align: center; margin-top: 1.0vw">
-                    Decrease Grōwan Equation {{ Decimal.gt(player.gameProgress.layer4.gro.equCancel, 0) ? `1-${new Decimal(player.gameProgress.layer4.gro.equCancel).min(7).toNumber() + 1}` : '1' }} costs<span v-if="Decimal.lt(player.gameProgress.layer4.gro.equCancel, 4)">, and decrease Grōwan Equation {{ format(Decimal.add(player.gameProgress.layer4.gro.equCancel, 5)) }}'s cost greatly.</span><br>
+                <button @click="buyGroEquCancel()" v-if="Decimal.gte(player.gameProgress.layer4.gro.growanEqu[3].bought, 1) || Decimal.gte(player.gameProgress.layer4.gro.equCancel, 1)" class="whiteText smallGroBorder groButton fontVerdana" :class="{ nope: Decimal.lt(player.gameProgress.layer4.gro.growanEqu[Decimal.add(player.gameProgress.layer4.gro.equCancel, 3).min(7).toNumber()].bought, GROWAN_DATA.equCancel.cost.value), ok: Decimal.gte(player.gameProgress.layer4.gro.growanEqu[Decimal.add(player.gameProgress.layer4.gro.equCancel, 3).min(7).toNumber()].bought, GROWAN_DATA.equCancel.cost.value) }" style="font-size: 0.8vw; height: 3vw; margin-left: auto; margin-right: auto; text-align: center; margin-top: 1.0vw">
+                    Decrease Grōwan Equation {{ Decimal.gt(player.gameProgress.layer4.gro.equCancel, 0) ? `1-${new Decimal(player.gameProgress.layer4.gro.equCancel).min(7).toNumber() + 1}` : '1' }} costs<span v-if="Decimal.lt(player.gameProgress.layer4.gro.equCancel, 4)">, and decrease Grōwan Equation {{ format(Decimal.add(player.gameProgress.layer4.gro.equCancel, 5)) }}'s cost greatly</span>.<br>
                     Cost: {{ format(GROWAN_DATA.equCancel.cost.value) }} Grōwan Equation {{ format(Decimal.add(player.gameProgress.layer4.gro.equCancel, 4).min(8)) }}
+                </button>
+                <button v-if="Decimal.gte(player.gameProgress.layer4.gro.growanEqu[7].bought, 1) || Decimal.gte(player.gameProgress.layer4.gro.equCancel, 1)" class="whiteText smallGroBorder groButton fontVerdana" :class="{ nope: Decimal.lt(player.gameProgress.layer4.gro.growanEqu[7].bought, GROWAN_DATA.gal.cost.value), ok: Decimal.gte(player.gameProgress.layer4.gro.growanEqu[7].bought, GROWAN_DATA.gal.cost.value) }" style="font-size: 0.8vw; height: 3vw; margin-left: auto; margin-right: auto; text-align: center; margin-top: 0.5vw">
+                    Increase the 'Multiply all equations' multiplier by ^{{ format(GROWAN_DATA.gal.eff.value, 3) }}.<br>
+                    Cost: {{ format(GROWAN_DATA.gal.cost.value) }} Grōwan Equation 8
                 </button>
             </div>
             <!-- <div
@@ -79,6 +89,22 @@ import { resetStage } from "@/resets";
             >
 
             </div> -->
+        </div>
+        <div v-if="tab.tabList[tab.currentTab][0] === 1" class="flex-container" style="flex-direction: column; justify-content: center; margin-bottom: 1vw">
+            <div class="flex-container" style="justify-content: center">
+                <div class="flex-container" style="justify-content: center; background-color: #300; border: 0.24vw solid #c00; width: 30vw; margin: 0.25vw">
+                    <span class="whiteText fontVerdana" style="font-size: 1.0vw">You have bought {{ player.gameProgress.layer4.gro.upgrades[0] }} active upgrades.</span>
+                    <div v-for="(item, index) in GROWAN_UPGS.active" :key="index">
+                        
+                    </div>
+                </div>
+                <div class="flex-container" style="justify-content: center; background-color: #210; border: 0.24vw solid #840; width: 30vw; margin: 0.25vw">
+                    <span class="whiteText fontVerdana" style="font-size: 1.0vw">You have bought {{ player.gameProgress.layer4.gro.upgrades[1] }} normal upgrades.</span>
+                </div>
+                <div class="flex-container" style="justify-content: center; background-color: #023; border: 0.24vw solid #06c; width: 30vw; margin: 0.25vw">
+                    <span class="whiteText fontVerdana" style="font-size: 1.0vw">You have bought {{ player.gameProgress.layer4.gro.upgrades[2] }} idle upgrades.</span>
+                </div>
+            </div>
         </div>
     </div>
 </template>

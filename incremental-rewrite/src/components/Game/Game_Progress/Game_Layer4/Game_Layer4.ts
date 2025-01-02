@@ -40,7 +40,7 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
 
             i = Decimal.max(player.value.gameProgress.layer4.gro.gEAmount, 0);
             tmp.value.layer4.growan.solEff = {
-                prai: i.add(1).log10().div(100).add(1).pow(0.4)
+                prai: i.add(1).log10().mul(0.002).add(1)
             }
 
             updateAllBest(player.value.gameProgress.layer4.gro.best, player.value.gameProgress.layer4.gro.amount);

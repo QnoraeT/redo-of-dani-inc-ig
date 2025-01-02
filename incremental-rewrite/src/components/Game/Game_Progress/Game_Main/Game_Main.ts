@@ -780,6 +780,11 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
             setFactor(6, [2, 1], `Sabotaged Upgrades ×${format(challengeDepth("su"))}`, `^${format(getColChalCondEffects("su")[3], 3)}`, `×${format(i, 2)}`, inChallenge("su") && Decimal.gte(challengeDepth("su"), 9), "col");
 
+            if (Decimal.gt(player.value.gameProgress.layer4.gro.totalAmt, 0)) {
+                i = i.pow(tmp.value.layer4.growan.solEff.prai);
+            }
+            setFactor(7, [2, 1], "Grōwan Solution Effect", `^${format(tmp.value.layer4.growan.solEff.prai, 3)}`, `×${format(i, 2)}`, Decimal.gt(player.value.gameProgress.layer4.gro.totalAmt, 0), "growan");
+
             tmp.value.main.prai.effect = i;
 
             i = Decimal.add(player.value.gameProgress.main.prai.amount, tmp.value.main.prai.pending);
@@ -798,6 +803,9 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
             if (inChallenge("su") && Decimal.gte(challengeDepth("su"), 9)) {
                 i = i.pow(getColChalCondEffects("su")[3]);
+            }
+            if (Decimal.gt(player.value.gameProgress.layer4.gro.totalAmt, 0)) {
+                i = i.pow(tmp.value.layer4.growan.solEff.prai);
             }
             tmp.value.main.prai.nextEffect = i;
 

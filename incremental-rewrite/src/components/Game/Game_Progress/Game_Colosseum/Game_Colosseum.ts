@@ -190,6 +190,7 @@ export const challengeToggle = (id: challengeIDList) => {
                 player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);
             }
 
+            setAchievement(3, 2);
             setAchievement(2, 3);
             setAchievement(2, 1);
         }

@@ -4,8 +4,8 @@ import Decimal from "break_eternity.js";
 import { timesCompleted } from "../Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
 import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 
-export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "fkp" | "col" | "tax" | "sc1" | "sc2"
-export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "fkp", "col", "tax", "sc1", "sc2"]
+export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "fkp" | "col" | "growan" | "tax" | "sc1" | "sc2"
+export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "fkp", "col", "growan", "tax", "sc1", "sc2"]
 export const factorColors = {
     norm: "#FFFFFF",
     ach: "#FFFF80",
@@ -14,6 +14,7 @@ export const factorColors = {
     kp: "#00FFFF",
     fkp: "#80FF80",
     col: "#FFA080",
+    growan: "#804000",
     tax: "#FFE040",
     sc1: "#FFA0A0",
     sc2: "#FFE0C0"

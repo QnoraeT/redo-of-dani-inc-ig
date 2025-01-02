@@ -226,10 +226,13 @@ export const reset = (layer: number) => {
             // colTime should automatically exit all challenges
             player.value.gameProgress.col.power = D(0);
             player.value.gameProgress.col.time = D(0);
+            // this is to actually leave the challenge because doing it with recursive reset 3 will not reset the data and put the game in a buggy state
+            updateAllCol(0);
 
             for (const i in COL_CHALLENGES) {
                 if (COL_CHALLENGES[i as challengeIDList].layer === 0) {
                     player.value.gameProgress.col.completed[i as challengeIDList] = D(0);
+                    player.value.gameProgress.inChallenge[i as challengeIDList].optionalDiff = D(0);
                 }
             }
             for (let i = 0; i < COL_RESEARCH.length; i++) {

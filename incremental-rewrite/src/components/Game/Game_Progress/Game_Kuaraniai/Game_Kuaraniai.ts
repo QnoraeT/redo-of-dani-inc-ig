@@ -436,6 +436,11 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             }
             setFactor(4, [4, 1], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[0], 2)}`, `${format(tmp.value.kua.pending, 1)}`, Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1), "kb");
 
+            if (Decimal.gt(player.value.gameProgress.layer4.gro.totalAmt, 0)) {
+                tmp.value.kua.pending = tmp.value.kua.pending.mul(tmp.value.layer4.growan.eff.kuaGain);
+            }
+            setFactor(5, [4, 1], `Grōwan Effect`, `×${format(tmp.value.layer4.growan.eff.kuaGain, 2)}`, `${format(tmp.value.kua.pending, 1)}`, Decimal.gt(player.value.gameProgress.layer4.gro.totalAmt, 0), "growan");
+
             data = {
                 oldGain: tmp.value.kua.pending,
                 oldKua: D(0),
@@ -448,7 +453,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
                 tmp.value.kua.pending = data.newKua.sub(data.oldKua);
             }
-            setFactor(5, [4, 1], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tmp.value.kua.pending), 2)}`, `${format(tmp.value.kua.pending, 4)}`, inChallenge("df"), "col");
+            setFactor(6, [4, 1], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tmp.value.kua.pending), 2)}`, `${format(tmp.value.kua.pending, 4)}`, inChallenge("df"), "col");
 
             if (player.value.gameProgress.kua.auto) {
                 generate = tmp.value.kua.pending.mul(delta).mul(0.01);

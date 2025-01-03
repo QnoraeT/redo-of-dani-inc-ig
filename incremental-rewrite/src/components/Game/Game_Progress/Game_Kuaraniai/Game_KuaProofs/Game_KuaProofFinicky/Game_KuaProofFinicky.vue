@@ -20,8 +20,8 @@ import { getFinickyKPExp, getFinickyKPExpGain, getFinickySeconds } from "./Game_
         </span>
         <button @click="resetFromFKP(true, true, true, 1)" class="whiteText fontVerdana" style="border: 0.18vw solid #0f0; background-color: #040; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.2vw; padding-top: 0.75vw; padding-bottom: 0.75vw; padding-right: 1.5vw; padding-left: 1.5vw;"> 
             Add <span style="font-size: 1vw"><b>{{ format(getFinickyKPExp(Decimal.add(getFinickyKPExpGain(player.gameProgress.kua.proofs.strange.amount), player.gameProgress.kua.proofs.finicky.hiddenExp), false).sub(getFinickyKPExp(player.gameProgress.kua.proofs.finicky.hiddenExp, false)), 2) }}</b></span> to Finicky KProof's exponent and add <span style="font-size: 1vw"><b>{{ formatTime(getFinickySeconds(player.gameProgress.kua.proofs.strange.amount), 3) }}</b></span> of it.<br>
-            <span v-if="Decimal.lte(player.gameProgress.kua.proofs.finicky.cooldown, 0) && Decimal.gte(player.gameProgress.kua.proofs.strange.amount, 1e10)">This will reset SKP and KProof progress, but will not reset Effects progress.<br></span>
-            <span v-if="Decimal.lt(player.gameProgress.kua.proofs.strange.amount, 1e10)">You cannot FKP reset until you get {{ format(1e10) }} SKP!<br></span>
+            <span v-if="Decimal.lte(player.gameProgress.kua.proofs.finicky.cooldown, 0) && Decimal.gte(player.gameProgress.kua.proofs.strange.amount, 1e7)">This will reset SKP and KProof progress, but will not reset Effects progress.<br></span>
+            <span v-if="Decimal.lt(player.gameProgress.kua.proofs.strange.amount, 1e7)">You cannot FKP reset until you get {{ format(1e7) }} SKP!<br></span>
             <span v-if="Decimal.gt(player.gameProgress.kua.proofs.finicky.cooldown, 0)">You cannot FKP reset for {{ formatTime(player.gameProgress.kua.proofs.finicky.cooldown) }}!<br></span>
         </button>
         <div class="flex-container" style="margin-top: 0.4vw; flex-wrap: wrap; justify-content: center;">

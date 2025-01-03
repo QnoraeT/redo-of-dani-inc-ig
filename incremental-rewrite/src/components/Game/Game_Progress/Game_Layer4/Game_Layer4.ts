@@ -24,13 +24,10 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             }
 
             tmp.value.layer4.growan.req = D(1e24);
-            tmp.value.layer4.growan.canDo = Decimal.gte(player.value.gameProgress.kua.best[4]!, tmp.value.layer4.growan.req);
-            tmp.value.layer4.growan.pending = D(0);
+            tmp.value.layer4.growan.pending = Decimal.log(player.value.gameProgress.kua.best[4]!, tmp.value.layer4.growan.req).sub(player.value.gameProgress.layer4.gro.totalAmt).max(0);
 
-            if (tmp.value.layer4.growan.canDo) {
-                tmp.value.layer4.growan.pending = Decimal.log(player.value.gameProgress.kua.best[4]!, tmp.value.layer4.growan.req).sub(player.value.gameProgress.layer4.gro.totalAmt).max(0);
-            }
             tmp.value.layer4.growan.nextAt = Decimal.pow(tmp.value.layer4.growan.req, player.value.gameProgress.layer4.gro.totalAmt);
+            tmp.value.layer4.growan.canDo = Decimal.gte(player.value.gameProgress.kua.best[4]!, tmp.value.layer4.growan.nextAt);
 
             i = Decimal.max(player.value.gameProgress.layer4.gro.totalAmt, 0);
             tmp.value.layer4.growan.eff = {

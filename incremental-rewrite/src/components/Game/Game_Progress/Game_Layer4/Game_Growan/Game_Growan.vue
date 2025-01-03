@@ -68,40 +68,20 @@ import { resetStage } from "@/resets";
                     Cost: {{ format(GROWAN_DATA.gal.cost.value) }} Grōwan Equation 8
                 </button>
             </div>
-            <!-- <div
-                class="flex-container"
-                style="
-                    flex-wrap: wrap;
-                    align-content: flex-start;
-                    margin-top: 0.8vw;
-                    background-color: #420;
-                    border: 0.24vw solid #804000;
-                    margin-left: auto;
-                    margin-right: auto;
-                    display: flex;
-                    justify-content: center;
-                    flex-direction: row;
-                    padding: 0.6vw;
-                    box-shadow: 0 0 0.8vw 0.24vw rgb(66, 25, 0);
-                    height: 45vw;
-                    width: 80vw;
-                "
-            >
-
-            </div> -->
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 1" class="flex-container" style="flex-direction: column; justify-content: center; margin-bottom: 1vw">
             <div class="flex-container" style="justify-content: center">
-                <div class="flex-container" style="justify-content: center; background-color: #300; border: 0.24vw solid #c00; width: 30vw; margin: 0.25vw">
+                <div class="flex-container" style="flex-direction: column; align-items: center; background-color: #300; border: 0.24vw solid #c00; width: 30vw; margin: 0.25vw">
                     <span class="whiteText fontVerdana" style="font-size: 1.0vw">You have bought {{ player.gameProgress.layer4.gro.upgrades[0] }} active upgrades.</span>
-                    <div v-for="(item, index) in GROWAN_UPGS.active" :key="index">
-                        
+                    <div v-for="(item, index) in GROWAN_UPGS.active" :key="index" style="border: 0.24vw solid #c00; width: 27.5vw; margin: 0.25vw; text-align: center;" :style="{ backgroundColor: Decimal.gte(player.gameProgress.layer4.gro.amount, item.cost) ? '#600' : '#200' }">
+                        <span class="fontVerdana whiteText" style="font-size: 0.75vw">{{ item.desc.value }}<br><br></span>
+                        <span class="fontVerdana whiteText" style="font-size: 1.0vw">Cost: {{ format(item.cost) }} Grōwan</span>
                     </div>
                 </div>
-                <div class="flex-container" style="justify-content: center; background-color: #210; border: 0.24vw solid #840; width: 30vw; margin: 0.25vw">
+                <div class="flex-container" style="flex-direction: column; align-items: center; background-color: #210; border: 0.24vw solid #840; width: 30vw; margin: 0.25vw">
                     <span class="whiteText fontVerdana" style="font-size: 1.0vw">You have bought {{ player.gameProgress.layer4.gro.upgrades[1] }} normal upgrades.</span>
                 </div>
-                <div class="flex-container" style="justify-content: center; background-color: #023; border: 0.24vw solid #06c; width: 30vw; margin: 0.25vw">
+                <div class="flex-container" style="flex-direction: column; align-items: center; background-color: #023; border: 0.24vw solid #06c; width: 30vw; margin: 0.25vw">
                     <span class="whiteText fontVerdana" style="font-size: 1.0vw">You have bought {{ player.gameProgress.layer4.gro.upgrades[2] }} idle upgrades.</span>
                 </div>
             </div>

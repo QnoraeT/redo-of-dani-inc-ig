@@ -5,7 +5,7 @@ import Decimal from "break_eternity.js"
 import { D } from "@/calc"
 import { format } from "@/format"
 import { setFactor } from "../../Game_Stats/Game_Stats"
-import { GROWAN_DATA } from "./Game_Growan/Game_Growan"
+import { buyGroEquCancel, buyGroGal, GROWAN_DATA } from "./Game_Growan/Game_Growan"
 
 export const updateAllLayer4 = (delta: DecimalSource) => {
     updateLayer4(1, delta)
@@ -24,7 +24,7 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             }
 
             tmp.value.layer4.growan.req = D(1e24);
-            tmp.value.layer4.growan.pending = Decimal.log(player.value.gameProgress.kua.best[4]!, tmp.value.layer4.growan.req).sub(player.value.gameProgress.layer4.gro.totalAmt).max(0);
+            tmp.value.layer4.growan.pending = Decimal.max(player.value.gameProgress.kua.best[4]!, tmp.value.layer4.growan.req).log(tmp.value.layer4.growan.req).sub(player.value.gameProgress.layer4.gro.totalAmt).max(0);
 
             tmp.value.layer4.growan.nextAt = Decimal.pow(tmp.value.layer4.growan.req, player.value.gameProgress.layer4.gro.totalAmt);
             tmp.value.layer4.growan.canDo = Decimal.gte(player.value.gameProgress.kua.best[4]!, tmp.value.layer4.growan.nextAt);
@@ -32,10 +32,10 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             i = Decimal.max(player.value.gameProgress.layer4.gro.totalAmt, 0);
             tmp.value.layer4.growan.eff = {
                 kuaGain: i.add(1).pow(2),
-                groMult: i.add(1).pow(0.2).sub(1).pow10().mul(i),
+                groMult: i.pow10().mul(i),
             }
 
-            i = Decimal.max(player.value.gameProgress.layer4.gro.gEAmount, 0);
+            i = Decimal.max(player.value.gameProgress.layer4.gro.bestGEA, 0);
             tmp.value.layer4.growan.solEff = {
                 prai: i.add(1).log10().mul(0.002).add(1)
             }
@@ -49,6 +49,7 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             generate = i.mul(delta);
 
             player.value.gameProgress.layer4.gro.gEAmount = Decimal.add(player.value.gameProgress.layer4.gro.gEAmount, generate);
+            player.value.gameProgress.layer4.gro.bestGEA = Decimal.max(player.value.gameProgress.layer4.gro.bestGEA, player.value.gameProgress.layer4.gro.gEAmount);
 
             updateAllTotal(player.value.gameProgress.layer4.gro.groAmountStats.totals, generate);
             player.value.gameProgress.layer4.gro.groAmountStats.totalEver = Decimal.add(player.value.gameProgress.layer4.gro.groAmountStats.totalEver, generate);
@@ -61,6 +62,12 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
                 generate = generate.mul(delta);
                 player.value.gameProgress.layer4.gro.growanEqu[i - 1].accumulated = Decimal.add(player.value.gameProgress.layer4.gro.growanEqu[i - 1].accumulated, generate);
             }
+
+            // delete this, testing
+            const k = 1
+            k
+            buyGroEquCancel(true, false)
+            buyGroGal(true, false)
             break;
         case 0:
             tmp.value.layer4.tax.active = false

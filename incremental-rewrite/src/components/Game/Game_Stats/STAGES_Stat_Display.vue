@@ -89,9 +89,16 @@ defineProps<{
         </div>
         <div v-if="id === 3" class="statText fontVerdana">
             <span>
-                Total Taxed Coins: {{ format(player.gameProgress.tax.totalEver, 2) }}<br>
-                Best Taxed Coins: {{ format(player.gameProgress.tax.bestEver, 2) }}<br>
-                Taxation Resets: {{ format(player.gameProgress.tax.times) }}<br>
+                Total Grōwan: {{ format(player.gameProgress.layer4.gro.totalAmt, 2) }}<br>
+                Equation Cancellations: {{ format(player.gameProgress.layer4.gro.equCancel) }}<br>
+                Grōwan Equation Mult Increases: {{ format(player.gameProgress.layer4.gro.gal) }}<br>
+            </span>
+        </div>
+        <div v-if="id === 4" class="statText fontVerdana">
+            <span>
+                Total Taxed Coins: {{ format(player.gameProgress.layer4.tax.totalEver, 2) }}<br>
+                Best Taxed Coins: {{ format(player.gameProgress.layer4.tax.bestEver, 2) }}<br>
+                Taxation Resets: {{ format(player.gameProgress.layer4.tax.times) }}<br>
             </span>
         </div>
     </div>

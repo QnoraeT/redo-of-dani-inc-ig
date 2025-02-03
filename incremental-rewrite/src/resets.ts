@@ -17,7 +17,8 @@ import { MAIN_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_MainUp
 import { updateAllLayer4 } from "./components/Game/Game_Progress/Game_Layer4/Game_Layer4";
 import { COL_RESEARCH } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
 import { COL_CHALLENGES, type challengeIDList } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalData";
-
+import { inChallenge } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
+import { hasGrowanMilestone } from "./components/Game/Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 
 export const resetTotalBestArray = (
     array: Array<null | DecimalSource>,
@@ -86,19 +87,23 @@ export const resetStage = (resets: "prai" | "pr2" | "kua" | "col" | "tax" | "gro
             reset(3);
             break;
         case "growan":
-            if (tmp.value.layer4.growan.canDo || override) {
-                if (!override) {
-                    player.value.gameProgress.layer4.gro.totalAmt = Decimal.add(player.value.gameProgress.layer4.gro.totalAmt, tmp.value.layer4.growan.pending);
-                    player.value.gameProgress.layer4.gro.amount = Decimal.add(player.value.gameProgress.layer4.gro.amount, tmp.value.layer4.growan.pending);
-
-                    player.value.gameProgress.layer4.timeInL4R = D(0);
-                    if (player.value.gameProgress.layer4.pickedFirst === 0) {
-                        player.value.gameProgress.layer4.pickedFirst = 1;
-                    }
+            if (!tmp.value.layer4.growan.canDo) {
+                if (!confirm('Are you sure you want to do a layer 4 reset? You will not gain anything!')) {
+                    return;
                 }
-
-                reset(4);
             }
+            if (!override) {
+                NaNCheck(tmp.value.layer4.growan.pending, `You are gaining NaN grōwan`)
+                player.value.gameProgress.layer4.gro.totalAmt = Decimal.add(player.value.gameProgress.layer4.gro.totalAmt, tmp.value.layer4.growan.pending);
+                player.value.gameProgress.layer4.gro.amount = Decimal.add(player.value.gameProgress.layer4.gro.amount, tmp.value.layer4.growan.pending);
+
+                player.value.gameProgress.layer4.timeInL4R = D(0);
+                if (player.value.gameProgress.layer4.pickedFirst === 0) {
+                    player.value.gameProgress.layer4.pickedFirst = 1;
+                }
+            }
+
+            reset(4);
             break;
         default:
             throw new Error(`uhh i don't think ${resets} is resettable`);
@@ -144,7 +149,7 @@ export const reset = (layer: number) => {
             player.value.gameProgress.main.prai.times = D(0);
             player.value.gameProgress.main.prai.amount = D(0);
             player.value.gameProgress.kua.timeInKua = D(0);
-            if (Decimal.lt(player.value.gameProgress.main.pr2.amount, 25)) {
+            if (Decimal.lt(player.value.gameProgress.main.pr2.amount, 25) && !hasGrowanMilestone(0)) {
                 player.value.gameProgress.main.oneUpgrades = [];
             }
             for (let i = 0; i < player.value.gameProgress.main.upgrades.length; i++) {
@@ -160,11 +165,15 @@ export const reset = (layer: number) => {
             player.value.gameProgress.kua.kshards.upgrades = 0;
             player.value.gameProgress.kua.kpower.amount = D(0);
             player.value.gameProgress.kua.kpower.upgrades = 0;
-            player.value.gameProgress.main.pr2.amount = D(0);
+
+            if (!hasGrowanMilestone(0)) {
+                player.value.gameProgress.main.pr2.amount = D(0);
+                player.value.gameProgress.main.prai.auto = false;
+            }
+
             for (let i = 0; i < MAIN_UPGS.length; i++) {
                 player.value.gameProgress.main.upgrades[i].auto = false;
             }
-            player.value.gameProgress.main.prai.auto = false;
             player.value.gameProgress.kua.auto = false;
 
             for (let i = 0; i < MAIN_UPGS.length; i++) {
@@ -181,9 +190,11 @@ export const reset = (layer: number) => {
             player.value.gameProgress.kua.enhancers.extractionXP = [D(0), D(0), D(0)];
             player.value.gameProgress.kua.enhancers.upgrades = [];
 
-            player.value.gameProgress.kua.blessings.amount = D(0);
-            for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
-                player.value.gameProgress.kua.blessings.upgrades[i] = D(0);
+            if (!hasGrowanMilestone(1)) {
+                player.value.gameProgress.kua.blessings.amount = D(0);
+                for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
+                    player.value.gameProgress.kua.blessings.upgrades[i] = D(0);
+                }
             }
 
             player.value.gameProgress.kua.proofs.amount = D(0);
@@ -217,8 +228,11 @@ export const reset = (layer: number) => {
             for (const i in KUA_PROOF_AUTO) {
                 for (let j = 0; j < KUA_PROOF_AUTO[i as KuaProofAutoTypes].length; j++) {
                     player.value.gameProgress.kua.proofs.automationBought[i as KuaProofAutoTypes][j] = false;
+                    player.value.gameProgress.kua.proofs.automationEnabled[i as KuaProofAutoTypes][j] = false;
                 }
             }
+
+            player.value.gameProgress.col.timeInCol = D(0);
             break;
         case 4:
             // TODO: add an extra setting where col power and time do not reset on layer 1+ col challenges
@@ -238,6 +252,16 @@ export const reset = (layer: number) => {
             for (let i = 0; i < COL_RESEARCH.length; i++) {
                 player.value.gameProgress.col.research.xpTotal[i] = D(0);
                 player.value.gameProgress.col.research.enabled[i] = false;
+            }
+
+            // milestone 1
+            player.value.gameProgress.main.oneUpgrades = [];
+            player.value.gameProgress.main.pr2.amount = D(0);
+
+            // milestone 2
+            player.value.gameProgress.kua.blessings.amount = D(0);
+            for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
+                player.value.gameProgress.kua.blessings.upgrades[i] = D(0);
             }
             break;
         default:
@@ -264,27 +288,25 @@ export const reset = (layer: number) => {
     resetTotalBestArray(player.value.gameProgress.col.best, D(0), layer);
     resetTotalBestArray(player.value.gameProgress.col.totals, D(0), layer);
 
-    // for (let i = 0; i < 2; i++) {
-        switch (layer) {
-            case 0:
-                updateAllStart(0);
-                break;
-            case 1:
-                updateAllStart(0);
-                break;
-            case 2:
-                updateAllKua(0);
-                break;
-            case 3:
-                updateAllCol(0);
-                break;
-            case 4:
-                updateAllLayer4(0);
-                break;
-            default:
-                throw new Error(`uhh i don't think ${layer} is resettable`);
-        }
-    // }
+    switch (layer) {
+        case 0:
+            updateAllStart(0);
+            break;
+        case 1:
+            updateAllStart(0);
+            break;
+        case 2:
+            updateAllKua(0);
+            break;
+        case 3:
+            updateAllCol(0);
+            break;
+        case 4:
+            updateAllLayer4(0);
+            break;
+        default:
+            throw new Error(`uhh i don't think ${layer} is resettable`);
+    }
 
     reset(layer - 1);
 };
@@ -303,8 +325,8 @@ export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, d
         }
 
         tmp.value.kua.proofs.skpExp = getStrangeKPExp(player.value.gameProgress.kua.proofs.strange.hiddenExp, false);
-        let data = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(delta).pow(tmp.value.kua.proofs.skpExp).sub(1);
-        let calc = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(1).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        let data = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        let calc = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed).pow(tmp.value.kua.proofs.skpExp).sub(1);
 
         const softcaps = {
             prevEff: calc,
@@ -325,7 +347,19 @@ export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, d
             setSCSLEffectDisp('skp', false, 0, `/${format(calc.div(softcaps.prevEff), 3)}`);
         }
 
-        player.value.gameProgress.kua.proofs.strange.amount = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(delta).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        if (inChallenge("df")) {
+            data = scale(data, 2.1, true, 10, 1, 0.75);
+            calc = scale(calc, 2.1, true, 10, 1, 0.75);
+            player.value.gameProgress.kua.proofs.strange.amount = scale(player.value.gameProgress.kua.proofs.strange.amount, 2.1, true, 10, 1, 0.75);
+        }
+
+        player.value.gameProgress.kua.proofs.strange.amount = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
+
+        if (inChallenge("df")) {
+            data = scale(data, 2.1, false, 10, 1, 0.75);
+            calc = scale(calc, 2.1, false, 10, 1, 0.75);
+            player.value.gameProgress.kua.proofs.strange.amount = scale(player.value.gameProgress.kua.proofs.strange.amount, 2.1, false, 10, 1, 0.75);
+        }
 
         if (data.gte(softcaps.scal[0].start)) {
             data = scale(data, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
@@ -340,7 +374,7 @@ export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, d
         NaNCheck(data);
         NaNCheck(player.value.gameProgress.kua.proofs.strange.amount);
 
-        if (reset) {
+        if (reset && !hasGrowanMilestone(1)) {
             player.value.gameProgress.kua.proofs.amount = D(0);
             for (let i = 0; i < KUA_PROOF_UPGS.kp.length; i++) {
                 player.value.gameProgress.kua.proofs.upgrades.kp[i] = D(0);
@@ -365,7 +399,16 @@ export const resetFromFKP = (reset = true, addTimes: boolean, addExp: boolean, d
 
         tmp.value.kua.proofs.fkpExp = getFinickyKPExp(player.value.gameProgress.kua.proofs.finicky.hiddenExp, false);
 
+        if (inChallenge("df")) {
+            player.value.gameProgress.kua.proofs.finicky.amount = scale(player.value.gameProgress.kua.proofs.finicky.amount, 2.1, true, 10, 1, 0.75);
+        }
+
         player.value.gameProgress.kua.proofs.finicky.amount = Decimal.max(player.value.gameProgress.kua.proofs.finicky.amount, 0).add(1).root(tmp.value.kua.proofs.fkpExp).add(gain.mul(delta)).pow(tmp.value.kua.proofs.fkpExp).sub(1);
+
+        if (inChallenge("df")) {
+            player.value.gameProgress.kua.proofs.finicky.amount = scale(player.value.gameProgress.kua.proofs.finicky.amount, 2.1, false, 10, 1, 0.75);
+        }
+
         NaNCheck(player.value.gameProgress.kua.proofs.finicky.amount);
 
         if (reset) {

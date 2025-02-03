@@ -3,6 +3,7 @@ import { format, formatPerc } from "@/format";
 import { player, tmp } from "@/main";
 import Decimal from "break_eternity.js";
 import { computed, type ComputedRef } from "vue";
+import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
 
 export const buyKShardUpg = (id: number) => {
     if (id === player.value.gameProgress.kua.kshards.upgrades) {
@@ -245,6 +246,9 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 15
             desc: computed(() => {
+                if (hasGrowanMilestone(3)) {
+                    return `Upgrade 1 is ${format(10, 1)}% more effective.`;
+                }
                 return `Unlock Upgrade 7 which raises Upgrade 1's effect.`;
             }),
             cost: D(1e25),
@@ -253,6 +257,9 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 16
             desc: computed(() => {
+                if (hasGrowanMilestone(3)) {
+                    return `Upgrade 2 is ${format(10, 1)}% more effective.`;
+                }
                 return `Unlock Upgrade 8 which raises Upgrade 1's cost.`;
             }),
             cost: D(1e30),
@@ -261,6 +268,9 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 17
             desc: computed(() => {
+                if (hasGrowanMilestone(3)) {
+                    return `Upgrade 3 is ${format(10, 1)}% more effective.`;
+                }
                 return `Unlock Upgrade 9 which multiplies Upgrade 1's base.`;
             }),
             cost: D(1e35),

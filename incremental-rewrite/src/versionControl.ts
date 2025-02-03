@@ -618,8 +618,13 @@ export const updatePlayerData = (player: Player): Player => {
                 totalAmt: D(0),
                 amount: D(0),
                 auto: false,
-                upgrades: [0, 0, 0],
+                upgrades: {
+                    active: [],
+                    overall: [],
+                    idle: []
+                },
                 gEAmount: D(0),
+                bestGEA: D(0),
                 groAmountStats: {
                     totals: [null, null, null, null, null],
                     best: [null, null, null, null, null],
@@ -671,8 +676,13 @@ export const updatePlayerData = (player: Player): Player => {
                 totalAmt: D(0),
                 amount: D(0),
                 auto: false,
-                upgrades: [0, 0, 0],
+                upgrades: {
+                    active: [],
+                    overall: [],
+                    idle: []
+                },
                 gEAmount: D(0),
+                bestGEA: D(0),
                 groAmountStats: {
                     totals: [null, null, null, null, null],
                     best: [null, null, null, null, null],
@@ -713,8 +723,13 @@ export const updatePlayerData = (player: Player): Player => {
                 totalAmt: D(0),
                 amount: D(0),
                 auto: false,
-                upgrades: [0, 0, 0],
+                upgrades: {
+                    active: [],
+                    overall: [],
+                    idle: []
+                },
                 gEAmount: D(0),
+                bestGEA: D(0),
                 groAmountStats: {
                     totals: [null, null, null, null, null],
                     best: [null, null, null, null, null],
@@ -746,10 +761,47 @@ export const updatePlayerData = (player: Player): Player => {
         player.version = 44;
     }
     if (player.version === 44) {
-
-        // player.displayVersion = 'v1.1.5.8 - Dec-27-2024';
-        // player.version = 45;
+        player.gameProgress.layer4.gro.bestGEA = D(0);
+        player.displayVersion = 'v1.1.5.8 - Jan-04-2025';
+        player.version = 45;
     }
-    
+    if (player.version === 45) {
+        player.gameProgress.layer4.gro.upgrades = {
+            active: [],
+            overall: [],
+            idle: []
+        };
+        player.displayVersion = 'v1.1.5.9 - Jan-20-2025';
+        player.version = 46;
+    }
+    if (player.version === 46) {
+        player.gameProgress.layer4.gro.upgrades = {
+            active: [],
+            overall: [],
+            idle: []
+        };
+        player.displayVersion = 'v1.1.5.10 - Jan-23-2025';
+        player.version = 47;
+    }
+    if (player.version === 47) {
+
+        // player.displayVersion = 'v1.1.5.11 - Jan-22-2025';
+        // player.version = 48;
+    }
+    if (player.version === 48) {
+
+        // player.displayVersion = 'v1.1.5.12 - Jan-22-2025';
+        // player.version = 49;
+    }
+    if (player.version === 49) {
+
+        // player.displayVersion = 'v1.1.5.13 - Jan-22-2025';
+        // player.version = 50;
+    }
+    if (player.version === 50) {
+
+        // player.displayVersion = 'v1.1.5.14 - Jan-22-2025';
+        // player.version = 51;
+    }
     return player;
 };

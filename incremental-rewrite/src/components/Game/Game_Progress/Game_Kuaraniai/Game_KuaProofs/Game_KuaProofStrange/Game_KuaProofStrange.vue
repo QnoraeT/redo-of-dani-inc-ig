@@ -26,7 +26,7 @@ import { getSCSLAttribute } from "@/softcapScaling";
             times.
         </span>
         <button @click="resetFromSKP(true, true, true, 1)" class="whiteText fontVerdana" style="border: 0.18vw solid #ff0; background-color: #440; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.2vw; padding-top: 0.75vw; padding-bottom: 0.75vw; padding-right: 1.5vw; padding-left: 1.5vw;"> 
-            Add <span style="font-size: 1vw"><b>{{ format(getStrangeKPExp(Decimal.log10(player.gameProgress.kua.proofs.amount).div(2).add(player.gameProgress.kua.proofs.strange.hiddenExp), false).sub(getStrangeKPExp(player.gameProgress.kua.proofs.strange.hiddenExp, false)), 2) }}</b></span> to Strange KProof's exponent and add 1 second of it.<br>
+            Add <span style="font-size: 1vw"><b>{{ format(getStrangeKPExp(Decimal.log10(player.gameProgress.kua.proofs.amount).div(2).add(player.gameProgress.kua.proofs.strange.hiddenExp), false).sub(getStrangeKPExp(player.gameProgress.kua.proofs.strange.hiddenExp, false)), 2) }}</b></span> to Strange KProof's exponent and add <span style="font-size: 1vw"><b>{{ formatTime(tmp.kua.proofs.skpSpeed, 3) }}</b></span> of it.<br>
             <span v-if="Decimal.lte(player.gameProgress.kua.proofs.strange.cooldown, 0) && Decimal.gte(player.gameProgress.kua.proofs.amount, 1e24)">This will reset KProof progress, but will not reset Effects progress.<br></span>
             <span v-if="Decimal.lt(player.gameProgress.kua.proofs.amount, 1e24)">You cannot SKP reset until you get {{ format(1e24) }} KProofs!<br></span>
             <span v-if="Decimal.gt(player.gameProgress.kua.proofs.strange.cooldown, 0)">You cannot SKP reset for {{ formatTime(player.gameProgress.kua.proofs.strange.cooldown) }}!<br></span>

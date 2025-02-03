@@ -13,6 +13,7 @@ import { COL_CHALLENGES } from '../Game_Colosseum/Game_ColChallenges/Game_ColCha
 import { getColResEffect, getColResLevel } from '../Game_Colosseum/Game_ColResearches/Game_ColResearches'
 import { getOMUpgrade, MAIN_ONE_UPGS, maxxedOMUpgrade } from './Game_OneUpgrades/Game_OneUpgrades'
 import { MAIN_UPGS } from './Game_MainUpgrades/Game_MainUpgrades'
+import { GROWAN_UPGS, hasGrowanMilestone } from '../Game_Layer4/Game_Growan/Game_Growan'
 
 export const PR2_EFF = [
     {
@@ -93,7 +94,12 @@ export const PR2_EFF = [
     {
         show: computed(() => { return Decimal.gt(player.value.gameProgress.kua.amount, 0.0001) }),
         when: D(75),
-        text: computed(() => { return `unlock the Kuaraniai generator (works by ${format(1)}%/s).`; })
+        text: computed(() => { 
+            if (player.value.gameProgress.inChallenge.im.overall) {
+                return `unlock the Kuaraniai generator (works by ${format(1)}%/s) and the One-Upgrade automator.`
+            }
+            return `unlock the Kuaraniai generator (works by ${format(1)}%/s).`; 
+        })
     },
     {
         show: computed(() => { return getKuaUpgrade('s', 15); }),
@@ -241,6 +247,18 @@ export const PRAI_GAIN_CALC: Array<TrueFactor> = [
     },
     {
         baseActive: computed(() => {
+            return player.value.gameProgress.layer4.gro.upgrades.overall.includes(1);
+        }),
+        active: true,
+        name: computed(() => { return 'Grōwan Overall Upg. 2'; }),
+        effect: computed(() => {
+            return GROWAN_UPGS.overall[1].eff!.value.prai;
+        }),
+        color: 'growan',
+        type: 'mult'
+    },
+    {
+        baseActive: computed(() => {
             return inChallenge("im");
         }),
         active: true,
@@ -277,6 +295,9 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 if (player.value.gameProgress.main.oneUpgrades[i] === undefined) { player.value.gameProgress.main.oneUpgrades[i] = D(0); }
                 tmp.value.main.oneUpgrades[i].canBuy = Decimal.gte(player.value.gameProgress.main.prai.amount, MAIN_ONE_UPGS[i].cost.value);
                 tmp.value.main.canBuyUpg = tmp.value.main.canBuyUpg || (tmp.value.main.oneUpgrades[i].canBuy && !maxxedOMUpgrade(i) && MAIN_ONE_UPGS[i].show.value);
+                if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 75) && player.value.gameProgress.inChallenge.im.overall && MAIN_ONE_UPGS[i].show.value) {
+                    player.value.gameProgress.main.oneUpgrades[i] = Decimal.max(player.value.gameProgress.main.oneUpgrades[i], MAIN_ONE_UPGS[i].target.value.floor().add(1));
+                }
             }
             break;
         case -9:
@@ -500,42 +521,48 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             switch (upgID) {
                 case 0:
                     shown = true;
-                    autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 2);
+                    autoUnlocked = (Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 2) && hasGrowanMilestone(3)) || Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 2);
                     break;
                 case 1:
                     shown = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 1);
-                    autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 4);
+                    autoUnlocked = (Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 4) && hasGrowanMilestone(3)) || Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 4);
                     break;
                 case 2:
                     shown = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 5);
-                    autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 18);
+                    autoUnlocked = (Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 18) && hasGrowanMilestone(3)) || Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 18);
                     break;
                 case 3:
                     shown = Decimal.gt(player.value.gameProgress.kua.amount, 0);
-                    autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 12);
+                    autoUnlocked = (Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 12) && hasGrowanMilestone(3)) || Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 12);
                     break;
                 case 4:
                     shown = Decimal.gte(player.value.gameProgress.kua.kshards.amount, 0.01);
-                    autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 14);
+                    autoUnlocked = (Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 14) && hasGrowanMilestone(3)) || Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 14);
                     break;
                 case 5:
                     shown = Decimal.gte(player.value.gameProgress.kua.kpower.amount, 1);
-                    autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 18);
+                    autoUnlocked = (Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 18) && hasGrowanMilestone(3)) || Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 18);
                     break;
                 case 6:
                     shown = getKuaUpgrade('s', 15);
-                    autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 100);
+                    autoUnlocked = (Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 100) && hasGrowanMilestone(3)) || Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 100);
                     break;
                 case 7:
                     shown = getKuaUpgrade('s', 16);
-                    autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 125);
+                    autoUnlocked = (Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 125) && hasGrowanMilestone(3)) || Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 125);
                     break;
                 case 8:
                     shown = getKuaUpgrade('s', 17);
-                    autoUnlocked = Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 150);
+                    autoUnlocked = (Decimal.gte(player.value.gameProgress.main.pr2.best[4]!, 150) && hasGrowanMilestone(3)) || Decimal.gte(player.value.gameProgress.main.pr2.best[3]!, 150);
                     break;
                 default:
                     throw new Error(`${upgID} is not a valid index for main upgrade`);
+            }
+            if (upgID >= 0 && upgID < 9 && hasGrowanMilestone(2)) {
+                shown = true;
+            }
+            if (upgID >= 0 && upgID < 9 && hasGrowanMilestone(3)) {
+                autoUnlocked = true;
             }
             tmp.value.main.upgrades[upgID].shown = shown;
             tmp.value.main.upgrades[upgID].autoUnlocked = autoUnlocked;
@@ -594,15 +621,23 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
 
             // this is only used for Col Challenge 'Dimension Crawler!'
             tmp.value.main.upgrades[upgID].multiplier = D(1);
-            if (inChallenge('dc')) {
-                i = COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0];
+            if (inChallenge('dc') || Decimal.gte(timesCompleted("dc"), 10)) {
+                i = inChallenge('dc')
+                    ? COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0]
+                    : getColChalRewEffects("dc")[3];
                 tmp.value.main.upgrades[upgID].multiplier = tmp.value.main.upgrades[upgID].multiplier.mul(i.pow(tmp.value.main.upgrades[upgID].effective));
 
-                tmp.value.main.upgrades[upgID].multiplier = tmp.value.main.upgrades[upgID].multiplier.pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[2]);
+                if (inChallenge('dc')) {
+                    tmp.value.main.upgrades[upgID].multiplier = tmp.value.main.upgrades[upgID].multiplier.pow(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[2]);
+                }
 
                 if (upgID > 0) {
                     player.value.gameProgress.main.upgrades[upgID - 1].accumulated = Decimal.add(player.value.gameProgress.main.upgrades[upgID - 1].accumulated, tmp.value.main.upgrades[upgID].effective.add(player.value.gameProgress.main.upgrades[upgID].accumulated).add(player.value.gameProgress.main.upgrades[upgID].bought).mul(tmp.value.main.upgrades[upgID].multiplier).mul(delta))
                 }
+
+                tmp.value.main.upgrades[upgID].dc11FreeLvs = !player.value.gameProgress.inChallenge.dc.overall && Decimal.gte(timesCompleted("dc"), 11)
+                    ? Decimal.max(player.value.gameProgress.main.upgrades[upgID].accumulated, 0).add(1).log2().add(1).pow(0.8).sub(1).div(0.8).add(1).ln().div(getColChalRewEffects("dc")[4]).add(1).pow(getColChalRewEffects("dc")[4]).sub(1)
+                    : D(0)
             }
 
             tmp.value.main.upgrades[upgID].effectTextColor = "#FFFFFF";

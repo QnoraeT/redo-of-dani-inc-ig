@@ -587,7 +587,7 @@ export const getSCSLAttribute = (
                     break;
                 case "ge":
                     data.push({
-                        start: D(102),
+                        start: D(100),
                         basePow: D(2),
                         power: D(1),
                         displayedEffect: ""
@@ -602,7 +602,7 @@ export const getSCSLAttribute = (
                     break;
                 case "gtick":
                     data.push({
-                        start: D(305),
+                        start: D(300),
                         basePow: D(2),
                         power: D(1),
                         displayedEffect: ""

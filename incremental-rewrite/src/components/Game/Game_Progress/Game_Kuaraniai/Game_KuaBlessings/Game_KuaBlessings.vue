@@ -4,6 +4,7 @@ import { player, tmp } from "@/main";
 import { buyKBUpg, gainKBOnClick, KUA_BLESS_TIER, KUA_BLESS_UPGS } from "./Game_KuaBlessings";
 import Decimal from "break_eternity.js";
 import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_ColChalData";
+import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
 </script>
 <template>
     <div style="margin-top: 0.2vw; background-color: #021; border: 0.2vw solid #0f4; margin-left: auto; margin-right: auto; display: flex; justify-content: center; flex-direction: row; box-shadow: 0 0 0.8vw 0.24vw rgb(0, 66, 17); height: 40vw; width: 80vw;">
@@ -46,8 +47,8 @@ import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_Col
                         <!-- <br><span v-if="!item.implemented" style="color: #ff0; font-size: 0.5vw"><b>[ NOT IMPLEMENTED ]</b><br></span> -->
                         <span >{{item.desc.value}}</span>
                         <br><br>
-                        <span >Currently: <b style="font-size: 0.65vw;">{{item.effDesc}}</b><br></span>
-                        <span >Cost: <b style="font-size: 0.65vw;">{{format(item.cost.value)}}</b> KBlessings.</span>
+                        <span>Currently: <b style="font-size: 0.65vw;">{{item.effDesc}}</b><br></span>
+                        <span>{{ hasGrowanMilestone(2) ? 'Req.' : 'Cost' }}: <b style="font-size: 0.65vw;">{{format(item.cost.value)}}</b> KBlessings.</span>
                     </button>
                 </div>
             </div>

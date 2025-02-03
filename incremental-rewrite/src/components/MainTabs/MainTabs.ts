@@ -115,7 +115,7 @@ export const TABS_LIST = [
         outlineColor: "#d5c000",
         highlightColor: "#ffff7f",
         if: computed(() => {
-            return tmp.value.layer4.tax.active;
+            return player.value.gameProgress.unlocks.tax && tmp.value.layer4.tax.active;
         }),
         alert: computed(() => { return false }),
         warning: computed(() => { return false })
@@ -128,7 +128,7 @@ export const TABS_LIST = [
         outlineColor: "#a36200",
         highlightColor: "#ffe3b9",
         if: computed(() => {
-            return tmp.value.layer4.growan.active;
+            return player.value.gameProgress.unlocks.tax && tmp.value.layer4.growan.active;
         }),
         alert: computed(() => { return false }),
         warning: computed(() => { return false })

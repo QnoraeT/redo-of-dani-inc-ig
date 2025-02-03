@@ -27,7 +27,7 @@ import { updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Gam
 import { initAllMainUpgrades, MAIN_UPGS, type TmpMainUpgrade } from "./components/Game/Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 import { initAllMainOneUpgrades, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_OneUpgrades/Game_OneUpgrades";
 import { updateAllStart } from "./components/Game/Game_Progress/Game_Main/Game_Main";
-import { initGroEquations } from "./components/Game/Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
+import { GROWAN_DATA, GROWAN_UPGS, initGroEquations } from "./components/Game/Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 import { updateAllLayer4 } from "./components/Game/Game_Progress/Game_Layer4/Game_Layer4";
 
 // this may slow down calculations!!
@@ -154,7 +154,20 @@ export const NEXT_UNLOCKS = [
         color: computed(() => {
             return mixColor('#ffff00', '#804000', 'Linear', (Math.sin(gameVars.value.sessionTime * Math.PI) + 1) / 2);
         })
-    }
+    },
+    {
+        shown: computed(() => {
+            return player.value.gameProgress.layer4 === undefined ? false : player.value.gameProgress.layer4.pickedFirst !== 0 && Decimal.gte(player.value.gameProgress.main.best[3]!, "e2000");
+        }),
+        done: computed(() => {
+            return false;
+        }),
+        dispPart1: computed(() => {
+            return `${format(player.value.gameProgress.main.best[3]!)} / ${format("e10000")}`;
+        }),
+        dispPart2: `Points to unlock the next layers.`,
+        color: computed(() => { return '#9e9bff' })
+    },
 ];
 
 type Game = {
@@ -390,8 +403,13 @@ export type Player = {
                 totalAmt: DecimalSource,
                 amount: DecimalSource,
                 auto: boolean,
-                upgrades: Array<number>
+                upgrades: {
+                    active: Array<number>,
+                    overall: Array<number>,
+                    idle: Array<number>
+                }
                 gEAmount: DecimalSource
+                bestGEA: DecimalSource
                 groAmountStats: {
                     totals: Array<null | DecimalSource>, // null, null, null, null, null
                     best: Array<null | DecimalSource>, // null, null, null, null, null
@@ -478,7 +496,7 @@ export const initPlayer = (set = false): Player => {
             notation: 0,
             scaleSoftColors: false,
             scaledUpgBase: true,
-            notationLimit: 1e6
+            notationLimit: 6
         },
 
         gameProgress: {
@@ -690,8 +708,13 @@ export const initPlayer = (set = false): Player => {
                     totalAmt: D(0),
                     amount: D(0),
                     auto: false,
-                    upgrades: [0, 0, 0],
+                    upgrades: {
+                        active: [],
+                        overall: [],
+                        idle: []
+                    },
                     gEAmount: D(0),
+                    bestGEA: D(0),
                     groAmountStats: {
                         totals: [null, null, null, null, null],
                         best: [null, null, null, null, null],
@@ -860,6 +883,8 @@ type Tmp = {
             }>
         },
         proofs: {
+            speed: Decimal,
+            skpSpeed: Decimal,
             exp: Decimal,
             expPerSec: Decimal,
             skpExp: Decimal,
@@ -1111,6 +1136,8 @@ function initTemp(): Tmp {
                 upgrades: initAllKBlessingUpgrades()
             },
             proofs: {
+                speed: D(1),
+                skpSpeed: D(1),
                 exp: D(1),
                 expPerSec: D(1),
                 skpExp: D(1),
@@ -1467,6 +1494,30 @@ export const PPS_CALC: Array<TrueFactor> = [
     },
     {
         baseActive: computed(() => {
+            return player.value.gameProgress.layer4.gro.upgrades.overall.includes(0);
+        }),
+        active: true,
+        name: computed(() => { return 'Grōwan Overall Upg 1'; }),
+        effect: computed(() => {
+            return GROWAN_UPGS.overall[0].eff!.value;
+        }),
+        color: 'growan',
+        type: 'mult'
+    },
+    {
+        baseActive: computed(() => {
+            return player.value.gameProgress.layer4.gro.upgrades.overall.includes(1);
+        }),
+        active: true,
+        name: computed(() => { return 'Grōwan Overall Upg. 2'; }),
+        effect: computed(() => {
+            return GROWAN_UPGS.overall[1].eff!.value.pts;
+        }),
+        color: 'growan',
+        type: 'mult'
+    },
+    {
+        baseActive: computed(() => {
             return tmp.value.layer4.tax.active;
         }),
         active: true,
@@ -1590,8 +1641,8 @@ function calcPPS(): Decimal {
     return pps;
 }
 
-export const getEndgame = () => {
-    return Decimal.max(player.value.gameProgress.main.bestEver, 1).log10().sqrt().div(Decimal.sqrt(1500)).min(1).mul(100);
+export const getEndgame = (x = player.value.gameProgress.main.bestEver) => {
+    return Decimal.max(x, 10).log10().log(4000).pow(2).min(1).mul(100);
 };
 
 function gameLoop(): void {
@@ -1665,8 +1716,8 @@ function gameLoop(): void {
             generate = data.newPts.sub(data.oldPts).max(1);
             tmp.value.main.pps = generate.div(gameDelta);
         }
-        // FIXME: every time PPS gets updated, check the id value for this (24)
-        setFactor(24, [0], "Decaying Feeling", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, inChallenge("df"), "col");
+        // FIXME: every time PPS gets updated, check the id value for this (26)
+        setFactor(26, [0], "Decaying Feeling", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, inChallenge("df"), "col");
 
         data.oldPts = Decimal.max(player.value.gameProgress.main.points, data.scal[0].start);
         setSCSLEffectDisp("points", false, 0, `/${format(1, 2)}`);
@@ -1710,8 +1761,8 @@ function gameLoop(): void {
             }
             setSCSLEffectDisp("points", false, 0, `/${format(data.converted, 2)}`);
         }
-        // FIXME: every time PPS gets updated, check the id value for this (25)
-        setFactor(25, [0], "Taxation", `/${format(data.converted, 2)}`, `${format(tmp.value.main.pps, 1)}`, Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start), "sc1");
+        // FIXME: every time PPS gets updated, check the id value for this (27)
+        setFactor(27, [0], "Taxation", `/${format(data.converted, 2)}`, `${format(tmp.value.main.pps, 1)}`, Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start), "sc1");
 
         if (Decimal.isNaN(player.value.gameProgress.main.points)) {
             throw new Error(`weh?! points are NaN!`)
@@ -1860,6 +1911,7 @@ declare global {
         compressToBase64: typeof compressToBase64;
         decompressFromBase64: typeof decompressFromBase64;
         tab: typeof tab;
+        GROWAN_DATA: typeof GROWAN_DATA;
     }
 }
 
@@ -1884,5 +1936,6 @@ window.UPDATE_LOG = UPDATE_LOG;
 window.compressToBase64 = compressToBase64;
 window.decompressFromBase64 = decompressFromBase64;
 window.tab = tab;
+window.GROWAN_DATA = GROWAN_DATA;
 
 createApp(App).mount("#app");

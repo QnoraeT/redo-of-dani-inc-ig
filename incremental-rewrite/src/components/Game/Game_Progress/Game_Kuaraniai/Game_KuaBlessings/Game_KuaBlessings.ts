@@ -3,6 +3,7 @@ import { format, formatPerc } from "@/format";
 import { player, tmp, updateAllBest, updateAllTotal } from "@/main";
 import Decimal from "break_eternity.js";
 import { computed, type ComputedRef } from "vue";
+import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
 
 export type KuaBlessTiers = {
     rank: {
@@ -483,7 +484,9 @@ export const gainKBOnClick = () => {
 
 export const buyKBUpg = (id: number) => {
     if (Decimal.gte(player.value.gameProgress.kua.blessings.amount, KUA_BLESS_UPGS[id].cost.value)) {
-        player.value.gameProgress.kua.blessings.amount = Decimal.sub(player.value.gameProgress.kua.blessings.amount, KUA_BLESS_UPGS[id].cost.value);
+        if (!hasGrowanMilestone(2)) {
+            player.value.gameProgress.kua.blessings.amount = Decimal.sub(player.value.gameProgress.kua.blessings.amount, KUA_BLESS_UPGS[id].cost.value);
+        }
         player.value.gameProgress.kua.blessings.upgrades[id] = Decimal.add(player.value.gameProgress.kua.blessings.upgrades[id], 1);
     }
 }

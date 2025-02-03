@@ -10,6 +10,8 @@ import { KUA_BLESS_UPGS } from "../../Game_Kuaraniai/Game_KuaBlessings/Game_KuaB
 import { KUA_PROOF_UPGS, type KuaProofUpgTypes } from "../../Game_Kuaraniai/Game_KuaProofs/Game_KuaProofs"
 import { KUA_PROOF_AUTO, type KuaProofAutoTypes } from "../../Game_Kuaraniai/Game_KuaProofs/Game_KuaProofAuto/Game_KuaProofAuto"
 import { KUA_ENHANCERS } from "../../Game_Kuaraniai/Game_KuaEnhancers/Game.KuaEnhancers"
+import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan"
+import { setAchievement } from "@/components/Game/Game_Achievements/Game_Achievements"
 
 export const getColChalDisplayedDifficulty = (id: challengeIDList) => {
     return player.value.gameProgress.inChallenge[id].overall ? Decimal.sub(challengeDepth(id), 1) : player.value.gameProgress.inChallenge[id].optionalDiff;
@@ -71,6 +73,9 @@ export type colChallengesSavedData = {
     oneUpgrades: Array<DecimalSource>,
     pointBest: Array<DecimalSource | null>,
     pointTotals: Array<DecimalSource | null>,
+    col: {
+        timeInCol: DecimalSource
+    }
     kua: {
         auto: boolean,
         amount: DecimalSource,
@@ -197,6 +202,9 @@ export const makeColChallengeSaveData = (): colChallengesSavedData => {
             player.value.gameProgress.main.totals[1],
             player.value.gameProgress.main.totals[2]
         ],
+        col: {
+            timeInCol: player.value.gameProgress.col.timeInCol
+        },
         kua: {
             auto: player.value.gameProgress.kua.auto,
             amount: player.value.gameProgress.kua.amount,
@@ -357,7 +365,6 @@ export const makeColChallengeSaveData = (): colChallengesSavedData => {
             obj.kua.proofs.auto[i as KuaProofAutoTypes][j] = player.value.gameProgress.kua.proofs.automationBought[i as KuaProofAutoTypes][j];
         }
     }
-
     return obj;
 };
 
@@ -382,8 +389,10 @@ export const exitChallenge = (id: challengeIDList) => {
         }
     }
 
-    for (let i = 0; i < player.value.gameProgress.main.oneUpgrades.length; i++) {
-        player.value.gameProgress.main.oneUpgrades[i] = savedColData.oneUpgrades[i];
+    if (!hasGrowanMilestone(0)) {
+        for (let i = 0; i < player.value.gameProgress.main.oneUpgrades.length; i++) {
+            player.value.gameProgress.main.oneUpgrades[i] = savedColData.oneUpgrades[i];
+        }
     }
 
     player.value.gameProgress.main.points = savedColData.points;
@@ -397,10 +406,12 @@ export const exitChallenge = (id: challengeIDList) => {
     player.value.gameProgress.main.totals[3] = savedColData.pointTotals[3];
 
     player.value.gameProgress.main.pr2.auto = savedColData.pr2.auto;
-    player.value.gameProgress.main.pr2.amount = savedColData.pr2.amount;
     player.value.gameProgress.main.pr2.timeInPR2 = savedColData.pr2.timeInPR2;
-    player.value.gameProgress.main.pr2.best[2] = savedColData.pr2.best[2];
-    player.value.gameProgress.main.pr2.best[3] = savedColData.pr2.best[3];
+    if (!hasGrowanMilestone(0)) {
+        player.value.gameProgress.main.pr2.amount = savedColData.pr2.amount;
+        player.value.gameProgress.main.pr2.best[2] = savedColData.pr2.best[2];
+        player.value.gameProgress.main.pr2.best[3] = savedColData.pr2.best[3];
+    }
 
     player.value.gameProgress.main.prai.auto = savedColData.prai.auto;
     player.value.gameProgress.main.prai.amount = savedColData.prai.amount;
@@ -450,13 +461,15 @@ export const exitChallenge = (id: challengeIDList) => {
         player.value.gameProgress.kua.enhancers.upgrades[i] = savedColData.kua.enhancers.upgrades[i];
     }
 
-    player.value.gameProgress.kua.blessings.amount = savedColData.kua.blessings.amount;
-    player.value.gameProgress.kua.blessings.totals[2] = savedColData.kua.blessings.totals[2];
-    player.value.gameProgress.kua.blessings.best[2] = savedColData.kua.blessings.best[2];
-    player.value.gameProgress.kua.blessings.totals[3] = savedColData.kua.blessings.totals[3];
-    player.value.gameProgress.kua.blessings.best[3] = savedColData.kua.blessings.best[3];
-    for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
-        player.value.gameProgress.kua.blessings.upgrades[i] = savedColData.kua.blessings.upgrades[i];
+    if (!hasGrowanMilestone(1)) {
+        player.value.gameProgress.kua.blessings.amount = savedColData.kua.blessings.amount;
+        player.value.gameProgress.kua.blessings.totals[2] = savedColData.kua.blessings.totals[2];
+        player.value.gameProgress.kua.blessings.best[2] = savedColData.kua.blessings.best[2];
+        player.value.gameProgress.kua.blessings.totals[3] = savedColData.kua.blessings.totals[3];
+        player.value.gameProgress.kua.blessings.best[3] = savedColData.kua.blessings.best[3];
+        for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
+            player.value.gameProgress.kua.blessings.upgrades[i] = savedColData.kua.blessings.upgrades[i];
+        }
     }
 
     player.value.gameProgress.kua.proofs.amount = savedColData.kua.proofs.amount;
@@ -498,6 +511,65 @@ export const exitChallenge = (id: challengeIDList) => {
     for (const i in KUA_PROOF_AUTO) {
         for (let j = 0; j < KUA_PROOF_AUTO[i as KuaProofAutoTypes].length; j++) {
             player.value.gameProgress.kua.proofs.automationBought[i as KuaProofAutoTypes][j] = savedColData.kua.proofs.auto[i as KuaProofAutoTypes][j];
+        }
+    }
+
+    player.value.gameProgress.col.timeInCol = savedColData.col.timeInCol;
+};
+
+export const challengeToggle = (id: challengeIDList) => {
+    if (!inChallenge(id)) {
+        if (player.value.gameProgress.col.challengeOrder.layer[player.value.gameProgress.col.challengeOrder.layer.length - 1] <= COL_CHALLENGES[id].layer) {
+            return;
+        }
+
+        player.value.gameProgress.inChallenge[id].name = COL_CHALLENGES[id].name;
+        player.value.gameProgress.inChallenge[id].goalDesc = COL_CHALLENGES[id].goalDesc.value;
+        player.value.gameProgress.inChallenge[id].entered = true;
+        player.value.gameProgress.inChallenge[id].enteredDiff = player.value.gameProgress.inChallenge[id].optionalDiff;
+
+        const obj: colChallengesSavedData = makeColChallengeSaveData();
+
+        player.value.gameProgress.col.saved[id] = obj;
+        player.value.gameProgress.col.challengeOrder.chalID.push(COL_CHALLENGES[id].id);
+        player.value.gameProgress.col.challengeOrder.layer.push(COL_CHALLENGES[id].layer);
+        resetStage('col');
+        if (id === 'im' && !hasGrowanMilestone(0)) {
+            player.value.gameProgress.main.pr2.amount = D(1);
+        }
+    } else {
+        if (player.value.gameProgress.col.challengeOrder.chalID.length === 0 || player.value.gameProgress.col.challengeOrder.layer.length === 0) {
+            console.warn(`player.gameProgress.col.challengeOrder has no objects, but you are exiting a challenge! Exiting all challenges...`);
+            for (const i in player.value.gameProgress.inChallenge) {
+                player.value.gameProgress.inChallenge[i as challengeIDList].entered = false;
+            }
+            return;
+        }
+        if (COL_CHALLENGES[id].canComplete.value) {
+            if (COL_CHALLENGES[id].type === 1 || COL_CHALLENGES[id].type === 3) {
+                if (Decimal.eq(player.value.gameProgress.inChallenge[id].enteredDiff, player.value.gameProgress.col.completed[id])) {
+                    player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);
+                    player.value.gameProgress.inChallenge[id].optionalDiff = Decimal.add(player.value.gameProgress.inChallenge[id].optionalDiff, 1).min(COL_CHALLENGES[id].cap);
+                }
+            } else {
+                player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);
+            }
+
+            setAchievement(3, 2);
+            setAchievement(2, 3);
+            setAchievement(2, 1);
+        }
+
+        let layerExited = player.value.gameProgress.col.challengeOrder.layer[player.value.gameProgress.col.challengeOrder.chalID.indexOf(id)];
+        if (layerExited === undefined) {
+            console.warn(`layerExited from exiting a COL challenge was left undefined! Defaulting to 0...`);
+            layerExited = 0;
+        }
+        for (let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1; i >= 0; i--) {
+            if (player.value.gameProgress.col.challengeOrder.layer[i] > layerExited) {
+                break;
+            }
+            exitChallenge(player.value.gameProgress.col.challengeOrder.chalID[i]);
         }
     }
 };

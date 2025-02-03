@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { format, formatTime } from "./format";
-import { player, tmp, gameVars, NEXT_UNLOCKS } from "./main";
+import { player, game, tmp, gameVars, NEXT_UNLOCKS } from "./main";
 import GameTabs from "./components/MainTabs/MainTabs.vue";
 import Game_Main from "./components/Game/Game_Progress/Game_Main/Game_Main.vue";
 import Game_Options from "./components/Game/Game_Options/Game_Options.vue";
@@ -16,7 +16,6 @@ import Decimal from "break_eternity.js";
 import Game_Stored_Time from "./components/Game/Game_Progress/Game_Stored_Time/Game_Stored_Time.vue";
 import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalData";
 </script>
-
 <template>
     <div>
         <canvas ref="canvas" id="canvas" style="height: 100vh; width: 100vw; position: absolute; top: 0vw; left: 0vw; z-index: -2;"></canvas>
@@ -33,10 +32,10 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
         </div>
         <div class="flex-container" v-if="tmp.gameIsRunning">
             <div style="font-size: 1.0vw" class="whiteText grayShadow fontVerdana">
-                Time since last save: {{ formatTime(gameVars.sessionTime - gameVars.lastSave) }}
+                Time since last save: {{ formatTime(gameVars.sessionTime - gameVars.lastSave) }}/{{ formatTime(game.autoSaveInterval) }}
             </div>
         </div>
-        
+
         <div class="flex-container" style="background-color: #ffffff20" v-if="!tmp.gameIsRunning">
             <div style="flex-grow: 1; flex-basis: 0; text-align: left; text-shadow: #ffffff 0vw 0vw 0.3vw;" class="bigText whiteText grayShadow fontVerdana">
                 Loading...
@@ -44,7 +43,7 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
         </div>
         <div class="popup-container">
             <div>
-                <div v-for="item in popupList" class="popup fontVerdana" style=" display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; align-content: center; " :key="item.id" v-on:click=" () => { item.life = 0.2; } " :style="{ 'background-color': item.color, opacity: item.opacity, color: colorChange(item.color, 0.5, 1.0) }" >
+                <div v-for="item in popupList" class="popup fontVerdana" style="display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; align-content: center; " :key="item.id" v-on:click=" () => { item.life = 0.2; } " :style="{ 'background-color': item.color, opacity: item.opacity, color: colorChange(item.color, 0.5, 1.0) }" >
                     <span style="font-size: 0.85vw; font-weight: bold; text-align: center; margin-bottom: 0.24vw;">{{ item.title }}</span>
                     <span style="font-size: 0.7vw; text-align: center" v-html="item.message"></span>
                 </div>
@@ -60,21 +59,21 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
                 challenges:
             </span>
             <div v-if="player.gameProgress.col.inAChallenge" style="height: 1.0vw; width: 40vw; position: relative; margin-left: auto; margin-right: auto; margin-bottom: 1vw;">
-                    <!-- does nothing, is actually the base of the bar -->
-                    <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
+                <!-- does nothing, is actually the base of the bar -->
+                <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
+                :style="{
+                    backgroundColor: player.gameProgress.col.completedAll ? '#001452' : '#521400'
+                }"></div>
+                <div
                     :style="{
-                        backgroundColor: player.gameProgress.col.completedAll ? '#001452' : '#521400'
-                    }"></div>
-                    <div
-                        :style="{
-                            backgroundColor: player.gameProgress.col.completedAll ? '#0080FF' : '#FF4000',
-                            width: `${
-                                100 * Decimal.sub(1, Decimal.div(player.gameProgress.col.time, player.gameProgress.col.maxTime)).toNumber()
-                            }%`
-                        }"
-                        style="position: absolute; top: 0; left: 0; height: 100%"
-                    ></div>
+                        backgroundColor: player.gameProgress.col.completedAll ? '#0080FF' : '#FF4000',
+                        width: `${
+                            100 * Decimal.sub(1, Decimal.div(player.gameProgress.col.time, player.gameProgress.col.maxTime)).toNumber()
+                        }%`
+                    }"
+                    style="position: absolute; top: 0; left: 0; height: 100%">
                 </div>
+            </div>
             <div
                 v-for="(item, index) in player.gameProgress.inChallenge"
                 :key="index"

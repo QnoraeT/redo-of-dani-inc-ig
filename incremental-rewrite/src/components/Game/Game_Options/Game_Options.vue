@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Decimal from "break_eternity.js";
 import { colorChange, gRC } from "@/calc";
-import { tab, game, player, tmp, gameVars } from "@/main";
+import { tab, game, player, tmp, gameVars, getEndgame } from "@/main";
 import { format, formatTime } from "@/format";
 import { switchSubTab } from "../../MainTabs/MainTabs";
 import {
@@ -102,7 +102,7 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                                         }"
                                         style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
                                     ></div>
-                                    <!-- <div :style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.25, game.currentSave === index ? 1 : 0.125), width: `${getEndgame(item.data.gameProgress.main.points).toNumber()}%` }" style="position: absolute; top: 0; left: 0; height: 100%;"></div> -->
+                                    <div :style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.25, game.currentSave === index ? 1 : 0.125), width: `${getEndgame(item.data.gameProgress.main.bestEver).toNumber()}%` }" style="position: absolute; top: 0; left: 0; height: 100%;"></div>
                                 </div>
                                 <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;">
                                     <div style="margin: 0.3vw; margin-top: 0.15vw">
@@ -114,13 +114,13 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                                             </div>
                                         </div>
                                         <div style="position: relative; width: 100%; height: 50%">
-                                            <div style=" display: flex; justify-content: center; height: 100%;" class="fontVerdana">
-                                                <!-- <span style="text-align: center; font-size: 0.75vw;" class="whiteText"><b>Endgame: {{format(getEndgame(item.data.gameProgress.main.points), 2)}}%</b></span> -->
+                                            <div style="display: flex; justify-content: center; height: 100%;" class="fontVerdana">
                                                 <span style="text-align: center; font-size: 0.75vw" class="whiteText">Points: {{ format( item.data.gameProgress.main.points, 2 ) }}</span>
                                                 <span v-if="Decimal.gte(item.data.gameProgress.main.prai.totalEver, 1) && Decimal.lt(item.data.gameProgress.col.power, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, PRai: {{ format( item.data.gameProgress.main.prai.amount ) }}</span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.main.prai.totalEver, 10)" style="text-align: center; font-size: 0.75vw" class="whiteText" >, PR2: {{ format(item.data.gameProgress.main.pr2.amount) }}</span>
+                                                <span v-if="Decimal.gte(item.data.gameProgress.main.prai.totalEver, 10) && (item.data.gameProgress.layer4 === undefined ? true : Decimal.lt(item.data.gameProgress.layer4.gro.totalAmt, 1) && Decimal.lt(item.data.gameProgress.layer4.tax.totalEver, 1))" style="text-align: center; font-size: 0.75vw" class="whiteText" >, PR2: {{ format(item.data.gameProgress.main.pr2.amount) }}</span>
                                                 <span v-if="Decimal.gte(item.data.gameProgress.main.pr2.bestEver, 10)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Kuaraniai: {{ format(item.data.gameProgress.kua.amount, 3) }} </span>
                                                 <span v-if="Decimal.gte(item.data.gameProgress.col.power, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Col. Power: {{ format( item.data.gameProgress.col.power, 2 ) }}</span>
+                                                <span v-if="item.data.gameProgress.layer4 === undefined ? false : Decimal.gte(item.data.gameProgress.layer4.gro.totalAmt, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Total grōwan: {{ format( item.data.gameProgress.layer4.gro.totalAmt, 2 ) }}</span>
                                             </div>
                                         </div>
                                         <div style="position: relative; width: 100%; height: 25%; display: flex; align-items: flex-end;">

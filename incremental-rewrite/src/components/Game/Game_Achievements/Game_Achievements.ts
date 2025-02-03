@@ -1500,7 +1500,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 autoComplete: false,
                 reward: computed(() => { return ``; }),
                 show: computed(() => { return player.value.gameProgress.layer4.pickedFirst === 1; }),
-                status: computed(() => { return Decimal.lt(player.value.gameProgress.layer4.timeInL4R, 240) ? true : `Failed due to taking ${formatTime(240)} in a layer 4 reset.`; })
+                status: computed(() => { return Decimal.lt(player.value.gameProgress.layer4.timeInL4R, 240) ? true : `Failed due to taking ${formatTime(player.value.gameProgress.layer4.timeInL4R)} in a layer 4 reset.`; })
             },
         ],
         rewAll: computed(() => {

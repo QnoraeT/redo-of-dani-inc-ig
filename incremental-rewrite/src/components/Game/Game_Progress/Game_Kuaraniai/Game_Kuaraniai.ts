@@ -15,6 +15,7 @@ import { getFinickyKPExp } from "./Game_KuaProofs/Game_KuaProofFinicky/Game_KuaP
 import { getColResEffect } from "../Game_Colosseum/Game_ColResearches/Game_ColResearches";
 import { getKuaUpgrade, KUA_UPGRADES } from "./Game_KuaUpgrades/Game_KuaUpgrades";
 import { KUA_ENHANCERS } from "./Game_KuaEnhancers/Game.KuaEnhancers";
+import { GROWAN_UPGS } from "../Game_Layer4/Game_Growan/Game_Growan";
 
 export const updateAllKua = (delta: DecimalSource) => {
     tmp.value.kua.canBuyUpg = false;
@@ -89,6 +90,13 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.proofs.fkpEff = D(0);
             tmp.value.kua.proofs.fkpEff = Decimal.max(player.value.gameProgress.kua.proofs.finicky.amount, 0).add(1).log10().sqrt();
 
+            tmp.value.kua.proofs.speed = D(1);
+            tmp.value.kua.proofs.skpSpeed = D(1);
+            if (player.value.gameProgress.layer4.gro.upgrades.overall.includes(0)) {
+                tmp.value.kua.proofs.speed = tmp.value.kua.proofs.speed.mul(2);
+                tmp.value.kua.proofs.skpSpeed = tmp.value.kua.proofs.skpSpeed.mul(2);
+            }
+
             tmp.value.kua.proofs.canBuyUpg = false;
             tmp.value.kua.proofs.canBuyUpgs.effect = false;
             tmp.value.kua.proofs.canBuyUpgs.kp = false;
@@ -129,7 +137,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     if (data) {
                         player.value.gameProgress.kua.proofs.upgrades[k][j] = tmp.value.kua.proofs.upgrades[k][j].target.floor().add(1).max(player.value.gameProgress.kua.proofs.upgrades[k][j]);
                     }
-                    
+
                     data = D(0);
                     if (k === 'effect') {
                         if (j >= 0 && j <= 2) {
@@ -188,17 +196,20 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(2, [4, 6], "Trial and Error", `+${format(tmp.value.kua.proofs.upgrades.kp[1].effect, 2)}`, `^${format(tmp.value.kua.proofs.exp, 2)}`, tmp.value.kua.proofs.upgrades.kp[1].effect.gt(0), "kp");
             tmp.value.kua.proofs.exp = tmp.value.kua.proofs.exp.add(tmp.value.kua.proofs.fkpEff);
             setFactor(3, [4, 6], "Finicky KProof Effect", `+${format(tmp.value.kua.proofs.fkpEff, 2)}`, `^${format(tmp.value.kua.proofs.exp, 2)}`, tmp.value.kua.proofs.fkpEff.gt(0), "fkp");
+            tmp.value.kua.proofs.exp = tmp.value.kua.proofs.exp.add(GROWAN_UPGS.overall[1].eff!.value.kpe);
+            setFactor(4, [4, 6], "Grōwan Overall Upg. 2", `+${format(GROWAN_UPGS.overall[1].eff!.value.kpe, 2)}`, `^${format(tmp.value.kua.proofs.exp, 2)}`, player.value.gameProgress.layer4.gro.upgrades.overall.includes(1), "growan");
             tmp.value.kua.proofs.exp = tmp.value.kua.proofs.exp.mul(tmp.value.kua.proofs.upgrades.kp[2].effect);
-            setFactor(4, [4, 6], "Crafted Experiments", `×${format(tmp.value.kua.proofs.upgrades.kp[2].effect, 2)}`, `^${format(tmp.value.kua.proofs.exp, 2)}`, tmp.value.kua.proofs.upgrades.kp[2].effect.gt(1), "kp");
+            setFactor(5, [4, 6], "Crafted Experiments", `×${format(tmp.value.kua.proofs.upgrades.kp[2].effect, 2)}`, `^${format(tmp.value.kua.proofs.exp, 2)}`, tmp.value.kua.proofs.upgrades.kp[2].effect.gt(1), "kp");
             NaNCheck(tmp.value.kua.proofs.exp, `KProof's exponent turned into NaN!`)
 
             tmp.value.kua.proofs.skpExp = getStrangeKPExp(player.value.gameProgress.kua.proofs.strange.hiddenExp, true);
             tmp.value.kua.proofs.fkpExp = getFinickyKPExp(player.value.gameProgress.kua.proofs.finicky.hiddenExp, true);
 
             if (player.value.gameProgress.unlocks.kproofs.main && tmp.value.kua.active.proofs.gain) {
+                // why did i do this
                 let fuck = player.value.gameProgress.kua.proofs.amount;
-                data = Decimal.max(player.value.gameProgress.kua.proofs.amount, 0).add(1).root(tmp.value.kua.proofs.exp).add(delta).pow(tmp.value.kua.proofs.exp).sub(1);
-                calc = Decimal.max(player.value.gameProgress.kua.proofs.amount, 0).add(1).root(tmp.value.kua.proofs.exp).add(1).pow(tmp.value.kua.proofs.exp).sub(1);
+                data = Decimal.max(player.value.gameProgress.kua.proofs.amount, 0).add(1).root(tmp.value.kua.proofs.exp).add(tmp.value.kua.proofs.speed.mul(delta)).pow(tmp.value.kua.proofs.exp).sub(1);
+                calc = Decimal.max(player.value.gameProgress.kua.proofs.amount, 0).add(1).root(tmp.value.kua.proofs.exp).add(tmp.value.kua.proofs.speed).pow(tmp.value.kua.proofs.exp).sub(1);
 
                 const softcaps = {
                     prevEff: calc,
@@ -221,8 +232,22 @@ export const updateKua = (type: number, delta: DecimalSource) => {
                     setSCSLEffectDisp('kp', false, 0, `/${format(calc.div(softcaps.prevEff), 3)}`);
                 }
 
-                fuck = Decimal.max(fuck, 0).add(1).root(tmp.value.kua.proofs.exp).add(1).pow(tmp.value.kua.proofs.exp).sub(1);
-                player.value.gameProgress.kua.proofs.amount = Decimal.max(player.value.gameProgress.kua.proofs.amount, 0).add(1).root(tmp.value.kua.proofs.exp).add(delta).pow(tmp.value.kua.proofs.exp).sub(1);
+                if (inChallenge("df")) {
+                    data = scale(data, 2.1, true, 10, 1, 0.75);
+                    calc = scale(calc, 2.1, true, 10, 1, 0.75);
+                    fuck = scale(fuck, 2.1, true, 10, 1, 0.75);
+                    player.value.gameProgress.kua.proofs.amount = scale(player.value.gameProgress.kua.proofs.amount, 2.1, true, 10, 1, 0.75);
+                }
+
+                fuck = Decimal.max(fuck, 0).add(1).root(tmp.value.kua.proofs.exp).add(tmp.value.kua.proofs.speed).pow(tmp.value.kua.proofs.exp).sub(1);
+                player.value.gameProgress.kua.proofs.amount = Decimal.max(player.value.gameProgress.kua.proofs.amount, 0).add(1).root(tmp.value.kua.proofs.exp).add(tmp.value.kua.proofs.speed.mul(delta)).pow(tmp.value.kua.proofs.exp).sub(1);
+
+                if (inChallenge("df")) {
+                    data = scale(data, 2.1, false, 10, 1, 0.75);
+                    calc = scale(calc, 2.1, false, 10, 1, 0.75);
+                    fuck = scale(fuck, 2.1, false, 10, 1, 0.75);
+                    player.value.gameProgress.kua.proofs.amount = scale(player.value.gameProgress.kua.proofs.amount, 2.1, false, 10, 1, 0.75);
+                }
 
                 if (data.gte(softcaps.scal[0].start)) {
                     data = scale(data, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
@@ -279,9 +304,36 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(5, [4, 5], "Holy Process", `×${format(tmp.value.kua.proofs.upgrades.effect[2].effect, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gt(tmp.value.kua.proofs.upgrades.effect[2].effect, 1), "kp");
 
             tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(getColResEffect(5));
-            setFactor(6, [4, 4], "Compliance", `×${format(getColResEffect(5), 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
             tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(getColResEffect(4));
+            setFactor(6, [4, 4], "Compliance", `×${format(getColResEffect(5), 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
             setFactor(6, [4, 5], "Defiance", `×${format(getColResEffect(4), 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
+
+            tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(ACHIEVEMENT_DATA[3].eff.value);
+            tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(ACHIEVEMENT_DATA[3].eff.value);
+            setFactor(7, [4, 4], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].eff.value, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].eff.value, 1), "ach");
+            setFactor(7, [4, 5], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].eff.value, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].eff.value, 1), "ach");
+
+            data = {
+                oldGain: tmp.value.kua.blessings.perClick,
+                oldKB: D(0),
+                newKB: D(0),
+            };
+            data.oldKB = Decimal.max(player.value.gameProgress.kua.blessings.amount, 1);
+
+            if (inChallenge("df")) {
+                data.newKB = scale(
+                    scale(
+                        scale(
+                            scale(
+                                data.oldKB.max(1).log10().add(1), 0.2, true, 1, 1, Decimal.pow(0.9, challengeDepth("df"))
+                            ).sub(1).pow10().add(tmp.value.kua.blessings.perClick).log10().add(1), 0.2, false, 1, 1, Decimal.pow(0.9, challengeDepth("df"))
+                        ).sub(1).pow10(), 0.2, true, 1, 1, Decimal.pow(0.75, challengeDepth("df"))
+                    ).add(tmp.value.kua.blessings.perClick), 0.2, false, 1, 1, Decimal.pow(0.75, challengeDepth("df"))
+                );
+
+                tmp.value.kua.blessings.perClick = data.newKB.sub(data.oldKB).max(0.1);
+            }
+            setFactor(7, [4, 4], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tmp.value.kua.blessings.perClick), 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, inChallenge("df"), "col");
 
             data = {
                 prevEff: tmp.value.kua.blessings.perClick,
@@ -290,7 +342,28 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
             tmp.value.kua.blessings.perClick = scale(tmp.value.kua.blessings.perClick, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
             setSCSLEffectDisp('kba', false, 0, `${format(data.prevEff.log(tmp.value.kua.blessings.perClick), 3)}√`);
-            setFactor(7, [4, 4], "Softcap", `softcap(${format(data.prevEff)})`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gt(tmp.value.kua.blessings.perClick, data.scal[0].start), "sc1");
+            setFactor(8, [4, 4], "Softcap", `softcap(${format(data.prevEff)})`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gt(tmp.value.kua.blessings.perClick, data.scal[0].start), "sc1");
+
+            data = {
+                oldGain: tmp.value.kua.blessings.perSec,
+                oldKB: D(0),
+                newKB: D(0),
+            };
+            data.oldKB = Decimal.max(player.value.gameProgress.kua.blessings.amount, 1);
+
+            if (inChallenge("df")) {
+                data.newKB = scale(
+                    scale(
+                        scale(
+                            scale(
+                                data.oldKB.max(1).log10().add(1), 0.2, true, 1, 1, Decimal.pow(0.9, challengeDepth("df"))
+                            ).sub(1).pow10().add(tmp.value.kua.blessings.perSec).log10().add(1), 0.2, false, 1, 1, Decimal.pow(0.9, challengeDepth("df"))
+                        ).sub(1).pow10(), 0.2, true, 1, 1, Decimal.pow(0.75, challengeDepth("df"))
+                    ).add(tmp.value.kua.blessings.perSec), 0.2, false, 1, 1, Decimal.pow(0.75, challengeDepth("df"))
+                );
+                tmp.value.kua.blessings.perSec = data.newKB.sub(data.oldKB).max(0.1);
+            }
+            setFactor(7, [4, 5], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tmp.value.kua.blessings.perSec), 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, inChallenge("df"), "col");
 
             data = {
                 prevEff: tmp.value.kua.blessings.perSec,
@@ -299,7 +372,7 @@ export const updateKua = (type: number, delta: DecimalSource) => {
 
             tmp.value.kua.blessings.perSec = scale(tmp.value.kua.blessings.perSec, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
             setSCSLEffectDisp('kbi', false, 0, `${format(data.prevEff.log(tmp.value.kua.blessings.perSec), 3)}√`);
-            setFactor(7, [4, 5], "Softcap", `softcap(${format(data.prevEff)})`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gt(tmp.value.kua.blessings.perSec, data.scal[0].start), "sc1");
+            setFactor(8, [4, 5], "Softcap", `softcap(${format(data.prevEff)})`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gt(tmp.value.kua.blessings.perSec, data.scal[0].start), "sc1");
 
             NaNCheck(tmp.value.kua.blessings.perClick, 'KB per click is NaN!');
             NaNCheck(tmp.value.kua.blessings.perSec, 'KB per second is NaN!');

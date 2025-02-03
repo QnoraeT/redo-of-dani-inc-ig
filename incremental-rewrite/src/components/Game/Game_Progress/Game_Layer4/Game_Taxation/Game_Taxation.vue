@@ -14,7 +14,7 @@ import { getTaxUpgrade, TAX_UPGRADES } from "./Game_Taxation";
                 <span v-if="tmp.layer4.tax.canDo">Gain <span style="font-size: 1vw" ><b>{{ format(tmp.layer4.tax.pending, 3) }}</b></span> taxed coins upon taxation.<br></span>
                 <span v-if="!tmp.layer4.tax.canDo">You need <span style="font-size: 1vw" ><b>{{ format(tmp.layer4.tax.req, 3) }}</b></span> points in order to preform a taxation!<br></span>
                 <span v-if="player.gameProgress.layer4.pickedFirst === 0">Warning: If you Taxation reset, you will be locked out of Grōwan!<br></span>
-                This is a layer 4 reset, and will reset all prior layers.
+                <span style="font-size: 0.55vw">This is a layer 4 reset, and will reset all prior layers. You can reset even if you won't gain any coins.</span>
             </button>
             <div
                 class="flex-container"

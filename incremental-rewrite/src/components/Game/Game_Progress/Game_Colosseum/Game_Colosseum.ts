@@ -2,11 +2,9 @@ import Decimal, { type DecimalSource } from "break_eternity.js";
 import { format } from "@/format";
 import { player, tmp, updateAllBest, updateAllTotal } from "@/main";
 import { D } from "@/calc";
-import { setAchievement } from "../../Game_Achievements/Game_Achievements";
-import { resetStage } from "@/resets";
 import { setFactor } from "../../Game_Stats/Game_Stats";
-import { completedChallenge, exitChallenge, getColChalRewEffects, inChallenge, makeColChallengeSaveData, timesCompleted, type colChallengesSavedData } from "./Game_ColChallenges/Game_ColChalHandler";
-import { challengeIDListArr, COL_CHALLENGES, type challengeIDList } from "./Game_ColChallenges/Game_ColChalData";
+import { completedChallenge, exitChallenge, getColChalRewEffects, timesCompleted } from "./Game_ColChallenges/Game_ColChalHandler";
+import { challengeIDListArr, COL_CHALLENGES } from "./Game_ColChallenges/Game_ColChalData";
 import { COL_RESEARCH, getColResEffect } from "./Game_ColResearches/Game_ColResearches";
 
 export const updateAllCol = (delta: DecimalSource) => {
@@ -149,62 +147,5 @@ export const updateCol = (type: number, delta: DecimalSource) => {
             break;
         default:
             throw new Error(`Colosseum area of the game does not contain ${type}`);
-    }
-};
-
-export const challengeToggle = (id: challengeIDList) => {
-    if (!inChallenge(id)) {
-        if (player.value.gameProgress.col.challengeOrder.layer[player.value.gameProgress.col.challengeOrder.layer.length - 1] <= COL_CHALLENGES[id].layer) {
-            return;
-        }
-
-        player.value.gameProgress.inChallenge[id].name = COL_CHALLENGES[id].name;
-        player.value.gameProgress.inChallenge[id].goalDesc = COL_CHALLENGES[id].goalDesc.value;
-        player.value.gameProgress.inChallenge[id].entered = true;
-        player.value.gameProgress.inChallenge[id].enteredDiff = player.value.gameProgress.inChallenge[id].optionalDiff;
-
-        const obj: colChallengesSavedData = makeColChallengeSaveData();
-
-        player.value.gameProgress.col.saved[id] = obj;
-        player.value.gameProgress.col.challengeOrder.chalID.push(COL_CHALLENGES[id].id);
-        player.value.gameProgress.col.challengeOrder.layer.push(COL_CHALLENGES[id].layer);
-        resetStage('col');
-        if (id === 'im') {
-            player.value.gameProgress.main.pr2.amount = D(1);
-        }
-    } else {
-        if (player.value.gameProgress.col.challengeOrder.chalID.length === 0 || player.value.gameProgress.col.challengeOrder.layer.length === 0) {
-            console.warn(`player.gameProgress.col.challengeOrder has no objects, but you are exiting a challenge! Exiting all challenges...`);
-            for (const i in player.value.gameProgress.inChallenge) {
-                player.value.gameProgress.inChallenge[i as challengeIDList].entered = false;
-            }
-            return;
-        }
-        if (COL_CHALLENGES[id].canComplete.value) {
-            if (COL_CHALLENGES[id].type === 1 || COL_CHALLENGES[id].type === 3) {
-                if (Decimal.eq(player.value.gameProgress.inChallenge[id].enteredDiff, player.value.gameProgress.col.completed[id])) {
-                    player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);
-                    player.value.gameProgress.inChallenge[id].optionalDiff = Decimal.add(player.value.gameProgress.inChallenge[id].optionalDiff, 1).min(COL_CHALLENGES[id].cap);
-                }
-            } else {
-                player.value.gameProgress.col.completed[id] = Decimal.add(player.value.gameProgress.col.completed[id], 1).min(COL_CHALLENGES[id].cap);
-            }
-
-            setAchievement(3, 2);
-            setAchievement(2, 3);
-            setAchievement(2, 1);
-        }
-
-        let layerExited = player.value.gameProgress.col.challengeOrder.layer[player.value.gameProgress.col.challengeOrder.chalID.indexOf(id)];
-        if (layerExited === undefined) {
-            console.warn(`layerExited from exiting a COL challenge was left undefined! Defaulting to 0...`);
-            layerExited = 0;
-        }
-        for (let i = player.value.gameProgress.col.challengeOrder.chalID.length - 1; i >= 0; i--) {
-            if (player.value.gameProgress.col.challengeOrder.layer[i] > layerExited) {
-                break;
-            }
-            exitChallenge(player.value.gameProgress.col.challengeOrder.chalID[i]);
-        }
     }
 };

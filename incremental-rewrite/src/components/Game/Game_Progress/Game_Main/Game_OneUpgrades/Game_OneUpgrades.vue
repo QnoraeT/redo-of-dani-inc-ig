@@ -3,6 +3,7 @@ import { format } from '@/format';
 import { inChallenge } from '../../Game_Colosseum/Game_ColChallenges/Game_ColChalHandler';
 import { buyOneMainUpg, getOMUpgrade, MAIN_ONE_UPGS, maxxedOMUpgrade } from './Game_OneUpgrades';
 import { tmp } from '@/main';
+import Decimal from 'break_eternity.js';
 
 
 </script>
@@ -11,7 +12,7 @@ import { tmp } from '@/main';
         <div v-for="(item, index) in MAIN_ONE_UPGS" :key="index">
             <!-- set padding to 0vw because it auto-inserts padding -->
             <button @click="buyOneMainUpg(index)" :class="{ nope: !tmp.main.oneUpgrades[index].canBuy && !maxxedOMUpgrade(index), ok: tmp.main.oneUpgrades[index].canBuy && !maxxedOMUpgrade(index), done: maxxedOMUpgrade(index) }" :style="{ backgroundColor: maxxedOMUpgrade(index) ? '#303030' : '#202020' }" v-if="item.show.value" style="width: 12vw; height: 8vw; margin-left: 0.18vw; margin-right: 0.18vw; margin-bottom: 0.36vw; font-size: 0.65vw;" class="generatorButton fontVerdana whiteText">
-                <span style="font-size: 0.75vw; margin-right: 0.5vw; color: #ddd"><b>#{{index + 1}}</b></span><span v-if="inChallenge('im')" class="whiteText">×{{ format(getOMUpgrade(index)) }}</span>
+                <span style="font-size: 0.75vw; margin-right: 0.5vw; color: #ddd"><b>#{{index + 1}}</b></span><span v-if="inChallenge('im') || Decimal.gt(getOMUpgrade(index), 1)" class="whiteText">×{{ format(getOMUpgrade(index)) }}</span>
                 <br><span v-if="(item.implemented !== undefined) && (item.implemented === false)" style="color: #ff0; font-size: 0.5vw"><b>[ NOT IMPLEMENTED ]</b><br></span>
                 <span class="vertical-align: top;">{{item.desc}}</span>
                 <br><br>

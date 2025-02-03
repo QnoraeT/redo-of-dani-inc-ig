@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import Decimal from "break_eternity.js";
 import { format, formatPerc } from "@/format";
 import { buyKMainUpg, buyKPowerUpg, buyKShardUpg, KUA_UPGRADES } from "./Game_KuaUpgrades";
 import { gameVars, player, tmp } from "@/main";
 import { colorChange, gRC } from "@/calc";
-import Decimal from "break_eternity.js";
-import { resetStage } from "@/resets";
+import { resetStage } from "@/resets";;
+import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
 import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
+
 </script>
 <template>
     <button
@@ -44,7 +46,7 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
     }"
     class="whiteText thinMediumButton fontVerdana genAutoButton"
     id="autoKua"
-    v-if="Decimal.gte(player.gameProgress.main.pr2.amount, 75)"
+    v-if="Decimal.gte(player.gameProgress.main.pr2.amount, 75) || (Decimal.gte(player.gameProgress.main.pr2.best[4]!, 75) && hasGrowanMilestone(3))"
     @click="player.gameProgress.kua.auto = !player.gameProgress.kua.auto"
 >
     <b>Kuaraniai Generator: {{ player.gameProgress.kua.auto ? "On" : "Off" }}</b>

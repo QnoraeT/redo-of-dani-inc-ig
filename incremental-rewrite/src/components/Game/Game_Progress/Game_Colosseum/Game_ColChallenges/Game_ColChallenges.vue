@@ -3,8 +3,8 @@ import Decimal from "break_eternity.js";
 import { player } from "@/main";
 import { format } from "@/format";
 import { COL_CHALLENGES } from "./Game_ColChalData";
-import { completedChallenge, inChallenge, timesCompleted } from "./Game_ColChalHandler";
-import { challengeToggle } from "../Game_Colosseum";
+import { challengeToggle, completedChallenge, inChallenge, timesCompleted } from "./Game_ColChalHandler";
+
 </script>
 <template>
     <div v-for="item in COL_CHALLENGES" class="flex-container" :key="item.id">

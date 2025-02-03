@@ -4,7 +4,7 @@ import { player, shiftDown, tmp } from '@/main';
 import { getPR2Cost, PR2_EFF } from '../Game_Main';
 import Decimal from 'break_eternity.js';
 import { getKuaUpgrade } from '../../Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades';
-import { challengeDepth, inChallenge } from '../../Game_Colosseum/Game_ColChallenges/Game_ColChalHandler';
+import { challengeDepth, getColChalRewEffects, inChallenge, timesCompleted } from '../../Game_Colosseum/Game_ColChallenges/Game_ColChalHandler';
 import { resetStage } from '@/resets';
 import { buyGenUPG, MAIN_UPGS } from './Game_MainUpgrades';
 import { COL_CHALLENGES } from '../../Game_Colosseum/Game_ColChallenges/Game_ColChalData';
@@ -13,7 +13,7 @@ import { COL_CHALLENGES } from '../../Game_Colosseum/Game_ColChallenges/Game_Col
 </script>
 <template>
     <div class="flex-container" style="margin-left: auto; margin-right: auto; justify-content: center;">
-        <span class="whiteText fontVerdana" style="text-align: center; font-size: 0.9vw" v-if="inChallenge('dc')">Every bought upgrade boosts their multiplier by {{ format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0], 2) }}×!</span>
+        <span class="whiteText fontVerdana" style="text-align: center; font-size: 0.9vw" v-if="inChallenge('dc') || Decimal.gte(timesCompleted('dc'), 11)">Every bought upgrade boosts their multiplier by {{ format(inChallenge('dc') ? COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0] : getColChalRewEffects("dc")[3], 2) }}×!</span>
     </div>
     <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 0.5vw; margin-bottom: 0.5vw; width: 80vw; align-content: center;">
         <div v-for="(item, index) in MAIN_UPGS" :key='index'>
@@ -21,9 +21,10 @@ import { COL_CHALLENGES } from '../../Game_Colosseum/Game_ColChallenges/Game_Col
                 <button style="text-align: center; font-size: 0.7vw" 
                 :class="{ nope: !tmp.main.upgrades[index].canBuy, ok: tmp.main.upgrades[index].canBuy }"
                 class="whiteText mediumButton fontVerdana generatorButton" @click="buyGenUPG(index)">
-                    <h3 style="margin-top: 0.35vw; font-size: 0.9vw">Upgrade {{index + 1}}: {{format(player.gameProgress.main.upgrades[index].bought)}}<span style="font-size: 0.55vw" v-if="Decimal.gt(tmp.main.upgrades[index].freeExtra, 0)">&nbsp;(+{{format(tmp.main.upgrades[index].freeExtra)}})</span><span style="font-size: 0.55vw; color: #fa8" v-if="Decimal.gt(player.gameProgress.main.upgrades[index].accumulated, 0) && inChallenge('dc')">&nbsp;(+{{format(player.gameProgress.main.upgrades[index].accumulated)}})</span></h3>
+                    <h3 style="margin-top: 0.35vw; font-size: 0.9vw">Upgrade {{index + 1}}: {{format(player.gameProgress.main.upgrades[index].bought)}}<span style="font-size: 0.55vw" v-if="Decimal.gt(tmp.main.upgrades[index].freeExtra, 0)">&nbsp;(+{{format(tmp.main.upgrades[index].freeExtra)}})</span><span style="font-size: 0.55vw; color: #fa8" v-if="Decimal.gt(player.gameProgress.main.upgrades[index].accumulated, 0) && (inChallenge('dc') || Decimal.gte(timesCompleted('dc'), 11))">&nbsp;(+{{format(player.gameProgress.main.upgrades[index].accumulated)}})</span></h3>
                     <span v-if="!inChallenge('dc')">{{tmp.main.upgrades[index].display}}</span>
-                    <span v-if="inChallenge('dc')">Multiplier: {{ format(tmp.main.upgrades[index].multiplier, 2) }}×</span>
+                    <br v-if="!inChallenge('dc') && Decimal.gte(timesCompleted('dc'), 11)">
+                    <span v-if="inChallenge('dc') || Decimal.gte(timesCompleted('dc'), 11)">Multiplier: {{ format(tmp.main.upgrades[index].multiplier, 2) }}×</span>
                     <br><span :style="{ color: tmp.main.upgrades[index].effectTextColor }">{{tmp.main.upgrades[index].totalDisp}}</span>
                     <br><span :style="{ color: tmp.main.upgrades[index].costTextColor }">Cost: {{format(tmp.main.upgrades[index].cost)}} points</span>
                 </button>

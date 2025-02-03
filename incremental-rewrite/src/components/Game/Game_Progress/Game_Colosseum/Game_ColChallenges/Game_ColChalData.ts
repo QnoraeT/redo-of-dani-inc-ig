@@ -328,11 +328,11 @@ export const COL_CHALLENGES: colChallenges = {
                 return `winner you complete it all`;
             }
             let txt = `
-            <li>Upgrades now generate the previous upgrade and all Upgrade scalings and softcaps are removed. However, their effects are vastly reduced.</li>
-            <li>Multipliers to PPS and PRai other than Upgrade 1 and Points (respectively) are dilated to the ^${format(0.5, 2)}.</li>`;
-            txt += `<li>Upgrades' effective costs are significantly increased.</li>`;
+            <li>Upgs. now generate the previous upg. and all Upg. scalings and softcaps are removed. However, their effects are vastly reduced.</li>
+            <li>Multipliers to PPS and PRai other than Upg. 1 and Points (respectively) are dilated to the ^${format(0.5, 2)}.</li>`;
+            txt += `<li>Upgs.' effective costs are significantly increased.</li>`;
             if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 10)) {
-                txt += `<li>Upgrades' multipliers are raised to the ^${format(COL_CHALLENGES.dc.type3ChalCond!(Decimal.add(getColChalDisplayedDifficulty("dc"), 1))[2], 2)}.</li>`;
+                txt += `<li>Upgs.' multipliers are raised to the ^${format(COL_CHALLENGES.dc.type3ChalCond!(Decimal.add(getColChalDisplayedDifficulty("dc"), 1))[2], 2)}.</li>`;
             }
             // let txt = `
             // All upgrades now generate the previous upgrade and all Upgrade scalings and softcaps are removed, however, their effects are vastly reduced down to log(Effective+1)^${format(COL_CHALLENGES.dc.type3ChalCond!(getColChalDisplayedDifficulty("dc"))[1], 2)}.
@@ -358,7 +358,7 @@ export const COL_CHALLENGES: colChallenges = {
                 txt += `<li>Upgrade 3's base is increased based off of your Colosseum Power. Currently: +${format(COL_CHALLENGES.dc.type3ChalEff!(getColChalDisplayedDifficulty("dc"))[2], 3)}</li>`
             }
             if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 10)) {
-                txt += `<li>All upgrades now accumulate outside of this challenge with reduced effect. Currently: ${format(COL_CHALLENGES.dc.type3ChalEff!(getColChalDisplayedDifficulty("dc"))[3], 3)}× per bought, ${format(COL_CHALLENGES.dc.type3ChalEff!(timesCompleted('dc'))[4].mul(100))}% eff.</li>`
+                txt += `<li>All upgrades now accumulate outside of this challenge with reduced effect. Currently: ${format(COL_CHALLENGES.dc.type3ChalEff!(getColChalDisplayedDifficulty("dc"))[3], 3)}× per bought, ${format(COL_CHALLENGES.dc.type3ChalEff!(getColChalDisplayedDifficulty('dc'))[4].mul(100))}% eff.</li>`
             }
             return txt;
         }),
@@ -411,13 +411,13 @@ export const COL_CHALLENGES: colChallenges = {
                     : D(0)
             )
             arr.push(
-                Decimal.gte(x, 10)
-                    ? Decimal.sub(x, 10).pow_base(1.01)
+                Decimal.gte(x, 9)
+                    ? Decimal.sub(x, 9).pow_base(1.01)
                     : D(0)
             )
             arr.push(
-                Decimal.gte(x, 10)
-                    ? Decimal.sub(x, 10).pow_base(1.1)
+                Decimal.gte(x, 9)
+                    ? Decimal.div(x, 10).add(0.1)
                     : D(0)
             )
             return arr;

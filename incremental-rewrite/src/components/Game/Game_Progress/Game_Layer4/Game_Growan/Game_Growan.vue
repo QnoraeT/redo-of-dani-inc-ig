@@ -79,9 +79,9 @@ import { resetStage } from "@/resets";
             </div>
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 1" class="flex-container" style="flex-direction: column; justify-content: center; margin-bottom: 1vw">
-            <span style="text-shadow: #840 0vw 0vw 0.8vw; color: #c60; text-align: center; font-size: 0.9vw; margin-top: 0.2vw" class="fontVerdana">
+            <!-- <span style="text-shadow: #840 0vw 0vw 0.8vw; color: #c60; text-align: center; font-size: 0.9vw; margin-top: 0.2vw" class="fontVerdana">
                 Idle and Active upgrades increase the other's cost by +{{ format(1) }} each and both increase Normal Upgrade costs by +{{ format(2) }} each!
-            </span>
+            </span> -->
             <button @click="respecAllGroUpgs()" v-if="player.gameProgress.layer4.gro.upgrades.active.length > 0 || player.gameProgress.layer4.gro.upgrades.overall.length > 0 || player.gameProgress.layer4.gro.upgrades.idle.length > 0" class="whiteText smallGroBorder groButton fontVerdana" style="margin-top: 1vw; margin-bottom: 1vw; margin-left: auto; margin-right: auto; border: 0.24vw solid #840; width: 27.5vw; text-align: center; background-color: #210; font-size: 0.75vw">
                 Respec all Grōwan upgrades.<br>
                 Warning: This will cause a grōwan reset!

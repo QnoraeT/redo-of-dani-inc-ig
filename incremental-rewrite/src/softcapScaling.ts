@@ -230,10 +230,7 @@ export const getSCSLAttribute = (
 
                     data[0].power = data[0].power.div(tmp.value.kua.effects.upg1Scaling);
 
-                    if (
-                        Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) &&
-                        Decimal.gte(player.value.gameProgress.kua.amount, 10)
-                    ) {
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) && Decimal.gte(player.value.gameProgress.kua.amount, 10)) {
                         data[0].start = data[0].start.add(15);
                         data[1].start = data[1].start.add(15);
                     }
@@ -262,6 +259,10 @@ export const getSCSLAttribute = (
                     }
 
                     data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff.value[2]);
+
+                    if (player.value.gameProgress.layer4.gro.upgrades.overall.includes(2)) {
+                        data[3].power = data[3].power.mul(0.8);
+                    }
 
                     if (inChallenge('dc')) {
                         for (let i = 0; i < data.length; i++) {
@@ -641,6 +642,10 @@ export const getSCSLAttribute = (
                     }
 
                     data[0].start = data[0].start.mul(tmp.value.kua.proofs.upgrades.effect[6].effect.max(1));
+
+                    if (player.value.gameProgress.layer4.gro.upgrades.overall.includes(2)) {
+                        data[0].power = data[0].power.mul(0.975);
+                    }
                     break;
                 case "upg1":
                     data.push({
@@ -655,9 +660,13 @@ export const getSCSLAttribute = (
                         power: D(1),
                         displayedEffect: ""
                     });
-                    
+
                     if (Decimal.gte(timesCompleted("su"), 1)) {
                         data[0].power = data[0].power.div(tmp.value.col.effects.upg1a2sc);
+                    }
+
+                    if (player.value.gameProgress.layer4.gro.upgrades.overall.includes(2)) {
+                        data[0].start = data[0].start.mul(3.162e12);
                     }
 
                     if (inChallenge('dc')) {
@@ -697,6 +706,10 @@ export const getSCSLAttribute = (
 
                     if (Decimal.gte(timesCompleted("su"), 1)) {
                         data[0].power = data[0].power.div(tmp.value.col.effects.upg1a2sc);
+                    }
+
+                    if (player.value.gameProgress.layer4.gro.upgrades.overall.includes(2)) {
+                        data[0].start = D(Infinity);
                     }
 
                     if (inChallenge('dc')) {

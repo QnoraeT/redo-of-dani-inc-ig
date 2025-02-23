@@ -45,7 +45,7 @@ import {
                             {{ item.list.length }}
                         </span>
                         <span style="font-size: 0.9vw; margin-top: 0.3vw; text-align: center" class="fontVerdana whiteText">
-                            {{ item.rewAll.value }}
+                            {{ item.rewardDescription.value }}
                         </span>
                     </div>
                     <div style="display: flex; flex-wrap: wrap; margin-top: 0.75vw; width: 40vw; justify-content: center;">
@@ -111,7 +111,7 @@ import {
                                         >ID: ({{ index }}, {{ item2 }})
                                     </span>
                                     <span style="font-size: 1vw">{{ item.list[item2].name.value }}</span>
-                                    <br><br>{{ item.list[item2].desc.value }} <br>{{
+                                    <br><br>{{ item.list[item2].description.value }} <br>{{
                                         item.list[item2].reward.value === ""
                                             ? ""
                                             : `Reward: ${item.list[item2].reward.value}`

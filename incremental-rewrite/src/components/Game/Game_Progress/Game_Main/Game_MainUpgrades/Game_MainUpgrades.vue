@@ -6,7 +6,7 @@ import Decimal from 'break_eternity.js';
 import { getKuaUpgrade } from '../../Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades';
 import { challengeDepth, getColChalRewEffects, inChallenge, timesCompleted } from '../../Game_Colosseum/Game_ColChallenges/Game_ColChalHandler';
 import { resetStage } from '@/resets';
-import { buyGenUPG, MAIN_UPGS } from './Game_MainUpgrades';
+import { buyGenUPG, MAIN_UPG_DATA } from './Game_MainUpgrades';
 import { COL_CHALLENGES } from '../../Game_Colosseum/Game_ColChallenges/Game_ColChalData';
 
 
@@ -16,7 +16,7 @@ import { COL_CHALLENGES } from '../../Game_Colosseum/Game_ColChallenges/Game_Col
         <span class="whiteText fontVerdana" style="text-align: center; font-size: 0.9vw" v-if="inChallenge('dc') || Decimal.gte(timesCompleted('dc'), 11)">Every bought upgrade boosts their multiplier by {{ format(inChallenge('dc') ? COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[0] : getColChalRewEffects("dc")[3], 2) }}×!</span>
     </div>
     <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 0.5vw; margin-bottom: 0.5vw; width: 80vw; align-content: center;">
-        <div v-for="(item, index) in MAIN_UPGS" :key='index'>
+        <div v-for="(item, index) in MAIN_UPG_DATA" :key='index'>
             <div class="flex-container" style="flex-direction: column; margin: 0.2vw;" v-if="tmp.main.upgrades[index].active && tmp.main.upgrades[index].shown">
                 <button style="text-align: center; font-size: 0.7vw" 
                 :class="{ nope: !tmp.main.upgrades[index].canBuy, ok: tmp.main.upgrades[index].canBuy }"

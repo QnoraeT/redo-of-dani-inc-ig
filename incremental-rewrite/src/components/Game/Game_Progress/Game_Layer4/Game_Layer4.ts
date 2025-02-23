@@ -64,10 +64,10 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             }
 
             // delete this, testing
-            const k = 1
-            k
-            buyGroEquCancel(true, false)
-            buyGroGal(true, false)
+            // const k = 1
+            // k
+            // buyGroEquCancel(true, false)
+            // buyGroGal(true, false)
             break;
         case 0:
             tmp.value.layer4.tax.active = false

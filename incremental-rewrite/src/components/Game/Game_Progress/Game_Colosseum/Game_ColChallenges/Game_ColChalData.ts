@@ -38,27 +38,29 @@ export type ChallengeData = {
 };
 
 export type colChallengeData = {
-    type: number;
-    num: number;
-    id: challengeIDList;
-    layer: number;
-    name: string;
-    goal: ComputedRef<Decimal>;
-    resourceReq?: ComputedRef<DecimalSource>;
-    goalDesc: ComputedRef<string>;
-    desc: ComputedRef<string>;
-    reward: ComputedRef<string>;
-    cap: Decimal;
-    show: ComputedRef<boolean>;
-    canComplete: ComputedRef<boolean>;
-    progress: ComputedRef<Decimal>;
-    progDisplay: ComputedRef<string>;
-    type1ChalCond?: Array<Array<Decimal>>
-    type1ChalEff?: Array<Array<Decimal>>
+    type: number,
+    num: number,
+    id: challengeIDList,
+    layer: number,
+    name: string,
+    labelEff: ComputedRef<string>,
+    labelRew: ComputedRef<string>,
+    goal: ComputedRef<Decimal>,
+    resourceReq?: ComputedRef<DecimalSource>,
+    goalDesc: ComputedRef<string>,
+    desc: ComputedRef<string>,
+    reward: ComputedRef<string>,
+    cap: Decimal,
+    show: ComputedRef<boolean>,
+    canComplete: ComputedRef<boolean>,
+    progress: ComputedRef<Decimal>,
+    progDisplay: ComputedRef<string>,
+    type1ChalCond?: Array<Array<Decimal>>,
+    type1ChalEff?: Array<Array<Decimal>>,
     // there's no type2Cond because that's gonna screw things up when stuff goes retroactively, see the "reducing points by ^0.5 but it overflows first tick and screws up" issue
-    type2ChalEff?: ComputedRef<Array<Decimal>>
+    type2ChalEff?: ComputedRef<Array<Decimal>>,
     // use type 3 when you want a repeatable challenge to be endless at some point
-    type3ChalCond?: (x: DecimalSource) => Array<Decimal>
+    type3ChalCond?: (x: DecimalSource) => Array<Decimal>,
     type3ChalEff?: (x: DecimalSource) => Array<Decimal>
 };
 
@@ -79,6 +81,8 @@ export const COL_CHALLENGES: colChallenges = {
         id: "nk",
         layer: 0,
         name: `No Kuaraniai`,
+        labelEff: computed(() => { return `${COL_CHALLENGES.nk.name} ×${format(timesCompleted('nk'))}`; }),
+        labelRew: computed(() => { return `${COL_CHALLENGES.nk.name} Comp. ×${format(timesCompleted('nk'))}`; }),
         goal: computed(() => { return D(1e25); }),
         goalDesc: computed(() => {
             return `Reach ${format(COL_CHALLENGES.nk.goal.value)} Points.`;
@@ -106,6 +110,8 @@ export const COL_CHALLENGES: colChallenges = {
         id: "su",
         layer: 0,
         name: `Sabotaged Upgrades`,
+        labelEff: computed(() => { return `${COL_CHALLENGES.su.name} ×${format(timesCompleted('su'))}`; }),
+        labelRew: computed(() => { return `${COL_CHALLENGES.su.name} Comp. ×${format(timesCompleted('su'))}`; }),
         goal: computed(() => {
             return [
                 D(1e24),
@@ -213,6 +219,8 @@ export const COL_CHALLENGES: colChallenges = {
         id: "df",
         layer: 0,
         name: `Decaying Feeling`,
+        labelEff: computed(() => { return `${COL_CHALLENGES.df.name} ×${format(timesCompleted('df'))}`; }),
+        labelRew: computed(() => { return `${COL_CHALLENGES.df.name} Comp. ×${format(timesCompleted('df'))}`; }),
         goal: computed(() => { return D(1e20); }),
         goalDesc: computed(() => {
             return `Reach ${format(COL_CHALLENGES.df.goal.value)} Points.`;
@@ -244,6 +252,8 @@ export const COL_CHALLENGES: colChallenges = {
         id: "im",
         layer: 0,
         name: `Inverted Mechanics`,
+        labelEff: computed(() => { return `I.M. ×${format(timesCompleted('im'))}`; }),
+        labelRew: computed(() => { return `I.M. Comp. ×${format(timesCompleted('im'))}`; }),
         goal: computed(() => { return D(1e20); }),
         resourceReq: computed(() => { return player.value.gameProgress.main.best[3]!; }),
         goalDesc: computed(() => {
@@ -292,6 +302,8 @@ export const COL_CHALLENGES: colChallenges = {
         id: "dc",
         layer: 0,
         name: `Dimension Crawler`,
+        labelEff: computed(() => { return `${COL_CHALLENGES.dc.name} ×${format(timesCompleted('dc'))}`; }),
+        labelRew: computed(() => { return `${COL_CHALLENGES.dc.name} Comp. ×${format(timesCompleted('dc'))}`; }),
         goal: computed(() => {
             if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 20)) {
                 return Decimal.sub(getColChalDisplayedDifficulty("dc"), 20).pow_base(1.02012).pow_base(1600).pow10();
@@ -446,6 +458,8 @@ export const COL_CHALLENGES: colChallenges = {
         id: "sn",
         layer: 0,
         name: `Simple Nerfs`,
+        labelEff: computed(() => { return `${COL_CHALLENGES.sn.name} ×${format(timesCompleted('sn'))}`; }),
+        labelRew: computed(() => { return `${COL_CHALLENGES.sn.name} Comp. ×${format(timesCompleted('sn'))}`; }),
         goal: computed(() => { return D('9.999e999'); }),
         goalDesc: computed(() => {
             return `Reach ${format(COL_CHALLENGES.sn.goal.value)} Points.`;

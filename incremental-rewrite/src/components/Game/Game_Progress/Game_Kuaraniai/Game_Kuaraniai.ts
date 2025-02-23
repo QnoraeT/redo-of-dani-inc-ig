@@ -3,7 +3,7 @@ import { NaNCheck, player, tmp, updateAllBest, updateAllTotal } from "@/main";
 import { format } from "@/format";
 import { D, scale } from "@/calc";
 import { ACHIEVEMENT_DATA } from "../../Game_Achievements/Game_Achievements";
-import { setFactor } from "../../Game_Stats/Game_Stats";
+import { pushFactor, resetFactor, setFactor } from "../../Game_Stats/Game_Stats";
 import { getSCSLAttribute, setSCSLEffectDisp } from "@/softcapScaling";
 import { resetFromSKP } from "@/resets";
 import { KUA_BLESS_TIER, KUA_BLESS_UPGS } from "./Game_KuaBlessings/Game_KuaBlessings";
@@ -273,6 +273,9 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             tmp.value.kua.blessings.tier = KUA_BLESS_TIER.tier.rounded.value;
             tmp.value.kua.blessings.tetr = KUA_BLESS_TIER.tetr.rounded.value;
 
+            resetFactor([4, 4]);
+            resetFactor([4, 5]);
+
             tmp.value.kua.blessings.perClick = D(1);
             tmp.value.kua.blessings.perSec = D(2);
             setFactor(0, [4, 4], "Base", `${format(0.1, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, true);
@@ -308,10 +311,20 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             setFactor(6, [4, 4], "Compliance", `×${format(getColResEffect(5), 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
             setFactor(6, [4, 5], "Defiance", `×${format(getColResEffect(4), 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
 
-            tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(ACHIEVEMENT_DATA[3].eff.value);
-            tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(ACHIEVEMENT_DATA[3].eff.value);
-            setFactor(7, [4, 4], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].eff.value, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].eff.value, 1), "ach");
-            setFactor(7, [4, 5], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].eff.value, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].eff.value, 1), "ach");
+            tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(ACHIEVEMENT_DATA[3].effect.value);
+            tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(ACHIEVEMENT_DATA[3].effect.value);
+            setFactor(7, [4, 4], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].effect.value, 1), "ach");
+            setFactor(7, [4, 5], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].effect.value, 1), "ach");
+
+            if (player.value.gameProgress.layer4.gro.upgrades.idle.includes(0)) {
+                tmp.value.kua.blessings.perSec = tmp.value.kua.blessings.perSec.mul(10);
+                pushFactor([4, 5], "Grōwan Idle Upg. 1", `×${format(10)}`, `${format(tmp.value.kua.blessings.perSec, 2)}`, "growan");
+            }
+
+            if (player.value.gameProgress.layer4.gro.upgrades.active.includes(0)) {
+                tmp.value.kua.blessings.perClick = tmp.value.kua.blessings.perClick.mul(10);
+                pushFactor([4, 5], "Grōwan Active Upg. 1", `×${format(10)}`, `${format(tmp.value.kua.blessings.perClick, 2)}`, "growan");
+            }
 
             data = {
                 oldGain: tmp.value.kua.blessings.perClick,
@@ -562,8 +575,8 @@ export const updateKua = (type: number, delta: DecimalSource) => {
             }
             setFactor(1, [4, 0], "KBlessings", `×${format(tmp.value.kua.blessings.kuaEff, 2)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, player.value.gameProgress.unlocks.kblessings, "kb");
 
-            k = k.mul(ACHIEVEMENT_DATA[1].eff.value);
-            setFactor(2, [4, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].eff.value, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true, "ach");
+            k = k.mul(ACHIEVEMENT_DATA[1].effect.value);
+            setFactor(2, [4, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].effect.value, 3)}`, `(${format(Decimal.pow(player.value.gameProgress.kua.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true, "ach");
 
             if (getKuaUpgrade("s", 11)) {
                 k = k.mul(KUA_UPGRADES.KShards[10].eff!.value);

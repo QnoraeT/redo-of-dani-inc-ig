@@ -9,8 +9,8 @@ import { getKuaUpgrade } from "../Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/
 import { computed, type ComputedRef } from "vue";
 import { GROWAN_DATA } from "../Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 
-export type Ach_Types = "main" | "kua" | "col" | "l4";
-export const Ach_Types_List: Array<Ach_Types> = ["main", "kua", "col", "l4"];
+export type AchievementTypes = "main" | "kua" | "col" | "l4";
+export const Ach_Types_List: Array<AchievementTypes> = ["main", "kua", "col", "l4"];
 
 export const ACH_DEF_COLORS = {
     main: {
@@ -35,27 +35,28 @@ export const ACH_DEF_COLORS = {
     }
 };
 
-type Ach_Data = Array<{
-    type: Ach_Types;
+type AchievementTiers = {
+    type: AchievementTypes;
     show: ComputedRef<boolean>;
-    list: Array<{
-        ordering: number;
-        name: ComputedRef<string>;
-        desc: ComputedRef<string>;
-        cond: ComputedRef<boolean>;
-        autoComplete?: boolean;
-        reward: ComputedRef<string>;
-        eff?: ComputedRef<Decimal>;
-        show: ComputedRef<boolean>;
-        status: ComputedRef<boolean | string>;
-        extra?: string;
-    }>;
-    rewAll: ComputedRef<string>;
-    eff: ComputedRef<Decimal>;
-}>;
+    list: Array<AchievementData>;
+    rewardDescription: ComputedRef<string>;
+    effect: ComputedRef<Decimal>;
+};
 
+type AchievementData = {
+    ordering: number;
+    name: ComputedRef<string>;
+    description: ComputedRef<string>;
+    condition: ComputedRef<boolean>;
+    autoComplete?: boolean;
+    reward: ComputedRef<string>;
+    effect?: ComputedRef<Decimal>;
+    show: ComputedRef<boolean>;
+    status: ComputedRef<boolean | string>;
+    extra?: string;
+};
 
-export const ACHIEVEMENT_DATA: Ach_Data = [
+export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
     {
         type: "main",
         show: computed(() => { return true; }),
@@ -67,10 +68,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Starting off?`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Get ${format(1)} UP1.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 1);
                 }),
                 reward: computed(() => { return ``; }),
@@ -83,10 +84,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Let me show you how cruel I was with this...`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Get ${format(20)} UP1.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 20);
                 }),
                 reward: computed(() => { return ``; }),
@@ -99,10 +100,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Not my progress!`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Do your first PRai reset.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 1);
                 }),
                 reward: computed(() => { return ``; }),
@@ -115,10 +116,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Are you rich now?`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have at least ${format(10)} PRai.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 10);
                 }),
                 reward: computed(() => {
@@ -133,10 +134,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `No! Not again! This is not Distance Incremental!`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Get your first softcap.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[1].effect, 10);
                 }),
                 reward: computed(() => { return ``; }),
@@ -149,10 +150,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `All that time wasted...`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have ${format(1e18)} points without doing a PRai reset.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e18) && Decimal.lt(player.value.gameProgress.main.prai.times, 1);
                 }),
                 reward: computed(() => {
@@ -168,16 +169,16 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `This cannot be endgame.`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Do a PR2 reset twice.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 2);
                 }),
                 reward: computed(() => {
-                    return `UP1's scaling is weakened based off of PRai. Currently: ${formatPerc(ACHIEVEMENT_DATA[0].list[6].eff!.value, 3)} weaker.`;
+                    return `UP1's scaling is weakened based off of PRai. Currently: ${formatPerc(ACHIEVEMENT_DATA[0].list[6].effect!.value, 3)} weaker.`;
                 }),
-                eff: computed(() => {
+                effect: computed(() => {
                     return Decimal.max(player.value.gameProgress.main.prai.amount, 10)
                         .log10()
                         .root(3)
@@ -194,10 +195,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Instant gratification.`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Receive ${format(1e3)} PRai in a single PRai reset.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(tmp.value.main.prai.pending, 1e3);
                 }),
                 autoComplete: false,
@@ -213,10 +214,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `This really is a clone of Distance Incremental!`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have at least ${format(100)} UP1.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100);
                 }),
                 reward: computed(() => {
@@ -231,10 +232,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `What once was part of a bygone era...`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Do a PR2 reset ${format(4)} times in total.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 4);
                 }),
                 reward: computed(() => { return ``; }),
@@ -249,10 +250,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Going even further beyond!`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Do a PR2 reset ${format(11)} times.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 11);
                 }),
                 reward: computed(() => { return ``; }),
@@ -267,10 +268,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `A prelude 1`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have ${format(1e45)} points without buying Upgrade 3.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e45) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
@@ -292,10 +293,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `A prelude 2`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have ${format(1e63)} points without buying Upgrade 2 and 3.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e63) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
@@ -339,10 +340,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `A prelude 3`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have ${format(1e90)} points without buying Upgrades 1, 2, and 3 in the current PRai run.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e90) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
@@ -386,10 +387,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Enhancing 1`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Make Upgrade 1's base reach ×${format(1.6, 3)}`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 1.6);
                 }),
                 reward: computed(() => {
@@ -406,10 +407,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Enhancing 2`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Make Upgrade 1's base reach ×${format(2, 3)}`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 2);
                 }),
                 reward: computed(() => { return ``; }),
@@ -424,10 +425,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Enhancing 3`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Make Upgrade 1's base reach ×${format(3, 3)}`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[0].effectBase, 3);
                 }),
                 reward: computed(() => { return ``; }),
@@ -442,11 +443,11 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Apparently Upgrades 4-6 are all you need.`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Get ${format(1e30)} points without having Upgrades 1-3 and without more than ${format(10)} PRai for this Kuaraniai run.`;
                 }),
                 autoComplete: false,
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
                     Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
                     Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0) &&
@@ -454,9 +455,9 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     Decimal.gte(player.value.gameProgress.main.best[2]!, 1e30);
                 }),
                 reward: computed(() => {
-                    return `PRai's effect is slightly boosted by ×${format(ACHIEVEMENT_DATA[0].list[17].eff!.value, 2)} based off your time in PRai.`;
+                    return `PRai's effect is slightly boosted by ×${format(ACHIEVEMENT_DATA[0].list[17].effect!.value, 2)} based off your time in PRai.`;
                 }),
-                eff: computed(() => {
+                effect: computed(() => {
                     return Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 1)
                         .sqrt()
                         .pow_base(1.5)
@@ -508,10 +509,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `You can't escape the IRS, fool!`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(Number.MAX_VALUE)} points.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.bestEver, Number.MAX_VALUE);
                 }),
                 reward: computed(() => { return ``; }),
@@ -526,10 +527,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Ordered`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Every upgrade from 1-6 must have #×${format(10)} of themselves. (Upgrade 1 must be bought ${format(10)} times, Upgrade 2 ${format(20)} times, etc.)`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 10) &&
                         Decimal.eq(player.value.gameProgress.main.upgrades[1].bought, 20) &&
                         Decimal.eq(player.value.gameProgress.main.upgrades[2].bought, 30) &&
@@ -571,10 +572,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Jumping to conclusions.`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(1e100)} PRai while doing no more than ${format(5)} PRai resets.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e100) && Decimal.lte(player.value.gameProgress.main.prai.times, 5);
                 }),
                 reward: computed(() => { return ``; }),
@@ -591,10 +592,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Reach Infinity, again!`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(Decimal.pow(Number.MAX_VALUE, 2))} Points.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.points, Decimal.pow(Number.MAX_VALUE, 2));
                 }),
                 reward: computed(() => { return ``; }),
@@ -609,10 +610,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `I wonder why this wasn't here for so long?`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have over ${format(10)} effective Upgrade 1s without buying any.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gt(tmp.value.main.upgrades[0].effective, 10) && Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 0);
                 }),
                 reward: computed(() => { return ``; }),
@@ -629,10 +630,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             //     name: computed(() => {
             //         return `There are 2 constants in life. Death, and Taxes. Evade one of them.`;
             //     }),
-            //     desc: computed(() => {
+            //     description: computed(() => {
             //         return `Delay the tax man by ${format(1e50)}×!`;
             //     }),
-            //     cond: computed(() => {
+            //     condition: computed(() => {
             //         return getSCSLAttribute('points', false)[0].start.gte(Decimal.mul(Number.MAX_VALUE, 1e50));
             //     }),
             //     reward: computed(() => { return ``; }),
@@ -644,10 +645,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
             //     })
             // },
         ],
-        rewAll: computed(() => {
-            return `Point gain is increased by ${format(ACHIEVEMENT_DATA[0].eff.value.sub(1).mul(100), 2)}%. (×1.1 per main achievement)`;
+        rewardDescription: computed(() => {
+            return `Point gain is increased by ${format(ACHIEVEMENT_DATA[0].effect.value.sub(1).mul(100), 2)}%. (×1.1 per main achievement)`;
         }),
-        eff: computed(() => {
+        effect: computed(() => {
             let eff = D(1.1);
             eff = Decimal.pow(eff, player.value.gameProgress.achievements[0].length);
             return eff;
@@ -665,10 +666,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `What even is this thing? Why do I have so little of it?`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Convert all of your PRai to Kuaraniai.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gt(player.value.gameProgress.kua.amount, 0);
                 }),
                 reward: computed(() => {
@@ -685,16 +686,16 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Stockpiler`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Save up ${format(1e12)} PRai on a Kuaraniai run.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e12);
                 }),
                 reward: computed(() => {
-                    return `UP2 also boosts number gain at a reduced rate. Currently: ×${format(ACHIEVEMENT_DATA[1].list[1].eff!.value, 2)}`;
+                    return `UP2 also boosts number gain at a reduced rate. Currently: ×${format(ACHIEVEMENT_DATA[1].list[1].effect!.value, 2)}`;
                 }),
-                eff: computed(() => {
+                effect: computed(() => {
                     let pow = D(0.2);
                     if (ifAchievement(1, 12)) {
                         pow = pow.add(0.05);
@@ -722,10 +723,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Gathering Pieces Together`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have ${format(0.01, 3)} Kuaraniai.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.amount, 0.01);
                 }),
                 reward: computed(() => { return ``; }),
@@ -740,16 +741,16 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `You like making progress, don't you?`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have ${format(0.1, 2)} Kuaraniai.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.amount, 0.095);
                 }),
                 reward: computed(() => {
-                    return `Kuaraniai gain is increased by ${format(50)}%, and KShards produce another point multiplier. Currently: ×${format(ACHIEVEMENT_DATA[1].list[3].eff!.value, 2)}`;
+                    return `Kuaraniai gain is increased by ${format(50)}%, and KShards produce another point multiplier. Currently: ×${format(ACHIEVEMENT_DATA[1].list[3].effect!.value, 2)}`;
                 }),
-                eff: computed(() => {
+                effect: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.kshards.totals[3]!, 5e11)
                         ? Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).div(50).root(5).mul(10000)
                         : Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).mul(8).add(1).sqrt().sub(1).div(2).add(1);
@@ -765,11 +766,11 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `This upgrade was unnecessary`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have ${format(1e80)} points without Upgrade 3 in the current Kuaraniai run.`;
                 }),
                 autoComplete: false,
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e80) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
@@ -794,19 +795,19 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Quite interesting`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Get ${format(1e2)} Upgrade 1 without having over ${format(10)} PRai.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100) &&
                         Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10)
                     );
                 }),
                 reward: computed(() => {
-                    return `Upgrade 1's effectiveness is slightly increased based off of your PRai. Currently: ${format(ACHIEVEMENT_DATA[1].list[5].eff!.value.sub(1).mul(1e2), 3)}%`;
+                    return `Upgrade 1's effectiveness is slightly increased based off of your PRai. Currently: ${format(ACHIEVEMENT_DATA[1].list[5].effect!.value.sub(1).mul(1e2), 3)}%`;
                 }),
-                eff: computed(() => {
+                effect: computed(() => {
                     let eff = D(player.value.gameProgress.main.prai.amount);
                     if (eff.gte(1e216)) {
                         eff = eff.log10().log(6).div(300).add(1)
@@ -830,11 +831,11 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Actually, these are useless!`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(1e20)} PRai without Upgrades 1, 2, and 3 in the current Kuaraniai run.`;
                 }),
                 autoComplete: false,
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.prai.best[2]!, 1e20) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
@@ -843,9 +844,9 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     );
                 }),
                 reward: computed(() => {
-                    return `All upgrades' cost scaling is slightly slowed down based off of your time in this PRai reset. Currently: ${formatPerc(ACHIEVEMENT_DATA[1].list[6].eff!.value, 3)} slower`;
+                    return `All upgrades' cost scaling is slightly slowed down based off of your time in this PRai reset. Currently: ${formatPerc(ACHIEVEMENT_DATA[1].list[6].effect!.value, 3)} slower`;
                 }),
-                eff: computed(() => {
+                effect: computed(() => {
                     let eff = Decimal.div(player.value.gameProgress.main.prai.timeInPRai, 60);
                     eff = eff.div(eff.mul(198).add(1)).add(1);
                     return eff;
@@ -882,10 +883,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `This softcap won't hurt me!`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Upgrade 2's effect must reach /${format(1e17)}.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(tmp.value.main.upgrades[1].effect, 1e17);
                 }),
                 reward: computed(() => {
@@ -902,10 +903,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Make this obsolete, I dare you. >:3`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Gain ${format(2.5, 2)} Kuaraniai without doing a single PRai reset.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(tmp.value.kua.pending, 2.5) &&
                         Decimal.lte(player.value.gameProgress.main.prai.times, 0)
@@ -931,11 +932,11 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `oh we might make this obsolete`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have ${format(300)} Upgrade 1 without having more than ${format(10)} PRai.`;
                 }),
                 autoComplete: false,
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 300) &&
                         Decimal.lte(player.value.gameProgress.main.prai.amount, 10)
@@ -958,11 +959,11 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `"End-game" pass filter`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(1e80)} points without buying Upgrades 1, 2, and 3 in the current Kuaraniai run.`;
                 }),
                 autoComplete: false,
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.best[2]!, 1e80) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
@@ -971,7 +972,7 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                     );
                 }),
                 reward: computed(() => {
-                    return `Every upgrades' base is increased by ${format(1, 2)}%.`;
+                    return `Upgrade 1-6's base is increased by ${format(1, 2)}%.`;
                 }),
                 show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
@@ -1009,10 +1010,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `I don't think this does much`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(300)} Upgrade 1 without Upgrade 2 in the current Kuaraniai run.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 300) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
@@ -1020,9 +1021,9 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 }),
                 autoComplete: false,
                 reward: computed(() => {
-                    return `Upgrade 2 also boosts PRai gain at a drastically reduced rate. Currently: ×${format(ACHIEVEMENT_DATA[1].list[11].eff!.value, 2)}`;
+                    return `Upgrade 2 also boosts PRai gain at a drastically reduced rate. Currently: ×${format(ACHIEVEMENT_DATA[1].list[11].effect!.value, 2)}`;
                 }),
-                eff: computed(() => {
+                effect: computed(() => {
                     let eff = Decimal.max(tmp.value.main.upgrades[1].effect, 1e10);
                     if (getKuaUpgrade("p", 7)) {
                         eff = eff.root(3).max(1e10);
@@ -1046,10 +1047,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `What if the upgrades didn't chain boost each other and instead also directly boosted the thing`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Get ${format(1e35)} points without Upgrades 1 and 2 in the current Kuaraniai run.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.best[2]!, 1e35) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
@@ -1095,19 +1096,19 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `speedrun? :o`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(1e260)} points in the first ${format(5, 2)} seconds in a Kuaraniai run.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         Decimal.gte(player.value.gameProgress.main.points, 1e260) &&
                         Decimal.lte(player.value.gameProgress.kua.timeInKua, 5)
                     );
                 }),
                 reward: computed(() => {
-                    return `Point gain is boosted but it decays over the next ${format(60, 2)} seconds. Currently: ×${format(ACHIEVEMENT_DATA[1].list[13].eff!.value, 2)}`;
+                    return `Point gain is boosted but it decays over the next ${format(60, 2)} seconds. Currently: ×${format(ACHIEVEMENT_DATA[1].list[13].effect!.value, 2)}`;
                 }),
-                eff: computed(() => {
+                effect: computed(() => {
                     let eff = Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 5).min(60);
                     eff = Decimal.pow(1e2, Decimal.sub(55, eff.sub(5)).div(0.55).div(1e2).pow(2));
                     return eff;
@@ -1127,10 +1128,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `imagine PR3 as "tiers" if PR2 is "ranks"`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(25)} PR2.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 25);
                 }),
                 reward: computed(() => { return ``; }),
@@ -1145,10 +1146,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Stockpiler 2`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Save up ${format(1e85)} PRai on a Kuaraniai run.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 1e85);
                 }),
                 reward: computed(() => {
@@ -1165,10 +1166,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `:softcapkisser:`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Get ${format(1e7)} Kuaraniai.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.amount, 1e7);
                 }),
                 reward: computed(() => { return ``; }),
@@ -1183,10 +1184,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Collector`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Buy 10 KShard and KPower upgrades.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return player.value.gameProgress.kua.kshards.upgrades >= 10 && player.value.gameProgress.kua.kpower.upgrades >= 10;
                 }),
                 reward: computed(() => { return ``; }),
@@ -1201,10 +1202,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Don't need em.`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(1e130)} points while buying only KShard or KPower upgrades.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.main.points, 1e130) &&
                         (player.value.gameProgress.kua.upgrades === 0 &&
                         (player.value.gameProgress.kua.kshards.upgrades >= 0 && player.value.gameProgress.kua.kpower.upgrades === 0) ||
@@ -1238,10 +1239,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Wait what?`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Have your KProof amount higher than your points.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.kua.proofs.amount, player.value.gameProgress.main.points);
                 }),
                 reward: computed(() => { return ``; }),
@@ -1251,10 +1252,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: computed(() => { return true; })
             },
         ],
-        rewAll: computed(() => {
-            return `Kuaraniai's effects are ${format(ACHIEVEMENT_DATA[1].eff.value.sub(1).mul(100), 2)}% stronger. (+1% per Kuaraniai achievement)`;
+        rewardDescription: computed(() => {
+            return `Kuaraniai's effects are ${format(ACHIEVEMENT_DATA[1].effect.value.sub(1).mul(100), 2)}% stronger. (+1% per Kuaraniai achievement)`;
         }),
-        eff: computed(() => {
+        effect: computed(() => {
             let eff = D(0.01);
             eff = Decimal.mul(eff, player.value.gameProgress.achievements[1].length);
             eff = eff.add(1);
@@ -1273,10 +1274,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Does every incremental game need to have a challenge like this? Probably.`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Complete Colosseum Challenge 'No Kuaraniai.'`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.col.completed.nk, 1);
                 }),
                 reward: computed(() => { return ``; }),
@@ -1291,10 +1292,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `In a time crunch.`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Fully complete a challenge with less than ${formatTime(10)} to spare.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.lte(player.value.gameProgress.col.time, 10);
                 }),
                 autoComplete: false,
@@ -1312,10 +1313,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `this challenge is only gonna more: computed( d =>ifficult`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Complete "Sabotaged Upgrades" 5 times.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(timesCompleted("su"), 5);
                 }),
                 reward: computed(() => { return ``; }),
@@ -1330,10 +1331,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Ruining the point`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Complete "Sabotaged Upgrades" on difficulty 1 without buying any upgrade.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return inChallenge('su') && Decimal.eq(challengeDepth('su'), 1) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
                         Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
@@ -1386,10 +1387,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `There wasn't any point in doing that.`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach ${format(1e100)} points in No Kuaraniai.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return (
                         player.value.gameProgress.inChallenge.nk.overall &&
                         Decimal.gte(player.value.gameProgress.main.best[3]!, 1e100)
@@ -1407,10 +1408,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `smort`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach Level ${format(1e2)} in Dotgenous.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(getColResLevel(0), 100);
                 }),
                 reward: computed(() => { return ``; }),
@@ -1425,10 +1426,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `This is weird wtf`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reach a PB of ${format(1e35)} in Inverted Mechanics.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(timesCompleted('im'), 1e35);
                 }),
                 reward: computed(() => { return ``; }),
@@ -1438,10 +1439,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: computed(() => { return true; })
             },
         ],
-        rewAll: computed(() => {
-            return `Points gain in colosseum challenges are increased the lower your time is. (100%: ^${format(ACHIEVEMENT_DATA[2].eff.value.mul(0.25).add(1), 3)}, 50%: ^${format(ACHIEVEMENT_DATA[2].eff.value.mul(0.5).add(1), 3)}, 0%: ^${format(ACHIEVEMENT_DATA[2].eff.value.add(1), 3)})`;
+        rewardDescription: computed(() => {
+            return `Points gain in colosseum challenges are increased the lower your time is. (100%: ^${format(ACHIEVEMENT_DATA[2].effect.value.mul(0.25).add(1), 3)}, 50%: ^${format(ACHIEVEMENT_DATA[2].effect.value.mul(0.5).add(1), 3)}, 0%: ^${format(ACHIEVEMENT_DATA[2].effect.value.add(1), 3)})`;
         }),
-        eff: computed(() => {
+        effect: computed(() => {
             let eff = D(0.004);
             eff = Decimal.mul(eff, player.value.gameProgress.achievements[2].length);
             return eff;
@@ -1459,10 +1460,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Antimatter dimensions ripoff real`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Gain at least ${format(1e12)} Grōwan Solutions.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.layer4.gro.gEAmount, 1e12);
                 }),
                 reward: computed(() => { return ``; }),
@@ -1475,10 +1476,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `The 'Dimension Boosts' be acting different`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Reduce Grōwan Equation costs by -${format(2)}.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(GROWAN_DATA.equCancel.eff.value, 2);
                 }),
                 reward: computed(() => { return ``; }),
@@ -1491,10 +1492,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 name: computed(() => {
                     return `Taking advantage of the start?`;
                 }),
-                desc: computed(() => {
+                description: computed(() => {
                     return `Complete No Kuaraniai in the first ${formatTime(240)} of a layer 4 reset.`;
                 }),
-                cond: computed(() => {
+                condition: computed(() => {
                     return Decimal.gte(player.value.gameProgress.col.completed.nk, 1) && Decimal.lt(player.value.gameProgress.layer4.timeInL4R, 240);
                 }),
                 autoComplete: false,
@@ -1503,10 +1504,10 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
                 status: computed(() => { return Decimal.lt(player.value.gameProgress.layer4.timeInL4R, 240) ? true : `Failed due to taking ${formatTime(player.value.gameProgress.layer4.timeInL4R)} in a layer 4 reset.`; })
             },
         ],
-        rewAll: computed(() => {
-            return `KBlessings gain is increased by ${format(ACHIEVEMENT_DATA[3].eff.value.sub(1).mul(100), 2)}%. (×1.05 per Layer 4 achievement)`;
+        rewardDescription: computed(() => {
+            return `KBlessings gain is increased by ${format(ACHIEVEMENT_DATA[3].effect.value.sub(1).mul(100), 2)}%. (×1.05 per Layer 4 achievement)`;
         }),
-        eff: computed(() => {
+        effect: computed(() => {
             let eff = D(1.05);
             eff = Decimal.pow(eff, player.value.gameProgress.achievements[3].length);
             return eff;
@@ -1515,9 +1516,9 @@ export const ACHIEVEMENT_DATA: Ach_Data = [
 ];
 
 export const setAchievement = (type: number, id: number) => {
-    if (!ifAchievement(type, id) && ACHIEVEMENT_DATA[type].list[id].cond.value) {
+    if (!ifAchievement(type, id) && ACHIEVEMENT_DATA[type].list[id].condition.value) {
         player.value.gameProgress.achievements[type].push(id);
-        spawnPopup(0, ACHIEVEMENT_DATA[type].list[id].desc.value, ACHIEVEMENT_DATA[type].list[id].name.value, 3, `#FFFF00`);
+        spawnPopup(0, ACHIEVEMENT_DATA[type].list[id].description.value, ACHIEVEMENT_DATA[type].list[id].name.value, 3, `#FFFF00`);
     }
     // return [ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].cond, ifAchievement(type, id), tmp.value.achievementList[type][id], player.value.gameProgress.achievements[type]]
 };
@@ -1550,11 +1551,11 @@ export const fixAchievements = () => {
 };
 
 export const getAchievementEffect = (type: number, id: number) => {
-    if (Decimal.isNaN(ACHIEVEMENT_DATA[type].list[id].eff!.value) || ACHIEVEMENT_DATA[type].list[id].eff!.value === undefined) {
+    if (Decimal.isNaN(ACHIEVEMENT_DATA[type].list[id].effect!.value) || ACHIEVEMENT_DATA[type].list[id].effect!.value === undefined) {
         console.error(ACHIEVEMENT_DATA[type].list[id]);
         throw new Error(`Achievement ${type}, ${id}'s effect either does not exist or is NaN!`);
     }
-    return ACHIEVEMENT_DATA[type].list[id].eff!.value;
+    return ACHIEVEMENT_DATA[type].list[id].effect!.value;
 };
 
 export const ifAchievement = (type: number, id: number) => {

@@ -2,7 +2,11 @@ import { player, tmp } from "@/main";
 import { D } from "@/calc";
 import Decimal from "break_eternity.js";
 import { timesCompleted } from "../Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
-import { MAIN_UPGS } from "../Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
+import { MAIN_UPG_DATA } from "../Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
+import { MAIN_ONE_UPGS } from "../Game_Progress/Game_Main/Game_OneUpgrades/Game_OneUpgrades";
+import { KUA_UPGRADES } from "../Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
+import { KUA_BLESS_UPGS } from "../Game_Progress/Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
+import { GROWAN_UPGS } from "../Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 
 export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "fkp" | "col" | "growan" | "tax" | "sc1" | "sc2"
 export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "fkp", "col", "growan", "tax", "sc1", "sc2"]
@@ -123,10 +127,7 @@ export const setFactor = (
                         `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
                     );
                 }
-                if (
-                    ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id] ===
-                    undefined
-                ) {
+                if (ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id] === undefined) {
                     ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors![id] = {
                         name: name,
                         show: show,
@@ -150,9 +151,158 @@ export const setFactor = (
     }
 };
 
+export const pushFactor = (
+    where: Array<number>,
+    name: string,
+    effect: string,
+    now: string,
+    color = factorColorIDList[0],
+) => {
+    let len = -1;
+    if (where[1] === undefined) {
+        // ! I HAVE TO SPAM ! ON THIS SO THAT GITHUB CAN ACTUALLY BUILD THE SITE BUT VSCODE ISN'T GIVING ME ANY ISSUES ??? WTF?
+        if (ALL_FACTORS[where[0]].factors! === null) {
+            throw new Error(
+                `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+            );
+        }
+        len = ALL_FACTORS[where[0]].factors!.length;
+    } else {
+        if (ALL_FACTORS[where[0]].subTabs! === null) {
+            throw new Error(
+                `You can't go to a subtab to a factors only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+            );
+        }
+        if (where[2] === undefined) {
+            if (ALL_FACTORS[where[0]].subTabs![where[1]].factors! === null) {
+                throw new Error(
+                    `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                );
+            }
+            len = ALL_FACTORS[where[0]].subTabs![where[1]].factors!.length;
+        } else {
+            // ! sorry! i don't know how to fix this issue on page load, but it works after the first tick (?)
+            try {
+                ALL_FACTORS[where[0]].subTabs![where[1]].subTabs!
+            } catch(e) {
+                // console.error(`random error, don't know how to fix it`)
+                // console.log(`--- error start ---`)
+                // console.log(e)
+                // console.log('name:')
+                // console.log(ALL_FACTORS[where[0]].name)
+                // console.log('subTabs:')
+                // console.log(ALL_FACTORS[where[0]].subTabs!)
+                // console.log('where[1]')
+                // console.log(where[1])
+                // console.log('real')
+                // console.log(ALL_FACTORS[where[0]].subTabs![where[1]])
+                // console.log(`--- error end ---`)
+                return;
+            }
+            if (ALL_FACTORS[where[0]].subTabs![where[1]].subTabs! === null) {
+                throw new Error(
+                    `You can't go to a subtab to a factors only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                );
+            }
+
+            if (where[3] === undefined) {
+                if (ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors! === null) {
+                    throw new Error(
+                        `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                    );
+                }
+                len = ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors!.length
+            } else {
+                throw new Error(
+                    `Unhandled exception! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                );
+            }
+        }
+    }
+    if (len === -1) {
+        console.warn(`pushFactor had -1 len! something is wrong!`)
+        console.log({
+            where: where,
+            name: name,
+            effect: effect,
+            now: now,
+            color: color
+        })
+        return;
+    }
+    setFactor(len, where, name, effect, now, true, color);
+}
+
+export const resetFactor = (where: Array<number>) => {
+    if (where[1] === undefined) {
+        // ! I HAVE TO SPAM ! ON THIS SO THAT GITHUB CAN ACTUALLY BUILD THE SITE BUT VSCODE ISN'T GIVING ME ANY ISSUES ??? WTF?
+        if (ALL_FACTORS[where[0]].factors! === null) {
+            throw new Error(
+                `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+            );
+        }
+        ALL_FACTORS[where[0]].factors! = [];
+        return;
+    } else {
+        if (ALL_FACTORS[where[0]].subTabs! === null) {
+            throw new Error(
+                `You can't go to a subtab to a factors only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+            );
+        }
+        if (where[2] === undefined) {
+            if (ALL_FACTORS[where[0]].subTabs![where[1]].factors! === null) {
+                throw new Error(
+                    `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                );
+            }
+            ALL_FACTORS[where[0]].subTabs![where[1]].factors! = [];
+            return;
+        } else {
+            // ! sorry! i don't know how to fix this issue on page load, but it works after the first tick (?)
+            try {
+                ALL_FACTORS[where[0]].subTabs![where[1]].subTabs!
+            } catch(e) {
+                // console.error(`random error, don't know how to fix it`)
+                // console.log(`--- error start ---`)
+                // console.log(e)
+                // console.log('name:')
+                // console.log(ALL_FACTORS[where[0]].name)
+                // console.log('subTabs:')
+                // console.log(ALL_FACTORS[where[0]].subTabs!)
+                // console.log('where[1]')
+                // console.log(where[1])
+                // console.log('real')
+                // console.log(ALL_FACTORS[where[0]].subTabs![where[1]])
+                // console.log(`--- error end ---`)
+                return;
+            }
+            if (ALL_FACTORS[where[0]].subTabs![where[1]].subTabs! === null) {
+                throw new Error(
+                    `You can't go to a subtab to a factors only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                );
+            }
+
+            if (where[3] === undefined) {
+                if (ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors! === null) {
+                    throw new Error(
+                        `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                    );
+                }
+                ALL_FACTORS[where[0]].subTabs![where[1]].subTabs![where[2]].factors! = [];
+                return;
+            } else {
+                throw new Error(
+                    `Unhandled exception! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                );
+            }
+        }
+    }
+    throw new Error(`bad args for resetFactor: ${where}`)
+}
+
 export const initStatsFactors = () => {
     const arr = [];
-    for (let i = 0; i < MAIN_UPGS.length; i++) {
+    for (let i = 0; i < MAIN_UPG_DATA.length; i++) {
         arr.push({
             name: `Upgrade ${i + 1}`,
             get show() {
@@ -457,3 +607,90 @@ export const STAGES = [
     //     }
     // }
 ];
+
+export const LABELS = (() => {
+    const mainUpgradeMap = MAIN_UPG_DATA.map((_, index) => [`upg${index+1}`, `Upgrade ${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
+
+    const mainOneUpgradeMap = MAIN_ONE_UPGS.map((_, index) => [`ou${index+1}`, `One-Upgrade ${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
+
+    const kuaKuaUpgradeMap = KUA_UPGRADES.Kua.map((_, index) => [`ku${index+1}`, `Kuaraniai Upgrade #${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
+
+    const kuaPowUpgradeMap = KUA_UPGRADES.KPower.map((_, index) => [`kpowu${index+1}`, `KPower Upgrade #${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
+
+    const kuaShaUpgradeMap = KUA_UPGRADES.KShards.map((_, index) => [`kshau${index+1}`, `KShard Upgrade #${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
+
+    const kuaBlessUpgradeMap = KUA_BLESS_UPGS.map((_, index) => [`kbu${index+1}`, `KBlessing Upgrade #${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
+
+    const growanOverallUpgradeMap = GROWAN_UPGS.overall.map((_, index) => [`gou${index+1}`, `Grōwan Overall Upg. ${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
+
+    const growanIdleUpgradeMap = GROWAN_UPGS.idle.map((_, index) => [`giu${index+1}`, `Grōwan Idle Upg. ${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
+
+    const growanActiveUpgradeMap = GROWAN_UPGS.active.map((_, index) => [`gau${index+1}`, `Grōwan Active Upg. ${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
+
+    return {
+        def: "Default",
+
+        sc1: "Softcap",
+        sc2: "Super Softcap",
+        sc3: "Hyper Softcap",
+
+        pr2_4: "PR2 4",
+        pr2_9: "PR2 9",
+
+        kb: "KBlessings",
+
+        kpe1: "Basic Discoveries",
+        kpe2: "Exotic Laboratory",
+        kpe3: "Holy Process",
+        kpe4: "Line Extruder",
+        kpe5: "Violent Violet",
+        kpe6: "Hyper Heaven",
+        kpe7: "Ultimate Bribery",
+        kpe8: "Constructive Interference",
+        kpe9: "Infinite Staircase",
+
+        nk: "No Kuaraniai",
+        su: "Sabotaged Upgrades",
+        df: "Decaying Feeling",
+        im: "Inverted Mechanics",
+        dc: "Dimension Crawler",
+        sn: "Simple Nerfs",
+
+        ...mainUpgradeMap,
+        ...mainOneUpgradeMap,
+        ...kuaKuaUpgradeMap,
+        ...kuaShaUpgradeMap,
+        ...kuaPowUpgradeMap,
+        ...kuaBlessUpgradeMap,
+        ...growanOverallUpgradeMap,
+        ...growanIdleUpgradeMap,
+        ...growanActiveUpgradeMap
+    } as Record<string, string>;
+})();

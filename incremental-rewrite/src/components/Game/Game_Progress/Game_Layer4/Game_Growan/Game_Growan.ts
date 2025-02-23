@@ -133,7 +133,7 @@ export const GROWAN_UPGS: GrowanUpgType = {
             id: "o4",
             cost: D(5),
             desc: computed((): string => {
-                return `Upgrade 1's atomic scaling is reduced by ${format(4)}%, and the Point softcap is weakened by ${format(1)}%.`;
+                return `Upgrade 1's atomic scaling is reduced by ${format(20)}%, and the Point softcap is weakened by ${format(2.5, 1)}%.`;
             })
         },
         {
@@ -427,19 +427,19 @@ export const GROWAN_DATA = {
     },
     upgCostModif: {
         overall: computed(() => {
-            let mul = D(0);
-            mul = mul.add(Decimal.mul(2, player.value.gameProgress.layer4.gro.upgrades.active.length));
-            mul = mul.add(Decimal.mul(2, player.value.gameProgress.layer4.gro.upgrades.idle.length));
+            const mul = D(0);
+            // mul = mul.add(Decimal.mul(2, player.value.gameProgress.layer4.gro.upgrades.active.length));
+            // mul = mul.add(Decimal.mul(2, player.value.gameProgress.layer4.gro.upgrades.idle.length));
             return mul;
         }),
         active: computed(() => {
-            let mul = D(0);
-            mul = mul.add(player.value.gameProgress.layer4.gro.upgrades.idle.length);
+            const mul = D(0);
+            // mul = mul.add(player.value.gameProgress.layer4.gro.upgrades.idle.length);
             return mul;
         }),
         idle: computed(() => {
-            let mul = D(0);
-            mul = mul.add(player.value.gameProgress.layer4.gro.upgrades.active.length);
+            const mul = D(0);
+            // mul = mul.add(player.value.gameProgress.layer4.gro.upgrades.active.length);
             return mul;
         }),
     }
@@ -517,19 +517,19 @@ export const buyGroGal = (max = false, reset = true) => {
 }
 
 export const buyGroUpg = (type: GrowanUpgTypes, id: number) => {
-    // TODO: uncomment the restrictions!
-    let k = 1
-    k
-    // if (player.value.gameProgress.layer4.gro.upgrades[type].includes(id)) {
-    //     return;
-    // }
+    // // TODO: uncomment the restrictions!
+    // let k = 1
+    // k
+    if (player.value.gameProgress.layer4.gro.upgrades[type].includes(id)) {
+        return;
+    }
 
-    // const cost = GROWAN_UPGS[type][id].cost.add(GROWAN_DATA.upgCostModif[type].value);
-    // if (Decimal.lt(player.value.gameProgress.layer4.gro.amount, cost)) {
-    //     return;
-    // }
+    const cost = GROWAN_UPGS[type][id].cost.add(GROWAN_DATA.upgCostModif[type].value);
+    if (Decimal.lt(player.value.gameProgress.layer4.gro.amount, cost)) {
+        return;
+    }
 
-    // player.value.gameProgress.layer4.gro.amount = Decimal.sub(player.value.gameProgress.layer4.gro.amount, cost);
+    player.value.gameProgress.layer4.gro.amount = Decimal.sub(player.value.gameProgress.layer4.gro.amount, cost);
     player.value.gameProgress.layer4.gro.upgrades[type].push(id);
 }
 

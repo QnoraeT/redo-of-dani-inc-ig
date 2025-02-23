@@ -4,7 +4,7 @@ import { tmp, player, updateAllTotal, updateAllBest, NaNCheck, type TrueFactor }
 import { scale, D, smoothPoly, smoothExp, expQuadCostGrowth } from '@/calc'
 import { getSCSLAttribute, SCALE_ATTR, SOFT_ATTR, doAllScaling, type ScSlItems } from '@/softcapScaling'
 import { getAchievementEffect, ifAchievement } from '../../Game_Achievements/Game_Achievements'
-import { setFactor } from '../../Game_Stats/Game_Stats'
+import { LABELS, pushFactor, resetFactor, setFactor } from '../../Game_Stats/Game_Stats'
 import { computed } from 'vue'
 import { challengeDepth, getColChalCondEffects, getColChalRewEffects, inChallenge, timesCompleted } from '../Game_Colosseum/Game_ColChallenges/Game_ColChalHandler'
 import { getKuaUpgrade, KUA_UPGRADES } from '../Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades'
@@ -12,8 +12,8 @@ import { KUA_ENHANCERS } from '../Game_Kuaraniai/Game_KuaEnhancers/Game.KuaEnhan
 import { COL_CHALLENGES } from '../Game_Colosseum/Game_ColChallenges/Game_ColChalData'
 import { getColResEffect, getColResLevel } from '../Game_Colosseum/Game_ColResearches/Game_ColResearches'
 import { getOMUpgrade, MAIN_ONE_UPGS, maxxedOMUpgrade } from './Game_OneUpgrades/Game_OneUpgrades'
-import { MAIN_UPGS } from './Game_MainUpgrades/Game_MainUpgrades'
 import { GROWAN_UPGS, hasGrowanMilestone } from '../Game_Layer4/Game_Growan/Game_Growan'
+import { MAIN_UPG_DATA } from './Game_MainUpgrades/Game_MainUpgrades'
 
 export const PR2_EFF = [
     {
@@ -219,7 +219,7 @@ export const PRAI_GAIN_CALC: Array<TrueFactor> = [
         }),
         active: true,
         name: computed(() => {
-            return `Decaying Feeling Completion ×${format(timesCompleted('df'))}`;
+            return COL_CHALLENGES.df.labelRew.value;
         }),
         effect: computed(() => {
             return D(10);
@@ -233,7 +233,7 @@ export const PRAI_GAIN_CALC: Array<TrueFactor> = [
         }),
         active: true,
         name: computed(() => {
-            return `Dimension Crawler Comp. ×${format(timesCompleted('df'))}`;
+            return COL_CHALLENGES.dc.labelRew.value;
         }),
         effect: computed(() => {
             let total = D(0);
@@ -250,7 +250,7 @@ export const PRAI_GAIN_CALC: Array<TrueFactor> = [
             return player.value.gameProgress.layer4.gro.upgrades.overall.includes(1);
         }),
         active: true,
-        name: computed(() => { return 'Grōwan Overall Upg. 2'; }),
+        name: computed(() => { return LABELS.gou2; }),
         effect: computed(() => {
             return GROWAN_UPGS.overall[1].eff!.value.prai;
         }),
@@ -263,7 +263,7 @@ export const PRAI_GAIN_CALC: Array<TrueFactor> = [
         }),
         active: true,
         name: computed(() => {
-            return `Inverted Mechanics ×${format(challengeDepth("im"))}`;
+            return COL_CHALLENGES.im.labelEff.value;
         }),
         effect: computed(() => {
             return Decimal.pow(0.8, challengeDepth("im"));
@@ -277,7 +277,7 @@ export const updateAllStart = (delta: DecimalSource) => {
     updateStart(2, delta); // one upgrades (only for if they can be bought and is the tab should be highlighted)
     updateStart(1, delta); // pr2 calculations
     updateStart(0, delta); // prai calculations
-    for (let i = MAIN_UPGS.length - 1; i >= 0; i--) {
+    for (let i = MAIN_UPG_DATA.length - 1; i >= 0; i--) {
         updateStart(-(i + 1), delta); // all main upgs
     }
 }
@@ -460,13 +460,13 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 scal = expQuadCostGrowth(i, tmp.value.main.upgrades[upgID].costBase.scale[2], tmp.value.main.upgrades[upgID].costBase.scale[1], tmp.value.main.upgrades[upgID].costBase.scale[0], tmp.value.main.upgrades[upgID].costBase.exp, true);
 
                 if (upgID === 5) {
-                    scal = scal.mul(KUA_ENHANCERS.enhances[5].effect())
+                    scal = scal.mul(KUA_ENHANCERS.enhances[5].effect());
                 }
                 if (upgID === 4) {
-                    scal = scal.mul(KUA_ENHANCERS.enhances[4].effect())
+                    scal = scal.mul(KUA_ENHANCERS.enhances[4].effect());
                 }
                 if (upgID === 3) {
-                    scal = scal.mul(KUA_ENHANCERS.enhances[3].effect())
+                    scal = scal.mul(KUA_ENHANCERS.enhances[3].effect());
                 }
 
                 scal = doAllScaling(scal, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true), true);
@@ -474,11 +474,11 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                     scal = scal.log10().add(1).root(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[3]);
                 }
                 if (inChallenge("su")) {
-                    scal = scal.div(getColChalCondEffects("su")[0])
+                    scal = scal.div(getColChalCondEffects("su")[0]);
                 }
                 if (upgID === 3 || upgID === 4 || upgID === 5) {
                     if (getKuaUpgrade("p", 11)) {
-                        scal = scal.div(0.9)
+                        scal = scal.div(0.9);
                     }
                 }
                 if (upgID === 2) {
@@ -512,10 +512,10 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 tmp.value.main.upgrades[upgID].target = scal;
             }
 
-            tmp.value.main.upgrades[upgID].effect = MAIN_UPGS[upgID].effect();
-            tmp.value.main.upgrades[upgID].effective = MAIN_UPGS[upgID].effective(player.value.gameProgress.main.upgrades[upgID].bought);
-            tmp.value.main.upgrades[upgID].freeExtra = MAIN_UPGS[upgID].freeExtra.value;
-            tmp.value.main.upgrades[upgID].effectBase = MAIN_UPGS[upgID].effectBase.value;
+            tmp.value.main.upgrades[upgID].effect = MAIN_UPG_DATA[upgID].effect.value;
+            tmp.value.main.upgrades[upgID].effective = MAIN_UPG_DATA[upgID].effective.value;
+            tmp.value.main.upgrades[upgID].freeExtra = MAIN_UPG_DATA[upgID].freeExtra.value;
+            tmp.value.main.upgrades[upgID].effectBase = MAIN_UPG_DATA[upgID].effectBase.value;
 
             tmp.value.main.upgrades[upgID].calcEB = tmp.value.main.upgrades[upgID].effectBase;
             switch (upgID) {
@@ -567,23 +567,23 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             tmp.value.main.upgrades[upgID].shown = shown;
             tmp.value.main.upgrades[upgID].autoUnlocked = autoUnlocked;
 
-            switch (upgID) {
-                case 0:
-                case 1:
-                case 3:
-                case 4:
-                case 6:
-                case 7:
-                case 8:
-                    tmp.value.main.upgrades[upgID].calcEB = MAIN_UPGS[upgID].effect(Decimal.add(player.value.gameProgress.main.upgrades[upgID].bought, 1)).div(MAIN_UPGS[upgID].effect());
-                    break;
-                case 2:
-                case 5:
-                    tmp.value.main.upgrades[upgID].calcEB = MAIN_UPGS[upgID].effect(Decimal.add(player.value.gameProgress.main.upgrades[upgID].bought, 1)).sub(MAIN_UPGS[upgID].effect());
-                    break;
-                default:
-                    throw new Error(`${upgID} is not a valid index for main upgrade`);
-            }
+            // switch (upgID) {
+            //     case 0:
+            //     case 1:
+            //     case 3:
+            //     case 4:
+            //     case 6:
+            //     case 7:
+            //     case 8:
+            //         tmp.value.main.upgrades[upgID].calcEB = MAIN_UPG_DATA[upgID].effect(Decimal.add(player.value.gameProgress.main.upgrades[upgID].bought, 1)).div(MAIN_UPG_DATA[upgID].effect());
+            //         break;
+            //     case 2:
+            //     case 5:
+            //         tmp.value.main.upgrades[upgID].calcEB = MAIN_UPG_DATA[upgID].effect(Decimal.add(player.value.gameProgress.main.upgrades[upgID].bought, 1)).sub(MAIN_UPG_DATA[upgID].effect());
+            //         break;
+            //     default:
+            //         throw new Error(`${upgID} is not a valid index for main upgrade`);
+            // }
 
             switch (upgID) {
                 case 0:
@@ -676,18 +676,25 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
 
             player.value.gameProgress.main.prai.timeInPRai = Decimal.add(player.value.gameProgress.main.prai.timeInPRai, delta);
 
+            resetFactor([2, 2]);
             tmp.value.main.prai.req = D(1e6);
             tmp.value.main.prai.gainExp = D(1 / 3);
-            setFactor(0, [2, 2], "Base", `${format(tmp.value.main.prai.gainExp, 3)}`, `^${format(tmp.value.main.prai.gainExp, 3)}`, true);
+            pushFactor([2, 2], LABELS.def, `${format(tmp.value.main.prai.gainExp, 3)}`, `^${format(tmp.value.main.prai.gainExp, 3)}`)
 
             if (ifAchievement(1, 8)) {
                 tmp.value.main.prai.gainExp = tmp.value.main.prai.gainExp.add(5/3000);
+                pushFactor([2, 2], LABELS.ach1_8, `+${format(5/3000, 3)}`, `^${format(tmp.value.main.prai.gainExp, 3)}`, "ach")
             }
-            setFactor(1, [2, 2], "Achievement ID: (1, 8)", `+${format(5/3000, 3)}`, `^${format(tmp.value.main.prai.gainExp, 3)}`, ifAchievement(1, 8), "ach");
+
+            if (player.value.gameProgress.layer4.gro.upgrades.idle.includes(0)) {
+                tmp.value.main.prai.gainExp = tmp.value.main.prai.gainExp.add(GROWAN_UPGS.idle[0].eff!.value)
+                pushFactor([2, 2], LABELS.giu1, `+${format(GROWAN_UPGS.idle[0].eff!.value, 3)}`, `^${format(tmp.value.main.prai.gainExp, 3)}`, "col");
+            }
 
             if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 1) && Decimal.gte(player.value.gameProgress.main.totals[0]!, tmp.value.main.prai.req)) {
                 let eff, txt;
                 i = D(1);
+                resetFactor([2, 0]);
 
                 for (let j = 0; j < PRAI_GAIN_CALC.length; j++) {
                     PRAI_GAIN_CALC[j].active = PRAI_GAIN_CALC[j].baseActive.value;
@@ -707,12 +714,12 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                             i = i.pow(eff);
                             txt = `^${format(eff, 3)}`;
                         }
-                    }
 
-                    if (PRAI_GAIN_CALC[j].name.value === 'Base') {
-                        txt = `(1+${format(tmp.value.main.prai.gainExp, 3)}(${format(player.value.gameProgress.main.totals[0]!)}/${format(tmp.value.main.prai.req)})^${format(tmp.value.main.prai.gainExp, 3)}-1) dilate ${format(0.9, 2)}`;
+                        if (PRAI_GAIN_CALC[j].name.value === 'Base') {
+                            txt = `(1+${format(tmp.value.main.prai.gainExp, 3)}(${format(player.value.gameProgress.main.totals[0]!)}/${format(tmp.value.main.prai.req)})^${format(tmp.value.main.prai.gainExp, 3)}-1) dilate ${format(0.9, 2)}`;
+                        }
+                        pushFactor([2, 0], PRAI_GAIN_CALC[j].name.value, txt, `${format(i, 1)}`, PRAI_GAIN_CALC[j].color);
                     }
-                    setFactor(j, [2, 0], PRAI_GAIN_CALC[j].name.value, txt, `${format(i, 1)}`, PRAI_GAIN_CALC[j].active, PRAI_GAIN_CALC[j].color);
                 }
 
                 const data = {
@@ -726,8 +733,8 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                     data.newPRai = scale(scale(scale(scale(data.oldPRai.max(10).log10(), 0.2, true, 1, 1, Decimal.pow(0.9, challengeDepth("df"))).pow10().add(i).log10(), 0.2, false, 1, 1, Decimal.pow(0.9, challengeDepth("df"))).pow10(), 0.2, true, 10, 1, Decimal.pow(0.75, challengeDepth("df"))).add(i), 0.2, false, 10, 1, Decimal.pow(0.75, challengeDepth("df")));
 
                     i = data.newPRai.sub(data.oldPRai).max(1);
+                    pushFactor([2, 0], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i)}`, "col")
                 }
-                setFactor(10, [2, 0], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i)}`, inChallenge("df"), "col");
 
                 tmp.value.main.prai.pending = i.floor().max(0);
 
@@ -768,6 +775,9 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 generate = tmp.value.main.prai.pending.mul(delta).mul(0.0001);
                 if (player.value.gameProgress.kua.upgrades >= 1) {
                     generate = generate.mul(100);
+                }
+                if (player.value.gameProgress.layer4.gro.upgrades.idle.includes(0)) {
+                    generate = generate.mul(10);
                 }
                 if (inChallenge("df")) {
                     generate = generate.mul(10000);

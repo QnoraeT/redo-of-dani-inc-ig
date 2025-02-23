@@ -13,12 +13,12 @@ import { KUA_BLESS_UPGS } from "./components/Game/Game_Progress/Game_Kuaraniai/G
 import { updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { getStrangeKPExp } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofStrange/Game_KuaProofStrange";
 import { getFinickyKPExp, getFinickyKPExpGain, getFinickySeconds } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofFinicky/Game_KuaProofFinicky";
-import { MAIN_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 import { updateAllLayer4 } from "./components/Game/Game_Progress/Game_Layer4/Game_Layer4";
 import { COL_RESEARCH } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
 import { COL_CHALLENGES, type challengeIDList } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalData";
 import { inChallenge } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
 import { hasGrowanMilestone } from "./components/Game/Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
+import { MAIN_UPG_DATA } from "./components/Game/Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 
 export const resetTotalBestArray = (
     array: Array<null | DecimalSource>,
@@ -137,7 +137,7 @@ export const reset = (layer: number) => {
             for (let j = 0; j < 3; j++) {
                 player.value.gameProgress.main.upgrades[j].bought = D(0);
             }
-            for (let j = 0; j < MAIN_UPGS.length; j++) {
+            for (let j = 0; j < MAIN_UPG_DATA.length; j++) {
                 player.value.gameProgress.main.upgrades[j].accumulated = D(0);
             }
             break;
@@ -171,12 +171,12 @@ export const reset = (layer: number) => {
                 player.value.gameProgress.main.prai.auto = false;
             }
 
-            for (let i = 0; i < MAIN_UPGS.length; i++) {
+            for (let i = 0; i < MAIN_UPG_DATA.length; i++) {
                 player.value.gameProgress.main.upgrades[i].auto = false;
             }
             player.value.gameProgress.kua.auto = false;
 
-            for (let i = 0; i < MAIN_UPGS.length; i++) {
+            for (let i = 0; i < MAIN_UPG_DATA.length; i++) {
                 player.value.gameProgress.main.upgrades[i].bought = D(0);
                 player.value.gameProgress.main.upgrades[i].boughtInReset[3] = D(0);
             }

@@ -10,7 +10,7 @@ import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame, decompressS
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from "./softcapScaling";
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
 import { diePopupsDie } from "./popups";
-import { ALL_FACTORS, initStatsFactors, setFactor, type FactorColorID } from "./components/Game/Game_Stats/Game_Stats";
+import { ALL_FACTORS, initStatsFactors, LABELS, pushFactor, resetFactor, setFactor, type FactorColorID } from "./components/Game/Game_Stats/Game_Stats";
 import { updatePlayerData } from "./versionControl";
 import { reset } from "./resets";
 import { speedToConsume, timeSpeedBoost } from "./components/Game/Game_Progress/Game_Stored_Time/Game_Stored_Time";
@@ -24,7 +24,7 @@ import { initAllKBlessingUpgrades, KUA_BLESS_UPGS } from "./components/Game/Game
 import { initAllKProofUpgrades, KUA_PROOF_UPGS, type KuaProofUpgTypes, type TmpKProofUpgs } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofs";
 import { updateAllCol } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 import { updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
-import { initAllMainUpgrades, MAIN_UPGS, type TmpMainUpgrade } from "./components/Game/Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
+import { initAllMainUpgrades, MAIN_UPG_DATA, type TmpMainUpgrade } from "./components/Game/Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 import { initAllMainOneUpgrades, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_OneUpgrades/Game_OneUpgrades";
 import { updateAllStart } from "./components/Game/Game_Progress/Game_Main/Game_Main";
 import { GROWAN_DATA, GROWAN_UPGS, initGroEquations } from "./components/Game/Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
@@ -475,7 +475,7 @@ export const makeChallengeInfo = () => {
 
 export const initPlayer = (set = false): Player => {
     const mainUpgrades = [];
-    for (let i = 0; i < MAIN_UPGS.length; i++) {
+    for (let i = 0; i < MAIN_UPG_DATA.length; i++) {
         mainUpgrades.push({
             bought: D(0),
             best: D(0),
@@ -1305,7 +1305,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Upgrade 1'; }),
         effect: computed(() => {
-            return tmp.value.main.upgrades[0].effect;
+            return MAIN_UPG_DATA[0].effect.value;
         }),
         color: 'norm',
         type: 'mult'
@@ -1315,7 +1315,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Upgrade 2'; }),
         effect: computed(() => {
-            return tmp.value.main.upgrades[1].effect;
+            return MAIN_UPG_DATA[1].effect.value;
         }),
         color: 'col',
         type: 'mult'
@@ -1325,7 +1325,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Upgrade 4'; }),
         effect: computed(() => {
-            return tmp.value.main.upgrades[3].effect;
+            return MAIN_UPG_DATA[3].effect.value;
         }),
         color: 'norm',
         type: 'mult'
@@ -1335,7 +1335,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Upgrade 5'; }),
         effect: computed(() => {
-            return tmp.value.main.upgrades[4].effect;
+            return MAIN_UPG_DATA[4].effect.value;
         }),
         color: 'col',
         type: 'mult'
@@ -1389,7 +1389,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Achievement Tier 1'; }),
         effect: computed(() => {
-            return ACHIEVEMENT_DATA[0].eff.value;
+            return ACHIEVEMENT_DATA[0].effect.value;
         }),
         color: 'ach',
         type: 'mult'
@@ -1497,7 +1497,7 @@ export const PPS_CALC: Array<TrueFactor> = [
             return player.value.gameProgress.layer4.gro.upgrades.overall.includes(0);
         }),
         active: true,
-        name: computed(() => { return 'Grōwan Overall Upg 1'; }),
+        name: computed(() => { return 'Grōwan Overall Upg. 1'; }),
         effect: computed(() => {
             return GROWAN_UPGS.overall[0].eff!.value;
         }),
@@ -1530,6 +1530,18 @@ export const PPS_CALC: Array<TrueFactor> = [
     },
     {
         baseActive: computed(() => {
+            return Decimal.gte(player.value.gameProgress.main.oneUpgrades[19], 1);
+        }),
+        active: true,
+        name: computed(() => { return 'One Upgrade #20'; }),
+        effect: computed(() => {
+            return MAIN_ONE_UPGS[19].effect.value;
+        }),
+        color: 'norm',
+        type: 'pow'
+    },
+    {
+        baseActive: computed(() => {
             return getKuaUpgrade("p", 3);
         }),
         active: true,
@@ -1559,7 +1571,7 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Achievement Tier 3'; }),
         effect: computed(() => {
-            return ACHIEVEMENT_DATA[2].eff.value
+            return ACHIEVEMENT_DATA[2].effect.value
             .mul(
                 Decimal.pow(
                     0.25,
@@ -1576,14 +1588,14 @@ export const PPS_CALC: Array<TrueFactor> = [
     },
     {
         baseActive: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.oneUpgrades[19], 1);
+            return player.value.gameProgress.layer4.gro.upgrades.active.includes(0);
         }),
         active: true,
-        name: computed(() => { return 'One Upgrade #20'; }),
+        name: computed(() => { return 'Grōwan Active Upg. 1'; }),
         effect: computed(() => {
-            return MAIN_ONE_UPGS[19].effect.value;
+            return GROWAN_UPGS.active[0].eff!.value;
         }),
-        color: 'norm',
+        color: 'growan',
         type: 'pow'
     },
     {
@@ -1697,6 +1709,7 @@ function gameLoop(): void {
         updateAllKua(gameDelta);
         updateAllStart(gameDelta);
 
+        resetFactor([0]);
         tmp.value.main.pps = calcPPS();
         generate = Decimal.mul(tmp.value.main.pps, gameDelta);
 
@@ -1715,9 +1728,9 @@ function gameLoop(): void {
 
             generate = data.newPts.sub(data.oldPts).max(1);
             tmp.value.main.pps = generate.div(gameDelta);
+
+            pushFactor([0], "Decaying Feeling", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, "col")
         }
-        // FIXME: every time PPS gets updated, check the id value for this (26)
-        setFactor(26, [0], "Decaying Feeling", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, inChallenge("df"), "col");
 
         data.oldPts = Decimal.max(player.value.gameProgress.main.points, data.scal[0].start);
         setSCSLEffectDisp("points", false, 0, `/${format(1, 2)}`);
@@ -1760,9 +1773,9 @@ function gameLoop(): void {
                 data.converted = Decimal.div(data.oldPPS, generate).mul(gameDelta);
             }
             setSCSLEffectDisp("points", false, 0, `/${format(data.converted, 2)}`);
+
+            pushFactor([0], "Taxation", `/${format(data.converted, 2)}`, `${format(tmp.value.main.pps, 1)}`, "sc1")
         }
-        // FIXME: every time PPS gets updated, check the id value for this (27)
-        setFactor(27, [0], "Taxation", `/${format(data.converted, 2)}`, `${format(tmp.value.main.pps, 1)}`, Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start), "sc1");
 
         if (Decimal.isNaN(player.value.gameProgress.main.points)) {
             throw new Error(`weh?! points are NaN!`)
@@ -1912,6 +1925,7 @@ declare global {
         decompressFromBase64: typeof decompressFromBase64;
         tab: typeof tab;
         GROWAN_DATA: typeof GROWAN_DATA;
+        LABELS: typeof LABELS;
     }
 }
 
@@ -1937,5 +1951,6 @@ window.compressToBase64 = compressToBase64;
 window.decompressFromBase64 = decompressFromBase64;
 window.tab = tab;
 window.GROWAN_DATA = GROWAN_DATA;
+window.LABELS = LABELS;
 
 createApp(App).mount("#app");

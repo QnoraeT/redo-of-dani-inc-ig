@@ -4,8 +4,7 @@ import { challengeDepth, getColChalCondEffects, getColChalRewEffects, inChalleng
 import { tmp } from "@/main";
 import { player } from "@/main";
 import Decimal, { type DecimalSource } from "break_eternity.js";
-import { getSCSLAttribute, setSCSLEffectDisp } from "@/softcapScaling";
-import { D, scale } from "@/calc";
+import { D } from "@/calc";
 import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_ColChalData";
 import { updateStart } from "../Game_Main";
 import { getOMUpgrade, MAIN_ONE_UPGS } from "../Game_OneUpgrades/Game_OneUpgrades";
@@ -42,8 +41,6 @@ export type TmpMainUpgrade = {
     cost: Decimal,
     target: Decimal,
     canBuy: boolean,
-    effectTextColor: string,
-    costTextColor: string,
     active: boolean,
     costBase: {
         exp: Decimal,
@@ -103,15 +100,15 @@ export class MainUpgrades {
     constructor(index: number) {
         this.index = index;
         this.baseCostGrowthData = [
-            {exp: D(0), scale: [D(5),    D(1.55),   D(1)     ]},
-            {exp: D(0), scale: [D(1e3),  D(1.25),   D(1)     ]},
-            {exp: D(0), scale: [D(1e10), D(100),    D(1.05)  ]},
+            {exp: D(0), scale: [D(5),    D(1.55),   D(1.005) ]},
+            {exp: D(0), scale: [D(1e3),  D(1.25),   D(1.004) ]},
+            {exp: D(0), scale: [D(1e10), D(100),    D(1.01)  ]},
             {exp: D(0), scale: [D(1e33), D(1.02),   D(1.0003)]},
             {exp: D(0), scale: [D(1e45), D(1.03),   D(1.0002)]},
-            {exp: D(0), scale: [D(1e63), D(1.25),   D(1.025) ]},
-            {exp: D(1), scale: [D(1000), D(1.01),   D(1.0001)]},
-            {exp: D(1), scale: [D(1250), D(1.0075), D(1.0002)]},
-            {exp: D(1), scale: [D(1500), D(1.025),  D(1.0005)]},
+            {exp: D(0), scale: [D(1e63), D(1.25),   D(1.005) ]},
+            {exp: D(1), scale: [D(1000), D(1.01),   D(1.01)  ]},
+            {exp: D(1), scale: [D(1250), D(1.0075), D(1.02)  ]},
+            {exp: D(1), scale: [D(1500), D(1.025),  D(1.05)  ]},
         ][index];
         this.baseEffectBase = [
             {type: 1, val: computed(() => { return D(1.5); })},
@@ -289,19 +286,6 @@ export class MainUpgrades {
             }
         }
 
-        if (this.index >= 3 && this.index <= 5) {
-            const data = {
-                prevEff: effBase,
-                scal: getSCSLAttribute(`kuaupg${(this.index + 1) as 4 | 5 | 6}base`, false)
-            }
-
-            if (effBase.gte(data.scal[0].start)) {
-                effBase = scale(effBase, 0, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
-                setSCSLEffectDisp(`kuaupg${(this.index + 1) as 4 | 5 | 6}base`, false, 0, `/${format(data.prevEff.div(effBase), 3)}`);
-                pushFactor(FACTOR_ARR, LABELS.sc1, `softcap(${format(data.prevEff)})`, `${format(eff, 3)}`, "sc1");
-            }
-        }
-
         return effBase;
     })
 
@@ -415,25 +399,6 @@ export class MainUpgrades {
                 effect = effect.max(1).log10().pow(eff).pow10();
                 pushFactor(FACTOR_ARR, LABELS.kpowu8, `dilate ${format(eff, 3)}`, `×${format(effect)}`, "kua");
             }
-
-            const data = {
-                prevEff: effect,
-                scal: getSCSLAttribute(`upg1`, false)
-            }
-
-            if (effect.gte(data.scal[0].start)) {
-                effect = scale(effect, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
-                setSCSLEffectDisp(`upg1`, false, 0, `${format(data.prevEff.log(effect), 3)}√`);
-                pushFactor(FACTOR_ARR, LABELS.sc1, `softcap(${format(data.prevEff)})`, `×${format(effect)}`, "sc1");
-            }
-
-            data.prevEff = effect;
-
-            if (effect.gte(data.scal[1].start)) {
-                effect = scale(effect, 2.1, false, data.scal[1].start, data.scal[1].power, data.scal[1].basePow);
-                setSCSLEffectDisp(`upg1`, false, 1, `${format(data.prevEff.log(effect), 3)}√`);
-                pushFactor(FACTOR_ARR, LABELS.sc2, `supersoftcap(${format(data.prevEff)})`, `/${format(effect)}`, "sc2");
-            }
         }
 
         if (this.index === 1) {
@@ -449,29 +414,10 @@ export class MainUpgrades {
                 pushFactor(FACTOR_ARR, LABELS.kbu1, `^${format(eff, 3)}`, `/${format(effect)}`, "kb");
             }
 
-            const data = {
-                prevEff: effect,
-                scal: getSCSLAttribute(`upg2`, false)
-            }
-
-            if (effect.gte(data.scal[0].start)) {
-                effect = scale(effect, 0, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
-                setSCSLEffectDisp(`upg2`, false, 0, `/${format(data.prevEff.div(effect), 3)}`);
-                pushFactor(FACTOR_ARR, LABELS.sc1, `softcap(${format(data.prevEff)})`, `/${format(effect)}`, "sc1");
-            }
-
             if (getKuaUpgrade('p', 7)) {
                 eff = D(3);
                 effect = effect.pow(eff);
                 pushFactor(FACTOR_ARR, LABELS.kpowu7, `^${format(eff, 3)}`, `×${format(effect)}`, "kua");
-            }
-
-            data.prevEff = effect;
-
-            if (effect.gte(data.scal[1].start)) {
-                effect = scale(effect, 2.1, false, data.scal[1].start, data.scal[1].power, data.scal[1].basePow);
-                setSCSLEffectDisp(`upg2`, false, 1, `${format(data.prevEff.log(effect), 3)}√`);
-                pushFactor(FACTOR_ARR, LABELS.sc2, `supersoftcap(${format(data.prevEff)})`, `/${format(effect)}`, "sc2");
             }
 
             if (inChallenge("su") && Decimal.gte(challengeDepth("su"), 5)) {
@@ -481,57 +427,6 @@ export class MainUpgrades {
             }
         }
 
-        if (this.index === 2) {
-            const data = {
-                prevEff: effect,
-                scal: getSCSLAttribute(`upg3`, false)
-            }
-
-            if (effect.gte(data.scal[0].start)) {
-                effect = scale(effect, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
-                setSCSLEffectDisp(`upg3`, false, 0, `${format(data.prevEff.log(effect), 3)}√`);
-                pushFactor(FACTOR_ARR, LABELS.sc1, `softcap(${format(data.prevEff)})`, `+${format(effect, 3)}`, "sc1");
-            }
-        }
-
-        if (this.index === 3) {
-            const data = {
-                prevEff: effect,
-                scal: getSCSLAttribute(`upg4`, false)
-            }
-
-            if (effect.gte(data.scal[0].start)) {
-                effect = scale(effect, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
-                setSCSLEffectDisp(`upg4`, false, 0, `${format(data.prevEff.log(effect), 3)}√`);
-                pushFactor(FACTOR_ARR, LABELS.sc1, `softcap(${format(data.prevEff)})`, `×${format(effect)}`, "sc1");
-            }
-        }
-
-        if (this.index === 4) {
-            const data = {
-                prevEff: effect,
-                scal: getSCSLAttribute(`upg5`, false)
-            }
-
-            if (effect.gte(data.scal[0].start)) {
-                effect = scale(effect, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
-                setSCSLEffectDisp(`upg5`, false, 0, `${format(data.prevEff.log(effect), 3)}√`);
-                pushFactor(FACTOR_ARR, LABELS.sc1, `softcap(${format(data.prevEff)})`, `/${format(effect)}`, "sc1");
-            }
-        }
-
-        if (this.index === 5) {
-            const data = {
-                prevEff: effect,
-                scal: getSCSLAttribute(`upg6`, false)
-            }
-
-            if (effect.gte(data.scal[0].start)) {
-                effect = scale(effect, 1.3, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
-                setSCSLEffectDisp(`upg6`, false, 0, `/${format(data.prevEff.div(effect), 3)}`);
-                pushFactor(FACTOR_ARR, LABELS.sc1, `softcap(${format(data.prevEff)})`, `+${format(effect, 3)}`, "sc1");
-            }
-        }
         return effect;
     })  
 }

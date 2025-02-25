@@ -5,7 +5,7 @@ import Decimal from "break_eternity.js"
 import { D } from "@/calc"
 import { format } from "@/format"
 import { setFactor } from "../../Game_Stats/Game_Stats"
-import { buyGroEquCancel, buyGroGal, GROWAN_DATA } from "./Game_Growan/Game_Growan"
+import { GROWAN_DATA } from "./Game_Growan/Game_Growan"
 
 export const updateAllLayer4 = (delta: DecimalSource) => {
     updateLayer4(1, delta)

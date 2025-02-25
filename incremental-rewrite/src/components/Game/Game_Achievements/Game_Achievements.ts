@@ -751,9 +751,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Kuaraniai gain is increased by ${format(50)}%, and KShards produce another point multiplier. Currently: ×${format(ACHIEVEMENT_DATA[1].list[3].effect!.value, 2)}`;
                 }),
                 effect: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.kua.kshards.totals[3]!, 5e11)
-                        ? Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).div(50).root(5).mul(10000)
-                        : Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).mul(8).add(1).sqrt().sub(1).div(2).add(1);
+                    return Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).mul(8).add(1).sqrt().sub(1).div(2).add(1);
                 }),
                 show: computed(() => {
                     return player.value.gameProgress.unlocks.kua;
@@ -809,11 +807,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 effect: computed(() => {
                     let eff = D(player.value.gameProgress.main.prai.amount);
-                    if (eff.gte(1e216)) {
-                        eff = eff.log10().log(6).div(300).add(1)
-                    } else {
-                        eff = eff.max(10).log10().cbrt().sub(1).div(500).add(1);
-                    }
+                    eff = eff.log10().log(6).div(300).add(1)
                     return eff;
                 }),
                 show: computed(() => {
@@ -1311,7 +1305,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 // id: 2
                 ordering: 2,
                 name: computed(() => {
-                    return `this challenge is only gonna more: computed( d =>ifficult`;
+                    return `this challenge is only gonna more: difficult`;
                 }),
                 description: computed(() => {
                     return `Complete "Sabotaged Upgrades" 5 times.`;

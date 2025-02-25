@@ -7,7 +7,6 @@ import { type Tab } from "./components/MainTabs/MainTabs";
 import { D, expQuadCostGrowth, linearAdd, mixColor, scale, smoothExp, smoothPoly } from "./calc";
 import { format } from "./format";
 import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame, decompressSave } from "./saving";
-import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from "./softcapScaling";
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
 import { diePopupsDie } from "./popups";
 import { ALL_FACTORS, initStatsFactors, LABELS, pushFactor, resetFactor, setFactor, type FactorColorID } from "./components/Game/Game_Stats/Game_Stats";
@@ -793,7 +792,6 @@ type Tmp = {
             cost: Decimal,
             effect: Decimal,
             textEffect: { when: Decimal, txt: string },
-            costTextColor: string,
             effActive: boolean,
             effective: Decimal
         }
@@ -1048,7 +1046,6 @@ function initTemp(): Tmp {
                 cost: D(Infinity),
                 effect: D(0),
                 textEffect: { when: D(0), txt: "" },
-                costTextColor: "#ffffff",
                 effActive: true,
                 effective: D(0)
             }
@@ -1703,7 +1700,6 @@ function gameLoop(): void {
 
         player.value.gameTime = Decimal.add(player.value.gameTime, gameDelta);
 
-        updateAllSCSL();
         updateAllLayer4(gameDelta);
         updateAllCol(gameDelta);
         updateAllKua(gameDelta);
@@ -1718,8 +1714,7 @@ function gameLoop(): void {
             converted: D(0),
             oldGen: generate,
             oldPts: D(0),
-            newPts: D(0),
-            scal: getSCSLAttribute("points", false)
+            newPts: D(0)
         };
         data.oldPts = Decimal.max(player.value.gameProgress.main.points, 10);
 
@@ -1732,50 +1727,49 @@ function gameLoop(): void {
             pushFactor([0], "Decaying Feeling", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, "col")
         }
 
-        data.oldPts = Decimal.max(player.value.gameProgress.main.points, data.scal[0].start);
-        setSCSLEffectDisp("points", false, 0, `/${format(1, 2)}`);
+        // data.oldPts = Decimal.max(player.value.gameProgress.main.points, data.scal[0].start);
 
-        if (Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start)) {
-            data.newPts = scale(
-                scale(
-                    data.oldPts.log10(),
-                    0.2,
-                    true,
-                    data.scal[0].start.log10(),
-                    data.scal[0].power,
-                    data.scal[0].basePow
-                )
-                    .pow10()
-                    .add(generate)
-                    .log10(),
-                0.2,
-                false,
-                data.scal[0].start.log10(),
-                data.scal[0].power,
-                data.scal[0].basePow
-            ).pow10();
+        // if (Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start)) {
+        //     data.newPts = scale(
+        //         scale(
+        //             data.oldPts.log10(),
+        //             0.2,
+        //             true,
+        //             data.scal[0].start.log10(),
+        //             data.scal[0].power,
+        //             data.scal[0].basePow
+        //         )
+        //             .pow10()
+        //             .add(generate)
+        //             .log10(),
+        //         0.2,
+        //         false,
+        //         data.scal[0].start.log10(),
+        //         data.scal[0].power,
+        //         data.scal[0].basePow
+        //     ).pow10();
 
-            generate = data.newPts.sub(data.oldPts).max(0); // max 0 to fix negative PPS bug, probably floating point issues
+        //     generate = data.newPts.sub(data.oldPts).max(0); // max 0 to fix negative PPS bug, probably floating point issues
 
-            tmp.value.main.pps = generate.div(gameDelta);
+        //     tmp.value.main.pps = generate.div(gameDelta);
 
-            if (generate.eq(0)) {
-                data.converted = Decimal.div(data.oldPPS, 
-                    scale(
-                        data.oldPPS.log10(),
-                        0.2,
-                        false,
-                        data.scal[0].start.log10(),
-                        data.scal[0].power,
-                        data.scal[0].basePow
-                    ).pow10().mul(gameDelta));
-            } else {
-                data.converted = Decimal.div(data.oldPPS, generate).mul(gameDelta);
-            }
-            setSCSLEffectDisp("points", false, 0, `/${format(data.converted, 2)}`);
+        //     if (generate.eq(0)) {
+        //         data.converted = Decimal.div(data.oldPPS, 
+        //             scale(
+        //                 data.oldPPS.log10(),
+        //                 0.2,
+        //                 false,
+        //                 data.scal[0].start.log10(),
+        //                 data.scal[0].power,
+        //                 data.scal[0].basePow
+        //             ).pow10().mul(gameDelta));
+        //     } else {
+        //         data.converted = Decimal.div(data.oldPPS, generate).mul(gameDelta);
+        //     }
+        //     setSCSLEffectDisp("points", false, 0, `/${format(data.converted, 2)}`);
 
-            pushFactor([0], "Taxation", `/${format(data.converted, 2)}`, `${format(tmp.value.main.pps, 1)}`, "sc1")
-        }
+        //     pushFactor([0], "Taxation", `/${format(data.converted, 2)}`, `${format(tmp.value.main.pps, 1)}`, "sc1")
+        // }
 
         if (Decimal.isNaN(player.value.gameProgress.main.points)) {
             throw new Error(`weh?! points are NaN!`)
@@ -1784,17 +1778,18 @@ function gameLoop(): void {
             throw new Error(`weh?! points are negative!`)
         }
 
-        tmp.value.main.ppsNullified = generate.eq(0) && Decimal.gte(player.value.gameProgress.main.points, data.scal[0].start);
+        // tmp.value.main.ppsNullified = generate.eq(0) && Decimal.gte(player.value.gameProgress.main.points, data.scal[0].start);
+        tmp.value.main.ppsNullified = false
         if (tmp.value.main.ppsNullified) {
-            tmp.value.main.pps = 
-                scale(
-                    data.oldPPS.log10(),
-                    0.2,
-                    false,
-                    data.scal[0].start.log10(),
-                    data.scal[0].power,
-                    data.scal[0].basePow
-                ).pow10().mul(gameDelta);
+            // tmp.value.main.pps = 
+            //     scale(
+            //         data.oldPPS.log10(),
+            //         0.2,
+            //         false,
+            //         data.scal[0].start.log10(),
+            //         data.scal[0].power,
+            //         data.scal[0].basePow
+            //     ).pow10().mul(gameDelta);
         } else {
             if (generate.lt(0) && !gameVars.value.warnings.negativePPS) {
                 gameVars.value.warnings.negativePPS = true;
@@ -1840,7 +1835,6 @@ function gameLoop(): void {
             }
         }
 
-        compileScalSoftList();
         diePopupsDie();
 
         if (gameVars.value.sessionTime > gameVars.value.lastSave + game.value.autoSaveInterval) {

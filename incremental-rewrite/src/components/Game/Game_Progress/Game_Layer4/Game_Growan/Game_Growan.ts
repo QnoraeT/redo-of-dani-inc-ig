@@ -1,8 +1,7 @@
-import { D, smoothExp } from "@/calc"
+import { D, smoothExp, smoothPoly } from "@/calc"
 import { format } from "@/format";
 import { player, tmp } from "@/main";
 import { resetStage } from "@/resets";
-import { doAllScaling, getSCSLAttribute } from "@/softcapScaling";
 import Decimal from "break_eternity.js";
 import { computed, type ComputedRef } from "vue";
 
@@ -296,7 +295,6 @@ export class GrowanEquations {
     cost: ComputedRef<Decimal> = computed(() => {
         let i = D(player.value.gameProgress.layer4.gro.growanEqu[this.index].bought);
         i = i.sub(Decimal.sub(player.value.gameProgress.layer4.gro.equCancel, this.index).max(0));
-        i = doAllScaling(i, getSCSLAttribute('ge', true), false);
         i = this.costGrowth.pow(i);
         i = i.mul(this.baseCost)
         if (this.index >= 4) {
@@ -313,7 +311,6 @@ export class GrowanEquations {
         }
         i = i.div(this.baseCost);
         i = i.log(this.costGrowth);
-        i = doAllScaling(i, getSCSLAttribute('ge', true), true);
         i = i.add(Decimal.sub(player.value.gameProgress.layer4.gro.equCancel, this.index).max(0));
         return i;
     })
@@ -338,8 +335,8 @@ export const GROWAN_DATA = {
     },
     tick: {
         cost: computed(() => {
-            let i = player.value.gameProgress.layer4.gro.tick;
-            i = doAllScaling(i, getSCSLAttribute('gtick', true), false);
+            let i = D(player.value.gameProgress.layer4.gro.tick);
+            i = smoothPoly(i, 2, 100, false);
             i = i.pow10();
             i = i.mul(1e8);
             return i;
@@ -348,7 +345,7 @@ export const GROWAN_DATA = {
             let i = player.value.gameProgress.layer4.gro.gEAmount;
             i = Decimal.div(i, 1e8);
             i = i.log10();
-            i = doAllScaling(i, getSCSLAttribute('gtick', true), true);
+            i = smoothPoly(i, 2, 100, true);
             return i;
         }),
         effPer: computed(() => {
@@ -369,7 +366,7 @@ export const GROWAN_DATA = {
                 return D(2);
             }
             i = Decimal.sub(i, 4);
-            i = doAllScaling(i, getSCSLAttribute('ec', true), false);
+            i = smoothExp(i, 1.005, false);
             i = i.mul(3);
             i = i.add(4);
             return i;
@@ -386,7 +383,7 @@ export const GROWAN_DATA = {
             }
             i = Decimal.sub(i, 4);
             i = i.div(3);
-            i = doAllScaling(i, getSCSLAttribute('ec', true), true);
+            i = smoothExp(i, 1.005, true);
             i = i.add(5);
             return i;
         }),

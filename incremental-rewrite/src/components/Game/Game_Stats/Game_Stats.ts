@@ -297,7 +297,6 @@ export const resetFactor = (where: Array<number>) => {
             }
         }
     }
-    throw new Error(`bad args for resetFactor: ${where}`)
 }
 
 export const initStatsFactors = () => {

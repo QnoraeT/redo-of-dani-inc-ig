@@ -4,8 +4,6 @@ import { player } from "./main";
 import { setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
 import { D, scale } from "./calc";
 import { updateAllStart } from "./components/Game/Game_Progress/Game_Main/Game_Main";
-import { format } from "./format";
-import { getSCSLAttribute, setSCSLEffectDisp } from "./softcapScaling";
 import { updateAllCol } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 import { KUA_PROOF_UPGS, type KuaProofUpgTypes } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofs";
 import { KUA_PROOF_AUTO, type KuaProofAutoTypes } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofAuto/Game_KuaProofAuto";
@@ -326,30 +324,9 @@ export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, d
 
         tmp.value.kua.proofs.skpExp = getStrangeKPExp(player.value.gameProgress.kua.proofs.strange.hiddenExp, false);
         let data = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
-        let calc = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed).pow(tmp.value.kua.proofs.skpExp).sub(1);
-
-        const softcaps = {
-            prevEff: calc,
-            scal: getSCSLAttribute('skp', false)
-        }
-
-        if (data.gte(softcaps.scal[1].start)) {
-            data = scale(data, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            calc = scale(calc, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            player.value.gameProgress.kua.proofs.strange.amount = scale(player.value.gameProgress.kua.proofs.strange.amount, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            setSCSLEffectDisp('skp', false, 1, `${format(calc.log(softcaps.prevEff), 3)}√`);
-        }
-
-        if (data.gte(softcaps.scal[0].start)) {
-            data = scale(data, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            calc = scale(calc, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            player.value.gameProgress.kua.proofs.strange.amount = scale(player.value.gameProgress.kua.proofs.strange.amount, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            setSCSLEffectDisp('skp', false, 0, `/${format(calc.div(softcaps.prevEff), 3)}`);
-        }
 
         if (inChallenge("df")) {
             data = scale(data, 2.1, true, 10, 1, 0.75);
-            calc = scale(calc, 2.1, true, 10, 1, 0.75);
             player.value.gameProgress.kua.proofs.strange.amount = scale(player.value.gameProgress.kua.proofs.strange.amount, 2.1, true, 10, 1, 0.75);
         }
 
@@ -357,18 +334,7 @@ export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, d
 
         if (inChallenge("df")) {
             data = scale(data, 2.1, false, 10, 1, 0.75);
-            calc = scale(calc, 2.1, false, 10, 1, 0.75);
             player.value.gameProgress.kua.proofs.strange.amount = scale(player.value.gameProgress.kua.proofs.strange.amount, 2.1, false, 10, 1, 0.75);
-        }
-
-        if (data.gte(softcaps.scal[0].start)) {
-            data = scale(data, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            player.value.gameProgress.kua.proofs.strange.amount = scale(player.value.gameProgress.kua.proofs.strange.amount, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-        }
-
-        if (data.gte(softcaps.scal[1].start)) {
-            data = scale(data, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            player.value.gameProgress.kua.proofs.strange.amount = scale(player.value.gameProgress.kua.proofs.strange.amount, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
         }
 
         NaNCheck(data);

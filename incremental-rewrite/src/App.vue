@@ -11,7 +11,6 @@ import Game_Colosseum from "./components/Game/Game_Progress/Game_Colosseum/Game_
 import Game_Layer4 from "./components/Game/Game_Progress/Game_Layer4/Game_Layer4.vue";
 import { popupList } from "./popups";
 import { colorChange, gRC } from "./calc";
-import { getSCSLAttribute } from "./softcapScaling";
 import Decimal from "break_eternity.js";
 import Game_Stored_Time from "./components/Game/Game_Progress/Game_Stored_Time/Game_Stored_Time.vue";
 import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalData";
@@ -50,10 +49,6 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
             </div>
         </div>
         <div class="flex-container fontVerdana" style="flex-direction: column; justify-content: center; margin-top: 0.75vw; margin-bottom: 0.75vw;">
-            <span v-if="Decimal.gte(player.gameProgress.main.totals[3]!, getSCSLAttribute('points', false)[0].start)" style="text-align: center; font-size: 0.8vw; color: #f44">
-                Your points past {{ format(getSCSLAttribute("points", false)[0].start) }} is taxed
-                by {{ getSCSLAttribute("points", false)[0].displayedEffect }}!
-            </span>
             <span v-if="player.gameProgress.col.inAChallenge" style="text-align: center; font-size: 1.6vw" :style="{ color: player.gameProgress.col.completedAll ? '#0080FF' : '#FF4000' }">
                 You have <b>{{ formatTime(player.gameProgress.col.time, 3) }}</b> left within these
                 challenges:

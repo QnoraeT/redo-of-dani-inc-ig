@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { tab, getEndgame } from "@/main";
+import { tab, tmp, getEndgame } from "@/main";
 import { format } from "@/format";
 import { ALL_FACTORS, factorColors, STAGES } from "./Game_Stats";
 import { switchSubTab } from "../../MainTabs/MainTabs";
+import { SOFT_ATTR, SCALE_ATTR } from "@/softcapScaling";
 import STAGES_StatDisplay from "./STAGES_Stat_Display.vue";
 import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
 </script>
@@ -10,6 +11,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
     <div id="stats" v-if="tab.currentTab === 2">
         <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1vw; margin-bottom: 0.5vw;">
             <Tab_Button @click="switchSubTab(0, 0)" :selected="tab.tabList[tab.currentTab][0] === 0" :name="'Progress'" /> 
+            <Tab_Button @click="switchSubTab(1, 0)" :selected="tab.tabList[tab.currentTab][0] === 1" :width="10" :name="'Scaling / Softcaps'" /> 
             <Tab_Button @click="switchSubTab(2, 0)" :selected="tab.tabList[tab.currentTab][0] === 2" :name="'All Factors'" />
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 0">
@@ -132,6 +134,49 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                 <STAGES_StatDisplay :id="index" />
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="tab.tabList[tab.currentTab][0] === 1">
+            <div class="flex-container" style="flex-direction: row; justify-content: center">
+                <div v-for="(item, index) in tmp.scaleList" :key="index" style="color: #fff">
+                    <div :style="{ backgroundColor: SCALE_ATTR[index].color }" v-if="item.length > 0" style="border-radius: 6vw; width: 6vw; height: 1.2vw; color: #fff; text-align: center; padding: 2.4vw 0; margin-left: 0.15vw; margin-right: 0.15vw; font-size: 0.8vw;" class="tooltip fontVerdana">
+                        {{ SCALE_ATTR[index].name }}
+                        <span class="tooltiptext">
+                            <span v-for="(item2, index2) in item" :key="index2">
+                                {{ item2 }}
+                                <br>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-container" style="flex-direction: row; justify-content: center; margin-top: 0.15vw">
+                <div v-for="(item, index) in tmp.softList" :key="index" style="color: #fff">
+                    <div
+                        :style="{ backgroundColor: SOFT_ATTR[index].color }"
+                        v-if="item.length > 0"
+                        style="
+                            border-radius: 6vw;
+                            width: 6vw;
+                            height: 1.2vw;
+                            color: #fff;
+                            text-align: center;
+                            padding: 2.4vw 0;
+                            margin-left: 0.15vw;
+                            margin-right: 0.15vw;
+                            font-size: 0.8vw;
+                        "
+                        class="tooltip fontVerdana"
+                    >
+                        {{ SOFT_ATTR[index].name }}
+                        <span class="tooltiptext">
+                            <span v-for="(item2, index2) in item" :key="index2">
+                                {{ item2 }}
+                                <br>
+                            </span>
+                        </span>
                     </div>
                 </div>
             </div>

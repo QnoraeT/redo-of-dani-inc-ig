@@ -5,6 +5,7 @@ import { player, tmp } from "@/main";
 import { resetFromSKP } from "@/resets";
 import { getStrangeKPExp } from "./Game_KuaProofStrange";
 import { buyKProofUpg, KUA_PROOF_UPGS } from "../Game_KuaProofs";
+import { getSCSLAttribute } from "@/softcapScaling";
 </script>
 <template>
     <div class="flex-container fontVerdana" style="background-color: #220; flex-direction: column; border: 0.24vw solid #ff0; padding: 0.6vw; height: 38vw; width: 40%;">
@@ -12,6 +13,12 @@ import { buyKProofUpg, KUA_PROOF_UPGS } from "../Game_KuaProofs";
             You have 
             <span style="font-size: 1.4vw"><b>{{ format(player.gameProgress.kua.proofs.strange.amount, 2) }}</b></span> 
             Strange KProofs<sup>{{ format(tmp.kua.proofs.skpExp, 2) }}</sup>, which adds <span style="font-size: 1.4vw"><b>{{ format(tmp.kua.proofs.skpEff, 2) }}</b></span> free levels to the first 3 KProof upgrades.
+        </span>
+        <span v-if="Decimal.gte(player.gameProgress.kua.proofs.strange.amount, getSCSLAttribute('skp', false)[0].start)" style="color: #ff0; text-align: center; font-size: 0.7vw">
+            Your Strange KProofs are getting odd at <span style="font-size: 0.8vw"><b>{{ format(getSCSLAttribute("skp", false)[0].start) }}</b></span>, which is dividing your Strange KProof gain by <span style="font-size: 0.8vw"><b>{{ getSCSLAttribute("skp", false)[0].displayedEffect }}</b></span>!
+        </span>
+        <span v-if="Decimal.gte(player.gameProgress.kua.proofs.strange.amount, getSCSLAttribute('skp', false)[1].start)" style="color: #f80; text-align: center; font-size: 0.7vw">
+            Your Strange KProofs are getting unstable at <span style="font-size: 0.8vw"><b>{{ format(getSCSLAttribute("skp", false)[1].start) }}</b></span>, which is rooting your Strange KProof gain by <span style="font-size: 0.8vw"><b>{{ getSCSLAttribute("skp", false)[1].displayedEffect }}</b></span>!
         </span>
         <span style="color: #ff0; text-align: center; font-size: 0.75vw">
             You have SKP reset
@@ -32,7 +39,7 @@ import { buyKProofUpg, KUA_PROOF_UPGS } from "../Game_KuaProofs";
                     <span>{{item.perDesc}}</span>
                     <br><br>
                     <span>Currently: <b style="font-size: 0.65vw;">{{item.desc}}</b></span><br>
-                    <span>Cost: <b style="font-size: 0.65vw;">{{format(KUA_PROOF_UPGS.skp[index].cost.value)}}</b> Strange KProofs.</span>
+                    <span>Cost: <b style="font-size: 0.65vw;">{{format(tmp.kua.proofs.upgrades.skp[index].cost)}}</b> Strange KProofs.</span>
                 </button>
             </div>
         </div>

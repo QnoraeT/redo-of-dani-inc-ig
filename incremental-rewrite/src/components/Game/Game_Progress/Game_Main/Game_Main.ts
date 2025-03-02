@@ -2,6 +2,7 @@ import Decimal, { type DecimalSource } from 'break_eternity.js'
 import { format, formatPerc } from '@/format'
 import { tmp, player, updateAllTotal, updateAllBest, NaNCheck, type TrueFactor } from '@/main'
 import { scale, D, smoothPoly, smoothExp, expQuadCostGrowth } from '@/calc'
+import { getSCSLAttribute, SCALE_ATTR, SOFT_ATTR, doAllScaling, type ScSlItems } from '@/softcapScaling'
 import { getAchievementEffect, ifAchievement } from '../../Game_Achievements/Game_Achievements'
 import { LABELS, pushFactor, resetFactor, setFactor } from '../../Game_Stats/Game_Stats'
 import { computed } from 'vue'
@@ -343,9 +344,8 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 }
             }
 
-            resetFactor([1, upgID, 1]);
             scal = D(player.value.gameProgress.main.upgrades[upgID].bought);
-            pushFactor([1, upgID, 1], LABELS.def, `${format(scal, 2)}`, `${format(scal, 2)} effective`);
+            setFactor(0, [1, upgID, 1], "Base", `${format(scal, 2)}`, `${format(scal, 2)} effective`, true);
 
             if (ifAchievement(1, 6)) {
                 scal = scal.div(getAchievementEffect(1, 6));
@@ -396,6 +396,10 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
             }
             setFactor(8, [1, upgID, 1], `Dimension Crawler ×${format(challengeDepth("dc"))}`, `10^(${format(scal)}^${format(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[3], 2)})`, `${format(scal, 2)} effective`, inChallenge("dc"), "col");
 
+            i = scal;
+            scal = doAllScaling(scal, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true), false);
+            setFactor(9, [1, upgID, 1], "Scaling", `scaling(${format(i, 2)})`, `${format(scal, 2)} effective`, true);
+
             if (upgID === 3) {
                 scal = scal.div(KUA_ENHANCERS.enhances[3].effect())
             }
@@ -406,8 +410,12 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 scal = scal.div(KUA_ENHANCERS.enhances[5].effect())
             }
 
-            tmp.value.main.upgrades[upgID].cost = smoothExp(scal, tmp.value.main.upgrades[upgID].costBase.scale[2], false).pow_base(tmp.value.main.upgrades[upgID].costBase.scale[1]).mul(tmp.value.main.upgrades[upgID].costBase.scale[0]).layeradd10(tmp.value.main.upgrades[upgID].costBase.exp);
-            pushFactor([1, upgID, 1], LABELS.def, `~${format(tmp.value.main.upgrades[upgID].costBase.scale[0])} × ${format(tmp.value.main.upgrades[upgID].costBase.scale[1], 3)}^${format(tmp.value.main.upgrades[upgID].costBase.scale[2])}^${format(scal, 3)}`, `${format(tmp.value.main.upgrades[upgID].cost)}`);
+            tmp.value.main.upgrades[upgID].cost = expQuadCostGrowth(scal, tmp.value.main.upgrades[upgID].costBase.scale[2], tmp.value.main.upgrades[upgID].costBase.scale[1], tmp.value.main.upgrades[upgID].costBase.scale[0], tmp.value.main.upgrades[upgID].costBase.exp, false);
+            if (tmp.value.main.upgrades[upgID].costBase.scale[2].gt(1)) {
+                setFactor(10, [1, upgID, 1], "Resulting Cost", `${format(tmp.value.main.upgrades[upgID].costBase.scale[2], 4)}^${format(scal)}² × ${format(tmp.value.main.upgrades[upgID].costBase.scale[1], 2)}^${format(scal)} × ${format(tmp.value.main.upgrades[upgID].costBase.scale[0])}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, true);
+            } else {
+                setFactor(10, [1, upgID, 1], "Resulting Cost", `${format(tmp.value.main.upgrades[upgID].costBase.scale[1], 2)}^${format(scal)} × ${format(tmp.value.main.upgrades[upgID].costBase.scale[0])}`, `${format(tmp.value.main.upgrades[upgID].cost)}`, true);
+            }
 
             if (upgID === 0) {
                 if (Decimal.gte(player.value.gameProgress.main.upgrades[7].bought, 1)) {
@@ -461,6 +469,7 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                     scal = scal.mul(KUA_ENHANCERS.enhances[3].effect());
                 }
 
+                scal = doAllScaling(scal, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true), true);
                 if (inChallenge("dc")) {
                     scal = scal.log10().add(1).root(COL_CHALLENGES.dc.type3ChalCond!(challengeDepth('dc'))[3]);
                 }
@@ -629,6 +638,26 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
                 tmp.value.main.upgrades[upgID].dc11FreeLvs = !player.value.gameProgress.inChallenge.dc.overall && Decimal.gte(timesCompleted("dc"), 11)
                     ? Decimal.max(player.value.gameProgress.main.upgrades[upgID].accumulated, 0).add(1).log2().add(1).pow(0.8).sub(1).div(0.8).add(1).ln().div(getColChalRewEffects("dc")[4]).add(1).pow(getColChalRewEffects("dc")[4]).sub(1)
                     : D(0)
+            }
+
+            tmp.value.main.upgrades[upgID].effectTextColor = "#FFFFFF";
+            if (player.value.settings.scaleSoftColors) {
+                for (let i = getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, false).length - 1; i >= 0; i--) {
+                    if (Decimal.gte(tmp.value.main.upgrades[upgID].effect, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, false)[i].start)) {
+                        tmp.value.main.upgrades[upgID].effectTextColor = SOFT_ATTR[i].color;
+                        break;
+                    }
+                }
+            }
+
+            tmp.value.main.upgrades[upgID].costTextColor = "#FFFFFF";
+            if (player.value.settings.scaleSoftColors) {
+                for (let i = getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true).length - 1; i >= 0; i--) {
+                    if (Decimal.gte(player.value.gameProgress.main.upgrades[upgID].bought, getSCSLAttribute(`upg${upgID + 1}` as ScSlItems, true)[i].start)) {
+                        tmp.value.main.upgrades[upgID].costTextColor = SCALE_ATTR[i].color;
+                        break;
+                    }
+                } 
             }
 
             if (player.value.gameProgress.main.upgrades[upgID].auto) {
@@ -888,6 +917,16 @@ export const updateStart = (whatToUpdate: number, delta: DecimalSource) => {
 
             tmp.value.main.pr2.canDo = Decimal.gte(player.value.gameProgress.main.prai.amount, Decimal.sub(tmp.value.main.pr2.cost, 0.5));
 
+            tmp.value.main.pr2.costTextColor = "#FFFFFF";
+            if (player.value.settings.scaleSoftColors) {
+                for (let i = getSCSLAttribute('pr2', true).length - 1; i >= 0; i--) {
+                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, getSCSLAttribute('pr2', true)[i].start)) {
+                        tmp.value.main.pr2.costTextColor = SCALE_ATTR[i].color;
+                        break;
+                    }
+                }
+            }
+
             tmp.value.main.pr2.textEffect = {when: D(0), txt: ''};
             if (Decimal.lte(player.value.gameProgress.main.pr2.amount, PR2_EFF[PR2_EFF.length - 1].when)) {
                 // this feels cursed not putting a "let i"
@@ -946,6 +985,8 @@ export const getPR2Cost = (x: DecimalSource, inverse: boolean, updateFact: boole
 
         cost = cost.mul(KUA_ENHANCERS.enhances[6].effect());
 
+        cost = doAllScaling(cost, getSCSLAttribute('pr2', true), true);
+
         if (inChallenge("im")) {
             cost = cost.div(Decimal.pow(1.2, challengeDepth("im")))
         }
@@ -959,6 +1000,11 @@ export const getPR2Cost = (x: DecimalSource, inverse: boolean, updateFact: boole
         }
         if (updateFact) {
             setFactor(1, [3, 0], `Inverted Mechanics ×${format(challengeDepth("im"))}`, `×${format(Decimal.pow(1.2, challengeDepth("im")), 3)}`, `${format(cost)} effective`, inChallenge("im"), "col");
+        }
+
+        cost = doAllScaling(cost, getSCSLAttribute('pr2', true), false);
+        if (updateFact) {
+            setFactor(2, [3, 0], "Scaling", `scaling(${format(cost)})`, `${format(cost)} effective`, true);
         }
 
         cost = cost.div(KUA_ENHANCERS.enhances[6].effect())

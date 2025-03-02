@@ -32,7 +32,7 @@ import { getFinickyKPExp, getFinickyKPExpGain, getFinickySeconds } from "./Game_
                     <span>{{item.perDesc}}</span>
                     <br><br>
                     <span>Currently: <b style="font-size: 0.65vw;">{{item.desc}}</b></span><br>
-                    <span>Cost: <b style="font-size: 0.65vw;">{{format(KUA_PROOF_UPGS.fkp[index].cost.value)}}</b> Finicky KProofs.</span>
+                    <span>Cost: <b style="font-size: 0.65vw;">{{format(tmp.kua.proofs.upgrades.fkp[index].cost)}}</b> Finicky KProofs.</span>
                 </button>
             </div>
         </div>

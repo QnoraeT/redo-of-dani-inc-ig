@@ -21,7 +21,7 @@ import Decimal from 'break_eternity.js';
                     <span>{{item.perDesc}}</span>
                     <br><br>
                     <span>Currently: <b style="font-size: 0.65vw;">{{item.desc}}</b></span><br>
-                    <span>Cost: <b style="font-size: 0.65vw;">{{format(KUA_PROOF_UPGS.effect[index].cost.value)}}</b> KProofs.</span>
+                    <span>Cost: <b style="font-size: 0.65vw;">{{format(tmp.kua.proofs.upgrades.effect[index].cost)}}</b> KProofs.</span>
                 </button>
             </div>
         </div>

@@ -25,8 +25,8 @@ import { COL_CHALLENGES } from '../../Game_Colosseum/Game_ColChallenges/Game_Col
                     <span v-if="!inChallenge('dc')">{{tmp.main.upgrades[index].display}}</span>
                     <br v-if="!inChallenge('dc') && Decimal.gte(timesCompleted('dc'), 11)">
                     <span v-if="inChallenge('dc') || Decimal.gte(timesCompleted('dc'), 11)">Multiplier: {{ format(tmp.main.upgrades[index].multiplier, 2) }}×</span>
-                    <br><span>{{tmp.main.upgrades[index].totalDisp}}</span>
-                    <br><span>Cost: {{format(tmp.main.upgrades[index].cost)}} points</span>
+                    <br><span :style="{ color: tmp.main.upgrades[index].effectTextColor }">{{tmp.main.upgrades[index].totalDisp}}</span>
+                    <br><span :style="{ color: tmp.main.upgrades[index].costTextColor }">Cost: {{format(tmp.main.upgrades[index].cost)}} points</span>
                 </button>
 
                 <button style="text-align: center; font-size: 0.7vw" 
@@ -68,7 +68,7 @@ import { COL_CHALLENGES } from '../../Game_Colosseum/Game_ColChallenges/Game_Col
             class="whiteText largeButton fontVerdana generatorButton" id="pr2" v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)" @click="resetStage('pr2')">
                 <h3 style="font-size: 1vw">PR2: {{format(player.gameProgress.main.pr2.amount)}}</h3>
                 Reset all of your previous progress to for a PR2 reset.
-                <br><span>{{
+                <br><span :style="{ color: tmp.main.pr2.costTextColor }">{{
                     shiftDown
                         ? `The next PR2 will require ${format(getPR2Cost(Decimal.add(player.gameProgress.main.pr2.amount, 1), false, false).div(getPR2Cost(player.gameProgress.main.pr2.amount, false, false)), 1)}× more PRai!`
                         : tmp.main.pr2.canDo

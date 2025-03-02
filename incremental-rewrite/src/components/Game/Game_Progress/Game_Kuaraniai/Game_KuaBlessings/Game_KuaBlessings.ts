@@ -1,6 +1,6 @@
 import { D, scale, smoothExp, smoothPoly } from "@/calc";
 import { format, formatPerc } from "@/format";
-import { player, tmp, updateAllBest, updateAllTotal } from "@/main";
+import { player, tmp } from "@/main";
 import Decimal from "break_eternity.js";
 import { computed, type ComputedRef } from "vue";
 import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
@@ -71,7 +71,7 @@ export const KUA_BLESS_TIER: KuaBlessTiers = {
             return smoothExp(i, 1.004, false).pow_base(2).mul(10);
         }),
         target: computed(() => {
-            const x = D(player.value.gameProgress.kua.blessings.best[3]!);
+            const x = D(player.value.gameProgress.kua.blessings.totalKBInCol);
             if (Decimal.lt(x, 10)) { return D(-1); }
             let i = smoothExp(Decimal.div(x, 10).log(2), 1.004, true);
             i = i.mul(KUA_BLESS_UPGS[3].eff.value[2]);
@@ -192,7 +192,7 @@ export const KUA_BLESS_TIER: KuaBlessTiers = {
                 return eff;
             }),
             pr2Eff: computed(() => {
-                let eff = Decimal.pow(KUA_BLESS_TIER.tetr.base.pr2Eff.value, player.value.gameProgress.main.pr2.amount);
+                let eff = Decimal.pow(KUA_BLESS_TIER.tetr.base.pr2Eff.value, player.value.gameProgress.pr2.amount);
                 if (!tmp.value.kua.active.blessings.ranks.tetr) {
                     eff = D(1);
                 }
@@ -475,10 +475,6 @@ export const gainKBOnClick = () => {
     if (Decimal.lt(player.value.gameProgress.kua.blessings.clickCooldown, 0)) {
         player.value.gameProgress.kua.blessings.clickCooldown = D(0.25);
         player.value.gameProgress.kua.blessings.amount = Decimal.add(player.value.gameProgress.kua.blessings.amount, tmp.value.kua.blessings.perClick);
-        updateAllTotal(player.value.gameProgress.kua.blessings.totals, tmp.value.kua.blessings.perClick);
-        player.value.gameProgress.kua.blessings.totalEver = Decimal.add(player.value.gameProgress.kua.blessings.totalEver, tmp.value.kua.blessings.perClick);
-        updateAllBest(player.value.gameProgress.kua.blessings.best,player.value.gameProgress.kua.blessings.amount);
-        player.value.gameProgress.kua.blessings.bestEver = Decimal.max(player.value.gameProgress.kua.blessings.bestEver, player.value.gameProgress.kua.blessings.amount);
     }
 }
 

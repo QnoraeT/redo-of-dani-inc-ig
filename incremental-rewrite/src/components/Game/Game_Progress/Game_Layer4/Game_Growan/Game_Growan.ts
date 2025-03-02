@@ -98,7 +98,7 @@ export const GROWAN_UPGS: GrowanUpgType = {
             id: "o1",
             cost: D(1),
             eff: computed(() => {
-                const i = Decimal.max(player.value.gameProgress.main.best[4]!, 1).pow(0.002);
+                const i = Decimal.max(player.value.gameProgress.bestPointsInL4, 1).pow(0.002);
                 return i;
             }),
             desc: computed((): string => {

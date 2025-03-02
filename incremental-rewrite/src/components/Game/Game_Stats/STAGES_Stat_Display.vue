@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Decimal from "break_eternity.js";
 import { tab, player, tmp } from "@/main";
 import { format, formatTime } from "@/format";
 import { STAGES } from "./Game_Stats";
@@ -30,60 +29,60 @@ defineProps<{
     >
         <div v-if="id === 0" class="statText fontVerdana">
             <span>
-                Total Points: {{ format(player.gameProgress.main.totalEver, 2) }}<br>
+                Total Points: {{ format(player.gameProgress.points, 2) }}<br>
                 {{ `<--- Upgrades --- >` }}<br>
             </span>
             <span v-for="(item, index) of MAIN_UPG_DATA" :key="index">
                 <span v-if="tmp.main.upgrades[index].shown">
                     Best Upgrade {{ index + 1 }}:
-                    {{ format(player.gameProgress.main.upgrades[index].best) }}<br>
+                    {{ format(player.gameProgress.upgrades[index].best) }}<br>
                 </span>
             </span>
             <span>
                 {{ `<--- PRai --- >` }}<br>
-                Total Points in PRai: {{ format(player.gameProgress.main.totals[0]!, 2) }}<br>
-                Total PRai: {{ format(player.gameProgress.main.prai.totalEver, 2) }}<br>
+                <!-- Total Points in PRai: {{ format(player.gameProgress.totals[0]!, 2) }}<br>
+                Total PRai: {{ format(player.gameProgress.prai.amount, 2) }}<br> -->
             </span>
-            <span v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)">
+            <!-- <span v-if="Decimal.gte(player.gameProgress.prai.bestEver, 9.5)">
                 {{ `<--- PRai --- >` }}<br>
-                Total PRai in PR2: {{ format(player.gameProgress.main.prai.totals[1]!, 2) }}<br>
-                Best PRai in PR2: {{ format(player.gameProgress.main.prai.best[1]!, 2) }}<br>
-            </span>
-            <span v-if="Decimal.gte(player.gameProgress.main.pr2.bestEver, 10)">
+                Total PRai in PR2: {{ format(player.gameProgress.prai.totals[1]!, 2) }}<br>
+                Best PRai in PR2: {{ format(player.gameProgress.prai.best[1]!, 2) }}<br>
+            </span> -->
+            <!-- <span v-if="Decimal.gte(player.gameProgress.pr2.bestEver, 10)">
                 Effective PRai in Kuaraniai: {{ format(tmp.kua.effectivePrai, 2) }}<br>
-            </span>
+            </span> -->
             <span>
-                PRai resets: {{ format(player.gameProgress.main.prai.times, 2) }}<br>
-                Time in PRai reset: {{ formatTime(player.gameProgress.main.prai.timeInPRai, 2)
+                PRai resets: {{ format(player.gameProgress.prai.times, 2) }}<br>
+                Time in PRai reset: {{ formatTime(player.gameProgress.prai.timeInPRai, 2)
                 }}<br>
             </span>
-            <span v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)">
+            <!-- <span v-if="Decimal.gte(player.gameProgress.prai.bestEver, 9.5)">
                 {{ `<--- PR2 --- >` }}<br>
-                PR2 resets: {{ format(player.gameProgress.main.pr2.amount) }}<br>
-                Best PR2: {{ format(player.gameProgress.main.pr2.bestEver) }}<br>
-            </span>
+                PR2 resets: {{ format(player.gameProgress.pr2.amount) }}<br>
+                Best PR2: {{ format(player.gameProgress.pr2.bestEver) }}<br>
+            </span> -->
         </div>
         <div v-if="id === 1" class="statText fontVerdana">
             <span>
                 Effective PRai in Kuaraniai: {{ format(tmp.kua.effectivePrai, 2) }}<br>
-                Total Kuaraniai: {{ format(player.gameProgress.kua.totalEver, 4) }}<br>
-                Best Kuaraniai: {{ format(player.gameProgress.kua.bestEver, 4) }}<br>
+                Total Kuaraniai: {{ format(player.gameProgress.kua.amount, 4) }}<br>
+                <!-- Best Kuaraniai: {{ format(player.gameProgress.kua.bestEver, 4) }}<br> -->
                 Kuaraniai Resets: {{ format(player.gameProgress.kua.times) }}<br>
                 Time in Kua reset: {{ formatTime(player.gameProgress.kua.timeInKua, 2) }}<br>
                 {{ `<--- Kuaraniai Shards --- >` }}<br>
-                Total KShards: {{ format(player.gameProgress.kua.kshards.totalEver, 3) }}<br>
+                <!-- Total KShards: {{ format(player.gameProgress.kua.kshards.amount, 3) }}<br>
                 Best KShards: {{ format(player.gameProgress.kua.kshards.bestEver, 3) }}<br>
-                KShard Upgrades: {{ player.gameProgress.kua.kshards.upgrades }}<br>
+                KShard Upgrades: {{ player.gameProgress.kua.kshards.upgrades }}<br> -->
                 {{ `<--- Kuaraniai Power --- >` }}<br>
-                Total KPower: {{ format(player.gameProgress.kua.kpower.totalEver, 3) }}<br>
+                <!-- Total KPower: {{ format(player.gameProgress.kua.kpower.amount, 3) }}<br>
                 Best KPower: {{ format(player.gameProgress.kua.kpower.bestEver, 3) }}<br>
-                KShard Upgrades: {{ player.gameProgress.kua.kpower.upgrades }}<br>
+                KShard Upgrades: {{ player.gameProgress.kua.kpower.upgrades }}<br> -->
             </span>
         </div>
         <div v-if="id === 2" class="statText fontVerdana">
             <span>
-                Total Colosseum Power: {{ format(player.gameProgress.col.totalEver, 2) }}<br>
-                Best Colosseum Power: {{ format(player.gameProgress.col.bestEver, 2) }}<br>
+                <!-- Total Colosseum Power: {{ format(player.gameProgress.col.amount, 2) }}<br>
+                Best Colosseum Power: {{ format(player.gameProgress.col.bestEver, 2) }}<br> -->
                 Total Challenge Completions: {{ format(tmp.col.totalColChalComp) }}<br>
             </span>
         </div>
@@ -94,13 +93,13 @@ defineProps<{
                 Grōwan Equation Mult Increases: {{ format(player.gameProgress.layer4.gro.gal) }}<br>
             </span>
         </div>
-        <div v-if="id === 4" class="statText fontVerdana">
+        <!-- <div v-if="id === 4" class="statText fontVerdana">
             <span>
-                Total Taxed Coins: {{ format(player.gameProgress.layer4.tax.totalEver, 2) }}<br>
+                Total Taxed Coins: {{ format(player.gameProgress.layer4.tax.amount, 2) }}<br>
                 Best Taxed Coins: {{ format(player.gameProgress.layer4.tax.bestEver, 2) }}<br>
                 Taxation Resets: {{ format(player.gameProgress.layer4.tax.times) }}<br>
             </span>
-        </div>
+        </div> -->
     </div>
 </template>
 <style scoped>

@@ -9,24 +9,20 @@ import { format } from "./format";
 import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame, decompressSave } from "./saving";
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
 import { diePopupsDie } from "./popups";
-import { ALL_FACTORS, initStatsFactors, LABELS, pushFactor, resetFactor, setFactor, type FactorColorID } from "./components/Game/Game_Stats/Game_Stats";
+import { ALL_FACTORS, initStatsFactors, LABELS, resetFactor, setFactor, type FactorColorID } from "./components/Game/Game_Stats/Game_Stats";
 import { updatePlayerData } from "./versionControl";
 import { reset } from "./resets";
-import { speedToConsume, timeSpeedBoost } from "./components/Game/Game_Progress/Game_Stored_Time/Game_Stored_Time";
 import { UPDATE_LOG } from "./components/Game/Game_Options/Game_Options";
 import { compressToBase64, decompressFromBase64 } from "lz-string";
-import { challengeDepth, inChallenge, timesCompleted, type colChallengesSavedData } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
-import { COL_CHALLENGES, type Challenge, type challengeIDList } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalData";
 import { getKuaUpgrade } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
-import { getColResEffect, getColXPtoNext } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
+import { getColXPtoNext } from "./components/Game/Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
 import { initAllKBlessingUpgrades, KUA_BLESS_UPGS } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
-import { initAllKProofUpgrades, KUA_PROOF_UPGS, type KuaProofUpgTypes, type TmpKProofUpgs } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_KuaProofs/Game_KuaProofs";
 import { updateAllCol } from "./components/Game/Game_Progress/Game_Colosseum/Game_Colosseum";
 import { updateAllKua } from "./components/Game/Game_Progress/Game_Kuaraniai/Game_Kuaraniai";
 import { initAllMainUpgrades, MAIN_UPG_DATA, type TmpMainUpgrade } from "./components/Game/Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 import { initAllMainOneUpgrades, MAIN_ONE_UPGS } from "./components/Game/Game_Progress/Game_Main/Game_OneUpgrades/Game_OneUpgrades";
 import { updateAllStart } from "./components/Game/Game_Progress/Game_Main/Game_Main";
-import { GROWAN_DATA, GROWAN_UPGS, initGroEquations } from "./components/Game/Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
+import { GROWAN_DATA, GROWAN_UPGS } from "./components/Game/Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 import { updateAllLayer4 } from "./components/Game/Game_Progress/Game_Layer4/Game_Layer4";
 
 // this may slow down calculations!!
@@ -43,26 +39,26 @@ export const NaNCheck = (num: DecimalSource, error = 'NaN detected!') => {
 export const NEXT_UNLOCKS = [
     {
         shown: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 3);
+            return Decimal.gte(player.value.gameProgress.prai.amount, 3);
         }),
         done: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 9.5);
+            return player.value.gameProgress.unlocks.pr2;
         }),
         dispPart1: computed(() => {
-            return `${format(player.value.gameProgress.main.prai.bestEver)} / ${format(10)}`;
+            return `${format(player.value.gameProgress.prai.amount)} / ${format(10)}`;
         }),
         dispPart2: `PRai to unlock the next layer.`,
         color: computed(() => { return "#ffffff"; })
     },
     {
         shown: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 3);
+            return Decimal.gte(player.value.gameProgress.pr2.amount, 3);
         }),
         done: computed(() => {
             return player.value.gameProgress.unlocks.kua;
         }),
         dispPart1: computed(() => {
-            return `${format(player.value.gameProgress.main.pr2.bestEver)} / ${format(10)}`;
+            return `${format(player.value.gameProgress.pr2.amount)} / ${format(10)}`;
         }),
         dispPart2: `PR2 to unlock the next layer.`,
         color: computed(() => { return "#7958ff"; })
@@ -76,7 +72,7 @@ export const NEXT_UNLOCKS = [
     // },
     {
         shown: computed(() => {
-            return player.value.gameProgress.kua.kpower.upgrades >= 2;
+            return player.value.gameProgress.kua.upgrades[1] >= 2;
         }),
         done: computed(() => {
             return player.value.gameProgress.unlocks.col;
@@ -89,10 +85,10 @@ export const NEXT_UNLOCKS = [
     },
     {
         shown: computed(() => {
-            return player.value.gameProgress.kua.kpower.upgrades >= 8;
+            return player.value.gameProgress.kua.upgrades[1] >= 8;
         }),
         done: computed(() => {
-            return player.value.gameProgress.unlocks.kblessings;
+            return player.value.gameProgress.unlocks.kb;
         }),
         dispPart1: computed(() => {
             return `${format(player.value.gameProgress.kua.amount)} / ${format(1e6)}`;
@@ -102,10 +98,10 @@ export const NEXT_UNLOCKS = [
     },
     {
         shown: computed(() => {
-            return player.value.gameProgress.unlocks.kblessings;
+            return player.value.gameProgress.unlocks.kb;
         }),
         done: computed(() => {
-            return player.value.gameProgress.kua.upgrades >= 3 || (player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main);
+            return player.value.gameProgress.kua.upgrades[2] >= 3;
         }),
         dispPart1: computed(() => {
             return `${player.value.gameProgress.kua.upgrades} / 3`;
@@ -115,39 +111,13 @@ export const NEXT_UNLOCKS = [
     },
     {
         shown: computed(() => {
-            return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
+            return Decimal.gte(player.value.gameProgress.bestPointsInL4, "ee3");
         }),
         done: computed(() => {
-            return player.value.gameProgress.unlocks.kproofs.strange;
+            return player.value.gameProgress.unlocks.l4;
         }),
         dispPart1: computed(() => {
-            return `${format(player.value.gameProgress.kua.proofs.amount)} / ${format(1e24)}`;
-        }),
-        dispPart2: `KProofs to unlock the next sub-feature.`,
-        color: computed(() => { return "#ffff00"; })
-    },
-    {
-        shown: computed(() => {
-            return Decimal.gte(player.value.gameProgress.unlocks.kproofs === undefined ? 0 : player.value.gameProgress.kua.proofs.strange.amount, 1e5);
-        }),
-        done: computed(() => {
-            return player.value.gameProgress.unlocks.kproofs.finicky;
-        }),
-        dispPart1: computed(() => {
-            return `${format(player.value.gameProgress.kua.proofs.strange.amount)} / ${format(1e7)}`;
-        }),
-        dispPart2: `Strange KProofs to unlock the next sub-feature.`,
-        color: computed(() => { return "#00ff00"; })
-    },
-    {
-        shown: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, "ee3");
-        }),
-        done: computed(() => {
-            return player.value.gameProgress.unlocks.tax;
-        }),
-        dispPart1: computed(() => {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format("e1500")}`;
+            return `${format(player.value.gameProgress.bestPointsInL4)} / ${format("e1500")}`;
         }),
         dispPart2: `Points to unlock the next layers.`,
         color: computed(() => {
@@ -156,13 +126,13 @@ export const NEXT_UNLOCKS = [
     },
     {
         shown: computed(() => {
-            return player.value.gameProgress.layer4 === undefined ? false : player.value.gameProgress.layer4.pickedFirst !== 0 && Decimal.gte(player.value.gameProgress.main.best[3]!, "e2000");
+            return player.value.gameProgress.layer4 === undefined ? false : player.value.gameProgress.layer4.pickedFirst !== 0 && Decimal.gte(player.value.gameProgress.bestPointsInL4, "e2000");
         }),
         done: computed(() => {
             return false;
         }),
         dispPart1: computed(() => {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format("e10000")}`;
+            return `${format(player.value.gameProgress.bestPointsInL4)} / ${format("e10000")}`;
         }),
         dispPart2: `Points to unlock the next layers.`,
         color: computed(() => { return '#9e9bff' })
@@ -186,207 +156,69 @@ export type Player = {
     gameTime: DecimalSource,
     setTimeSpeed: DecimalSource,
     version: number,
-    displayVersion: string,
     settings: {
         notation: number,
-        scaleSoftColors: boolean
-        scaledUpgBase: boolean,
         notationLimit: number
     },
-
     gameProgress: {
-        dilatedTime: {
-            normalized: boolean,
-            normalizeTime: number,
-            paused: boolean,
-            speed: number,
-            speedEnabled: boolean
-        },
         achievements: Array<Array<number>>,
-        inChallenge: Challenge,
         unlocks: {
             pr2: boolean,
             kua: boolean,
-            kenhancers: boolean,
-            kblessings: boolean,
-            kproofs: {
-                main: boolean,
-                strange: boolean,
-                finicky: boolean
-            },
+            kb: boolean,
+            kp: boolean,
             col: boolean,
-            tax: boolean
+            l4: boolean
         },
-        main: {
-            points: DecimalSource,
-            totals: Array<null | DecimalSource>, // prai, pr2, kua, col, l4
-            best: Array<null | DecimalSource>, // prai, pr2, kua, col, l4
-            totalEver: DecimalSource,
-            bestEver: DecimalSource,
-            upgrades: Array<{
-                bought: DecimalSource,
-                best: DecimalSource,
-                auto: boolean,
-                boughtInReset: Array<DecimalSource> // prai, pr2, kua, col, l4
-                accumulated: DecimalSource
-            }>,
-            oneUpgrades: Array<DecimalSource>,
-            prai: {
-                totals: Array<null | DecimalSource>, // null, pr2, kua, col, l4
-                best: Array<null | DecimalSource>, // null, pr2, kua, col, l4
-                totalEver: DecimalSource,
-                bestEver: DecimalSource,
-                amount: DecimalSource,
-                timeInPRai: DecimalSource,
-                auto: boolean,
-                times: DecimalSource
-            },
-            pr2: {
-                best: Array<null | DecimalSource>, // null, null, kua, col, l4
-                bestEver: DecimalSource,
-                amount: DecimalSource,
-                timeInPR2: DecimalSource,
-                auto: boolean
-            }
+        points: DecimalSource,
+        totalPointsInPrai: DecimalSource,
+        bestPointsInL4: DecimalSource,
+        upgrades: Array<{
+            bought: DecimalSource,
+            best: DecimalSource,
+            auto: boolean,
+            boughtInKua: DecimalSource
+            accumulated: DecimalSource
+        }>,
+        oneUpgrades: Array<DecimalSource>,
+        prai: {
+            amount: DecimalSource,
+            timeInPRai: DecimalSource,
+            auto: boolean,
+            times: DecimalSource
+        },
+        pr2: {
+            amount: DecimalSource,
+            timeInPR2: DecimalSource,
+            auto: boolean
         },
         kua: {
             auto: boolean,
             amount: DecimalSource,
-            totals: Array<null | DecimalSource>, // null, null, null, col, l4
-            best: Array<null | DecimalSource>, // null, null, null, col, l4
-            totalEver: DecimalSource,
-            bestEver: DecimalSource,
             timeInKua: DecimalSource,
             times: DecimalSource,
-            upgrades: number
-            kshards: {
-                amount: DecimalSource,
-                totals: Array<null | DecimalSource>, // null, null, null, col, l4
-                best: Array<null | DecimalSource>, // null, null, null, col, l4
-                totalEver: DecimalSource,
-                bestEver: DecimalSource,
-                upgrades: number
-            },
-            kpower: {
-                amount: DecimalSource,
-                totals: Array<null | DecimalSource>, // null, null, null, col, l4
-                best: Array<null | DecimalSource>, // null, null, null, col, l4
-                totalEver: DecimalSource,
-                bestEver: DecimalSource,
-                upgrades: number
-            },
-            enhancers: {
-                autoSources: boolean,
-                sources: Array<DecimalSource>,
-                enhancers: Array<DecimalSource>,
-                enhanceXP: Array<DecimalSource>,
-                enhancePow: Array<DecimalSource>,
-                xpSpread: DecimalSource,
-                inExtraction: number,
-                extractionXP: Array<DecimalSource>,
-                upgrades: Array<number>
-            },
+            upgrades: Array<number> // counts for ks, kp, and kua
+            kshards: DecimalSource,
+            totalKSInCol: DecimalSource,
+            kpower: DecimalSource,
+            totalKPInCol: DecimalSource,
             blessings: {
                 amount: DecimalSource,
+                totalKBInCol: DecimalSource,
                 clickCooldown: DecimalSource,
-                totals: Array<null | DecimalSource>, // null, null, null, col, l4
-                best: Array<null | DecimalSource>, // null, null, null, col, l4
-                totalEver: DecimalSource,
-                bestEver: DecimalSource,
                 upgrades: Array<DecimalSource>
             },
             proofs: {
                 amount: DecimalSource,
-                totals: Array<null | DecimalSource>, // null, null, null, col, l4
-                best: Array<null | DecimalSource>, // null, null, null, col, l4
-                totalEver: DecimalSource,
-                bestEver: DecimalSource,
-                automationBought: {
-                    other: Array<boolean>,
-                    effect: Array<boolean>,
-                    kp: Array<boolean>,
-                    skp: Array<boolean>,
-                    fkp: Array<boolean>
-                },
-                automationEnabled: {
-                    other: Array<boolean>,
-                    effect: Array<boolean>,
-                    kp: Array<boolean>,
-                    skp: Array<boolean>,
-                    fkp: Array<boolean>
-                },
-                upgrades: {
-                    effect: Array<DecimalSource>,
-                    kp: Array<DecimalSource>,
-                    skp: Array<DecimalSource>,
-                    fkp: Array<DecimalSource>
-                },
-                strange: {
-                    cooldown: DecimalSource,
-                    amount: DecimalSource,
-                    hiddenExp: DecimalSource,
-                    times: DecimalSource,
-                    totals: Array<null | DecimalSource>, // null, null, null, col, l4
-                    best: Array<null | DecimalSource>, // null, null, null, col, l4
-                    totalEver: DecimalSource,
-                    bestEver: DecimalSource
-                },
-                finicky: {
-                    cooldown: DecimalSource,
-                    amount: DecimalSource,
-                    hiddenExp: DecimalSource,
-                    times: DecimalSource,
-                    totals: Array<null | DecimalSource>, // null, null, null, col, l4
-                    best: Array<null | DecimalSource>, // null, null, null, col, l4
-                    totalEver: DecimalSource,
-                    bestEver: DecimalSource,
-                    powers: {
-                        white: {
-                            alloc: DecimalSource,
-                            amount: DecimalSource,
-                            upgrades: DecimalSource
-                        },
-                        cyan: {
-                            alloc: DecimalSource,
-                            amount: DecimalSource,
-                            upgrades: DecimalSource
-                        },
-                        yellow: {
-                            alloc: DecimalSource,
-                            amount: DecimalSource,
-                            upgrades: DecimalSource
-                        }
-                    }
-                },
+                upgrades: Array<DecimalSource>
             }
         },
         col: {
-            inAChallenge: boolean,
-            completed: {
-                nk: DecimalSource,
-                su: DecimalSource,
-                df: DecimalSource,
-                im: DecimalSource,
-                dc: DecimalSource,
-                sn: DecimalSource
-            },
-            challengeOrder: { chalID: Array<challengeIDList>, layer: Array<number> },
-            completedAll: boolean,
-            saved: {
-                nk: colChallengesSavedData | null,
-                su: colChallengesSavedData | null,
-                df: colChallengesSavedData | null,
-                im: colChallengesSavedData | null,
-                dc: colChallengesSavedData | null,
-                sn: colChallengesSavedData | null
-            },
+            inChallenge: number | null,
+            completed: Array<DecimalSource>,
             power: DecimalSource,
-            totals: Array<null | DecimalSource>, // null, null, null, null, l4
-            best: Array<null | DecimalSource>, // null, null, null, null, l4
-            totalEver: DecimalSource,
-            bestEver: DecimalSource,
             timeInCol: DecimalSource
-            time: DecimalSource,
+            timeLeft: DecimalSource,
             maxTime: DecimalSource,
             research: {
                 xpTotal: Array<DecimalSource>,
@@ -397,8 +229,6 @@ export type Player = {
             timeInL4R: DecimalSource
             pickedFirst: number // none = 0 gro = 1, tax = 2, both = 3
             gro: {
-                best: Array<null | DecimalSource>, // null, null, null, null, null
-                bestEver: DecimalSource,
                 totalAmt: DecimalSource,
                 amount: DecimalSource,
                 auto: boolean,
@@ -409,15 +239,8 @@ export type Player = {
                 }
                 gEAmount: DecimalSource
                 bestGEA: DecimalSource
-                groAmountStats: {
-                    totals: Array<null | DecimalSource>, // null, null, null, null, null
-                    best: Array<null | DecimalSource>, // null, null, null, null, null
-                    totalEver: DecimalSource,
-                    bestEver: DecimalSource,
-                }
                 growanEqu: Array<{
                     bought: DecimalSource
-                    boughtInReset: Array<DecimalSource> // null, null, null, null, null
                     accumulated: DecimalSource
                 }>
                 equCancel: DecimalSource
@@ -427,10 +250,6 @@ export type Player = {
             tax: {
                 auto: boolean,
                 amount: DecimalSource,
-                totals: Array<null | DecimalSource>, // null, null, null, null, null
-                best: Array<null | DecimalSource>, // null, null, null, null, null
-                totalEver: DecimalSource,
-                bestEver: DecimalSource,
                 times: DecimalSource,
                 upgrades: Array<DecimalSource>
                 invest: Array<{
@@ -440,7 +259,7 @@ export type Player = {
             }
         }
     }
-};
+}
 
 export const initGameBeforeSave = (): Game => {
     const data: Player = initPlayer();
@@ -493,205 +312,62 @@ export const initPlayer = (set = false): Player => {
         displayVersion: "v1.0.0",
         settings: {
             notation: 0,
-            scaleSoftColors: false,
-            scaledUpgBase: true,
             notationLimit: 6
         },
-
         gameProgress: {
-            dilatedTime: {
-                normalized: false,
-                normalizeTime: 0.05,
-                paused: false,
-                speed: 1,
-                speedEnabled: false
-            },
+            achievements: [],
             unlocks: {
                 pr2: false,
                 kua: false,
-                kenhancers: false,
-                kblessings: false,
-                kproofs: {
-                    main: false,
-                    strange: false,
-                    finicky: false
-                },
+                kb: false,
+                kp: false,
                 col: false,
-                tax: false
+                l4: false
             },
-            achievements: [],
-            inChallenge: {
-                nk: makeChallengeInfo(),
-                su: makeChallengeInfo(),
-                df: makeChallengeInfo(),
-                im: makeChallengeInfo(),
-                dc: makeChallengeInfo(),
-                sn: makeChallengeInfo()
+            points: D(0),
+            totalPointsInPrai: D(0),
+            bestPointsInL4: D(0),
+            upgrades: [],
+            oneUpgrades: [],
+            prai: {
+                amount: D(0),
+                timeInPRai: D(0),
+                auto: false,
+                times: D(0)
             },
-            main: {
-                points: D(0),
-                totals: [D(0), D(0), D(0), D(0), D(0)],
-                best: [D(0), D(0), D(0), D(0), D(0)],
-                totalEver: D(0),
-                bestEver: D(0),
-                upgrades: mainUpgrades,
-                oneUpgrades: [],
-                prai: {
-                    totals: [null, D(0), D(0), D(0), D(0)],
-                    best: [null, D(0), D(0), D(0), D(0)],
-                    totalEver: D(0),
-                    bestEver: D(0),
-                    amount: D(0),
-                    timeInPRai: D(0),
-                    auto: false,
-                    times: D(0)
-                },
-                pr2: {
-                    best: [null, null, D(0), D(0), D(0)],
-                    bestEver: D(0),
-                    amount: D(0),
-                    timeInPR2: D(0),
-                    auto: false
-                }
+            pr2: {
+                amount: D(0),
+                timeInPR2: D(0),
+                auto: false
             },
             kua: {
                 auto: false,
                 amount: D(0),
-                totals: [null, null, null, D(0), D(0)],
-                best: [null, null, null, D(0), D(0)],
-                totalEver: D(0),
-                bestEver: D(0),
                 timeInKua: D(0),
                 times: D(0),
-                upgrades: 0,
-                kshards: {
-                    amount: D(0),
-                    totals: [null, null, null, D(0), D(0)],
-                    best: [null, null, null, D(0), D(0)],
-                    totalEver: D(0),
-                    bestEver: D(0),
-                    upgrades: 0
-                },
-                kpower: {
-                    amount: D(0),
-                    totals: [null, null, null, D(0), D(0)],
-                    best: [null, null, null, D(0), D(0)],
-                    totalEver: D(0),
-                    bestEver: D(0),
-                    upgrades: 0
-                },
-                enhancers: {
-                    autoSources: false,
-                    sources: [D(0), D(0), D(0)],
-                    enhancers: [D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
-                    enhanceXP: [D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
-                    enhancePow: [D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
-                    xpSpread: D(1),
-                    inExtraction: 0,
-                    extractionXP: [D(0), D(0), D(0)],
-                    upgrades: []
-                },
+                upgrades: [0, 0, 0], // counts for ks, kp, and kua
+                kshards: D(0),
+                totalKSInCol: D(0),
+                kpower: D(0),
+                totalKPInCol: D(0),
                 blessings: {
                     amount: D(0),
+                    totalKBInCol: D(0),
                     clickCooldown: D(0),
-                    totals: [null, null, null, D(0), D(0)],
-                    best: [null, null, null, D(0), D(0)],
-                    totalEver: D(0),
-                    bestEver: D(0),
-                    upgrades: [D(0), D(0), D(0), D(0)]
+                    upgrades: []
                 },
                 proofs: {
                     amount: D(0),
-                    totals: [null, null, null, D(0), D(0)],
-                    best: [null, null, null, D(0), D(0)],
-                    totalEver: D(0),
-                    bestEver: D(0),
-                    automationBought: {
-                        other: [false, false, false],
-                        effect: [false, false, false, false, false, false, false, false, false],
-                        kp: [false, false, false, false, false, false, false, false, false],
-                        skp: [false, false, false, false, false, false, false, false, false],
-                        fkp: [false, false, false, false, false, false, false, false, false]
-                    },
-                    automationEnabled: {
-                        other: [false, false, false],
-                        effect: [false, false, false, false, false, false, false, false, false],
-                        kp: [false, false, false, false, false, false, false, false, false],
-                        skp: [false, false, false, false, false, false, false, false, false],
-                        fkp: [false, false, false, false, false, false, false, false, false]
-                    },
-                    upgrades: {
-                        effect: [D(0), D(0), D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
-                        kp: [D(0), D(0), D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
-                        skp: [D(0), D(0), D(0), D(0), D(0), D(0), D(0), D(0), D(0)],
-                        fkp: [D(0), D(0), D(0), D(0), D(0), D(0), D(0), D(0), D(0)]
-                    },
-                    strange: {
-                        cooldown: D(0),
-                        amount: D(0),
-                        hiddenExp: D(0),
-                        times: D(0),
-                        totals: [null, null, null, D(0), D(0)],
-                        best: [null, null, null, D(0), D(0)],
-                        totalEver: D(0),
-                        bestEver: D(0)
-                    },
-                    finicky: {
-                        cooldown: D(0),
-                        amount: D(0),
-                        hiddenExp: D(0),
-                        times: D(0),
-                        totals: [null, null, null, D(0), D(0)],
-                        best: [null, null, null, D(0), D(0)],
-                        totalEver: D(0),
-                        bestEver: D(0),
-                        powers: {
-                            white: {
-                                alloc: D(0),
-                                amount: D(0),
-                                upgrades: D(0)
-                            },
-                            cyan: {
-                                alloc: D(0),
-                                amount: D(0),
-                                upgrades: D(0)
-                            },
-                            yellow: {
-                                alloc: D(0),
-                                amount: D(0),
-                                upgrades: D(0)
-                            },
-                        }
-                    },
+                    upgrades: []
                 }
             },
             col: {
-                inAChallenge: false,
-                completed: {
-                    nk: D(0),
-                    su: D(0),
-                    df: D(0),
-                    im: D(0),
-                    dc: D(0),
-                    sn: D(0)
-                },
-                challengeOrder: { chalID: [], layer: [] },
-                completedAll: false,
-                saved: {
-                    nk: null,
-                    su: null,
-                    df: null,
-                    im: null,
-                    dc: null,
-                    sn: null
-                },
+                inChallenge: null,
+                completed: [],
+                saved: [],
                 power: D(0),
-                totals: [null, null, null, null, D(0)],
-                best: [null, null, null, null, D(0)],
-                totalEver: D(0),
-                bestEver: D(0),
                 timeInCol: D(0),
-                time: D(0),
+                timeLeft: D(0),
                 maxTime: D(0),
                 research: {
                     xpTotal: [],
@@ -700,10 +376,8 @@ export const initPlayer = (set = false): Player => {
             },
             layer4: {
                 timeInL4R: D(0),
-                pickedFirst: 0, // gro = false, tax = true
+                pickedFirst: 0, // none = 0 gro = 1, tax = 2, both = 3
                 gro: {
-                    best: [null, null, null, null, null],
-                    bestEver: D(0),
                     totalAmt: D(0),
                     amount: D(0),
                     auto: false,
@@ -714,13 +388,7 @@ export const initPlayer = (set = false): Player => {
                     },
                     gEAmount: D(0),
                     bestGEA: D(0),
-                    groAmountStats: {
-                        totals: [null, null, null, null, null],
-                        best: [null, null, null, null, null],
-                        totalEver: D(0),
-                        bestEver: D(0)
-                    },
-                    growanEqu: initGroEquations(),
+                    growanEqu: [],
                     equCancel: D(0),
                     tick: D(0),
                     gal: D(0)
@@ -728,17 +396,9 @@ export const initPlayer = (set = false): Player => {
                 tax: {
                     auto: false,
                     amount: D(0),
-                    totals: [null, null, null, null, null],
-                    best: [null, null, null, null, null],
-                    totalEver: D(0),
-                    bestEver: D(0),
                     times: D(0),
                     upgrades: [],
-                    invest: [ 
-                        { alloc: D(0), produced: D(0) }, 
-                        { alloc: D(0), produced: D(0) }, 
-                        { alloc: D(0), produced: D(0) }
-                    ]
+                    invest: []
                 }
             }
         }
@@ -827,12 +487,6 @@ type Tmp = {
         active: {
             proofs: {
                 gain: boolean,
-                upgrades: {
-                    effect: Array<boolean>,
-                    kp: Array<boolean>,
-                    skp: Array<boolean>,
-                    fkp: Array<boolean>
-                }
             },
             blessings: {
                 gain: boolean,
@@ -845,16 +499,14 @@ type Tmp = {
                 }
             },
             kpower: {
-                upgrades: boolean,
                 effects: boolean,
                 gain: boolean
             },
             kshards: {
-                upgrades: boolean,
                 effects: boolean,
                 gain: boolean
             },
-            upgrades: boolean,
+            upgrades: Array<boolean>,
             effects: boolean,
             gain: boolean
         },
@@ -881,15 +533,7 @@ type Tmp = {
             }>
         },
         proofs: {
-            speed: Decimal,
-            skpSpeed: Decimal,
-            exp: Decimal,
-            expPerSec: Decimal,
-            skpExp: Decimal,
-            skpEff: Decimal,
-            fkpExp: Decimal,
-            fkpGain: Decimal,
-            fkpEff: Decimal,
+            perSec: Decimal
             canBuyUpg: boolean,
             canBuyUpgs: {
                 auto: boolean,
@@ -898,15 +542,13 @@ type Tmp = {
                 skp: boolean,
                 fkp: boolean
             },
-            upgrades: {
-                effect: Array<TmpKProofUpgs>,
-                kp: Array<TmpKProofUpgs>,
-                skp: Array<TmpKProofUpgs>,
-                fkp: Array<TmpKProofUpgs>
-            }
         }
     },
     col: {
+        challengeData: Array<{
+            active: boolean
+            forced: boolean
+        }>
         totalColChalComp: Decimal,
         truePowGen: Decimal,
         powGen: Decimal,
@@ -943,31 +585,6 @@ type Tmp = {
     },
     gameIsRunning: boolean,
     saveModes: Array<boolean>,
-    scaleSoftcapNames: {
-        points: string,
-        upg1: string,
-        upg2: string,
-        upg3: string,
-        upg4: string,
-        upg5: string,
-        upg6: string,
-        upg7: string,
-        upg8: string,
-        upg9: string,
-        pr2: string,
-        kuaupg4base: string,
-        kuaupg5base: string,
-        kuaupg6base: string,
-        kba: string,
-        kbi: string,
-        kp: string,
-        skp: string,
-        ge: string,
-        gtick: string,
-        ec: string
-    },
-    scaleList: Array<Array<string>>,
-    softList: Array<Array<string>>,
     achievementList: Array<Array<number>>
 };
 
@@ -1081,12 +698,6 @@ function initTemp(): Tmp {
             active: {
                 proofs: {
                     gain: true,
-                    upgrades: {
-                        effect: [],
-                        kp: [],
-                        skp: [],
-                        fkp: []
-                    }
                 },
                 blessings: {
                     gain: true,
@@ -1099,16 +710,14 @@ function initTemp(): Tmp {
                     }
                 },
                 kpower: {
-                    upgrades: true,
                     effects: true,
                     gain: true
                 },
                 kshards: {
-                    upgrades: true,
                     effects: true,
                     gain: true
                 },
-                upgrades: true,
+                upgrades: [true, true, true],
                 effects: true,
                 gain: true
             },
@@ -1133,15 +742,7 @@ function initTemp(): Tmp {
                 upgrades: initAllKBlessingUpgrades()
             },
             proofs: {
-                speed: D(1),
-                skpSpeed: D(1),
-                exp: D(1),
-                expPerSec: D(1),
-                skpExp: D(1),
-                skpEff: D(1),
-                fkpExp: D(1),
-                fkpGain: D(1),
-                fkpEff: D(1),
+                perSec: D(0),
                 canBuyUpg: false,
                 canBuyUpgs: {
                     auto: false,
@@ -1149,16 +750,11 @@ function initTemp(): Tmp {
                     kp: false,
                     skp: false,
                     fkp: false
-                },
-                upgrades: {
-                    effect: initAllKProofUpgrades('effect'),
-                    kp: initAllKProofUpgrades('kp'),
-                    skp: initAllKProofUpgrades('skp'),
-                    fkp: initAllKProofUpgrades('fkp')
                 }
             }
         },
         col: {
+            challengeData: [],
             totalColChalComp: D(0),
             powGen: D(0),
             truePowGen: D(0),
@@ -1195,46 +791,10 @@ function initTemp(): Tmp {
         },
         gameIsRunning: true,
         saveModes: Array(SAVE_MODES.length).fill(false),
-        scaleSoftcapNames: {
-            points: "Points",
-            upg1: "Upgrade 1",
-            upg2: "Upgrade 2",
-            upg3: "Upgrade 3",
-            upg4: "Upgrade 4",
-            upg5: "Upgrade 5",
-            upg6: "Upgrade 6",
-            upg7: "Upgrade 7",
-            upg8: "Upgrade 8",
-            upg9: "Upgrade 9",
-            pr2: "PR2",
-            kuaupg4base: "Upgrade 4's Base",
-            kuaupg5base: "Upgrade 5's Base",
-            kuaupg6base: "Upgrade 6's Base",
-            kba: "KBlessings Per Click",
-            kbi: "KBlessings Per Second",
-            kp: "KProofs",
-            skp: "Strange KProofs",
-            ge: "Grōwan Equations",
-            gtick: "Grōwan Tickspeed",
-            ec: "Equation Cancelling"
-        },
-        scaleList: [],
-        softList: [],
         achievementList: []
     };
-    for (let i = 0; i < 10; i++) {
-        obj.scaleList.push([]);
-    }
-    for (let i = 0; i < 10; i++) {
-        obj.softList.push([]);
-    }
     for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
         obj.kua.active.blessings.upgrades[i] = true;
-    }
-    for (const i in KUA_PROOF_UPGS) {
-        for (let j = 0; j < KUA_PROOF_UPGS[i as KuaProofUpgTypes].length; j++) {
-            obj.kua.active.proofs.upgrades[i as KuaProofUpgTypes][j] = true;
-        }
     }
 
     return obj;
@@ -1302,19 +862,9 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Upgrade 1'; }),
         effect: computed(() => {
-            return MAIN_UPG_DATA[0].effect.value;
+            return MAIN_UPG_DATA[0].effect();
         }),
         color: 'norm',
-        type: 'mult'
-    },
-    {
-        baseActive: computed(() => { return inChallenge('im'); }),
-        active: true,
-        name: computed(() => { return 'Upgrade 2'; }),
-        effect: computed(() => {
-            return MAIN_UPG_DATA[1].effect.value;
-        }),
-        color: 'col',
         type: 'mult'
     },
     {
@@ -1322,19 +872,9 @@ export const PPS_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Upgrade 4'; }),
         effect: computed(() => {
-            return MAIN_UPG_DATA[3].effect.value;
+            return MAIN_UPG_DATA[3].effect();
         }),
         color: 'norm',
-        type: 'mult'
-    },
-    {
-        baseActive: computed(() => { return inChallenge('im'); }),
-        active: true,
-        name: computed(() => { return 'Upgrade 5'; }),
-        effect: computed(() => {
-            return MAIN_UPG_DATA[4].effect.value;
-        }),
-        color: 'col',
         type: 'mult'
     },
     {
@@ -1359,7 +899,7 @@ export const PPS_CALC: Array<TrueFactor> = [
     },
     {
         baseActive: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.oneUpgrades[9], 1);
+            return Decimal.gte(player.value.gameProgress.oneUpgrades[9], 1);
         }),
         active: true,
         name: computed(() => { return 'One-Upgrade #10'; }),
@@ -1465,32 +1005,6 @@ export const PPS_CALC: Array<TrueFactor> = [
     },
     {
         baseActive: computed(() => {
-            return Decimal.gte(timesCompleted("nk"), 1);
-        }),
-        active: true,
-        name: computed(() => { return 'Dotgenous'; }),
-        effect: computed(() => {
-            return getColResEffect(0);
-        }),
-        color: 'col',
-        type: 'mult'
-    },
-    {
-        baseActive: computed(() => {
-            return Decimal.gte(timesCompleted("df"), 1);
-        }),
-        active: true,
-        name: computed(() => {
-            return `Decaying Feeling Completion ×${format(timesCompleted('df'))}`;
-        }),
-        effect: computed(() => {
-            return D(10);
-        }),
-        color: 'col',
-        type: 'mult'
-    },
-    {
-        baseActive: computed(() => {
             return player.value.gameProgress.layer4.gro.upgrades.overall.includes(0);
         }),
         active: true,
@@ -1515,19 +1029,7 @@ export const PPS_CALC: Array<TrueFactor> = [
     },
     {
         baseActive: computed(() => {
-            return tmp.value.layer4.tax.active;
-        }),
-        active: true,
-        name: computed(() => { return 'Taxed Coins'; }),
-        effect: computed(() => {
-            return tmp.value.layer4.tax.ptsEff;
-        }),
-        color: 'tax',
-        type: 'mult'
-    },
-    {
-        baseActive: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.oneUpgrades[19], 1);
+            return Decimal.gte(player.value.gameProgress.oneUpgrades[19], 1);
         }),
         active: true,
         name: computed(() => { return 'One Upgrade #20'; }),
@@ -1563,7 +1065,7 @@ export const PPS_CALC: Array<TrueFactor> = [
     },
     {
         baseActive: computed(() => {
-            return player.value.gameProgress.col.inAChallenge;
+            return player.value.gameProgress.col.inChallenge !== null;
         }),
         active: true,
         name: computed(() => { return 'Achievement Tier 3'; }),
@@ -1573,7 +1075,7 @@ export const PPS_CALC: Array<TrueFactor> = [
                 Decimal.pow(
                     0.25,
                     Decimal.div(
-                        player.value.gameProgress.col.time,
+                        player.value.gameProgress.col.timeLeft,
                         player.value.gameProgress.col.maxTime
                     ).max(0)
                 )
@@ -1595,20 +1097,6 @@ export const PPS_CALC: Array<TrueFactor> = [
         color: 'growan',
         type: 'pow'
     },
-    {
-        baseActive: computed(() => {
-            return inChallenge("im");
-        }),
-        active: true,
-        name: computed(() => {
-            return `Inverted Mechanics ×${format(challengeDepth("im"))}`;
-        }),
-        effect: computed(() => {
-            return Decimal.pow(0.8, challengeDepth("im"));
-        }),
-        color: 'col',
-        type: 'pow'
-    },
 ];
 
 function calcPPS(): Decimal {
@@ -1616,21 +1104,12 @@ function calcPPS(): Decimal {
 
     for (let i = 0; i < PPS_CALC.length; i++) {
         PPS_CALC[i].active = PPS_CALC[i].baseActive.value;
-        if (inChallenge("su") && !(i >= 0 && i <= 6 || PPS_CALC[i].name.value === 'Dotgenous')) {
-            PPS_CALC[i].active = false;
-        }
-        if (inChallenge("im") && !(i === 2 || i === 4)) {
-            PPS_CALC[i].active = true;
-        }
 
         txt = '';
         if (PPS_CALC[i].active) {
             eff = PPS_CALC[i].effect.value;
 
             if (PPS_CALC[i].type === 'mult') {
-                if (inChallenge('dc') && PPS_CALC[i].name.value !== 'Upgrade 1') {
-                    eff = eff.max(1).log10().add(1).pow(0.5).sub(1).pow10();
-                }
 
                 pps = pps.mul(eff);
                 txt = `×${format(eff, 2)}`;
@@ -1650,7 +1129,7 @@ function calcPPS(): Decimal {
     return pps;
 }
 
-export const getEndgame = (x = player.value.gameProgress.main.bestEver) => {
+export const getEndgame = (x = player.value.gameProgress.points) => {
     return Decimal.max(x, 10).log10().log(4000).pow(2).min(1).mul(100);
 };
 
@@ -1679,24 +1158,8 @@ function gameLoop(): void {
             }
         }
 
-        if (player.value.gameProgress.dilatedTime.paused) {
-            player.value.offlineTime = Decimal.add(player.value.offlineTime, gameVars.value.delta * 1000);
-            gameVars.value.delta = 0;
-        }
-        if (player.value.gameProgress.dilatedTime.normalized) {
-            if (gameVars.value.delta > player.value.gameProgress.dilatedTime.normalizeTime) {
-                player.value.offlineTime = Decimal.add(player.value.offlineTime, (gameVars.value.delta - player.value.gameProgress.dilatedTime.normalizeTime) * 1000);
-                gameVars.value.delta = player.value.gameProgress.dilatedTime.normalizeTime;
-            }
-        }
-
         player.value.totalRealTime += gameVars.value.delta;
-        let gameDelta = Decimal.mul(gameVars.value.delta, tmp.value.gameTimeSpeed).mul(player.value.setTimeSpeed);
-        if (player.value.gameProgress.dilatedTime.speedEnabled && gameVars.value.delta < 1) {
-            const prev = player.value.offlineTime;
-            player.value.offlineTime = Decimal.sub(player.value.offlineTime, Decimal.mul(gameDelta, speedToConsume()).mul(1000));
-            gameDelta = Decimal.mul(gameDelta, timeSpeedBoost(prev));
-        }
+        const gameDelta = Decimal.mul(gameVars.value.delta, tmp.value.gameTimeSpeed).mul(player.value.setTimeSpeed);
 
         player.value.gameTime = Decimal.add(player.value.gameTime, gameDelta);
 
@@ -1716,115 +1179,42 @@ function gameLoop(): void {
             oldPts: D(0),
             newPts: D(0)
         };
-        data.oldPts = Decimal.max(player.value.gameProgress.main.points, 10);
+        data.oldPts = Decimal.max(player.value.gameProgress.points, 10);
 
-        if (inChallenge("df")) {
-            data.newPts = scale(scale(scale(scale(data.oldPts.max(10).log10(), 0.2, true, 1, 1, Decimal.pow(0.5, challengeDepth("df"))).pow10().add(generate).log10(), 0.2, false, 1, 1, Decimal.pow(0.5, challengeDepth("df"))).pow10(), 0.2, true, 10, 1, Decimal.pow(0.5, challengeDepth("df"))).add(generate), 0.2, false, 10, 1, Decimal.pow(0.5, challengeDepth("df")));
-
-            generate = data.newPts.sub(data.oldPts).max(1);
-            tmp.value.main.pps = generate.div(gameDelta);
-
-            pushFactor([0], "Decaying Feeling", `/${format(Decimal.div(data.oldGen, generate), 2)}`, `${format(tmp.value.main.pps, 1)}`, "col")
-        }
-
-        // data.oldPts = Decimal.max(player.value.gameProgress.main.points, data.scal[0].start);
-
-        // if (Decimal.add(player.value.gameProgress.main.points, generate).gte(data.scal[0].start) && Decimal.gte(generate, data.scal[0].start)) {
-        //     data.newPts = scale(
-        //         scale(
-        //             data.oldPts.log10(),
-        //             0.2,
-        //             true,
-        //             data.scal[0].start.log10(),
-        //             data.scal[0].power,
-        //             data.scal[0].basePow
-        //         )
-        //             .pow10()
-        //             .add(generate)
-        //             .log10(),
-        //         0.2,
-        //         false,
-        //         data.scal[0].start.log10(),
-        //         data.scal[0].power,
-        //         data.scal[0].basePow
-        //     ).pow10();
-
-        //     generate = data.newPts.sub(data.oldPts).max(0); // max 0 to fix negative PPS bug, probably floating point issues
-
-        //     tmp.value.main.pps = generate.div(gameDelta);
-
-        //     if (generate.eq(0)) {
-        //         data.converted = Decimal.div(data.oldPPS, 
-        //             scale(
-        //                 data.oldPPS.log10(),
-        //                 0.2,
-        //                 false,
-        //                 data.scal[0].start.log10(),
-        //                 data.scal[0].power,
-        //                 data.scal[0].basePow
-        //             ).pow10().mul(gameDelta));
-        //     } else {
-        //         data.converted = Decimal.div(data.oldPPS, generate).mul(gameDelta);
-        //     }
-        //     setSCSLEffectDisp("points", false, 0, `/${format(data.converted, 2)}`);
-
-        //     pushFactor([0], "Taxation", `/${format(data.converted, 2)}`, `${format(tmp.value.main.pps, 1)}`, "sc1")
-        // }
-
-        if (Decimal.isNaN(player.value.gameProgress.main.points)) {
+        if (Decimal.isNaN(player.value.gameProgress.points)) {
             throw new Error(`weh?! points are NaN!`)
         }
-        if (Decimal.lt(player.value.gameProgress.main.points, 0)) {
+        if (Decimal.lt(player.value.gameProgress.points, 0)) {
             throw new Error(`weh?! points are negative!`)
         }
 
-        // tmp.value.main.ppsNullified = generate.eq(0) && Decimal.gte(player.value.gameProgress.main.points, data.scal[0].start);
-        tmp.value.main.ppsNullified = false
-        if (tmp.value.main.ppsNullified) {
-            // tmp.value.main.pps = 
-            //     scale(
-            //         data.oldPPS.log10(),
-            //         0.2,
-            //         false,
-            //         data.scal[0].start.log10(),
-            //         data.scal[0].power,
-            //         data.scal[0].basePow
-            //     ).pow10().mul(gameDelta);
-        } else {
-            if (generate.lt(0) && !gameVars.value.warnings.negativePPS) {
-                gameVars.value.warnings.negativePPS = true;
-                console.log(`generate: ${generate}`);
-                console.warn(`PPS was trying to be negative! wtf?!`);
-                console.warn(`Internal game information:`);
-                console.warn({
-                    saveFile: {
-                        save: btoa(JSON.stringify(game.value.list[game.value.currentSave])),
-                        cloggingConsole: true
-                    },
-                    gameVariables1: gameVars.value,
-                    gameVariables2: tmp.value
-                });
-                console.table(ALL_FACTORS[0].factors);
-                alert(`An error happened: your points was attempting to be negative! The error was prevented, but the game may run in an unstable state. The game's save file was automatically exported into console.`);
-            }
-            generate = generate.max(0);
-            player.value.gameProgress.main.points = Decimal.add(player.value.gameProgress.main.points, generate);
-
-            updateAllTotal(player.value.gameProgress.main.totals, generate);
-            player.value.gameProgress.main.totalEver = Decimal.add(player.value.gameProgress.main.totalEver, generate);
-            updateAllBest(player.value.gameProgress.main.best, player.value.gameProgress.main.points);
-            player.value.gameProgress.main.bestEver = Decimal.max(player.value.gameProgress.main.bestEver, player.value.gameProgress.main.points);    
+        if (generate.lt(0) && !gameVars.value.warnings.negativePPS) {
+            gameVars.value.warnings.negativePPS = true;
+            console.log(`generate: ${generate}`);
+            console.warn(`PPS was trying to be negative! wtf?!`);
+            console.warn(`Internal game information:`);
+            console.warn({
+                saveFile: {
+                    save: btoa(JSON.stringify(game.value.list[game.value.currentSave])),
+                    cloggingConsole: true
+                },
+                gameVariables1: gameVars.value,
+                gameVariables2: tmp.value
+            });
+            console.table(ALL_FACTORS[0].factors);
+            alert(`An error happened: your points was attempting to be negative! The error was prevented, but the game may run in an unstable state. The game's save file was automatically exported into console.`);
         }
+        generate = generate.max(0);
+        player.value.gameProgress.points = Decimal.add(player.value.gameProgress.points, generate);
 
-        player.value.gameProgress.unlocks.pr2 = player.value.gameProgress.unlocks.pr2 || Decimal.gte(player.value.gameProgress.main.prai.amount, 9.5);
-        player.value.gameProgress.unlocks.kua = player.value.gameProgress.unlocks.kua || Decimal.gte(player.value.gameProgress.main.pr2.amount, 10);
-        player.value.gameProgress.unlocks.kenhancers = player.value.gameProgress.unlocks.kenhancers || Decimal.gte(player.value.gameProgress.kua.amount, 0.0095);
+        player.value.gameProgress.bestPointsInL4 = Decimal.max(player.value.gameProgress.bestPointsInL4, player.value.gameProgress.points);    
+
+        player.value.gameProgress.unlocks.pr2 = player.value.gameProgress.unlocks.pr2 || Decimal.gte(player.value.gameProgress.prai.amount, 9.5);
+        player.value.gameProgress.unlocks.kua = player.value.gameProgress.unlocks.kua || Decimal.gte(player.value.gameProgress.pr2.amount, 10);
         player.value.gameProgress.unlocks.col = player.value.gameProgress.unlocks.col || (getKuaUpgrade('p', 2) && Decimal.gte(player.value.gameProgress.kua.amount, 100));
-        player.value.gameProgress.unlocks.kblessings = player.value.gameProgress.unlocks.kblessings || (getKuaUpgrade('p', 8) && Decimal.gte(player.value.gameProgress.kua.amount, 1e6));
-        player.value.gameProgress.unlocks.kproofs.main = player.value.gameProgress.unlocks.kproofs.main || getKuaUpgrade('k', 3);
-        player.value.gameProgress.unlocks.kproofs.strange = player.value.gameProgress.unlocks.kproofs.strange || Decimal.gte(player.value.gameProgress.kua.proofs.amount, 1e24);
-        player.value.gameProgress.unlocks.kproofs.finicky = player.value.gameProgress.unlocks.kproofs.finicky || Decimal.gte(player.value.gameProgress.kua.proofs.strange.amount, 1e7);
-        player.value.gameProgress.unlocks.tax = player.value.gameProgress.unlocks.tax || Decimal.gte(player.value.gameProgress.main.points, "e1500");
+        player.value.gameProgress.unlocks.kb = player.value.gameProgress.unlocks.kb || (getKuaUpgrade('p', 8) && Decimal.gte(player.value.gameProgress.kua.amount, 1e6));
+        player.value.gameProgress.unlocks.kp = player.value.gameProgress.unlocks.kp || getKuaUpgrade('k', 3);
+        player.value.gameProgress.unlocks.l4 = player.value.gameProgress.unlocks.l4 || Decimal.gte(player.value.gameProgress.points, "e1500");
 
         for (let i = 0; i < ACHIEVEMENT_DATA.length; i++) {
             for (let j = 0; j < ACHIEVEMENT_DATA[i].list.length; j++) {
@@ -1913,7 +1303,6 @@ declare global {
         reset: typeof reset;
         linearAdd: typeof linearAdd;
         format: typeof format;
-        COL_CHALLENGES: typeof COL_CHALLENGES;
         UPDATE_LOG: typeof UPDATE_LOG;
         compressToBase64: typeof compressToBase64;
         decompressFromBase64: typeof decompressFromBase64;
@@ -1939,7 +1328,6 @@ window.resetTheWholeGame = resetTheWholeGame;
 window.reset = reset;
 window.linearAdd = linearAdd;
 window.format = format;
-window.COL_CHALLENGES = COL_CHALLENGES;
 window.UPDATE_LOG = UPDATE_LOG;
 window.compressToBase64 = compressToBase64;
 window.decompressFromBase64 = decompressFromBase64;

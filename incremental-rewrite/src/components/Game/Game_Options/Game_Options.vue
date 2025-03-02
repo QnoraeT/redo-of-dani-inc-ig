@@ -102,23 +102,23 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                                         }"
                                         style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
                                     ></div>
-                                    <div :style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.25, game.currentSave === index ? 1 : 0.125), width: `${getEndgame(item.data.gameProgress.main.bestEver).toNumber()}%` }" style="position: absolute; top: 0; left: 0; height: 100%;"></div>
+                                    <div :style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.25, game.currentSave === index ? 1 : 0.125), width: `${getEndgame(item.data.gameProgress.points).toNumber()}%` }" style="position: absolute; top: 0; left: 0; height: 100%;"></div>
                                 </div>
                                 <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;">
                                     <div style="margin: 0.3vw; margin-top: 0.15vw">
                                         <div style="position: relative; width: 100%; height: 25%">
                                             <div class="flex-container fontVerdana" style=" margin: 0.3vw; margin-top: 0.15vw; height: 20%;">
                                                 <div style="text-align: left;" class="whiteText saveListTopText">{{ item.name }}</div>
-                                                <div style="text-align: center;" class="whiteText saveListTopText">{{ item.data.displayVersion }}</div>
+                                                <!-- <div style="text-align: center;" class="whiteText saveListTopText">{{ item.data.displayVersion }}</div> -->
                                                 <div style="text-align: right;" class="whiteText saveListTopText">{{ displayModes(item.modes) }}</div>
                                             </div>
                                         </div>
                                         <div style="position: relative; width: 100%; height: 50%">
                                             <div style="display: flex; justify-content: center; height: 100%;" class="fontVerdana">
-                                                <span style="text-align: center; font-size: 0.75vw" class="whiteText">Points: {{ format( item.data.gameProgress.main.points, 2 ) }}</span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.main.prai.totalEver, 1) && Decimal.lt(item.data.gameProgress.col.power, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, PRai: {{ format( item.data.gameProgress.main.prai.amount ) }}</span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.main.prai.totalEver, 10) && (item.data.gameProgress.layer4 === undefined ? true : Decimal.lt(item.data.gameProgress.layer4.gro.totalAmt, 1) && Decimal.lt(item.data.gameProgress.layer4.tax.totalEver, 1))" style="text-align: center; font-size: 0.75vw" class="whiteText" >, PR2: {{ format(item.data.gameProgress.main.pr2.amount) }}</span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.main.pr2.bestEver, 10)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Kuaraniai: {{ format(item.data.gameProgress.kua.amount, 3) }} </span>
+                                                <span style="text-align: center; font-size: 0.75vw" class="whiteText">Points: {{ format( item.data.gameProgress.points, 2 ) }}</span>
+                                                <span v-if="Decimal.gte(item.data.gameProgress.prai.amount, 1) && Decimal.lt(item.data.gameProgress.col.power, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, PRai: {{ format( item.data.gameProgress.prai.amount ) }}</span>
+                                                <span v-if="Decimal.gte(item.data.gameProgress.prai.amount, 10) && (item.data.gameProgress.layer4 === undefined ? true : Decimal.lt(item.data.gameProgress.layer4.gro.totalAmt, 1) && Decimal.lt(item.data.gameProgress.layer4.tax.amount, 1))" style="text-align: center; font-size: 0.75vw" class="whiteText" >, PR2: {{ format(item.data.gameProgress.pr2.amount) }}</span>
+                                                <span v-if="Decimal.gte(item.data.gameProgress.pr2.amount, 10)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Kuaraniai: {{ format(item.data.gameProgress.kua.amount, 3) }} </span>
                                                 <span v-if="Decimal.gte(item.data.gameProgress.col.power, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Col. Power: {{ format( item.data.gameProgress.col.power, 2 ) }}</span>
                                                 <span v-if="item.data.gameProgress.layer4 === undefined ? false : Decimal.gte(item.data.gameProgress.layer4.gro.totalAmt, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Total grōwan: {{ format( item.data.gameProgress.layer4.gro.totalAmt, 2 ) }}</span>
                                             </div>
@@ -221,8 +221,6 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
         <div v-if="tab.tabList[tab.currentTab][0] === 3">
             <div class="flex-container" style="flex-direction: row; justify-content: center">
                 <Basic_Button @click="switchNotation()" :html="`Switch notation. Currently: ${NOTATION_LIST[player.settings.notation]}`"/>
-                <Basic_Button @click="player.settings.scaleSoftColors = !player.settings.scaleSoftColors" :html="`Show scaling/softcap colors. Currently: ${player.settings.scaleSoftColors}`"/>
-                <Basic_Button @click="player.settings.scaledUpgBase = !player.settings.scaledUpgBase" :html="`Show the upgrade's effect base. If false, will show the upgrade's exact effect. Currently: ${player.settings.scaledUpgBase}`"/>
                 <div
                 class="whiteText fontVerdana generatorButton"
                 style="padding: 0%; margin: 0.25vw; width: 14.28vw; height: 3vw; display: flex; flex-direction: column; border: 0.24vw solid #fff;">

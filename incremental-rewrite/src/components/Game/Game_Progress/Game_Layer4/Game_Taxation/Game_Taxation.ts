@@ -129,7 +129,7 @@ export const TAX_GAIN_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Base'; }),
         effect: computed(() => {
-            return Decimal.pow(100, Decimal.log(player.value.gameProgress.main.totals[4]!, tmp.value.layer4.tax.req).sqrt().sub(1));
+            return Decimal.pow(100, Decimal.log(player.value.gameProgress.bestPointsInL4, tmp.value.layer4.tax.req).sqrt().sub(1));
         }),
         color: 'norm',
         type: 'mult'

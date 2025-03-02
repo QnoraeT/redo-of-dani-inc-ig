@@ -1,6 +1,6 @@
 import type { DecimalSource } from "break_eternity.js"
 import { TAX_GAIN_CALC, TAX_UPGRADES } from "./Game_Taxation/Game_Taxation"
-import { player, tmp, updateAllBest, updateAllTotal } from "@/main"
+import { player, tmp } from "@/main"
 import Decimal from "break_eternity.js"
 import { D } from "@/calc"
 import { format } from "@/format"
@@ -24,10 +24,10 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             }
 
             tmp.value.layer4.growan.req = D(1e24);
-            tmp.value.layer4.growan.pending = Decimal.max(player.value.gameProgress.kua.best[4]!, tmp.value.layer4.growan.req).log(tmp.value.layer4.growan.req).sub(player.value.gameProgress.layer4.gro.totalAmt).max(0);
+            tmp.value.layer4.growan.pending = Decimal.max(player.value.gameProgress.kua.amount, tmp.value.layer4.growan.req).log(tmp.value.layer4.growan.req).sub(player.value.gameProgress.layer4.gro.totalAmt).max(0);
 
             tmp.value.layer4.growan.nextAt = Decimal.pow(tmp.value.layer4.growan.req, player.value.gameProgress.layer4.gro.totalAmt);
-            tmp.value.layer4.growan.canDo = Decimal.gte(player.value.gameProgress.kua.best[4]!, tmp.value.layer4.growan.nextAt);
+            tmp.value.layer4.growan.canDo = Decimal.gte(player.value.gameProgress.kua.amount, tmp.value.layer4.growan.nextAt);
 
             i = Decimal.max(player.value.gameProgress.layer4.gro.totalAmt, 0);
             tmp.value.layer4.growan.eff = {
@@ -40,9 +40,6 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
                 prai: i.add(1).log10().mul(0.002).add(1)
             }
 
-            updateAllBest(player.value.gameProgress.layer4.gro.best, player.value.gameProgress.layer4.gro.amount);
-            player.value.gameProgress.layer4.gro.bestEver = Decimal.max(player.value.gameProgress.layer4.gro.bestEver, player.value.gameProgress.layer4.gro.totalAmt);
-
             i = D(1);
             i = i.mul(GROWAN_DATA.equ.list[0].mult.value.mul(Decimal.add(player.value.gameProgress.layer4.gro.growanEqu[0].bought, player.value.gameProgress.layer4.gro.growanEqu[0].accumulated)));
             i = i.add(tmp.value.layer4.growan.eff.groMult);
@@ -50,11 +47,6 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
 
             player.value.gameProgress.layer4.gro.gEAmount = Decimal.add(player.value.gameProgress.layer4.gro.gEAmount, generate);
             player.value.gameProgress.layer4.gro.bestGEA = Decimal.max(player.value.gameProgress.layer4.gro.bestGEA, player.value.gameProgress.layer4.gro.gEAmount);
-
-            updateAllTotal(player.value.gameProgress.layer4.gro.groAmountStats.totals, generate);
-            player.value.gameProgress.layer4.gro.groAmountStats.totalEver = Decimal.add(player.value.gameProgress.layer4.gro.groAmountStats.totalEver, generate);
-            updateAllBest(player.value.gameProgress.layer4.gro.groAmountStats.best, player.value.gameProgress.layer4.gro.gEAmount);
-            player.value.gameProgress.layer4.gro.groAmountStats.bestEver = Decimal.max(player.value.gameProgress.layer4.gro.groAmountStats.bestEver, player.value.gameProgress.layer4.gro.gEAmount);
 
             for (i = 7; i >= 1; i--) {
                 generate = D(1);
@@ -82,7 +74,7 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             }
 
             tmp.value.layer4.tax.req = D("e1500");
-            tmp.value.layer4.tax.canDo = Decimal.gte(player.value.gameProgress.main.totals[4]!, tmp.value.layer4.tax.req);
+            tmp.value.layer4.tax.canDo = Decimal.gte(player.value.gameProgress.bestPointsInL4, tmp.value.layer4.tax.req);
             tmp.value.layer4.tax.pending = D(0);
             if (tmp.value.layer4.tax.canDo) {
                 let eff, txt;
@@ -106,7 +98,7 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
                     }
 
                     if (TAX_GAIN_CALC[j].name.value === 'Base') {
-                        txt = `${format(100)}^((log(${format(player.value.gameProgress.main.totals[4]!, 2)})/${format(tmp.value.layer4.tax.req.log10())})^${format(0.5, 2)} - 1)`;
+                        txt = `${format(100)}^((log(${format(player.value.gameProgress.bestPointsInL4, 2)})/${format(tmp.value.layer4.tax.req.log10())})^${format(0.5, 2)} - 1)`;
                     }
                     setFactor(j, [6, 0], TAX_GAIN_CALC[j].name.value, txt, `${format(i, 1)}`, TAX_GAIN_CALC[j].active, TAX_GAIN_CALC[j].color);
                 }
@@ -117,15 +109,10 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             if (player.value.gameProgress.layer4.tax.auto) {
                 generate = tmp.value.layer4.tax.pending.mul(delta);
                 player.value.gameProgress.layer4.tax.amount = Decimal.add(player.value.gameProgress.layer4.tax.amount, generate);
-                updateAllTotal(player.value.gameProgress.layer4.tax.totals, generate);
-                player.value.gameProgress.layer4.tax.totalEver = Decimal.add(player.value.gameProgress.layer4.tax.totalEver, generate);
             }
 
-            updateAllBest(player.value.gameProgress.layer4.tax.best, player.value.gameProgress.layer4.tax.amount);
-            player.value.gameProgress.layer4.tax.bestEver = Decimal.max(player.value.gameProgress.layer4.tax.bestEver, player.value.gameProgress.layer4.tax.amount);
-
             // TODO: upon next layer, make this totals[5] instead of totalEver
-            tmp.value.layer4.tax.ptsEff = Decimal.max(player.value.gameProgress.layer4.tax.totalEver, 0)
+            tmp.value.layer4.tax.ptsEff = Decimal.max(player.value.gameProgress.layer4.tax.amount, 0)
                 .add(10)
                 .log10()
                 .pow(2)

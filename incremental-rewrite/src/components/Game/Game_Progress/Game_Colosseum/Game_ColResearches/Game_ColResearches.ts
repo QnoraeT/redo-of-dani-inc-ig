@@ -2,6 +2,7 @@ import { D, linearAdd, sumHarmonicSeries } from "@/calc";
 import { format } from "@/format";
 import type { DecimalSource } from "break_eternity.js";
 import Decimal from "break_eternity.js";
+import { timesCompleted } from "../Game_ColChallenges/Game_ColChalHandler";
 import { player, tmp } from "@/main";
 
 export const getColXPtoNext = (id: number) => {
@@ -106,8 +107,7 @@ export const COL_RESEARCH = [
     },
     {
         get unlocked() {
-            return false;
-            // return Decimal.gte(timesCompleted('im'), 1e20);
+            return Decimal.gte(timesCompleted('im'), 1e20);
         },
         name: "Coliescence",
         effectDesc(level: DecimalSource) {
@@ -135,8 +135,7 @@ export const COL_RESEARCH = [
     },
     {
         get unlocked() {
-            return false;
-            // return Decimal.gte(timesCompleted('im'), 1e33);
+            return Decimal.gte(timesCompleted('im'), 1e33);
         },
         name: "Defiance",
         effectDesc(level: DecimalSource) {
@@ -163,8 +162,7 @@ export const COL_RESEARCH = [
     },
     {
         get unlocked() {
-            return false;
-            // return Decimal.gte(timesCompleted('im'), 1e33);
+            return Decimal.gte(timesCompleted('im'), 1e33);
         },
         name: "Compliance",
         effectDesc(level: DecimalSource) {

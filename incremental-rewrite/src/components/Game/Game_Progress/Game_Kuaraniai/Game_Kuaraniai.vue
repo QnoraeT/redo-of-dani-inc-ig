@@ -6,14 +6,15 @@ import Game_KuaBoughtUpgs from "./Game_KuaBoughtUpgs/Game_KuaBoughtUpgs.vue";
 import Game_KuaUpgrades from "./Game_KuaUpgrades/Game_KuaUpgrades.vue";
 import Game_KuaBlessings from "./Game_KuaBlessings/Game_KuaBlessings.vue";
 import Game_KuaProofs from "./Game_KuaProofs/Game_KuaProofs.vue";
+import Game_KuaEnhancers from "./Game_KuaEnhancers/Game_KuaEnhancers.vue";
 </script>
 <template>
     <div id="kuaraniai" v-if="tab.currentTab === 4">
         <div class="flex-container" style=" flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;">
             <button @click="switchSubTab(-1, 0)" style="width: 10vw" class="kuaButton2 fontVerdana whiteText normalTabButton">Bought Upgrades</button>
             <button :class="{ alert: tmp.kua.upgCanBuyUpg }" @click="switchSubTab(0, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Main</button>
-            <button :class="{ alert: tmp.kua.blessings.canBuyUpg }" v-if="player.gameProgress.unlocks.kb" @click="switchSubTab(1, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Blessings</button>
-            <button :class="{ alert: tmp.kua.proofs.canBuyUpg }" v-if="player.gameProgress.unlocks.kp" @click="switchSubTab(2, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Proof</button>
+            <button :class="{ alert: tmp.kua.blessings.canBuyUpg }" v-if="player.gameProgress.unlocks.kblessings" @click="switchSubTab(1, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Blessings</button>
+            <button :class="{ alert: tmp.kua.proofs.canBuyUpg }" v-if="player.gameProgress.unlocks.kproofs.main" @click="switchSubTab(2, 0)" class="kuaButton2 fontVerdana whiteText normalTabButton">Proof</button>
             <!-- disable this for now, seems unbalanced -->
             <!-- <button @click="switchSubTab(1, 0)" v-if="player.gameProgress.unlocks.kuaEnhancers" class="kuaButton2 fontVerdana whiteText normalTabButton">Enhancers</button> -->
         </div>
@@ -28,6 +29,9 @@ import Game_KuaProofs from "./Game_KuaProofs/Game_KuaProofs.vue";
         </div>
         <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 2">
             <Game_KuaProofs />
+        </div>
+        <div class="flex-container" style="flex-direction: row" v-if="tab.tabList[tab.currentTab][0] === 99">
+            <Game_KuaEnhancers />
         </div>
     </div>
 </template>

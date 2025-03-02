@@ -4,30 +4,29 @@ import { player, tmp } from "@/main";
 import Decimal from "break_eternity.js";
 import { computed, type ComputedRef } from "vue";
 import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
-import { MAIN_UPG_DATA } from "../../Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 
 export const buyKShardUpg = (id: number) => {
-    if (id === player.value.gameProgress.kua.upgrades[0]) {
-        if (Decimal.gte(player.value.gameProgress.kua.kshards, KUA_UPGRADES.KShards[id].cost)) {
-            player.value.gameProgress.kua.upgrades[0]++;
-            player.value.gameProgress.kua.kshards = Decimal.sub(player.value.gameProgress.kua.kshards, KUA_UPGRADES.KShards[id].cost);
+    if (id === player.value.gameProgress.kua.kshards.upgrades) {
+        if (Decimal.gte(player.value.gameProgress.kua.kshards.amount, KUA_UPGRADES.KShards[id].cost)) {
+            player.value.gameProgress.kua.kshards.upgrades++;
+            player.value.gameProgress.kua.kshards.amount = Decimal.sub(player.value.gameProgress.kua.kshards.amount, KUA_UPGRADES.KShards[id].cost);
         }
     }
 };
 
 export const buyKPowerUpg = (id: number) => {
-    if (id === player.value.gameProgress.kua.upgrades[1]) {
-        if (Decimal.gte(player.value.gameProgress.kua.kpower, KUA_UPGRADES.KPower[id].cost)) {
-            player.value.gameProgress.kua.upgrades[1]++;
-            player.value.gameProgress.kua.kpower = Decimal.sub(player.value.gameProgress.kua.kpower, KUA_UPGRADES.KPower[id].cost);
+    if (id === player.value.gameProgress.kua.kpower.upgrades) {
+        if (Decimal.gte(player.value.gameProgress.kua.kpower.amount, KUA_UPGRADES.KPower[id].cost)) {
+            player.value.gameProgress.kua.kpower.upgrades++;
+            player.value.gameProgress.kua.kpower.amount = Decimal.sub(player.value.gameProgress.kua.kpower.amount, KUA_UPGRADES.KPower[id].cost);
         }
     }
 };
 
 export const buyKMainUpg = (id: number) => {
-    if (id === player.value.gameProgress.kua.upgrades[2]) {
+    if (id === player.value.gameProgress.kua.upgrades) {
         if (Decimal.gte(player.value.gameProgress.kua.amount, KUA_UPGRADES.Kua[id].cost)) {
-            player.value.gameProgress.kua.upgrades[2]++;
+            player.value.gameProgress.kua.upgrades++;
             player.value.gameProgress.kua.amount = Decimal.sub(player.value.gameProgress.kua.amount, KUA_UPGRADES.Kua[id].cost);
         }
     }
@@ -36,20 +35,20 @@ export const buyKMainUpg = (id: number) => {
 export const getKuaUpgrade = (sp: "s" | "p" | "k", id: number): boolean => {
     if (sp === "s") {
         return (
-            player.value.gameProgress.kua.upgrades[0] >= id &&
-            tmp.value.kua.active.upgrades[0]
+            player.value.gameProgress.kua.kshards.upgrades >= id &&
+            tmp.value.kua.active.kshards.upgrades
         );
     }
     if (sp === "p") {
         return (
-            player.value.gameProgress.kua.upgrades[1] >= id &&
-            tmp.value.kua.active.upgrades[1]
+            player.value.gameProgress.kua.kpower.upgrades >= id &&
+            tmp.value.kua.active.kpower.upgrades
         );
     }
     if (sp === "k") {
         return (
-            player.value.gameProgress.kua.upgrades[2] >= id &&
-            tmp.value.kua.active.upgrades[2]
+            player.value.gameProgress.kua.upgrades >= id &&
+            tmp.value.kua.active.upgrades
         );
     }
     throw new Error(`${sp} is not a valid kua upgrade type!`);
@@ -106,7 +105,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             }),
             eff: computed(() => {
                 let i = D(1);
-                i = Decimal.max(MAIN_UPG_DATA[0].effect(), 1e10)
+                i = Decimal.max(tmp.value.main.upgrades[0].effect, 1e10)
                     .log10()
                     .div(10)
                     .sqrt()
@@ -193,7 +192,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
                 return `PR2 above or equal to ${format(45)} boosts Kuaraniai effects. Currently: ^${format(KUA_UPGRADES.KShards[10].eff!.value, 4)}`;
             }),
             eff: computed(() => {
-                let i = Decimal.max(player.value.gameProgress.pr2.amount, 45).sub(45);
+                let i = Decimal.max(player.value.gameProgress.main.pr2.amount, 45).sub(45);
                 i = i.mul(0.01).add(1).sqrt().sub(1).mul(2).add(1);
                 return i;
             }),
@@ -206,7 +205,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
                 return `Upgrade 4 boosts Kuaraniai gain at a vastly reduced rate. Currently: ${format(KUA_UPGRADES.KShards[11].eff!.value, 3)}×`;
             }),
             eff: computed(() => {
-                let i = Decimal.max(MAIN_UPG_DATA[3].effect(), 1);
+                let i = Decimal.max(tmp.value.main.upgrades[3].effect, 1);
                 i = i.log10().pow(0.2).add(1);
                 return i;
             }),
@@ -219,7 +218,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
                 return `Upgrade 5 boosts KShard gain at a vastly reduced rate. Currently: ${format(KUA_UPGRADES.KShards[12].eff!.value, 3)}×`;
             }),
             eff: computed(() => {
-                let i = Decimal.max(MAIN_UPG_DATA[4].effect(), 1);
+                let i = Decimal.max(tmp.value.main.upgrades[4].effect, 1);
                 i = i.log10().pow(0.2).add(1);
                 return i;
             }),
@@ -232,12 +231,12 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
                 return `Upgrade 6 boosts KPower gain at a vastly increased rate, and Upgrade 3 also affects Upgrade 2 at a reduced rate. Currently: ${format(KUA_UPGRADES.KShards[13].eff!.value, 3)}×, +${format(KUA_UPGRADES.KShards[13].eff2!.value!, 3)}`;
             }),
             eff: computed(() => {
-                let i = Decimal.add(MAIN_UPG_DATA[5].effect(), 1);
+                let i = Decimal.add(tmp.value.main.upgrades[5].effect, 1);
                 i = i.pow(4);
                 return i;
             }),
             eff2: computed(() => {
-                let i = Decimal.max(MAIN_UPG_DATA[2].effect(), 1);
+                let i = Decimal.max(tmp.value.main.upgrades[2].effect, 1);
                 i = i.div(3);
                 return i;
             }),
@@ -411,10 +410,10 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
                 return `PR2 slightly weakens UP1 and UP2's hyper scaling. Currently: ${formatPerc(KUA_UPGRADES.KPower[8].eff!.value)}`;
             }),
             eff: computed(() => {
-                if (Decimal.lt(player.value.gameProgress.pr2.amount, 25)) {
+                if (Decimal.lt(player.value.gameProgress.main.pr2.amount, 25)) {
                     return D(1);
                 }
-                let eff = Decimal.sub(player.value.gameProgress.pr2.amount, 25);
+                let eff = Decimal.sub(player.value.gameProgress.main.pr2.amount, 25);
                 eff = eff.div(eff.add(20)).mul(0.25).add(1);
                 return eff;
             }),
@@ -427,7 +426,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
                 return `UP1 and UP2's cost scaling is reduced based off of your points. Currently: ${formatPerc(KUA_UPGRADES.KPower[9].eff!.value)}`;
             }),
             eff: computed(() => {
-                let eff = Decimal.max(player.value.gameProgress.points, 1e10);
+                let eff = Decimal.max(player.value.gameProgress.main.points, 1e10);
                 eff = eff.log10().log10().ln().div(50).add(1).sqrt();
                 return eff;
             }),
@@ -526,7 +525,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 3
             desc: computed(() => {
-                return player.value.gameProgress.unlocks.kp
+                return (player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main)
                     ? `Increase the KShard and KPower effect to PRai and Points.`
                     : `Increase the KShard and KPower effect to PRai and Points, and unlock KProofs.`;
             }),

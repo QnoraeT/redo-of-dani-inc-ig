@@ -3,6 +3,7 @@ import { format } from "@/format";
 import { player, tmp } from "@/main";
 import { buyKBUpg, gainKBOnClick, KUA_BLESS_TIER, KUA_BLESS_UPGS } from "./Game_KuaBlessings";
 import Decimal from "break_eternity.js";
+import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_ColChalData";
 import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
 </script>
 <template>
@@ -15,8 +16,8 @@ import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
                 <span style="font-size: 1vw">({{ format(tmp.kua.blessings.perSec, 2) }}/s)</span>
             </span>
             <span style="color: #0f2; text-align: center; font-size: 0.7vw">
-                This boosts Upgrade 1's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg1Base, 3) }}</b></span><!-- <span v-if="COL_CHALLENGES.im.type2ChalEff!.value[1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg1Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff!.value[1]), 2) }})</span>. --><br>
-                This boosts Upgrade 2's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg2Base, 3) }}</b></span><!-- <span v-if="COL_CHALLENGES.im.type2ChalEff!.value[1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg2Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff!.value[1]), 2) }})</span>. --> <br>
+                This boosts Upgrade 1's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg1Base, 3) }}</b></span><span v-if="COL_CHALLENGES.im.type2ChalEff!.value[1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg1Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff!.value[1]), 2) }})</span>.<br>
+                This boosts Upgrade 2's base by +<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.upg2Base, 3) }}</b></span><span v-if="COL_CHALLENGES.im.type2ChalEff!.value[1].gt(0)">&nbsp;(×{{ format(tmp.kua.blessings.upg2Base.add(1).pow(COL_CHALLENGES.im.type2ChalEff!.value[1]), 2) }})</span>.<br>
                 This boosts Effective Kuaraniai by ×<span style="font-size: 0.8vw"><b>{{ format(tmp.kua.blessings.kuaEff, 2) }}</b></span>.
             </span>
             <button class="whiteText fontVerdana" :class="{ nope: Decimal.gt(player.gameProgress.kua.blessings.clickCooldown, 0), ok: Decimal.lte(player.gameProgress.kua.blessings.clickCooldown, 0) }" style="padding: 0vw; width: 12vw; height: 2vw; background-color: #041; margin-top: 0.5vw; margin-left: auto; margin-right: auto" :style="{ cursor: Decimal.gt(player.gameProgress.kua.blessings.clickCooldown, 0) ? 'not-allowed' : 'pointer' }" @click="gainKBOnClick()">

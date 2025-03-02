@@ -1,11 +1,10 @@
 import { D, smoothExp, smoothPoly } from "@/calc"
 import { format, formatPerc } from "@/format"
-import { player } from "@/main"
+import { player, tmp } from "@/main"
 import Decimal, { type DecimalSource } from "break_eternity.js"
 import { computed, type ComputedRef } from "vue"
+import { inChallenge } from "../../Game_Colosseum/Game_ColChallenges/Game_ColChalHandler"
 import { getKuaUpgrade } from "../../Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades"
-import { MAIN_UPG_DATA } from "../Game_MainUpgrades/Game_MainUpgrades"
-import { LABELS } from "@/components/Game/Game_Stats/Game_Stats"
 
 export type MainOneUpg = {
     implemented?: boolean
@@ -15,16 +14,15 @@ export type MainOneUpg = {
     desc: ComputedRef<string>
     effectDesc: ComputedRef<string>
     show: ComputedRef<boolean>
-    tooltipText?: ComputedRef<string>
 }
 
 export const maxxedOMUpgrade = (id: number): boolean => {
     // this is because col challenge Inverted Mechanics
-    return !true && Decimal.gte(player.value.gameProgress.oneUpgrades[id], 1);
+    return !inChallenge("im") && Decimal.gte(player.value.gameProgress.main.oneUpgrades[id], 1);
 }
 
 export const getOMUpgrade = (id: number): DecimalSource => {
-    return player.value.gameProgress.oneUpgrades[id] ?? D(0);
+    return player.value.gameProgress.main.oneUpgrades[id] ?? D(0);
 }
 
 export const initAllMainOneUpgrades = () => {
@@ -42,13 +40,21 @@ export const initAllMainOneUpgrades = () => {
 export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     { // 1
         cost: computed(() => {
-            return smoothExp(Decimal.add(getOMUpgrade(0), 1), 1.05, false).pow(2).pow_base(1e6);
+            if (inChallenge("im")) {
+                return smoothPoly(getOMUpgrade(0), 2, 100, false).pow_base(100).mul(1e6);
+            } else {
+                return D(1e6);
+            }
         }),
         target: computed(() => {
-            return smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e6).log(1e6).root(2), 1.05, true);
+            if (inChallenge("im")) {
+                return smoothPoly(Decimal.max(player.value.gameProgress.main.prai.amount, 1e6).div(1e6).log(100), 2, 100, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e6) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
-            let i = Decimal.max(player.value.gameProgress.prai.amount, 1).pow(0.5).log10().pow(1.1).pow10() ;
+            let i = Decimal.max(player.value.gameProgress.main.prai.amount, 1).pow(0.5).log10().pow(1.1).pow10() ;
             if (Decimal.gte(getOMUpgrade(4), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[4].effect.value);
             }
@@ -61,38 +67,30 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             if (Decimal.gte(getOMUpgrade(15), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[15].effect.value);
             }
-            i = i.pow(Decimal.max(getOMUpgrade(0), 1));
+            i = i.pow(Decimal.max(getOMUpgrade(0), 1).ln().add(1));
             return i;
         }),
         desc: computed(() => { return `Divide Upgrade 2's cost based off of your PRai.`; }),
         effectDesc: computed(() => { return `/${format(MAIN_ONE_UPGS[0].effect.value, 2)}`; }),
-        show: computed(() => { return true; }),
-        tooltipText: computed(() => {
-            let txt = ``
-            const newUp2Amt = MAIN_UPG_DATA[1].target(Decimal.mul(MAIN_UPG_DATA[1].cost(player.value.gameProgress.upgrades[1].bought), MAIN_ONE_UPGS[0].effect.value));
-            const oldUp2Amt = MAIN_UPG_DATA[1].target(MAIN_UPG_DATA[1].cost(player.value.gameProgress.upgrades[1].bought));
-            const newUp1Amt = MAIN_UPG_DATA[0].target(Decimal.mul(MAIN_UPG_DATA[0].cost(player.value.gameProgress.upgrades[0].bought), MAIN_UPG_DATA[1].effect()));
-            const oldUp1Amt = MAIN_UPG_DATA[0].target(MAIN_UPG_DATA[0].cost(player.value.gameProgress.upgrades[0].bought));
-            txt = `
-                ${LABELS.ou1} allows you to buy +${format(newUp2Amt.sub(oldUp2Amt), 3)} more Upgrade 2.<br>
-                This number decreases because Upgrade 2's cost scaling grows faster than this upgrade can decrease its cost.<br>
-                The extra Upgrade 2s decrease Upgrade 1's cost by ~${format(MAIN_UPG_DATA[1].effect(newUp2Amt).div(MAIN_UPG_DATA[1].effect()), 2)}×.<br>
-                <br>
-                The extra Upgrade 2s allows you to buy +${format(newUp1Amt.sub(oldUp1Amt), 3)} more Upgrade 1.<br>
-                The extra Upgrade 1s increase your point gain by ~${format(MAIN_UPG_DATA[0].effect(newUp1Amt).div(MAIN_UPG_DATA[0].effect()), 2)}×.
-            `
-            return txt;
-        })
+        show: computed(() => true)
     },
     { // 2
         cost: computed(() => {
-            return smoothExp(Decimal.add(getOMUpgrade(1), 1), 1.05, false).pow(2.25).pow_base(4e6);
+            if (inChallenge("im")) {
+                return smoothPoly(getOMUpgrade(1), 2, 50, false).pow_base(200).mul(4e6);
+            } else {
+                return D(4e6);
+            }
         }),
         target: computed(() => {
-            return smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 4e6).log(4e6).root(2.25), 1.05, true);
+            if (inChallenge("im")) {
+                return smoothPoly(Decimal.max(player.value.gameProgress.main.prai.amount, 4e6).div(4e6).log(200), 2, 50, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 4e6) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
-            let i = Decimal.min(player.value.gameProgress.prai.timeInPRai, 300).div(300).sqrt().mul(0.2);
+            let i = Decimal.min(player.value.gameProgress.main.prai.timeInPRai, 300).div(3000);
             if (Decimal.gte(getOMUpgrade(5), 1)) {
                 i = i.mul(MAIN_ONE_UPGS[5].effect.value);
             }
@@ -107,22 +105,22 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
         }),
         desc: computed(() => { return `Slowly increase Upgrade 1's base over time, maxing out over 5 minutes in this PRai reset.`; }),
         effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[1].effect.value, 3)}`; }),
-        show: computed(() => { return true; }),
-        tooltipText: computed(() => {
-            let txt = ``
-            txt = `
-                ${LABELS.ou2} effectively increases your points by ${format(MAIN_UPG_DATA[0].effect().div(Decimal.pow(MAIN_UPG_DATA[0].effectBase.value.sub(MAIN_ONE_UPGS[1].effect.value), player.value.gameProgress.upgrades[0].bought)), 2)}×.
-            `
-            return txt;
-        })
-
+        show: computed(() => true)
     },
     { // 3
         cost: computed(() => {
-            return smoothExp(Decimal.add(getOMUpgrade(2), 1), 1.05, false).pow(2.5).pow_base(5e7);
+            if (inChallenge("im")) {
+                return smoothPoly(getOMUpgrade(2), 2, 25, false).pow_base(1e3).mul(5e7);
+            } else {
+                return D(5e7);
+            }
         }),
         target: computed(() => {
-            return smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 5e7).log(5e7).root(2.5), 1.05, true);
+            if (inChallenge("im")) {
+                return smoothPoly(Decimal.max(player.value.gameProgress.main.prai.amount, 5e7).div(5e7).log(1e3), 2, 25, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 5e7) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = D(5);
@@ -140,17 +138,25 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
         }),
         desc: computed(() => { return `Delay Upgrade 1's scaling by a little bit.`; }),
         effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[2].effect.value, 3)}`; }),
-        show: computed(() => { return true; })
+        show: computed(() => true)
     },
     { // 4
         cost: computed(() => {
-            return smoothExp(Decimal.add(getOMUpgrade(3), 1), 1.05, false).pow(2.75).pow_base(2e10);
+            if (inChallenge("im")) {
+                return smoothPoly(getOMUpgrade(3), 3, 50, false).pow_base(2e4).mul(2e10);
+            } else {
+                return D(2e10);
+            }
         }),
         target: computed(() => {
-            return smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 2e10).log(2e10).root(2.75), 1.05, true);
+            if (inChallenge("im")) {
+                return smoothPoly(Decimal.max(player.value.gameProgress.main.prai.amount, 2e10).div(2e10).log(2e4), 3, 50, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 2e10) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
-            let i = Decimal.max(player.value.gameProgress.prai.timeInPRai, 0).mul(0.1).add(1).ln().add(1);
+            let i = Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 0).mul(0.1).add(1).ln().add(1);
             if (Decimal.gte(getOMUpgrade(13), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[13].effect.value.mul(0.25).add(1));
             }
@@ -166,22 +172,30 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             if (Decimal.gte(getOMUpgrade(15), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[15].effect.value);
             }
-            i = i.pow(Decimal.max(getOMUpgrade(3), 1));
+            i = i.pow(Decimal.max(getOMUpgrade(3), 1).sqrt());
             return i;
         }),
         desc: computed(() => { return `PRai gain is multiplied based off how much time you spent in this PRai reset.`; }),
         effectDesc: computed(() => { return `${format(MAIN_ONE_UPGS[3].effect.value, 3)}×`; }),
-        show: computed(() => { return Decimal.gte(player.value.gameProgress.pr2.amount, 7); })
+        show: computed(() => { return Decimal.gte(player.value.gameProgress.main.pr2.amount, 7); })
     },
     { // 5
         cost: computed(() => {
-            return smoothExp(Decimal.add(getOMUpgrade(4), 1), 1.05, false).pow(3).pow_base(1e15);
+            if (inChallenge("im")) {
+                return smoothPoly(getOMUpgrade(4), 3, 20, false).pow_base(1e5).mul(1e15);
+            } else {
+                return D(1e15);
+            }
         }),
         target: computed(() => {
-            return smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e15).log(1e15).root(2.25), 1.05, true);
+            if (inChallenge("im")) {
+                return smoothPoly(Decimal.max(player.value.gameProgress.main.prai.amount, 1e15).div(1e15).log(1e5), 3, 20, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e15) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
-            let i = Decimal.max(player.value.gameProgress.points, 10).log10().div(10).add(1).log10().add(1);
+            let i = Decimal.max(player.value.gameProgress.main.points, 10).log10().div(10).add(1).log10().add(1);
             if (Decimal.gte(getOMUpgrade(5), 1)) {
                 i = i.mul(MAIN_ONE_UPGS[5].effect.value);
             }
@@ -196,14 +210,22 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
         }),
         desc: computed(() => { return `Raise One-Upgrade 1 based off of your points.`; }),
         effectDesc: computed(() => { return `^${format(MAIN_ONE_UPGS[4].effect.value, 3)}`; }),
-        show: computed(() => { return Decimal.gte(player.value.gameProgress.pr2.amount, 7); })
+        show: computed(() => { return Decimal.gte(player.value.gameProgress.main.pr2.amount, 7); })
     },
     { // 6
         cost: computed(() => {
-            return smoothExp(getOMUpgrade(5), 1.1, false).pow_base(1e7).mul(1e23);
+            if (inChallenge("im")) {
+                return smoothExp(getOMUpgrade(5), 1.1, false).pow_base(1e7).mul(1e23);
+            } else {
+                return D(1e23);
+            }
         }),
         target: computed(() => {
-            return smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e23).div(1e23).log(1e7), 1.1, true);
+            if (inChallenge("im")) {
+                return smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 1e23).div(1e23).log(1e7), 1.1, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e23) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = Decimal.mul(player.value.gameProgress.kua.amount, 1000).max(1).log10().sqrt().mul(0.02).add(1);
@@ -225,10 +247,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 7
         cost: computed(() => {
-            return smoothExp(getOMUpgrade(6), 1.2, false).pow_base(1e11).mul(1e33);
+            if (inChallenge("im")) {
+                return smoothExp(getOMUpgrade(6), 1.2, false).pow_base(1e11).mul(1e33);
+            } else {
+                return D(1e33);
+            }
         }),
         target: computed(() => {
-            return smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e33).div(1e33).log(1e11), 1.2, true);
+            if (inChallenge("im")) {
+                return smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 1e33).div(1e33).log(1e11), 1.2, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e33) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => {
             let i = D(1.01);
@@ -247,10 +277,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 8
         cost: computed(() => {
-            return smoothPoly(getOMUpgrade(7), 4, 100, false).pow_base(1e23).mul(1e46);
+            if (inChallenge("im")) {
+                return smoothPoly(getOMUpgrade(7), 4, 100, false).pow_base(1e23).mul(1e46);
+            } else {
+                return D(1e46);
+            }
         }),
         target: computed(() => {
-            return smoothPoly(Decimal.max(player.value.gameProgress.prai.amount, 1e46).div(1e46).log(1e23), 4, 100, true);
+            if (inChallenge("im")) {
+                return smoothPoly(Decimal.max(player.value.gameProgress.main.prai.amount, 1e46).div(1e46).log(1e23), 4, 100, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e46) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => {
             let i = D(15);
@@ -269,10 +307,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 9
         cost: computed(() => {
-            return smoothExp(smoothPoly(getOMUpgrade(8), 2, 25, false), 1.05, false).pow_base(1e29).mul(1e71);
+            if (inChallenge("im")) {
+                return smoothExp(smoothPoly(getOMUpgrade(8), 2, 25, false), 1.05, false).pow_base(1e29).mul(1e71);
+            } else {
+                return D(1e71);
+            }
         }),
         target: computed(() => {
-            return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e71).div(1e71).log(1e29), 1.05, true), 2, 25, true);
+            if (inChallenge("im")) {
+                return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 1e71).div(1e71).log(1e29), 1.05, true), 2, 25, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e71) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let j = D(60);
@@ -297,13 +343,21 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 10
         cost: computed(() => {
-            return smoothExp(smoothPoly(getOMUpgrade(9), 2, 10, false), 1.1, false).pow_base(1e40).mul(1e100);
+            if (inChallenge("im")) {
+                return smoothExp(smoothPoly(getOMUpgrade(9), 2, 10, false), 1.1, false).pow_base(1e40).mul(1e100);
+            } else {
+                return D(1e100);
+            }
         }),
         target: computed(() => {
-            return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e100).div(1e100).log(1e40), 1.1, true), 2, 10, true);
+            if (inChallenge("im")) {
+                return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 1e100).div(1e100).log(1e40), 1.1, true), 2, 10, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e100) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
-            let i = Decimal.add(MAIN_UPG_DATA[2].effect(), MAIN_UPG_DATA[5].effect()).max(0).pow_base(1e10);
+            let i = Decimal.add(tmp.value.main.upgrades[2].effect, tmp.value.main.upgrades[5].effect).max(0).pow_base(1e10);
             i = i.pow(Decimal.max(getOMUpgrade(9), 1).cbrt().add(1));
             if (Decimal.gte(getOMUpgrade(10), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[10].effect.value);
@@ -319,10 +373,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 11
         cost: computed(() => {
-            return smoothExp(smoothPoly(getOMUpgrade(10), 3, 15, false), 1.15, false).pow_base(1e65).mul(1e135);
+            if (inChallenge("im")) {
+                return smoothExp(smoothPoly(getOMUpgrade(10), 3, 15, false), 1.15, false).pow_base(1e65).mul(1e135);
+            } else {
+                return D(1e135);
+            }
         }),
         target: computed(() => {
-            return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e135).div(1e135).log(1e65), 1.15, true), 3, 15, true);
+            if (inChallenge("im")) {
+                return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 1e135).div(1e135).log(1e65), 1.15, true), 3, 15, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e135) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = Decimal.max(10, player.value.gameProgress.col.power).log10().mul(0.01).add(0.99);
@@ -338,10 +400,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 12
         cost: computed(() => {
-            return smoothExp(smoothPoly(getOMUpgrade(11), 4, 20, false), 1.2, false).pow_base(1e90).mul(1e180);
+            if (inChallenge("im")) {
+                return smoothExp(smoothPoly(getOMUpgrade(11), 4, 20, false), 1.2, false).pow_base(1e90).mul(1e180);
+            } else {
+                return D(1e180);
+            }
         }),
         target: computed(() => {
-            return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e180).div(1e180).log(1e90), 1.2, true), 4, 20, true);
+            if (inChallenge("im")) {
+                return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 1e180).div(1e180).log(1e90), 1.2, true), 4, 20, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e180) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = Decimal.max(player.value.gameProgress.col.timeInCol, 1).log(60).mul(0.01).add(1);
@@ -357,10 +427,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 13
         cost: computed(() => {
-            return smoothExp(smoothExp(getOMUpgrade(12), 1.05, false), 1.25, false).pow_base(1e120).mul(1e240);
+            if (inChallenge("im")) {
+                return smoothExp(smoothExp(getOMUpgrade(12), 1.05, false), 1.25, false).pow_base(1e120).mul(1e240);
+            } else {
+                return D(1e240);
+            }
         }),
         target: computed(() => {
-            return smoothExp(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e240).div(1e240).log(1e120), 1.25, true), 1.05, true);
+            if (inChallenge("im")) {
+                return smoothExp(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 1e240).div(1e240).log(1e120), 1.25, true), 1.05, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e240) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = D(10);
@@ -376,10 +454,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 14
         cost: computed(() => {
-            return smoothExp(smoothExp(getOMUpgrade(13), 1.1, false), 1.35, false).pow_base(1e180).mul(1e300);
+            if (inChallenge("im")) {
+                return smoothExp(smoothExp(getOMUpgrade(13), 1.1, false), 1.35, false).pow_base(1e180).mul(1e300);
+            } else {
+                return D(1e300);
+            }
         }),
         target: computed(() => {
-            return smoothExp(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 1e300).div(1e300).log(1e180), 1.35, true), 1.1, true);
+            if (inChallenge("im")) {
+                return smoothExp(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 1e300).div(1e300).log(1e180), 1.35, true), 1.1, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e300) ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = D(1);
@@ -392,10 +478,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 15
         cost: computed(() => {
-            return smoothExp(smoothExp(getOMUpgrade(14), 1.15, false), 1.5, false).pow_base(1e300).mul('e400');
+            if (inChallenge("im")) {
+                return smoothExp(smoothExp(getOMUpgrade(14), 1.15, false), 1.5, false).pow_base(1e300).mul('e400');
+            } else {
+                return D('e400');
+            }
         }),
         target: computed(() => {
-            return smoothExp(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 'e400').div('e400').log(1e300), 1.5, true), 1.15, true);
+            if (inChallenge("im")) {
+                return smoothExp(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 'e400').div('e400').log(1e300), 1.5, true), 1.15, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 'e400') ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = D(10/9);
@@ -411,10 +505,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 16
         cost: computed(() => {
-            return smoothExp(smoothPoly(getOMUpgrade(15), 2, 20, false), 1.2, false).pow_base(2).pow_base('e500').mul('e500');
+            if (inChallenge("im")) {
+                return smoothExp(smoothPoly(getOMUpgrade(15), 2, 20, false), 1.2, false).pow_base(2).pow_base('e500').mul('e500');
+            } else {
+                return D('e500');
+            }
         }),
         target: computed(() => {
-            return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 'e500').div('e500').log('e500').log(2), 1.2, true), 2, 20, true);
+            if (inChallenge("im")) {
+                return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 'e500').div('e500').log('e500').log(2), 1.2, true), 2, 20, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 'e500') ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = D(1); /* Decimal.add(player.value.gameProgress.tax.amount, 1).log2().sqrt().mul(0.01).add(1); */ 
@@ -427,10 +529,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 17
         cost: computed(() => {
-            return smoothExp(smoothPoly(getOMUpgrade(16), 2, 15, false), 1.25, false).pow_base(3).pow_base('e750').mul('e750');
+            if (inChallenge("im")) {
+                return smoothExp(smoothPoly(getOMUpgrade(16), 2, 15, false), 1.25, false).pow_base(3).pow_base('e750').mul('e750');
+            } else {
+                return D('e750');
+            }
         }),
         target: computed(() => {
-            return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 'e750').div('e750').log('e750').log(3), 1.25, true), 2, 15, true);
+            if (inChallenge("im")) {
+                return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 'e750').div('e750').log('e750').log(3), 1.25, true), 2, 15, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 'e750') ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = D(1.005);
@@ -443,10 +553,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 18
         cost: computed(() => {
-            return smoothExp(smoothPoly(getOMUpgrade(17), 3, 15, false), 1.35, false).pow_base(5).pow_base('ee3').mul('ee3');
+            if (inChallenge("im")) {
+                return smoothExp(smoothPoly(getOMUpgrade(17), 3, 15, false), 1.35, false).pow_base(5).pow_base('ee3').mul('ee3');
+            } else {
+                return D('ee3');
+            }
         }),
         target: computed(() => {
-            return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 'ee3').div('ee3').log('ee3').log(5), 1.35, true), 3, 15, true);
+            if (inChallenge("im")) {
+                return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 'ee3').div('ee3').log('ee3').log(5), 1.35, true), 3, 15, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 'ee3') ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = D(1);
@@ -460,10 +578,18 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     { // 19
         implemented: false,
         cost: computed(() => {
-            return smoothExp(smoothPoly(getOMUpgrade(18), 4, 20, false), 1.5, false).pow_base(10).pow_base('e1500').mul('e1500');
+            if (inChallenge("im")) {
+                return smoothExp(smoothPoly(getOMUpgrade(18), 4, 20, false), 1.5, false).pow_base(10).pow_base('e1500').mul('e1500');
+            } else {
+                return D('e1500');
+            }
         }),
         target: computed(() => {
-            return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 'e1500').div('e1500').log('e1500').log(10), 1.5, true), 4, 20, true);
+            if (inChallenge("im")) {
+                return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 'e1500').div('e1500').log('e1500').log(10), 1.5, true), 4, 20, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 'e1500') ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
             let i = D(0); /* Decimal.mul(player.value.gameProgress.tax.times, 0.1).add(1).ln().mul(0.01); */ 
@@ -476,13 +602,21 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     },
     { // 20
         cost: computed(() => {
-            return smoothExp(smoothPoly(getOMUpgrade(19), 4, 15, false), 1.65, false).pow_base(10).pow_base('e2000').mul('e2000');
+            if (inChallenge("im")) {
+                return smoothExp(smoothPoly(getOMUpgrade(19), 4, 15, false), 1.65, false).pow_base(10).pow_base('e2000').mul('e2000');
+            } else {
+                return D('e2000');
+            }
         }),
         target: computed(() => {
-            return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.prai.amount, 'e2000').div('e2000').log('e2000').log(10), 1.5, true), 4, 15, true);
+            if (inChallenge("im")) {
+                return smoothPoly(smoothExp(Decimal.max(player.value.gameProgress.main.prai.amount, 'e2000').div('e2000').log('e2000').log(10), 1.5, true), 4, 15, true);
+            } else {
+                return Decimal.gte(player.value.gameProgress.main.prai.amount, 'e2000') ? D(1) : D(0);
+            }
         }),
         effect: computed(() => { 
-            let i = MAIN_UPG_DATA[0].effective().mul(Decimal.ln(MAIN_UPG_DATA[0].effectBase.value)).mul(0.00001).add(1).root(3).sub(1).mul(3).add(1);
+            let i = tmp.value.main.upgrades[0].effective.mul(Decimal.ln(tmp.value.main.upgrades[0].effectBase)).mul(0.00001).add(1).root(3).sub(1).mul(3).add(1);
             i = i.sub(1).mul(Decimal.max(getOMUpgrade(19), 1).cbrt()).add(1)
             return i;
         }),
@@ -493,9 +627,9 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
 ]
 
 export const buyOneMainUpg = (id: number) => {
-    if (Decimal.gte(player.value.gameProgress.prai.amount, MAIN_ONE_UPGS[id].cost.value) && !maxxedOMUpgrade(id)) {
-        player.value.gameProgress.prai.amount = Decimal.sub(player.value.gameProgress.prai.amount, MAIN_ONE_UPGS[id].cost.value);
-        player.value.gameProgress.oneUpgrades[id] = Decimal.add(player.value.gameProgress.oneUpgrades[id], 1);
-        // player.value.gameProgress.oneUpgrades[id] = Decimal.max(player.value.gameProgress.oneUpgrades[id], MAIN_ONE_UPGS[id].target.value.floor().add(1));
+    if (Decimal.gte(player.value.gameProgress.main.prai.amount, MAIN_ONE_UPGS[id].cost.value) && !maxxedOMUpgrade(id)) {
+        player.value.gameProgress.main.prai.amount = Decimal.sub(player.value.gameProgress.main.prai.amount, MAIN_ONE_UPGS[id].cost.value);
+        player.value.gameProgress.main.oneUpgrades[id] = Decimal.add(player.value.gameProgress.main.oneUpgrades[id], 1);
+        // player.value.gameProgress.main.oneUpgrades[id] = Decimal.max(player.value.gameProgress.main.oneUpgrades[id], MAIN_ONE_UPGS[id].target.value.floor().add(1));
     }
 }

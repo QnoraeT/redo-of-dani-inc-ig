@@ -1,14 +1,15 @@
 import { player, tmp } from "@/main";
 import { D } from "@/calc";
 import Decimal from "break_eternity.js";
+import { timesCompleted } from "../Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
 import { MAIN_UPG_DATA } from "../Game_Progress/Game_Main/Game_MainUpgrades/Game_MainUpgrades";
 import { MAIN_ONE_UPGS } from "../Game_Progress/Game_Main/Game_OneUpgrades/Game_OneUpgrades";
 import { KUA_UPGRADES } from "../Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
 import { KUA_BLESS_UPGS } from "../Game_Progress/Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
 import { GROWAN_UPGS } from "../Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 
-export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "fkp" | "col" | "growan"
-export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "fkp", "col", "growan"]
+export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "fkp" | "col" | "growan" | "tax" | "sc1" | "sc2"
+export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "fkp", "col", "growan", "tax", "sc1", "sc2"]
 export const factorColors = {
     norm: "#FFFFFF",
     ach: "#FFFF80",
@@ -17,7 +18,10 @@ export const factorColors = {
     kp: "#00FFFF",
     fkp: "#80FF80",
     col: "#FFA080",
-    growan: "#804000"
+    growan: "#804000",
+    tax: "#FFE040",
+    sc1: "#FFA0A0",
+    sc2: "#FFE0C0"
 }
 
 export type FactorsStat = {
@@ -434,7 +438,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
             {
                 name: "KBlessing Active",
                 get show() {
-                    return player.value.gameProgress.unlocks.kb;
+                    return player.value.gameProgress.unlocks.kblessings;
                 },
                 subTabs: null,
                 factors: []
@@ -442,7 +446,31 @@ export const ALL_FACTORS: Array<FactorsStat> = [
             {
                 name: "KBlessing Idle",
                 get show() {
-                    return player.value.gameProgress.unlocks.kb;
+                    return player.value.gameProgress.unlocks.kblessings;
+                },
+                subTabs: null,
+                factors: []
+            },
+            {
+                name: "KProof Exponent",
+                get show() {
+                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
+                },
+                subTabs: null,
+                factors: []
+            },
+            {
+                name: "SKProof Exponent",
+                get show() {
+                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.strange;
+                },
+                subTabs: null,
+                factors: []
+            },
+            {
+                name: "FKProof Exponent",
+                get show() {
+                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.finicky;
                 },
                 subTabs: null,
                 factors: []
@@ -471,6 +499,21 @@ export const ALL_FACTORS: Array<FactorsStat> = [
         ],
         factors: null
     },
+    {
+        name: "Taxation",
+        get show() {
+            return player.value.gameProgress.unlocks.tax;
+        },
+        subTabs: [
+            {
+                name: "Coins Gain",
+                show: true,
+                subTabs: null,
+                factors: []
+            },
+        ],
+        factors: null
+    },
 ];
 
 export const STAGES = [
@@ -480,8 +523,8 @@ export const STAGES = [
         show: true,
         get progress() {
             let prog = D(0);
-            prog = prog.add(Decimal.div(player.value.gameProgress.pr2.amount, 10))
-            prog = prog.add(Decimal.max(player.value.gameProgress.prai.amount, 1).log10().div(10))
+            prog = prog.add(Decimal.div(player.value.gameProgress.main.pr2.bestEver, 10))
+            prog = prog.add(Decimal.max(player.value.gameProgress.main.prai.bestEver, 1).log10().div(10))
             return prog.div(2);
         },
         get colors() {
@@ -503,7 +546,7 @@ export const STAGES = [
         get progress() {
             let prog = D(0);
             prog = prog.add(Decimal.add(player.value.gameProgress.kua.amount, tmp.value.kua.pending).max(0.0001).mul(1e4).log(1e30));
-            prog = prog.add(Decimal.max(player.value.gameProgress.kua.blessings.amount, 1).log10().div(12));
+            prog = prog.add(Decimal.max(player.value.gameProgress.kua.blessings.bestEver, 1).log10().div(12));
             prog = prog.add(Decimal.max(player.value.gameProgress.kua.proofs.amount, 10).log10().log10().div(4));
             return prog.div(3);
         },
@@ -524,12 +567,12 @@ export const STAGES = [
             return player.value.gameProgress.unlocks.col;
         },
         get progress() {
-            const prog = D(0);
-            // prog = prog.add(timesCompleted('nk'));
-            // prog = prog.add(Decimal.div(timesCompleted('su'), 6));
-            // prog = prog.add(timesCompleted('df'));
-            // prog = prog.add(Decimal.max(timesCompleted('im'), 1).log10().div(45));
-            // prog = prog.add(Decimal.div(timesCompleted('dc'), 2))
+            let prog = D(0);
+            prog = prog.add(timesCompleted('nk'));
+            prog = prog.add(Decimal.div(timesCompleted('su'), 6));
+            prog = prog.add(timesCompleted('df'));
+            prog = prog.add(Decimal.max(timesCompleted('im'), 1).log10().div(45));
+            prog = prog.add(Decimal.div(timesCompleted('dc'), 2))
             return prog.div(5);
         },
         get colors() {
@@ -575,48 +618,50 @@ export const LABELS = (() => {
         {} as Record<string, string>
     );
 
-    // const kuaKuaUpgradeMap = KUA_UPGRADES.Kua.map((_, index) => [`ku${index+1}`, `Kuaraniai Upgrade #${index+1}`]).reduce(
-    //     (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
-    //     {} as Record<string, string>
-    // );
+    const kuaKuaUpgradeMap = KUA_UPGRADES.Kua.map((_, index) => [`ku${index+1}`, `Kuaraniai Upgrade #${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
 
-    // const kuaPowUpgradeMap = KUA_UPGRADES.KPower.map((_, index) => [`kpowu${index+1}`, `KPower Upgrade #${index+1}`]).reduce(
-    //     (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
-    //     {} as Record<string, string>
-    // );
+    const kuaPowUpgradeMap = KUA_UPGRADES.KPower.map((_, index) => [`kpowu${index+1}`, `KPower Upgrade #${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
 
-    // const kuaShaUpgradeMap = KUA_UPGRADES.KShards.map((_, index) => [`kshau${index+1}`, `KShard Upgrade #${index+1}`]).reduce(
-    //     (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
-    //     {} as Record<string, string>
-    // );
+    const kuaShaUpgradeMap = KUA_UPGRADES.KShards.map((_, index) => [`kshau${index+1}`, `KShard Upgrade #${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
 
     const kuaBlessUpgradeMap = KUA_BLESS_UPGS.map((_, index) => [`kbu${index+1}`, `KBlessing Upgrade #${index+1}`]).reduce(
         (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
         {} as Record<string, string>
     );
 
-    // const growanOverallUpgradeMap = GROWAN_UPGS.overall.map((_, index) => [`gou${index+1}`, `Grōwan Overall Upg. ${index+1}`]).reduce(
-    //     (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
-    //     {} as Record<string, string>
-    // );
+    const growanOverallUpgradeMap = GROWAN_UPGS.overall.map((_, index) => [`gou${index+1}`, `Grōwan Overall Upg. ${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
 
-    // const growanIdleUpgradeMap = GROWAN_UPGS.idle.map((_, index) => [`giu${index+1}`, `Grōwan Idle Upg. ${index+1}`]).reduce(
-    //     (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
-    //     {} as Record<string, string>
-    // );
+    const growanIdleUpgradeMap = GROWAN_UPGS.idle.map((_, index) => [`giu${index+1}`, `Grōwan Idle Upg. ${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
 
-    // const growanActiveUpgradeMap = GROWAN_UPGS.active.map((_, index) => [`gau${index+1}`, `Grōwan Active Upg. ${index+1}`]).reduce(
-    //     (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
-    //     {} as Record<string, string>
-    // );
+    const growanActiveUpgradeMap = GROWAN_UPGS.active.map((_, index) => [`gau${index+1}`, `Grōwan Active Upg. ${index+1}`]).reduce(
+        (accumulator, [key, value]) => ({ ...accumulator, [key]: value }),
+        {} as Record<string, string>
+    );
 
     return {
         def: "Default",
 
+        sc1: "Softcap",
+        sc2: "Super Softcap",
+        sc3: "Hyper Softcap",
+
         pr2_4: "PR2 4",
         pr2_9: "PR2 9",
-        pr2_11: "PR2 11",
-        pr2_20: "PR2 20",
 
         kb: "KBlessings",
 
@@ -639,12 +684,12 @@ export const LABELS = (() => {
 
         ...mainUpgradeMap,
         ...mainOneUpgradeMap,
-        // ...kuaKuaUpgradeMap,
-        // ...kuaShaUpgradeMap,
-        // ...kuaPowUpgradeMap,
+        ...kuaKuaUpgradeMap,
+        ...kuaShaUpgradeMap,
+        ...kuaPowUpgradeMap,
         ...kuaBlessUpgradeMap,
-        // ...growanOverallUpgradeMap,
-        // ...growanIdleUpgradeMap,
-        // ...growanActiveUpgradeMap
+        ...growanOverallUpgradeMap,
+        ...growanIdleUpgradeMap,
+        ...growanActiveUpgradeMap
     } as Record<string, string>;
 })();

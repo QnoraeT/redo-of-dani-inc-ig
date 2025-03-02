@@ -32,6 +32,21 @@ export const TABS_LIST = [
         warning: computed(() => { return false }),
     },
     {
+        name: "Stored Time",
+        staticName: -1,
+        backgroundColor: "#004400",
+        textColor: "#00FF00",
+        outlineColor: "#008000",
+        highlightColor: "#00FF00",
+        if: computed(() => { return true }),
+        alert: computed(() => {
+            return player.value.gameProgress.dilatedTime.paused;
+        }),
+        warning: computed(() => {
+            return player.value.gameProgress.dilatedTime.speedEnabled && !player.value.gameProgress.dilatedTime.paused;
+        })
+    },
+    {
         name: "Options",
         staticName: 1,
         backgroundColor: "#999999",
@@ -100,7 +115,7 @@ export const TABS_LIST = [
         outlineColor: "#d5c000",
         highlightColor: "#ffff7f",
         if: computed(() => {
-            return player.value.gameProgress.unlocks.l4 && tmp.value.layer4.tax.active;
+            return player.value.gameProgress.unlocks.tax && tmp.value.layer4.tax.active;
         }),
         alert: computed(() => { return false }),
         warning: computed(() => { return false })
@@ -113,7 +128,7 @@ export const TABS_LIST = [
         outlineColor: "#a36200",
         highlightColor: "#ffe3b9",
         if: computed(() => {
-            return player.value.gameProgress.unlocks.l4 && tmp.value.layer4.growan.active;
+            return player.value.gameProgress.unlocks.tax && tmp.value.layer4.growan.active;
         }),
         alert: computed(() => { return false }),
         warning: computed(() => { return false })

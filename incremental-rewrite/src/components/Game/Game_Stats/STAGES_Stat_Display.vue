@@ -28,79 +28,79 @@ defineProps<{
         "
         class="whiteText"
     >
-        <div v-if="id === 0" class="statText fontVerdana">
+        <!-- <div v-if="id === 0" class="statText font0">
             <span>
-                Total Points: {{ format(player.gameProgress.main.totalEver, 2) }}<br>
+                Best Points in PRai: {{ format(player.prog.main.bestInPrai, 2) }}<br>
                 {{ `<--- Upgrades --- >` }}<br>
             </span>
             <span v-for="(item, index) of MAIN_UPG_DATA" :key="index">
                 <span v-if="tmp.main.upgrades[index].shown">
                     Best Upgrade {{ index + 1 }}:
-                    {{ format(player.gameProgress.main.upgrades[index].best) }}<br>
+                    {{ format(player.prog.main.upgrades[index].best) }}<br>
                 </span>
             </span>
             <span>
                 {{ `<--- PRai --- >` }}<br>
-                Total Points in PRai: {{ format(player.gameProgress.main.totals[0]!, 2) }}<br>
-                Total PRai: {{ format(player.gameProgress.main.prai.totalEver, 2) }}<br>
+                Best Points in PRai: {{ format(player.prog.main.totals[0]!, 2) }}<br>
+                Total PRai: {{ format(player.prog.main.prai.totalEver, 2) }}<br>
             </span>
-            <span v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)">
+            <span v-if="Decimal.gte(player.prog.main.prai.bestEver, 9.5)">
                 {{ `<--- PRai --- >` }}<br>
-                Total PRai in PR2: {{ format(player.gameProgress.main.prai.totals[1]!, 2) }}<br>
-                Best PRai in PR2: {{ format(player.gameProgress.main.prai.best[1]!, 2) }}<br>
+                Total PRai in PR2: {{ format(player.prog.main.prai.totals[1]!, 2) }}<br>
+                Best PRai in PR2: {{ format(player.prog.main.prai.best[1]!, 2) }}<br>
             </span>
-            <span v-if="Decimal.gte(player.gameProgress.main.pr2.bestEver, 10)">
+            <span v-if="Decimal.gte(player.prog.main.pr2.bestEver, 10)">
                 Effective PRai in Kuaraniai: {{ format(tmp.kua.effectivePrai, 2) }}<br>
             </span>
             <span>
-                PRai resets: {{ format(player.gameProgress.main.prai.times, 2) }}<br>
-                Time in PRai reset: {{ formatTime(player.gameProgress.main.prai.timeInPRai, 2)
+                PRai resets: {{ format(player.prog.main.prai.times, 2) }}<br>
+                Time in PRai reset: {{ formatTime(player.prog.main.prai.timeInPRai, 2)
                 }}<br>
             </span>
-            <span v-if="Decimal.gte(player.gameProgress.main.prai.bestEver, 9.5)">
+            <span v-if="Decimal.gte(player.prog.main.prai.bestEver, 9.5)">
                 {{ `<--- PR2 --- >` }}<br>
-                PR2 resets: {{ format(player.gameProgress.main.pr2.amount) }}<br>
-                Best PR2: {{ format(player.gameProgress.main.pr2.bestEver) }}<br>
+                PR2 resets: {{ format(player.prog.main.pr2.amount) }}<br>
+                Best PR2: {{ format(player.prog.main.pr2.bestEver) }}<br>
             </span>
         </div>
-        <div v-if="id === 1" class="statText fontVerdana">
+        <div v-if="id === 1" class="statText font0">
             <span>
                 Effective PRai in Kuaraniai: {{ format(tmp.kua.effectivePrai, 2) }}<br>
-                Total Kuaraniai: {{ format(player.gameProgress.kua.totalEver, 4) }}<br>
-                Best Kuaraniai: {{ format(player.gameProgress.kua.bestEver, 4) }}<br>
-                Kuaraniai Resets: {{ format(player.gameProgress.kua.times) }}<br>
-                Time in Kua reset: {{ formatTime(player.gameProgress.kua.timeInKua, 2) }}<br>
+                Total Kuaraniai: {{ format(player.prog.kua.totalEver, 4) }}<br>
+                Best Kuaraniai: {{ format(player.prog.kua.bestEver, 4) }}<br>
+                Kuaraniai Resets: {{ format(player.prog.kua.times) }}<br>
+                Time in Kua reset: {{ formatTime(player.prog.kua.timeInKua, 2) }}<br>
                 {{ `<--- Kuaraniai Shards --- >` }}<br>
-                Total KShards: {{ format(player.gameProgress.kua.kshards.totalEver, 3) }}<br>
-                Best KShards: {{ format(player.gameProgress.kua.kshards.bestEver, 3) }}<br>
-                KShard Upgrades: {{ player.gameProgress.kua.kshards.upgrades }}<br>
+                Total KShards: {{ format(player.prog.kua.kshards.totalEver, 3) }}<br>
+                Best KShards: {{ format(player.prog.kua.kshards.bestEver, 3) }}<br>
+                KShard Upgrades: {{ player.prog.kua.kshards.upgrades }}<br>
                 {{ `<--- Kuaraniai Power --- >` }}<br>
-                Total KPower: {{ format(player.gameProgress.kua.kpower.totalEver, 3) }}<br>
-                Best KPower: {{ format(player.gameProgress.kua.kpower.bestEver, 3) }}<br>
-                KShard Upgrades: {{ player.gameProgress.kua.kpower.upgrades }}<br>
+                Total KPower: {{ format(player.prog.kua.kpower.totalEver, 3) }}<br>
+                Best KPower: {{ format(player.prog.kua.kpower.bestEver, 3) }}<br>
+                KShard Upgrades: {{ player.prog.kua.kpower.upgrades }}<br>
             </span>
         </div>
-        <div v-if="id === 2" class="statText fontVerdana">
+        <div v-if="id === 2" class="statText font0">
             <span>
-                Total Colosseum Power: {{ format(player.gameProgress.col.totalEver, 2) }}<br>
-                Best Colosseum Power: {{ format(player.gameProgress.col.bestEver, 2) }}<br>
+                Total Colosseum Power: {{ format(player.prog.col.totalEver, 2) }}<br>
+                Best Colosseum Power: {{ format(player.prog.col.bestEver, 2) }}<br>
                 Total Challenge Completions: {{ format(tmp.col.totalColChalComp) }}<br>
             </span>
         </div>
-        <div v-if="id === 3" class="statText fontVerdana">
+        <div v-if="id === 3" class="statText font0">
             <span>
-                Total Grōwan: {{ format(player.gameProgress.layer4.gro.totalAmt, 2) }}<br>
-                Equation Cancellations: {{ format(player.gameProgress.layer4.gro.equCancel) }}<br>
-                Grōwan Equation Mult Increases: {{ format(player.gameProgress.layer4.gro.gal) }}<br>
+                Total Grōwan: {{ format(player.prog.layer4.gro.totalAmt, 2) }}<br>
+                Equation Cancellations: {{ format(player.prog.layer4.gro.equCancel) }}<br>
+                Grōwan Equation Mult Increases: {{ format(player.prog.layer4.gro.gal) }}<br>
             </span>
         </div>
-        <div v-if="id === 4" class="statText fontVerdana">
+        <div v-if="id === 4" class="statText font0">
             <span>
-                Total Taxed Coins: {{ format(player.gameProgress.layer4.tax.totalEver, 2) }}<br>
-                Best Taxed Coins: {{ format(player.gameProgress.layer4.tax.bestEver, 2) }}<br>
-                Taxation Resets: {{ format(player.gameProgress.layer4.tax.times) }}<br>
+                Total Taxed Coins: {{ format(player.prog.layer4.tax.totalEver, 2) }}<br>
+                Best Taxed Coins: {{ format(player.prog.layer4.tax.bestEver, 2) }}<br>
+                Taxation Resets: {{ format(player.prog.layer4.tax.times) }}<br>
             </span>
-        </div>
+        </div> -->
     </div>
 </template>
 <style scoped>

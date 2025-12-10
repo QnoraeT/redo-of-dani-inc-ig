@@ -7,7 +7,7 @@ export const KUA_ENHANCERS = {
     sources: [
         {
             get source() {
-                return player.value.gameProgress.main.points;
+                return player.value.prog.main.points;
             },
             sourceName: "points",
             cost(level: DecimalSource) {
@@ -21,7 +21,7 @@ export const KUA_ENHANCERS = {
         },
         {
             get source() {
-                return player.value.gameProgress.main.prai.amount;
+                return player.value.prog.main.prai.amount;
             },
             sourceName: "PRai",
             cost(level: DecimalSource) {
@@ -35,7 +35,7 @@ export const KUA_ENHANCERS = {
         },
         {
             get source() {
-                return player.value.gameProgress.kua.amount;
+                return player.value.prog.kua.amount;
             },
             sourceName: "Kuaraniai",
             cost(level: DecimalSource) {
@@ -54,7 +54,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Increase UP1's base by +${format(this.effect(), 4)}`;
             },
-            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[0], pow = tmp.value.kua.trueEnhPower[0]) {
+            effect(xp = player.value.prog.kua.enhancers.enhanceXP[0], pow = tmp.value.kua.trueEnhPower[0]) {
                 const effect = Decimal.max(xp, 0).mul(0.0025).add(1).ln().mul(0.1).add(1).pow(pow).sub(1);
                 return effect;
             }
@@ -64,7 +64,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Increase UP2's base by +${format(this.effect(), 4)}`;
             },
-            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[1], pow = tmp.value.kua.trueEnhPower[1]) {
+            effect(xp = player.value.prog.kua.enhancers.enhanceXP[1], pow = tmp.value.kua.trueEnhPower[1]) {
                 const effect = Decimal.max(xp, 0).mul(0.00025).add(1).root(10).sub(1).mul(10).add(1).pow(pow).sub(1);
                 return effect;
             }
@@ -74,7 +74,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Increase UP3's base by +${format(this.effect(), 4)}`;
             },
-            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[2], pow = tmp.value.kua.trueEnhPower[2]) {
+            effect(xp = player.value.prog.kua.enhancers.enhanceXP[2], pow = tmp.value.kua.trueEnhPower[2]) {
                 const effect = Decimal.max(xp, 0).mul(0.0025).add(1).ln().mul(0.001).add(1).pow(pow).sub(1);
                 return effect;
             }
@@ -84,7 +84,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Weaken UP4's cost growth (after scaling) by ${formatPerc(this.effect(), 3)}`;
             },
-            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[3], pow = tmp.value.kua.trueEnhPower[3]) {
+            effect(xp = player.value.prog.kua.enhancers.enhanceXP[3], pow = tmp.value.kua.trueEnhPower[3]) {
                 const effect = Decimal.max(xp, 0).mul(0.01).add(1).ln().mul(0.1).mul(pow).add(1);
                 return effect;
             }
@@ -94,7 +94,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Weaken UP5's cost growth (after scaling) by ${formatPerc(this.effect(), 3)}`;
             },
-            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[4], pow = tmp.value.kua.trueEnhPower[4]) {
+            effect(xp = player.value.prog.kua.enhancers.enhanceXP[4], pow = tmp.value.kua.trueEnhPower[4]) {
                 const effect = Decimal.max(xp, 0).mul(0.01).add(1).ln().mul(0.1).mul(pow).add(1);
                 return effect;
             }
@@ -104,7 +104,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Weaken UP6's cost growth (after scaling) by ${formatPerc(this.effect(), 3)}`;
             },
-            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[5], pow = tmp.value.kua.trueEnhPower[5]) {
+            effect(xp = player.value.prog.kua.enhancers.enhanceXP[5], pow = tmp.value.kua.trueEnhPower[5]) {
                 const effect = Decimal.max(xp, 0).mul(0.01).add(1).ln().mul(0.1).mul(pow).add(1);
                 return effect;
             }
@@ -114,7 +114,7 @@ export const KUA_ENHANCERS = {
             get desc() {
                 return `Weaken PR2's cost growth (after scaling) by ${formatPerc(this.effect(), 3)}`;
             },
-            effect(xp = player.value.gameProgress.kua.enhancers.enhanceXP[6], pow = tmp.value.kua.trueEnhPower[6]) {
+            effect(xp = player.value.prog.kua.enhancers.enhanceXP[6], pow = tmp.value.kua.trueEnhPower[6]) {
                 const effect = Decimal.max(xp, 0).mul(0.005).add(1).ln().mul(0.05).mul(pow).add(1);
                 return effect;
             }
@@ -123,23 +123,23 @@ export const KUA_ENHANCERS = {
 };
 
 export const buyKuaEnhSourceUPG = (i: number, max = false) => {
-    if (Decimal.gte(KUA_ENHANCERS.sources[i].source, KUA_ENHANCERS.sources[i].cost(player.value.gameProgress.kua.enhancers.sources[i]))) {
-        player.value.gameProgress.kua.enhancers.sources[i] = max 
-            ? Decimal.max(player.value.gameProgress.kua.enhancers.sources[i], KUA_ENHANCERS.sources[i].target(KUA_ENHANCERS.sources[i].source).floor().add(1))
-            : Decimal.add(player.value.gameProgress.kua.enhancers.sources[i], 1);
+    if (Decimal.gte(KUA_ENHANCERS.sources[i].source, KUA_ENHANCERS.sources[i].cost(player.value.prog.kua.enhancers.sources[i]))) {
+        player.value.prog.kua.enhancers.sources[i] = max 
+            ? Decimal.max(player.value.prog.kua.enhancers.sources[i], KUA_ENHANCERS.sources[i].target(KUA_ENHANCERS.sources[i].source).floor().add(1))
+            : Decimal.add(player.value.prog.kua.enhancers.sources[i], 1);
     }
 };
 
 export const kuaEnh = (id: number, amt: DecimalSource) => {
     const remain = Decimal.sub(tmp.value.kua.totalEnhSources, tmp.value.kua.enhSourcesUsed);
-    player.value.gameProgress.kua.enhancers.enhancers[id] = Decimal.min(
-        Decimal.add(remain, player.value.gameProgress.kua.enhancers.enhancers[id]),
-        Decimal.max(0, Decimal.add(player.value.gameProgress.kua.enhancers.enhancers[id], amt))
+    player.value.prog.kua.enhancers.enhancers[id] = Decimal.min(
+        Decimal.add(remain, player.value.prog.kua.enhancers.enhancers[id]),
+        Decimal.max(0, Decimal.add(player.value.prog.kua.enhancers.enhancers[id], amt))
     );
 };
 
 export const kuaEnhReset = () => {
-    for (let i = 0; i < player.value.gameProgress.kua.enhancers.enhancers.length; i++) {
-        player.value.gameProgress.kua.enhancers.enhancers[i] = 0;
+    for (let i = 0; i < player.value.prog.kua.enhancers.enhancers.length; i++) {
+        player.value.prog.kua.enhancers.enhancers[i] = 0;
     }
 };

@@ -1,4 +1,4 @@
-import { player } from "@/main";
+import { gameVars, player } from "@/main";
 import Decimal from "break_eternity.js";
 
 export const NOTATION_LIST = ["Mixed Scientific", "Scientific", "Letters", "Antimatter Dimensions Resources", "Distance Incremental Rank"];
@@ -36,6 +36,10 @@ export const switchNotation = () => {
 };
 
 export const setTimeSpeed = () => {
+    if (gameVars.value.timespeedCheatConfirmation && !confirm("Are you sure you want to take the easy way out? You might find the game enjoyable if you give it a little more patience.\n\nHowever, I recognize that my game is not perfect, so if you want to cheat time speed, then you can.\n\nIf you confirm, then this message will not reappear until the page has been reloaded.")) {
+        return
+    }
+    gameVars.value.timespeedCheatConfirmation = false;
     const i = prompt(
         "What speed would you like to set this game to? (Input blank to keep the current timespeed.)"
     );
@@ -61,6 +65,20 @@ export const makeColor = (text: string, color: string) => {
 }
 
 export const UPDATE_LOG = [
+    {
+        name: `v2.0.0.0 - Dec-17-2024`,
+        desc: `
+        <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
+        None.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Changes --- ></b></span><br>
+        Changed much of the code base. Unfortunately, that means that your saves are very likely to not work anymore.<br>
+        Changed ${makeColor('Achievement #1, 6', '#ff0')}'s requirement.<br>
+        <br>
+        <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
+        None.<br>
+        `
+    },
     {
         name: `v1.1.5.1 - Dec-17-2024`,
         desc: `

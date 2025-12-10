@@ -32,24 +32,24 @@ export const initAllKProofUpgrades = (id: KuaProofUpgTypes) => {
 
 export const buyKProofUpg = (id: number, category: KuaProofUpgTypes) => {
     if (category === 'effect') {
-        if (Decimal.gte(player.value.gameProgress.kua.proofs.amount, tmp.value.kua.proofs.upgrades.effect[id].cost)) {
-            player.value.gameProgress.kua.proofs.amount = Decimal.sub(player.value.gameProgress.kua.proofs.amount, tmp.value.kua.proofs.upgrades.effect[id].cost);
-            player.value.gameProgress.kua.proofs.upgrades.effect[id] = Decimal.add(player.value.gameProgress.kua.proofs.upgrades.effect[id], 1);
-            tmp.value.kua.proofs.upgrades.effect[id].cost = KUA_PROOF_UPGS.effect[id].cost(player.value.gameProgress.kua.proofs.upgrades.effect[id]);
+        if (Decimal.gte(player.value.prog.kua.proofs.amount, tmp.value.kua.proofs.upgrades.effect[id].cost)) {
+            player.value.prog.kua.proofs.amount = Decimal.sub(player.value.prog.kua.proofs.amount, tmp.value.kua.proofs.upgrades.effect[id].cost);
+            player.value.prog.kua.proofs.upgrades.effect[id] = Decimal.add(player.value.prog.kua.proofs.upgrades.effect[id], 1);
+            tmp.value.kua.proofs.upgrades.effect[id].cost = KUA_PROOF_UPGS.effect[id].cost(player.value.prog.kua.proofs.upgrades.effect[id]);
         }
     }
     if (category === 'kp') {
-        if (Decimal.gte(player.value.gameProgress.kua.proofs.amount, tmp.value.kua.proofs.upgrades.kp[id].cost)) {
-            player.value.gameProgress.kua.proofs.amount = Decimal.sub(player.value.gameProgress.kua.proofs.amount, tmp.value.kua.proofs.upgrades.kp[id].cost);
-            player.value.gameProgress.kua.proofs.upgrades.kp[id] = Decimal.add(player.value.gameProgress.kua.proofs.upgrades.kp[id], 1);
-            tmp.value.kua.proofs.upgrades.kp[id].cost = KUA_PROOF_UPGS.kp[id].cost(player.value.gameProgress.kua.proofs.upgrades.kp[id]);
+        if (Decimal.gte(player.value.prog.kua.proofs.amount, tmp.value.kua.proofs.upgrades.kp[id].cost)) {
+            player.value.prog.kua.proofs.amount = Decimal.sub(player.value.prog.kua.proofs.amount, tmp.value.kua.proofs.upgrades.kp[id].cost);
+            player.value.prog.kua.proofs.upgrades.kp[id] = Decimal.add(player.value.prog.kua.proofs.upgrades.kp[id], 1);
+            tmp.value.kua.proofs.upgrades.kp[id].cost = KUA_PROOF_UPGS.kp[id].cost(player.value.prog.kua.proofs.upgrades.kp[id]);
         }
     }
     if (category === 'skp') {
-        if (Decimal.gte(player.value.gameProgress.kua.proofs.strange.amount, tmp.value.kua.proofs.upgrades.skp[id].cost)) {
-            player.value.gameProgress.kua.proofs.strange.amount = Decimal.sub(player.value.gameProgress.kua.proofs.strange.amount, tmp.value.kua.proofs.upgrades.skp[id].cost);
-            player.value.gameProgress.kua.proofs.upgrades.skp[id] = Decimal.add(player.value.gameProgress.kua.proofs.upgrades.skp[id], 1);
-            tmp.value.kua.proofs.upgrades.skp[id].cost = KUA_PROOF_UPGS.skp[id].cost(player.value.gameProgress.kua.proofs.upgrades.skp[id]);
+        if (Decimal.gte(player.value.prog.kua.proofs.strange.amount, tmp.value.kua.proofs.upgrades.skp[id].cost)) {
+            player.value.prog.kua.proofs.strange.amount = Decimal.sub(player.value.prog.kua.proofs.strange.amount, tmp.value.kua.proofs.upgrades.skp[id].cost);
+            player.value.prog.kua.proofs.upgrades.skp[id] = Decimal.add(player.value.prog.kua.proofs.upgrades.skp[id], 1);
+            tmp.value.kua.proofs.upgrades.skp[id].cost = KUA_PROOF_UPGS.skp[id].cost(player.value.prog.kua.proofs.upgrades.skp[id]);
         }
     }
 }
@@ -140,7 +140,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.strange.amount, 0);
             }),
             title: `Line Extruder`,
             perDesc: computed(() => {
@@ -162,7 +162,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.strange.amount, 0);
             }),
             title: `Violent Violet`,
             perDesc: computed(() => {
@@ -184,7 +184,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.strange.amount, 0);
             }),
             title: `Hyper Heaven`,
             perDesc: computed(() => {
@@ -209,7 +209,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.finicky.amount, 0);
             }),
             title: `Ultimate Bribery`,
             perDesc: computed(() => {
@@ -226,12 +226,12 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return smoothExp(Decimal.log10(x).log(75000).sub(1).mul(10), 1.04, true);
             },
             effect(x) {
-                return Decimal.max(player.value.gameProgress.kua.proofs.amount, 1e100).log10().sqrt().div(10).sub(1).mul(Decimal.sqrt(x)).pow_base(100);
+                return Decimal.max(player.value.prog.kua.proofs.amount, 1e100).log10().sqrt().div(10).sub(1).mul(Decimal.sqrt(x)).pow_base(100);
             }
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.finicky.amount, 0);
             }),
             title: `Constructive Interference`,
             perDesc: computed(() => {
@@ -253,7 +253,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.finicky.amount, 0);
             }),
             title: `Infinite Staircase`,
             perDesc: computed(() => {
@@ -317,7 +317,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
             },
             effect(x) {
                 let eff = x;
-                eff = Decimal.max(player.value.gameProgress.kua.proofs.amount, 1).log10().add(1).log10().div(2).mul(x);
+                eff = Decimal.max(player.value.prog.kua.proofs.amount, 1).log10().add(1).log10().div(2).mul(x);
                 eff = eff.mul(tmp.value.kua.proofs.upgrades.kp[4].effect);
                 return eff;
             }
@@ -347,7 +347,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.strange.amount, 0);
             }),
             title: `Complex Breakthrough`,
             perDesc: computed(() => {
@@ -372,7 +372,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.strange.amount, 0);
             }),
             title: `Successive Trials`,
             perDesc: computed(() => {
@@ -389,14 +389,14 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return Decimal.div(x, 1e50).log10().add(1).log10().add(1).root(2.5).sub(1).pow10().sub(1);
             },
             effect(x) {
-                let eff = Decimal.max(player.value.gameProgress.kua.proofs.strange.amount, 1).log10().root(2).div(10).mul(x).add(1);
+                let eff = Decimal.max(player.value.prog.kua.proofs.strange.amount, 1).log10().root(2).div(10).mul(x).add(1);
                 eff = eff.mul(tmp.value.kua.proofs.upgrades.kp[7].effect);
                 return eff;
             }
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.strange.amount, 0);
             }),
             title: `Meta Experiments`,
             perDesc: computed(() => {
@@ -418,7 +418,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.finicky.amount, 0);
             }),
             title: `Million Dollar Breakthrough`,
             perDesc: computed(() => {
@@ -440,7 +440,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.finicky.amount, 0);
             }),
             title: `Verification Trials`,
             perDesc: computed(() => {
@@ -457,12 +457,12 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return Decimal.log10(x).log(20000).root(0.225).sub(1);
             },
             effect(x) {
-                return Decimal.max(player.value.gameProgress.kua.proofs.amount, 1e100).log10().log10().log2().root(4).pow(Decimal.add(x, 1).ln());
+                return Decimal.max(player.value.prog.kua.proofs.amount, 1e100).log10().log10().log2().root(4).pow(Decimal.add(x, 1).ln());
             }
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.finicky.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.finicky.amount, 0);
             }),
             title: `Ultimate Experiments`,
             perDesc: computed(() => {
@@ -486,7 +486,7 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
     skp: [
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 0);
+                return Decimal.gt(player.value.prog.kua.proofs.strange.amount, 0);
             }),
             title: `Untimely Difference`,
             perDesc: computed(() => {
@@ -503,14 +503,14 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return Decimal.div(x, 5).log2().root(1.5);
             },
             effect(x) {
-                let eff = Decimal.add(player.value.gameProgress.kua.proofs.strange.times, 1).log10().sqrt().div(10).mul(x);
+                let eff = Decimal.add(player.value.prog.kua.proofs.strange.times, 1).log10().sqrt().div(10).mul(x);
                 eff = scale(eff, 1.3, true, 10, 1, 2);
                 return eff;
             }
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 5);
+                return Decimal.gt(player.value.prog.kua.proofs.strange.amount, 5);
             }),
             title: `Uncertain Characteristic`,
             perDesc: computed(() => {
@@ -527,12 +527,12 @@ export const KUA_PROOF_UPGS: KuaProofUpgAllType = {
                 return Decimal.div(x, 25).log(5).root(2);
             },
             effect(x) {
-                return Decimal.add(player.value.gameProgress.kua.proofs.strange.amount, 1).log10().add(1).log10().mul(2).mul(x);
+                return Decimal.add(player.value.prog.kua.proofs.strange.amount, 1).log10().add(1).log10().mul(2).mul(x);
             }
         },
         {
             show: computed(() => {
-                return Decimal.gt(player.value.gameProgress.kua.proofs.strange.amount, 25);
+                return Decimal.gt(player.value.prog.kua.proofs.strange.amount, 25);
             }),
             title: `Unstable Conclusions`,
             perDesc: computed(() => {

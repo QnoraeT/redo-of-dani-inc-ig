@@ -11,7 +11,7 @@ import {
 </script>
 <template>
     <div id="achievement" v-if="tab.currentTab === 3">
-        <div style="display: flex; flex-direction: column; align-items: center">
+        <div style="display: flex; flex-direction: column-reverse; align-items: center">
             <div v-for="(item, index) in ACHIEVEMENT_DATA" :key="index">
                 <div
                     v-if="item.show.value"
@@ -23,15 +23,15 @@ import {
                         align-items: center;
                     "
                     :style="{
-                        border: `0.2vw solid ${player.gameProgress.achievements[index].length >= item.list.length ? ACH_DEF_COLORS[item.type].complete.value : mixColor(ACH_DEF_COLORS[item.type].unable.value, ACH_DEF_COLORS[item.type].canComplete.value, 'Linear', player.gameProgress.achievements[index].length / item.list.length)}`,
+                        border: `0.2vw solid ${player.prog.achievements[index].length >= item.list.length ? ACH_DEF_COLORS[item.type].complete.value : mixColor(ACH_DEF_COLORS[item.type].unable.value, ACH_DEF_COLORS[item.type].canComplete.value, 'Linear', player.prog.achievements[index].length / item.list.length)}`,
                         backgroundColor: colorChange(
-                            player.gameProgress.achievements[index].length >= item.list.length
+                            player.prog.achievements[index].length >= item.list.length
                                 ? ACH_DEF_COLORS[item.type].complete.value
                                 : mixColor(
                                         ACH_DEF_COLORS[item.type].unable.value,
                                         ACH_DEF_COLORS[item.type].canComplete.value,
                                         'Linear',
-                                        player.gameProgress.achievements[index].length / item.list.length
+                                        player.prog.achievements[index].length / item.list.length
                                     ),
                             0.25,
                             1
@@ -39,12 +39,12 @@ import {
                     }"
                 >
                     <div style="display: flex; flex-direction: column; align-items: center">
-                        <span style="font-size: 1.2vw; margin-top: 0.3vw" class="fontVerdana whiteText">
+                        <span style="font-size: 1.2vw; margin-top: 0.3vw" class="font0 whiteText">
                             Achievement Tier {{ index + 1 }}:
-                            {{ player.gameProgress.achievements[index].length }} /
+                            {{ player.prog.achievements[index].length }} /
                             {{ item.list.length }}
                         </span>
-                        <span style="font-size: 0.9vw; margin-top: 0.3vw; text-align: center" class="fontVerdana whiteText">
+                        <span style="font-size: 0.9vw; margin-top: 0.3vw; text-align: center" class="font0 whiteText">
                             {{ item.rewardDescription.value }}
                         </span>
                     </div>
@@ -78,7 +78,7 @@ import {
                                     height: `3vw`
                                 }"
                                 style="justify-content: space-around; align-items: center; font-size: 0.75vw; height: 3vw; width: 3vw; margin-right: 0.2vw; margin-left: 0.2vw;"
-                                class="tooltip fontVerdana whiteText flex-container"
+                                class="tooltip font0 whiteText flex-container"
                             >
                                 <div
                                     class="flex-container"

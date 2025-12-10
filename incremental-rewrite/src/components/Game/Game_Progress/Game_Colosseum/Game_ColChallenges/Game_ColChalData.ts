@@ -92,16 +92,16 @@ export const COL_CHALLENGES: colChallenges = {
         cap: D(1),
         show: computed(() => { return true; }),
         canComplete: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.nk.goal.value);
+            return Decimal.gte(player.value.prog.main.bestInCol, COL_CHALLENGES.nk.goal.value);
         }),
         progress: computed(() => {
-            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+            return Decimal.max(player.value.prog.main.bestInCol, 1)
                 .log10()
                 .div(COL_CHALLENGES.nk.goal.value.log10())
                 .min(1);
         }),
         progDisplay: computed(() => {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.nk.goal.value)} (${format(COL_CHALLENGES.nk.progress.value.mul(100), 3)}%)`;
+            return `${format(player.value.prog.main.bestInCol)} / ${format(COL_CHALLENGES.nk.goal.value)} (${format(COL_CHALLENGES.nk.progress.value.mul(100), 3)}%)`;
         })
     },
     su: {
@@ -201,16 +201,16 @@ export const COL_CHALLENGES: colChallenges = {
             return Decimal.gte(timesCompleted("nk"), 1);
         }),
         canComplete: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.su.goal.value);
+            return Decimal.gte(player.value.prog.main.bestInCol, COL_CHALLENGES.su.goal.value);
         }),
         progress: computed(() => {
-            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+            return Decimal.max(player.value.prog.main.bestInCol, 1)
                 .log10()
                 .div(COL_CHALLENGES.su.goal.value.log10())
                 .min(1);
         }),
         progDisplay: computed(() => {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.su.goal.value)} (${format(COL_CHALLENGES.su.progress.value.mul(100), 3)}%)`;
+            return `${format(player.value.prog.main.bestInCol)} / ${format(COL_CHALLENGES.su.goal.value)} (${format(COL_CHALLENGES.su.progress.value.mul(100), 3)}%)`;
         })
     },
     df: {
@@ -234,16 +234,16 @@ export const COL_CHALLENGES: colChallenges = {
             return Decimal.gte(timesCompleted("su"), 1);
         }),
         canComplete: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.df.goal.value);
+            return Decimal.gte(player.value.prog.main.bestInCol, COL_CHALLENGES.df.goal.value);
         }),
         progress: computed(() => {
-            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+            return Decimal.max(player.value.prog.main.bestInCol, 1)
                 .log10()
                 .div(COL_CHALLENGES.df.goal.value.log10())
                 .min(1);
         }),
         progDisplay: computed(() => {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.df.goal.value)} (${format(COL_CHALLENGES.df.progress.value.mul(100), 3)}%)`;
+            return `${format(player.value.prog.main.bestInCol)} / ${format(COL_CHALLENGES.df.goal.value)} (${format(COL_CHALLENGES.df.progress.value.mul(100), 3)}%)`;
         })
     },
     im: {
@@ -255,7 +255,7 @@ export const COL_CHALLENGES: colChallenges = {
         labelEff: computed(() => { return `I.M. ×${format(timesCompleted('im'))}`; }),
         labelRew: computed(() => { return `I.M. Comp. ×${format(timesCompleted('im'))}`; }),
         goal: computed(() => { return D(1e20); }),
-        resourceReq: computed(() => { return player.value.gameProgress.main.best[3]!; }),
+        resourceReq: computed(() => { return player.value.prog.main.bestInCol; }),
         goalDesc: computed(() => {
             return `PB: ${format(timesCompleted(COL_CHALLENGES.im.id))} / ${format(COL_CHALLENGES.im.goal.value)} Points.`;
         }),
@@ -287,13 +287,13 @@ export const COL_CHALLENGES: colChallenges = {
         }),
         canComplete: computed(() => { return false; }),
         progress: computed(() => {
-            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+            return Decimal.max(player.value.prog.main.bestInCol, 1)
                 .log10()
                 .div(Decimal.log10(Decimal.max(timesCompleted(COL_CHALLENGES.im.id), 10).max(COL_CHALLENGES.im.goal.value)))
                 .min(1);
         }),
         progDisplay: computed(() => {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(Decimal.max(COL_CHALLENGES.im.goal.value, timesCompleted(COL_CHALLENGES.im.id)))} (${format(COL_CHALLENGES.im.progress.value.mul(100), 3)}%)`;
+            return `${format(player.value.prog.main.bestInCol)} / ${format(Decimal.max(COL_CHALLENGES.im.goal.value, timesCompleted(COL_CHALLENGES.im.id)))} (${format(COL_CHALLENGES.im.progress.value.mul(100), 3)}%)`;
         })
     },
     dc: {
@@ -419,7 +419,7 @@ export const COL_CHALLENGES: colChallenges = {
             )
             arr.push(
                 Decimal.gte(x, 5)
-                    ? Decimal.max(player.value.gameProgress.col.power, 1000).cbrt().mul(Decimal.sub(x, 4)).div(20000)
+                    ? Decimal.max(player.value.prog.col.power, 1000).cbrt().mul(Decimal.sub(x, 4)).div(20000)
                     : D(0)
             )
             arr.push(
@@ -440,16 +440,16 @@ export const COL_CHALLENGES: colChallenges = {
             // return false;
         }),
         canComplete: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.dc.goal.value);
+            return Decimal.gte(player.value.prog.main.bestInCol, COL_CHALLENGES.dc.goal.value);
         }),
         progress: computed(() => {
-            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+            return Decimal.max(player.value.prog.main.bestInCol, 1)
                 .log10()
                 .div(COL_CHALLENGES.dc.goal.value.log10())
                 .min(1);
         }),
         progDisplay: computed(() => {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.dc.goal.value)} (${format(COL_CHALLENGES.dc.progress.value.mul(100), 3)}%)`;
+            return `${format(player.value.prog.main.bestInCol)} / ${format(COL_CHALLENGES.dc.goal.value)} (${format(COL_CHALLENGES.dc.progress.value.mul(100), 3)}%)`;
         })
     },
     sn: {
@@ -477,16 +477,16 @@ export const COL_CHALLENGES: colChallenges = {
             return false;
         }),
         canComplete: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.best[3]!, COL_CHALLENGES.sn.goal.value);
+            return Decimal.gte(player.value.prog.main.bestInCol, COL_CHALLENGES.sn.goal.value);
         }),
         progress: computed(() => {
-            return Decimal.max(player.value.gameProgress.main.best[3]!, 1)
+            return Decimal.max(player.value.prog.main.bestInCol, 1)
                 .log10()
                 .div(COL_CHALLENGES.sn.goal.value.log10())
                 .min(1);
         }),
         progDisplay: computed(() => {
-            return `${format(player.value.gameProgress.main.best[3]!)} / ${format(COL_CHALLENGES.sn.goal.value)} (${format(COL_CHALLENGES.sn.progress.value.mul(100), 3)}%)`;
+            return `${format(player.value.prog.main.bestInCol)} / ${format(COL_CHALLENGES.sn.goal.value)} (${format(COL_CHALLENGES.sn.progress.value.mul(100), 3)}%)`;
         })
     },
 };

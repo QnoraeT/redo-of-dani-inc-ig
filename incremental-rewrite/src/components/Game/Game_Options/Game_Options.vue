@@ -40,7 +40,7 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 0">
             <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 0.9vw">
-                <span class="fontVerdana whiteText" style="text-align: center">
+                <span class="font0 whiteText" style="text-align: center">
                     <b>You may find some weird things in this incremental!</b><br>
                     This was a game mostly made for fun, and mostly for an incremental I wanted to make when I was bored.<br>
                     <br>
@@ -102,43 +102,40 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                                         }"
                                         style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
                                     ></div>
-                                    <div :style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.25, game.currentSave === index ? 1 : 0.125), width: `${getEndgame(item.data.gameProgress.main.bestEver).toNumber()}%` }" style="position: absolute; top: 0; left: 0; height: 100%;"></div>
+                                    <div :style="{ backgroundColor: gRC(game.currentSave === index ? gameVars.sessionTime : 4.0, 0.25, game.currentSave === index ? 1 : 0.125), width: `${getEndgame(item.data.prog.main.bestEver).toNumber()}%` }" style="position: absolute; top: 0; left: 0; height: 100%;"></div>
                                 </div>
                                 <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;">
                                     <div style="margin: 0.3vw; margin-top: 0.15vw">
                                         <div style="position: relative; width: 100%; height: 25%">
-                                            <div class="flex-container fontVerdana" style=" margin: 0.3vw; margin-top: 0.15vw; height: 20%;">
+                                            <div class="flex-container font0" style=" margin: 0.3vw; margin-top: 0.15vw; height: 20%;">
                                                 <div style="text-align: left;" class="whiteText saveListTopText">{{ item.name }}</div>
                                                 <div style="text-align: center;" class="whiteText saveListTopText">{{ item.data.displayVersion }}</div>
                                                 <div style="text-align: right;" class="whiteText saveListTopText">{{ displayModes(item.modes) }}</div>
                                             </div>
                                         </div>
                                         <div style="position: relative; width: 100%; height: 50%">
-                                            <div style="display: flex; justify-content: center; height: 100%;" class="fontVerdana">
-                                                <span style="text-align: center; font-size: 0.75vw" class="whiteText">Points: {{ format( item.data.gameProgress.main.points, 2 ) }}</span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.main.prai.totalEver, 1) && Decimal.lt(item.data.gameProgress.col.power, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, PRai: {{ format( item.data.gameProgress.main.prai.amount ) }}</span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.main.prai.totalEver, 10) && (item.data.gameProgress.layer4 === undefined ? true : Decimal.lt(item.data.gameProgress.layer4.gro.totalAmt, 1) && Decimal.lt(item.data.gameProgress.layer4.tax.totalEver, 1))" style="text-align: center; font-size: 0.75vw" class="whiteText" >, PR2: {{ format(item.data.gameProgress.main.pr2.amount) }}</span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.main.pr2.bestEver, 10)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Kuaraniai: {{ format(item.data.gameProgress.kua.amount, 3) }} </span>
-                                                <span v-if="Decimal.gte(item.data.gameProgress.col.power, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Col. Power: {{ format( item.data.gameProgress.col.power, 2 ) }}</span>
-                                                <span v-if="item.data.gameProgress.layer4 === undefined ? false : Decimal.gte(item.data.gameProgress.layer4.gro.totalAmt, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Total grōwan: {{ format( item.data.gameProgress.layer4.gro.totalAmt, 2 ) }}</span>
+                                            <div style="display: flex; justify-content: center; height: 100%;" class="font0">
+                                                <span style="text-align: center; font-size: 0.75vw" class="whiteText">Points: {{ format( item.data.prog.main.points, 2 ) }}</span>
+                                                <span v-if="Decimal.gte(item.data.prog.main.prai.bestEver, 1) && Decimal.lt(item.data.prog.col.power, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, PRai: {{ format( item.data.prog.main.prai.amount ) }}</span>
+                                                <span v-if="Decimal.gte(item.data.prog.main.prai.bestEver, 10) && (item.data.prog.layer4 === undefined ? true : Decimal.lt(item.data.prog.layer4.gro.totalAmt, 1) && Decimal.lt(item.data.prog.layer4.tax.amount, 1))" style="text-align: center; font-size: 0.75vw" class="whiteText" >, PR2: {{ format(item.data.prog.main.pr2.amount) }}</span>
+                                                <span v-if="Decimal.gte(item.data.prog.main.pr2.bestEver, 10)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Kuaraniai: {{ format(item.data.prog.kua.amount, 3) }} </span>
+                                                <span v-if="Decimal.gte(item.data.prog.col.power, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Col. Power: {{ format( item.data.prog.col.power, 2 ) }}</span>
+                                                <span v-if="item.data.prog.layer4 === undefined ? false : Decimal.gte(item.data.prog.layer4.gro.totalAmt, 1)" style="text-align: center; font-size: 0.75vw" class="whiteText">, Total grōwan: {{ format( item.data.prog.layer4.gro.totalAmt, 2 ) }}</span>
                                             </div>
                                         </div>
                                         <div style="position: relative; width: 100%; height: 25%; display: flex; align-items: flex-end;">
-                                            <div style="flex-grow: 0.3333; flex-basis: 0; text-align: left; display: flex; flex-direction: column;" class="fontVerdana">
+                                            <div style="flex-grow: 0.3333; flex-basis: 0; text-align: left; display: flex; flex-direction: column;" class="font0">
                                                 <span style="font-size: 0.9vw" class="whiteText">
                                                     {{ formatTime(item.data.totalRealTime, 0, 3, 4) }}
                                                 </span>
                                                 <span v-if="game.currentSave != index" style="font-size: 0.75vw" class="whiteText" >
                                                     Offline for {{ formatTime((Date.now() - item.data.lastUpdated) / 1000, 0, 3, 4) }}
                                                 </span>
-                                                <span style="font-size: 0.75vw" class="whiteText">
-                                                    Offline Time: {{ formatTime(Decimal.div(item.data.offlineTime, 1000), 0, 3, 4) }}
-                                                </span>
                                             </div>
                                             <div style="flex-grow: 1; flex-basis: 0; text-align: right; font-size: 1.2vw;" class="whiteText">
                                                 <button
                                                     @click="switchToSave(index)"
-                                                    class="whiteText fontVerdana generatorButton saveListMiniButton"
+                                                    class="whiteText font0 generatorButton saveListMiniButton"
                                                     :style="{
                                                         cursor:
                                                             game.currentSave !== index
@@ -149,19 +146,19 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                                                 >
                                                     Load Save
                                                 </button>
-                                                <button @click="duplicateSave(index)" class="whiteText fontVerdana generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
+                                                <button @click="duplicateSave(index)" class="whiteText font0 generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
                                                     Duplicate Save
                                                 </button>
-                                                <button @click="deleteSave(index)" class="whiteText fontVerdana generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
+                                                <button @click="deleteSave(index)" class="whiteText font0 generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
                                                     Delete Save
                                                 </button>
-                                                <button @click="renameSave(index)" class="whiteText fontVerdana generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
+                                                <button @click="renameSave(index)" class="whiteText font0 generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
                                                     Rename Save
                                                 </button>
-                                                <button @click="importSave(index)" class="whiteText fontVerdana generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
+                                                <button @click="importSave(index)" class="whiteText font0 generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
                                                     Import Save
                                                 </button>
-                                                <button @click="exportSave(index)" class="whiteText fontVerdana generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
+                                                <button @click="exportSave(index)" class="whiteText font0 generatorButton saveListMiniButton" :style="{ border: `0.12vw solid ${gRC(gameVars.sessionTime, 1, 1)}` }">
                                                     Export Save
                                                 </button>
                                             </div>
@@ -175,18 +172,18 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
             </div>
             <div v-if="tab.tabList[tab.currentTab][1] === 1">
                 <div class="flex-container" style="flex-direction: column; justify-content: center; align-items: center">
-                    <span style="font-size: 1.1vw" class="fontVerdana whiteText">
+                    <span style="font-size: 1.1vw" class="font0 whiteText">
                         Your mode selection is currently:
                         {{ displayModesNonOptArray(tmp.saveModes) }}
                     </span>
                     <div class="flex-container" style="flex-direction: row; justify-content: center">
-                        <button @click="createNewSave(tmp.saveModes)" class="whiteText fontVerdana generatorButton" style="margin: 0.25vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
+                        <button @click="createNewSave(tmp.saveModes)" class="whiteText font0 generatorButton" style="margin: 0.25vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
                             Add new save.
                             <span style="color: #ffff00">
                                 WARNING: None of the modes are implemented yet!
                             </span>
                         </button>
-                        <button @click="resetModes()" class="whiteText fontVerdana generatorButton" style="margin: 0.25vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
+                        <button @click="resetModes()" class="whiteText font0 generatorButton" style="margin: 0.25vw; border: 0.2vw solid #ffffff; height: 5vw; width: 12vw; font-size: 0.75vw;">
                             Reset Mode Selection
                         </button>
                     </div>
@@ -195,7 +192,7 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                             <div v-for="(item, index) in SAVE_MODES" :key="index" class="flex-container">
                                 <button
                                     @click="setTempModes(index)"
-                                    class="whiteText fontVerdana tooltip"
+                                    class="whiteText font0 tooltip"
                                     :style="{
                                         color: item.textColor,
                                         border: `0.12vw solid ${tmp.saveModes[index] ? item.borderSelectedColor : item.borderColor}`,
@@ -224,7 +221,7 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
                 <Basic_Button @click="player.settings.scaleSoftColors = !player.settings.scaleSoftColors" :html="`Show scaling/softcap colors. Currently: ${player.settings.scaleSoftColors}`"/>
                 <Basic_Button @click="player.settings.scaledUpgBase = !player.settings.scaledUpgBase" :html="`Show the upgrade's effect base. If false, will show the upgrade's exact effect. Currently: ${player.settings.scaledUpgBase}`"/>
                 <div
-                class="whiteText fontVerdana generatorButton"
+                class="whiteText font0 generatorButton"
                 style="padding: 0%; margin: 0.25vw; width: 14.28vw; height: 3vw; display: flex; flex-direction: column; border: 0.24vw solid #fff;">
                     <div class="first-cont" style="height: 40%">
                         <span class="generic-text" style="left: 0.3vw; top: 0.3vw; font-size: 0.65vw" >Change when notation starts.</span>
@@ -240,12 +237,12 @@ import Basic_Button from "@/components/Game/Game_Options/OPT_Basic_Button.vue"
         </div>
         <div v-if="tab.tabList[tab.currentTab][0] === 4">
             <div class="flex-container" style="flex-direction: column; align-items: center">
-                <span class="whiteText fontVerdana" style="font-size: 1.4vw"><b>Warning: This section of the game contains spoilers!</b></span><br>
+                <span class="whiteText font0" style="font-size: 1.4vw"><b>Warning: This section of the game contains spoilers!</b></span><br>
                 <div v-for="(item, index) of UPDATE_LOG" :key="index" class="flex-container" style="flex-direction: column; align-items: center">
-                    <button @click="tab.tabList[tab.currentTab][1] === index + 1 ? switchSubTab(0, 1) : switchSubTab(index + 1, 1)" class="whiteText fontVerdana generatorButton" style="margin: 0.25vw; border: 0.24vw solid #ffffff; height: 4vw; width: 30vw; font-size: 1.5vw;">
+                    <button @click="tab.tabList[tab.currentTab][1] === index + 1 ? switchSubTab(0, 1) : switchSubTab(index + 1, 1)" class="whiteText font0 generatorButton" style="margin: 0.25vw; border: 0.24vw solid #ffffff; height: 4vw; width: 30vw; font-size: 1.5vw;">
                         {{ item.name }}
                     </button>
-                    <div v-if="tab.tabList[tab.currentTab][1] === index + 1" class="whiteText fontVerdana generatorButton" style="text-align: center; margin: 0.25vw; padding: 1vw; border: 0.18vw solid #c0c0c0; font-size: 0.9vw;">
+                    <div v-if="tab.tabList[tab.currentTab][1] === index + 1" class="whiteText font0 generatorButton" style="text-align: center; margin: 0.25vw; padding: 1vw; border: 0.18vw solid #c0c0c0; font-size: 0.9vw;">
                         <span v-html="item.desc"></span>
                     </div>
                 </div>

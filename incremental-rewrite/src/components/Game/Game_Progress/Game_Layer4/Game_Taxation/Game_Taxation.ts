@@ -5,7 +5,7 @@ import Decimal from "break_eternity.js";
 import { computed, type ComputedRef } from "vue";
 
 export const getTaxUpgrade = (id: number) => {
-    return player.value.gameProgress.layer4.tax.upgrades[id] ?? D(0);
+    return player.value.prog.layer4.tax.upgrades[id] ?? D(0);
 };
 
 export type TaxUpgrade = {
@@ -54,7 +54,7 @@ export const TAX_UPGRADES: Array<TaxUpgrade> = [
             return cost;
         }),
         target: computed(() => {
-            let target = player.value.gameProgress.layer4.tax.amount;
+            let target = player.value.prog.layer4.tax.amount;
             target = expQuadCostGrowth(target, 1.01, 2, 5, 0, true);
             return target;
         }),
@@ -79,7 +79,7 @@ export const TAX_UPGRADES: Array<TaxUpgrade> = [
             return cost;
         }),
         target: computed(() => {
-            let target = player.value.gameProgress.layer4.tax.amount;
+            let target = player.value.prog.layer4.tax.amount;
             target = expQuadCostGrowth(target, 1.01, 2, 5, 0, true);
             return target;
         }),
@@ -129,7 +129,7 @@ export const TAX_GAIN_CALC: Array<TrueFactor> = [
         active: true,
         name: computed(() => { return 'Base'; }),
         effect: computed(() => {
-            return Decimal.pow(100, Decimal.log(player.value.gameProgress.main.totals[4]!, tmp.value.layer4.tax.req).sqrt().sub(1));
+            return Decimal.pow(100, Decimal.log(player.value.prog.main.bestInLayer4, tmp.value.layer4.tax.req).sqrt().sub(1));
         }),
         color: 'norm',
         type: 'mult'

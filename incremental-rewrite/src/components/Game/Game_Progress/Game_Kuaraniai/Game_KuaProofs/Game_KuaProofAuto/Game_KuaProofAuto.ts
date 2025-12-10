@@ -108,21 +108,21 @@ export const KUA_PROOF_AUTO: KuaProofAuto = {
             cost: D('e3700'),
             desc: `Autobuy Ultimate Bribery.`,
             get show() {
-                return player.value.gameProgress.unlocks.kproofs.finicky;
+                return player.value.prog.unlocks.kproofs.finicky;
             }
         },
         {
             cost: D('e9500'),
             desc: `Autobuy Constructive Interference.`,
             get show() {
-                return player.value.gameProgress.unlocks.kproofs.finicky;
+                return player.value.prog.unlocks.kproofs.finicky;
             }
         },
         {
             cost: D('e23000'),
             desc: `Autobuy Infinite Staircase.`,
             get show() {
-                return player.value.gameProgress.unlocks.kproofs.finicky;
+                return player.value.prog.unlocks.kproofs.finicky;
             }
         },
     ],
@@ -161,21 +161,21 @@ export const KUA_PROOF_AUTO: KuaProofAuto = {
             cost: D('e400'),
             desc: `Autobuy Million Dollar Breakthrough.`,
             get show() {
-                return player.value.gameProgress.unlocks.kproofs.finicky;
+                return player.value.prog.unlocks.kproofs.finicky;
             }
         },
         {
             cost: D('e2000'),
             desc: `Autobuy Verification Trials.`,
             get show() {
-                return player.value.gameProgress.unlocks.kproofs.finicky;
+                return player.value.prog.unlocks.kproofs.finicky;
             }
         },
         {
             cost: D('e7500'),
             desc: `Autobuy Ultimate Experiments.`,
             get show() {
-                return player.value.gameProgress.unlocks.kproofs.finicky;
+                return player.value.prog.unlocks.kproofs.finicky;
             }
         },
     ],
@@ -202,12 +202,12 @@ export const KUA_PROOF_AUTO: KuaProofAuto = {
 }
 
 export const buyKProofAuto = (id: number, category: KuaProofAutoTypes) => {
-    if (player.value.gameProgress.kua.proofs.automationBought[category][id]) {
-        player.value.gameProgress.kua.proofs.automationEnabled[category][id] = !player.value.gameProgress.kua.proofs.automationEnabled[category][id];
+    if (player.value.prog.kua.proofs.automationBought[category][id]) {
+        player.value.prog.kua.proofs.automationEnabled[category][id] = !player.value.prog.kua.proofs.automationEnabled[category][id];
         return;
     }
-    if (Decimal.gte(player.value.gameProgress.kua.proofs.strange.amount, KUA_PROOF_AUTO[category][id].cost)) {
-        player.value.gameProgress.kua.proofs.strange.amount = Decimal.sub(player.value.gameProgress.kua.proofs.strange.amount, KUA_PROOF_AUTO[category][id].cost);
-        player.value.gameProgress.kua.proofs.automationBought[category][id] = true;
+    if (Decimal.gte(player.value.prog.kua.proofs.strange.amount, KUA_PROOF_AUTO[category][id].cost)) {
+        player.value.prog.kua.proofs.strange.amount = Decimal.sub(player.value.prog.kua.proofs.strange.amount, KUA_PROOF_AUTO[category][id].cost);
+        player.value.prog.kua.proofs.automationBought[category][id] = true;
     }
 }

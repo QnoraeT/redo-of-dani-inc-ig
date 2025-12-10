@@ -40,10 +40,10 @@ export const TABS_LIST = [
         highlightColor: "#00FF00",
         if: computed(() => { return true }),
         alert: computed(() => {
-            return player.value.gameProgress.dilatedTime.paused;
+            return player.value.prog.dilatedTime.paused;
         }),
         warning: computed(() => {
-            return player.value.gameProgress.dilatedTime.speedEnabled && !player.value.gameProgress.dilatedTime.paused;
+            return player.value.prog.dilatedTime.speedEnabled && !player.value.prog.dilatedTime.paused;
         })
     },
     {
@@ -87,7 +87,7 @@ export const TABS_LIST = [
         outlineColor: "#7958ff",
         highlightColor: "#ff81cb",
         if: computed(() => {
-            return player.value.gameProgress.unlocks.kua;
+            return player.value.prog.unlocks.kua;
         }),
         alert: computed(() => {
             return tmp.value.kua.canBuyUpg;
@@ -102,7 +102,7 @@ export const TABS_LIST = [
         outlineColor: "#ff3600",
         highlightColor: "#ff9b7f",
         if: computed(() => {
-            return player.value.gameProgress.unlocks.col;
+            return player.value.prog.unlocks.col;
         }),
         alert: computed(() => { return false }),
         warning: computed(() => { return false })
@@ -115,7 +115,7 @@ export const TABS_LIST = [
         outlineColor: "#d5c000",
         highlightColor: "#ffff7f",
         if: computed(() => {
-            return player.value.gameProgress.unlocks.tax && tmp.value.layer4.tax.active;
+            return player.value.prog.unlocks.tax && tmp.value.layer4.tax.active;
         }),
         alert: computed(() => { return false }),
         warning: computed(() => { return false })
@@ -128,7 +128,7 @@ export const TABS_LIST = [
         outlineColor: "#a36200",
         highlightColor: "#ffe3b9",
         if: computed(() => {
-            return player.value.gameProgress.unlocks.tax && tmp.value.layer4.growan.active;
+            return player.value.prog.unlocks.tax && tmp.value.layer4.growan.active;
         }),
         alert: computed(() => { return false }),
         warning: computed(() => { return false })

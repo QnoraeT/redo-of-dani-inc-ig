@@ -9,13 +9,13 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
     <div class="flex-container" style="justify-content: center; align-content: flex-start; flex-direction: row; flex-wrap: wrap; border: 0.24vw solid #ff4000; padding: 0.6vw; height: 38.4vw; width: 50%;">
         <div v-for="(item, index) in COL_RESEARCH" class="flex-container" :key="item.name">
             <!-- set padding to 0vw because it auto-inserts padding -->
-            <button v-if="item.unlocked" @click="switchSubTab(index, 1)" style="width: 9vw; height: 3.5vw; margin-left: 0.18vw; margin-right: 0.18vw; margin-top: 0.36vw; padding: 0vw;" class="smallColBorder colButton fontVerdana">
+            <button v-if="item.unlocked" @click="switchSubTab(index, 1)" style="width: 9vw; height: 3.5vw; margin-left: 0.18vw; margin-right: 0.18vw; margin-top: 0.36vw; padding: 0vw;" class="smallColBorder colButton font0">
                 <div class="whiteText" style="display: flex; justify-content: center; background-color: #631900; position: relative; width: 100%; height: 42.5%; font-size: 0.75vw;">
                     <span class="centered-text" style="height: 100%">{{ item.name }}</span>
                 </div>
                 <div class="whiteText" style="display: flex; justify-content: center; background-color: #7a1f00; position: relative; width: 100%; height: 42.5%; font-size: 0.75vw;">
                     <span class="centered-text" style="height: 100%">
-                        Level: {{ format(item.scoreToLevel(player.gameProgress.col.research.xpTotal[index]).floor(), 0) }}
+                        Level: {{ format(item.scoreToLevel(player.prog.col.research.xpTotal[index]).floor(), 0) }}
                     </span>
                 </div>
                 <div style="height: 15%; width: 100%; position: relative">
@@ -23,7 +23,7 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                     <div style="position: absolute; top: 0; left: 0; background-color: #521400; height: 100%; width: 100%;"></div>
                     <div
                         :style="{
-                            backgroundColor: player.gameProgress.col.research.enabled[index]
+                            backgroundColor: player.prog.col.research.enabled[index]
                                 ? '#ffc000'
                                 : '#ff4000',
                             width: `${
@@ -31,7 +31,7 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                                     ? 100
                                     : Decimal.div(
                                             Decimal.sub(
-                                                player.gameProgress.col.research.xpTotal[
+                                                player.prog.col.research.xpTotal[
                                                     index
                                                 ],
                                                 item.levelToScore(
@@ -61,12 +61,12 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
     </div>
     <div style="display: flex; justify-content: center; flex-direction: row; border: 0.18vw solid #ff4000; height: 39.8vw; width: 50%;">
         <div style="width: 100%; height: 100%">
-            <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 15%; font-size: 1.6vw;">
+            <div class="whiteText font0" style="display: flex; justify-content: center; background-color: #461100; position: relative; width: 100%; height: 15%; font-size: 1.6vw;">
                 <span class="centered-text" style="height: 100%">
                     {{ COL_RESEARCH[tab.tabList[tab.currentTab][1]].name }}
                 </span>
             </div>
-            <div class="whiteText fontVerdana" style="display: flex; justify-content: center; background-color: #521400; position: relative; width: 100%; height: 12%; font-size: 1.2vw;">
+            <div class="whiteText font0" style="display: flex; justify-content: center; background-color: #521400; position: relative; width: 100%; height: 12%; font-size: 1.2vw;">
                 <span class="centered-text" style="top: 4%">
                     Level: {{format(getColResLevel(tab.tabList[tab.currentTab][1]).floor(), 0)}}
                 </span>
@@ -76,7 +76,7 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                     XP: {{ 
                         format(
                             Decimal.sub(
-                                player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 
+                                player.prog.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 
                                 COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
                                     getColResLevel(tab.tabList[tab.currentTab][1]).floor()
                                     )
@@ -102,7 +102,7 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                                     )
                                 ).sub(
                                     Decimal.sub(
-                                        player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 
+                                        player.prog.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 
                                         COL_RESEARCH[tab.tabList[tab.currentTab][1]].levelToScore(
                                             getColResLevel(tab.tabList[tab.currentTab][1]).floor()
                                         )
@@ -110,13 +110,13 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                                 ).div(tmp.col.researchSpeed)) }})
                 </span>
                 <span v-if="getColResLevel(tab.tabList[tab.currentTab][1]).gte(1e12)" class="centered-text" style="top: 33.333%" >
-                    Total XP: {{ format(player.gameProgress.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 0) }}
+                    Total XP: {{ format(player.prog.col.research.xpTotal[tab.tabList[tab.currentTab][1]], 0) }}
                 </span>
                 <div style="top: 68.5%; height: 0.75vw; width: 27.5vw; position: relative">
                     <div style="position: absolute; top: 0; left: 0; border: 0.18vw solid #882200; background-color: #521400; height: 100%; width: 100%;"></div>
                     <div
                         :style="{
-                            backgroundColor: player.gameProgress.col.research.enabled[tab.tabList[tab.currentTab][1]]
+                            backgroundColor: player.prog.col.research.enabled[tab.tabList[tab.currentTab][1]]
                                 ? '#ffc000'
                                 : '#ff4000',
                             width: `${
@@ -124,7 +124,7 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                                     ? 100
                                     : Decimal.div(
                                             Decimal.sub(
-                                                player.gameProgress.col.research.xpTotal[
+                                                player.prog.col.research.xpTotal[
                                                     tab.tabList[tab.currentTab][1]
                                                 ],
                                                 COL_RESEARCH[
@@ -162,7 +162,7 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                     ></div>
                 </div>
             </div>
-            <div class="flex-container whiteText fontVerdana" style="justify-content: center; background-color: #461100; position: relative; width: 100%; height: 59%; font-size: 0.9vw;">
+            <div class="flex-container whiteText font0" style="justify-content: center; background-color: #461100; position: relative; width: 100%; height: 59%; font-size: 0.9vw;">
                 <span class="centered-text" style="top: 0.4vw">
                     {{COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDesc(getColResLevel(tab.tabList[tab.currentTab][1]).floor())}}
                 </span>
@@ -170,15 +170,15 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                     {{COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDescLevel(getColResLevel(tab.tabList[tab.currentTab][1]).floor())}}
                 </span>
             </div>
-            <div class="flex-container whiteText fontVerdana" style="justify-content: center; background-color: #521400; position: relative; width: 100%; height: 4.5%; font-size: 1.1vw;">
+            <div class="flex-container whiteText font0" style="justify-content: center; background-color: #521400; position: relative; width: 100%; height: 4.5%; font-size: 1.1vw;">
                 <span class="centered-text" style="top: 10%">
                     You currently have allocated {{ tmp.col.researchesAllocated }} / {{ tmp.col.researchesAtOnce }} researches.
                 </span>
             </div>
-            <div class="flex-container whiteText fontVerdana" style="justify-content: center; background-color: #461100; position: relative; width: 100%; height: 9.5%;">
-                <button @click="allocColResearch(tab.tabList[tab.currentTab][1])" class="smallColBorder colButton fontVerdana whiteText" style="width: 50%; height: 80%; top: 10%; font-size: 0.75vw; position: relative;">
+            <div class="flex-container whiteText font0" style="justify-content: center; background-color: #461100; position: relative; width: 100%; height: 9.5%;">
+                <button @click="allocColResearch(tab.tabList[tab.currentTab][1])" class="smallColBorder colButton font0 whiteText" style="width: 50%; height: 80%; top: 10%; font-size: 0.75vw; position: relative;">
                     {{
-                        player.gameProgress.col.research.enabled[tab.tabList[tab.currentTab][1]]
+                        player.prog.col.research.enabled[tab.tabList[tab.currentTab][1]]
                             ? "Stop"
                             : "Start"
                     }}

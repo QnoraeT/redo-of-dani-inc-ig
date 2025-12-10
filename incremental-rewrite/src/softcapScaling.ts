@@ -220,17 +220,17 @@ export const getSCSLAttribute = (
                         data[0].power = data[0].power.div(getAchievementEffect(0, 6));
                     }
 
-                    if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[2], 1)) {
+                    if (Decimal.gte(player.value.prog.main.oneUpgrades[2], 1)) {
                         data[0].start = data[0].start.add(MAIN_ONE_UPGS[2].effect.value);
                     }
 
-                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 7)) {
+                    if (Decimal.gte(player.value.prog.main.pr2.amount, 7)) {
                         data[0].power = data[0].power.div(10 / 9);
                     }
 
                     data[0].power = data[0].power.div(tmp.value.kua.effects.upg1Scaling);
 
-                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25) && Decimal.gte(player.value.gameProgress.kua.amount, 10)) {
+                    if (Decimal.gte(player.value.prog.main.pr2.amount, 25) && Decimal.gte(player.value.prog.kua.amount, 10)) {
                         data[0].start = data[0].start.add(15);
                         data[1].start = data[1].start.add(15);
                     }
@@ -254,13 +254,13 @@ export const getSCSLAttribute = (
                         data[2].power = data[2].power.div(MAIN_ONE_UPGS[14].effect.value);
                     }
 
-                    if (Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 1)) {
+                    if (Decimal.gte(player.value.prog.kua.blessings.upgrades[1], 1)) {
                         data[2].start = data[2].start.add(KUA_BLESS_UPGS[1].eff.value[0]);
                     }
 
                     data[1].start = data[1].start.add(KUA_BLESS_UPGS[0].eff.value[2]);
 
-                    if (player.value.gameProgress.layer4.gro.upgrades.overall.includes(2)) {
+                    if (player.value.prog.layer4.gro.upgrades.overall.includes(2)) {
                         data[3].power = data[3].power.mul(0.8);
                     }
 
@@ -296,11 +296,11 @@ export const getSCSLAttribute = (
                         displayedEffect: ""
                     });
 
-                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 15)) {
+                    if (Decimal.gte(player.value.prog.main.pr2.amount, 15)) {
                         data[1].power = data[1].power.mul(0.875);
                     }
 
-                    if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 25)) {
+                    if (Decimal.gte(player.value.prog.main.pr2.amount, 25)) {
                         data[0].start = data[0].start.add(15);
                         data[1].start = data[1].start.add(15);
                     }
@@ -309,7 +309,7 @@ export const getSCSLAttribute = (
                         data[0].power = data[0].power.div(KUA_UPGRADES.KShards[2].eff!.value);
                     }
 
-                    if (Decimal.gte(player.value.gameProgress.main.oneUpgrades[7], 1)) {
+                    if (Decimal.gte(player.value.prog.main.oneUpgrades[7], 1)) {
                         data[0].start = data[0].start.add(MAIN_ONE_UPGS[7].effect.value);
                     }
 
@@ -643,7 +643,7 @@ export const getSCSLAttribute = (
 
                     data[0].start = data[0].start.mul(tmp.value.kua.proofs.upgrades.effect[6].effect.max(1));
 
-                    if (player.value.gameProgress.layer4.gro.upgrades.overall.includes(2)) {
+                    if (player.value.prog.layer4.gro.upgrades.overall.includes(2)) {
                         data[0].power = data[0].power.mul(0.975);
                     }
                     break;
@@ -665,7 +665,7 @@ export const getSCSLAttribute = (
                         data[0].power = data[0].power.div(tmp.value.col.effects.upg1a2sc);
                     }
 
-                    if (player.value.gameProgress.layer4.gro.upgrades.overall.includes(2)) {
+                    if (player.value.prog.layer4.gro.upgrades.overall.includes(2)) {
                         data[0].start = data[0].start.mul(3.162e12);
                     }
 
@@ -708,7 +708,7 @@ export const getSCSLAttribute = (
                         data[0].power = data[0].power.div(tmp.value.col.effects.upg1a2sc);
                     }
 
-                    if (player.value.gameProgress.layer4.gro.upgrades.overall.includes(2)) {
+                    if (player.value.prog.layer4.gro.upgrades.overall.includes(2)) {
                         data[0].start = D(Infinity);
                     }
 
@@ -931,7 +931,7 @@ export const compileScalSoftList = () => {
 
 const SOFT_VALUES = {
     points: computed(() => {
-        return player.value.gameProgress.main.points;
+        return player.value.prog.main.points;
     }),
     upg1: computed(() => {
         return tmp.value.main.upgrades[0].effect;
@@ -982,10 +982,10 @@ const SOFT_VALUES = {
         return tmp.value.kua.blessings.perSec;
     }),
     kp: computed(() => {
-        return player.value.gameProgress.kua.proofs.amount;
+        return player.value.prog.kua.proofs.amount;
     }),
     skp: computed(() => {
-        return player.value.gameProgress.kua.proofs.strange.amount;
+        return player.value.prog.kua.proofs.strange.amount;
     }),
     ge: computed(() => {
         return D(0);
@@ -1003,34 +1003,34 @@ const SCAL_VALUES = {
         return D(0);
     }),
     upg1: computed(() => {
-        return player.value.gameProgress.main.upgrades[0].bought;
+        return player.value.prog.main.upgrades[0].bought;
     }),
     upg2: computed(() => {
-        return player.value.gameProgress.main.upgrades[1].bought;
+        return player.value.prog.main.upgrades[1].bought;
     }),
     upg3: computed(() => {
-        return player.value.gameProgress.main.upgrades[2].bought;
+        return player.value.prog.main.upgrades[2].bought;
     }),
     upg4: computed(() => {
-        return player.value.gameProgress.main.upgrades[3].bought;
+        return player.value.prog.main.upgrades[3].bought;
     }),
     upg5: computed(() => {
-        return player.value.gameProgress.main.upgrades[4].bought;
+        return player.value.prog.main.upgrades[4].bought;
     }),
     upg6: computed(() => {
-        return player.value.gameProgress.main.upgrades[5].bought;
+        return player.value.prog.main.upgrades[5].bought;
     }),
     upg7: computed(() => {
-        return player.value.gameProgress.main.upgrades[6].bought;
+        return player.value.prog.main.upgrades[6].bought;
     }),
     upg8: computed(() => {
-        return player.value.gameProgress.main.upgrades[7].bought;
+        return player.value.prog.main.upgrades[7].bought;
     }),
     upg9: computed(() => {
-        return player.value.gameProgress.main.upgrades[8].bought;
+        return player.value.prog.main.upgrades[8].bought;
     }),
     pr2: computed(() => {
-        return player.value.gameProgress.main.pr2.amount;
+        return player.value.prog.main.pr2.amount;
     }),
     kuaupg4base: computed(() => {
         return D(0);
@@ -1055,15 +1055,15 @@ const SCAL_VALUES = {
     }),
     ge: computed(() => {
         let max = D(0);
-        for (let i = 0; i < player.value.gameProgress.layer4.gro.growanEqu.length; i++) {
-            max = Decimal.max(max, player.value.gameProgress.layer4.gro.growanEqu[i].bought);
+        for (let i = 0; i < player.value.prog.layer4.gro.growanEqu.length; i++) {
+            max = Decimal.max(max, player.value.prog.layer4.gro.growanEqu[i].bought);
         }
         return max;
     }),
     gtick: computed(() => {
-        return player.value.gameProgress.layer4.gro.tick;
+        return player.value.prog.layer4.gro.tick;
     }),
     ec: computed(() => {
-        return player.value.gameProgress.layer4.gro.equCancel;
+        return player.value.prog.layer4.gro.equCancel;
     })
 };

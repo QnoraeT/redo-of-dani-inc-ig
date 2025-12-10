@@ -1,4 +1,4 @@
-import { player, tmp } from "@/main";
+import { player, tab, tmp } from "@/main";
 import { D } from "@/calc";
 import Decimal from "break_eternity.js";
 import { timesCompleted } from "../Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
@@ -47,6 +47,9 @@ export const setFactor = (
     show: boolean,
     color = factorColorIDList[0],
 ) => {
+    if (tab.value.currentTab != 2) {
+        return;
+    }
     if (where[1] === undefined) {
         // ! I HAVE TO SPAM ! ON THIS SO THAT GITHUB CAN ACTUALLY BUILD THE SITE BUT VSCODE ISN'T GIVING ME ANY ISSUES ??? WTF?
         if (ALL_FACTORS[where[0]].factors! === null) {
@@ -158,6 +161,9 @@ export const pushFactor = (
     now: string,
     color = factorColorIDList[0],
 ) => {
+    if (tab.value.currentTab != 2) {
+        return;
+    }
     let len = -1;
     if (where[1] === undefined) {
         // ! I HAVE TO SPAM ! ON THIS SO THAT GITHUB CAN ACTUALLY BUILD THE SITE BUT VSCODE ISN'T GIVING ME ANY ISSUES ??? WTF?
@@ -376,7 +382,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
     {
         name: "PR2",
         get show() {
-            return player.value.gameProgress.unlocks.pr2;
+            return player.value.prog.unlocks.pr2;
         },
         subTabs: [
             {
@@ -409,7 +415,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
     {
         name: "Kuaraniai",
         get show() {
-            return player.value.gameProgress.unlocks.kua;
+            return player.value.prog.unlocks.kua;
         },
         subTabs: [
             {
@@ -439,7 +445,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
             {
                 name: "KBlessing Active",
                 get show() {
-                    return player.value.gameProgress.unlocks.kblessings;
+                    return player.value.prog.unlocks.kblessings;
                 },
                 subTabs: null,
                 factors: []
@@ -447,7 +453,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
             {
                 name: "KBlessing Idle",
                 get show() {
-                    return player.value.gameProgress.unlocks.kblessings;
+                    return player.value.prog.unlocks.kblessings;
                 },
                 subTabs: null,
                 factors: []
@@ -455,7 +461,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
             {
                 name: "KProof Exponent",
                 get show() {
-                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
+                    return player.value.prog.unlocks.kproofs === undefined ? false : player.value.prog.unlocks.kproofs.main;
                 },
                 subTabs: null,
                 factors: []
@@ -463,7 +469,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
             {
                 name: "SKProof Exponent",
                 get show() {
-                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.strange;
+                    return player.value.prog.unlocks.kproofs === undefined ? false : player.value.prog.unlocks.kproofs.strange;
                 },
                 subTabs: null,
                 factors: []
@@ -471,7 +477,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
             {
                 name: "FKProof Exponent",
                 get show() {
-                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.finicky;
+                    return player.value.prog.unlocks.kproofs === undefined ? false : player.value.prog.unlocks.kproofs.finicky;
                 },
                 subTabs: null,
                 factors: []
@@ -482,7 +488,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
     {
         name: "Colosseum",
         get show() {
-            return player.value.gameProgress.unlocks.col;
+            return player.value.prog.unlocks.col;
         },
         subTabs: [
             {
@@ -503,7 +509,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
     {
         name: "Taxation",
         get show() {
-            return player.value.gameProgress.unlocks.tax;
+            return player.value.prog.unlocks.tax;
         },
         subTabs: [
             {
@@ -524,8 +530,8 @@ export const STAGES = [
         show: true,
         get progress() {
             let prog = D(0);
-            prog = prog.add(Decimal.div(player.value.gameProgress.main.pr2.bestEver, 10))
-            prog = prog.add(Decimal.max(player.value.gameProgress.main.prai.bestEver, 1).log10().div(10))
+            prog = prog.add(Decimal.div(player.value.prog.main.pr2.bestEver, 10))
+            prog = prog.add(Decimal.max(player.value.prog.main.prai.bestEver, 1).log10().div(10))
             return prog.div(2);
         },
         get colors() {
@@ -542,13 +548,13 @@ export const STAGES = [
         id: 1,
         name: "Kuaraniai",
         get show() {
-            return player.value.gameProgress.unlocks.kua;
+            return player.value.prog.unlocks.kua;
         },
         get progress() {
             let prog = D(0);
-            prog = prog.add(Decimal.add(player.value.gameProgress.kua.amount, tmp.value.kua.pending).max(0.0001).mul(1e4).log(1e30));
-            prog = prog.add(Decimal.max(player.value.gameProgress.kua.blessings.bestEver, 1).log10().div(12));
-            prog = prog.add(Decimal.max(player.value.gameProgress.kua.proofs.amount, 10).log10().log10().div(4));
+            prog = prog.add(Decimal.add(player.value.prog.kua.amount, tmp.value.kua.pending).max(0.0001).mul(1e4).log(1e30));
+            prog = prog.add(Decimal.max(player.value.prog.kua.blessings.bestInLayer4, 1).log10().div(12));
+            prog = prog.add(Decimal.max(player.value.prog.kua.proofs.amount, 10).log10().log10().div(4));
             return prog.div(3);
         },
         get colors() {
@@ -565,7 +571,7 @@ export const STAGES = [
         id: 2,
         name: "Colosseum",
         get show() {
-            return player.value.gameProgress.unlocks.col;
+            return player.value.prog.unlocks.col;
         },
         get progress() {
             let prog = D(0);

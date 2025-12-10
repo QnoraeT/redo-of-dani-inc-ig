@@ -9,7 +9,7 @@ defineProps<{
 }>();
 </script>
 <template>
-    <button style="margin-left: 0.16vw; margin-right: 0.16vw; width: 10vw; height: 10vw; font-size: 0.64vw;" class="whiteText kuaButton2 fontVerdana">
+    <button style="margin-left: 0.16vw; margin-right: 0.16vw; width: 10vw; height: 10vw; font-size: 0.64vw;" class="whiteText kuaButton2 font0">
         <span style="font-size: 0.5vw; margin-right: 0.6vw"><b>#{{index + 1}}</b></span><span v-if="item.implemented !== undefined" style="color: #ff0; font-size: 0.5vw"><b>[ NOT IMPLEMENTED ]</b><br></span>
         <span style="vertical-align: top">{{ item.desc }}</span>
         <br><br>

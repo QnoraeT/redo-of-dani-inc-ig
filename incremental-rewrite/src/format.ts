@@ -1,6 +1,6 @@
 import Decimal, { type DecimalSource } from "break_eternity.js";
-import { player } from "./main";
 import { D } from "./calc";
+import { player } from "./main";
 
 const abbSuffixes: Array<string> = ["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","UDc","DDc","TDc","QaDc","QiDc","SxDc","SpDc","OcDc","NoDc","Vg"];
 const letter: Array<string> = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
@@ -29,11 +29,11 @@ const timeList = [
 
 const abbExp = D(1e66);
 
-function numberWithCommas(x: string): string {
+export const numberWithCommas = (x: string) => {
     return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function formatLetter(remainingLogNumber: DecimalSource, string = ``): string {
+export const formatLetter = (remainingLogNumber: DecimalSource, string = ``): string => {
     if (Decimal.gte(remainingLogNumber, 1e12)) {
         console.error(
             `formatLetter is taking in numbers greater than ee12! This *will* freeze the game!`
@@ -65,11 +65,11 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3, notation = pl
             case 1: // sci
                 if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit).neg().pow10())) {
                     return `e${format(Decimal.log10(number), 0, expdec)}`;
-                } else if (Decimal.lt(number, 0.001)) {
+                } else if (Decimal.lt(number, 10 ** -dec)) {
                     const exp = Decimal.log10(number).mul(1.00000000001).floor();
                     return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
                 } else if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit))) {
-                    return numberWithCommas(new Decimal(number).toNumber().toFixed(dec));
+                    return numberWithCommas(Decimal.mul(number, 10 ** dec).floor().div(10 ** dec).toNumber().toFixed(dec));
                 } else if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit).pow10())) {
                     const exp = Decimal.log10(number).mul(1.00000000001).floor();
                     return `${Decimal.div(number, exp.pow10()).toNumber().toFixed(expdec)}e${format(exp, 0, expdec)}`;
@@ -108,7 +108,7 @@ export const format = (number: DecimalSource, dec = 0, expdec = 3, notation = pl
         }
     } catch(e) {
         console.warn(
-            `There was an error trying to get player.settings.notation! Falling back to Mixed Scientific...\n\nIf you have an object that has an item that uses format() without it being a get or function, this will occurr on load!`
+            `There was an error trying to get player.settings.notation! Falling back to Mixed Scientific...\n\nIf you have an object that has an item that uses format() without it being a get or export const, =  this will occurr on load!`
         );
         console.warn(e);
         if (Decimal.lt(number, Decimal.pow10(player.value.settings.notationLimit).neg().pow10())) {
@@ -144,7 +144,7 @@ export const formatTime = (number: DecimalSource, dec = 0, expdec = 3, limit = 2
     if (Decimal.lt(number, 0)) return `-${formatTime(Decimal.negate(number), dec, expdec)}`;
     if (Decimal.eq(number, 0)) return `${(0).toFixed(dec)}s`;
     if (Decimal.isNaN(number)) return "NaN";
-    if (!Decimal.isFinite(number)) return "Infinity";
+    if (!Decimal.isFinite(number)) return "Never";
     let lim = 0;
     let str = "";
     let end = false;
@@ -156,10 +156,10 @@ export const formatTime = (number: DecimalSource, dec = 0, expdec = 3, limit = 2
         if (Decimal.gte(number, timeList[i].amt)) {
             end = lim + 1 >= limit || timeList[i].stop;
             prevNumber = Decimal.div(number, timeList[i].amt);
-            str = `${str} ${format(prevNumber.sub(end ? 0 : 0.5), end ? dec : 0, expdec)}${timeList[i].name}`;
+            str = `${str} ${format(prevNumber.sub(0), end ? dec : 0, expdec)}${timeList[i].name}`;
             number = Decimal.sub(number, prevNumber.floor().mul(timeList[i].amt));
             lim++;
-            if (timeList[i].stop || prevNumber.gte(Decimal.pow10(player.value.settings.notationLimit))) {
+            if (timeList[i].stop || prevNumber.gte(1e8)) {
                 break;
             }
         } else {

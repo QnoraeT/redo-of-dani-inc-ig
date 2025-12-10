@@ -341,7 +341,7 @@ export const sumHarmonicSeries = (x: DecimalSource) => {
     }
     return Decimal.ln(x)
         .add(0.5772156649015329)
-        .add(Decimal.div(0.5, x))
+        .sub(Decimal.div(0.5, x))
         .sub(Decimal.div(1, Decimal.pow(x, 2).mul(12)))
         .add(Decimal.div(1, Decimal.pow(x, 4).mul(120)));
 };

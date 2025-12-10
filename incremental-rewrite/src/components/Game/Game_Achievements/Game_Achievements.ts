@@ -72,7 +72,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Get ${format(1)} UP1.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 1);
+                    return Decimal.gte(player.value.prog.main.upgrades[0].bought, 1);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => { return true; }),
@@ -88,7 +88,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Get ${format(20)} UP1.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 20);
+                    return Decimal.gte(player.value.prog.main.upgrades[0].bought, 20);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => { return true; }),
@@ -104,7 +104,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Do your first PRai reset.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 1);
+                    return Decimal.gte(player.value.prog.main.prai.bestEver, 1);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => { return true; }),
@@ -120,7 +120,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Have at least ${format(10)} PRai.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 10);
+                    return Decimal.gte(player.value.prog.main.prai.bestEver, 10);
                 }),
                 reward: computed(() => {
                     return `Increase your number generation by ${format(20)}%.`;
@@ -151,17 +151,16 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `All that time wasted...`;
                 }),
                 description: computed(() => {
-                    return `Have ${format(1e18)} points without doing a PRai reset.`;
+                    return `Have ${format(1e18)} points, taking longer than ${formatTime(3600)} to achieve. Or, reach ${format(1e63)} points.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.best[1]!, 1e18) && Decimal.lt(player.value.gameProgress.main.prai.times, 1);
+                    return Decimal.gte(player.value.prog.main.points, 1e18) && Decimal.gte(player.value.prog.main.prai.timeInPRai, 3600) || Decimal.gte(player.value.prog.main.points, 1e63);
                 }),
                 reward: computed(() => {
                     return `Your PRai's multiplier goes from ${format(4)}× -> ${format(5)}×.`;
                 }),
                 show: computed(() => { return true; }),
-                status: computed(() => { return Decimal.lt(player.value.gameProgress.main.prai.times, 1) ? true : `Failed due to having PRai reset ${format(player.value.gameProgress.main.prai.times)} times.`; }),
-                extra: `This may require you to do a higher level reset (like PR2) if you had already done a PRai reset!`
+                status: computed(() => { return Decimal.gte(player.value.prog.main.prai.timeInPRai, 3600) ? true : `Requirement increased, need to wait ${formatTime(Decimal.sub(3600, player.value.prog.main.prai.timeInPRai).max(0))}.`; })
             },
             {
                 // id: 6
@@ -173,13 +172,13 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Do a PR2 reset twice.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 2);
+                    return Decimal.gte(player.value.prog.main.pr2.bestEver, 2);
                 }),
                 reward: computed(() => {
                     return `UP1's scaling is weakened based off of PRai. Currently: ${formatPerc(ACHIEVEMENT_DATA[0].list[6].effect!.value, 3)} weaker.`;
                 }),
                 effect: computed(() => {
-                    return Decimal.max(player.value.gameProgress.main.prai.amount, 10)
+                    return Decimal.max(player.value.prog.main.prai.amount, 10)
                         .log10()
                         .root(3)
                         .sub(1)
@@ -218,7 +217,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Have at least ${format(100)} UP1.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100);
+                    return Decimal.gte(player.value.prog.main.upgrades[0].bought, 100);
                 }),
                 reward: computed(() => {
                     return `PRai effect is increased by ${format(100)}%.`;
@@ -236,11 +235,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Do a PR2 reset ${format(4)} times in total.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 4);
+                    return Decimal.gte(player.value.prog.main.pr2.bestEver, 4);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 9.5);
+                    return Decimal.gte(player.value.prog.main.prai.bestEver, 9.5);
                 }),
                 status: computed(() => { return true; })
             },
@@ -254,11 +253,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Do a PR2 reset ${format(11)} times.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 11);
+                    return Decimal.gte(player.value.prog.main.pr2.bestEver, 11);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 9.5);
+                    return Decimal.gte(player.value.prog.main.prai.bestEver, 9.5);
                 }),
                 status: computed(() => { return true; })
             },
@@ -273,16 +272,16 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.points, 1e45) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
+                        Decimal.gte(player.value.prog.main.points, 1e45) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].bought, 0)
                     );
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 9.5);
+                    return Decimal.gte(player.value.prog.main.prai.bestEver, 9.5);
                 }),
                 status: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
+                    return Decimal.lte(player.value.prog.main.upgrades[2].bought, 0)
                         ? true
                         : `Failed due to having Upgrade 3`;
                 })
@@ -298,9 +297,9 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.points, 1e63) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
+                        Decimal.gte(player.value.prog.main.points, 1e63) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].bought, 0)
                     );
                 }),
                 reward: computed(() => {
@@ -311,14 +310,14 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 status: computed(() => {
                     if (
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
+                        Decimal.lte(player.value.prog.main.upgrades[1].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].bought, 0)
                     ) {
                         return true;
                     }
                     const fail = [
-                        !Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0),
-                        !Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
+                        !Decimal.lte(player.value.prog.main.upgrades[1].bought, 0),
+                        !Decimal.lte(player.value.prog.main.upgrades[2].bought, 0)
                     ];
                     let txt = `Failed due to having Upgrade `;
                     if (fail[0] && fail[1]) {
@@ -345,10 +344,10 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.points, 1e90) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
+                        Decimal.gte(player.value.prog.main.points, 1e90) &&
+                        Decimal.lte(player.value.prog.main.upgrades[0].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].bought, 0)
                     );
                 }),
                 reward: computed(() => { return ``; }),
@@ -357,15 +356,15 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 status: computed(() => {
                     if (
-                        Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0)
+                        Decimal.lte(player.value.prog.main.upgrades[0].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].bought, 0)
                     ) {
                         return true;
                     }
                     const fail: Array<number> = [];
                     for (let i = 0; i < 3; i++) {
-                        if (!Decimal.lte(player.value.gameProgress.main.upgrades[i].bought, 0)) {
+                        if (!Decimal.lte(player.value.prog.main.upgrades[i].bought, 0)) {
                             fail.push(i);
                         }
                     }
@@ -397,7 +396,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `PR2's cost base is decreased from ${format(10)} to ${format(9)}.`;
                 }),
                 show: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 5);
+                    return Decimal.gte(player.value.prog.main.pr2.bestEver, 5);
                 }),
                 status: computed(() => { return true; })
             },
@@ -444,35 +443,35 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Apparently Upgrades 4-6 are all you need.`;
                 }),
                 description: computed(() => {
-                    return `Get ${format(1e30)} points without having Upgrades 1-3 and without more than ${format(10)} PRai for this Kuaraniai run.`;
+                    return `Get ${format(1e30)} points without having Upgrades 1-3 and without more than ${format(10)} PRai.`;
                 }),
                 autoComplete: false,
                 condition: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
-                    Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
-                    Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0) &&
-                    Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10) &&
-                    Decimal.gte(player.value.gameProgress.main.best[2]!, 1e30);
+                    return Decimal.lte(player.value.prog.main.upgrades[0].bought, 0) &&
+                    Decimal.lte(player.value.prog.main.upgrades[1].bought, 0) &&
+                    Decimal.lte(player.value.prog.main.upgrades[2].bought, 0) &&
+                    Decimal.lte(player.value.prog.main.prai.amount, 10) &&
+                    Decimal.gte(player.value.prog.main.points, 1e30);
                 }),
                 reward: computed(() => {
                     return `PRai's effect is slightly boosted by ×${format(ACHIEVEMENT_DATA[0].list[17].effect!.value, 2)} based off your time in PRai.`;
                 }),
                 effect: computed(() => {
-                    return Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 1)
+                    return Decimal.max(player.value.prog.main.prai.timeInPRai, 1)
                         .sqrt()
                         .pow_base(1.5)
                         .min(10);
                 }),
                 show: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 10);
+                    return Decimal.gte(player.value.prog.main.pr2.bestEver, 10);
                 }),
                 status: computed(() => {
                     if (
-                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
+                        Decimal.lte(player.value.prog.main.upgrades[0].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].bought, 0)
                     ) {
-                        return Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10)
+                        return Decimal.lte(player.value.prog.main.prai.amount, 10)
                             ? true
                             : `Failed due to having more than ${format(10)} PRai.`;
                     }
@@ -480,7 +479,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     for (let i = 0; i < 3; i++) {
                         if (
                             !Decimal.lte(
-                                player.value.gameProgress.main.upgrades[i].boughtInReset[2],
+                                player.value.prog.main.upgrades[i].bought,
                                 0
                             )
                         ) {
@@ -496,12 +495,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     } else {
                         txt += `${fail[0] + 1}.`;
                     }
-                    if (Decimal.gt(player.value.gameProgress.main.prai.totals[2]!, 10)) {
+                    if (Decimal.gt(player.value.prog.main.prai.amount, 10)) {
                         txt += ` Failed due to having more than ${format(10)} PRai.`;
                     }
                     return txt;
-                }),
-                extra: `You must do a Kuaraniai reset to earn this achievement!`
+                })
             },
             {
                 // id: 18
@@ -513,11 +511,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Reach ${format(Number.MAX_VALUE)} points.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.bestEver, Number.MAX_VALUE);
+                    return Decimal.gte(player.value.prog.main.bestEver, Number.MAX_VALUE);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.bestEver, 1e100);
+                    return Decimal.gte(player.value.prog.main.bestEver, 1e100);
                 }),
                 status: computed(() => { return true; })
             },
@@ -531,21 +529,21 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Every upgrade from 1-6 must have #×${format(10)} of themselves. (Upgrade 1 must be bought ${format(10)} times, Upgrade 2 ${format(20)} times, etc.)`;
                 }),
                 condition: computed(() => {
-                    return Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 10) &&
-                        Decimal.eq(player.value.gameProgress.main.upgrades[1].bought, 20) &&
-                        Decimal.eq(player.value.gameProgress.main.upgrades[2].bought, 30) &&
-                        Decimal.eq(player.value.gameProgress.main.upgrades[3].bought, 40) &&
-                        Decimal.eq(player.value.gameProgress.main.upgrades[4].bought, 50) &&
-                        Decimal.eq(player.value.gameProgress.main.upgrades[5].bought, 60)
+                    return Decimal.eq(player.value.prog.main.upgrades[0].bought, 10) &&
+                        Decimal.eq(player.value.prog.main.upgrades[1].bought, 20) &&
+                        Decimal.eq(player.value.prog.main.upgrades[2].bought, 30) &&
+                        Decimal.eq(player.value.prog.main.upgrades[3].bought, 40) &&
+                        Decimal.eq(player.value.prog.main.upgrades[4].bought, 50) &&
+                        Decimal.eq(player.value.prog.main.upgrades[5].bought, 60)
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => {
                     const fail: Array<number> = [];
                     for (let i = 0; i < 6; i++) {
-                        if (Decimal.neq(player.value.gameProgress.main.upgrades[i].bought, 10*(i+1))) {
+                        if (Decimal.neq(player.value.prog.main.upgrades[i].bought, 10*(i+1))) {
                             fail.push(i);
                         }
                     }
@@ -576,14 +574,14 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Reach ${format(1e100)} PRai while doing no more than ${format(5)} PRai resets.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e100) && Decimal.lte(player.value.gameProgress.main.prai.times, 5);
+                    return Decimal.gte(player.value.prog.main.prai.amount, 1e100) && Decimal.lte(player.value.prog.main.prai.times, 5);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.main.prai.times, 5) ? true : `Failed due to having PRai reset ${format(player.value.gameProgress.main.prai.times)} times.`
+                    return Decimal.lte(player.value.prog.main.prai.times, 5) ? true : `Failed due to having PRai reset ${format(player.value.prog.main.prai.times)} times.`
                 })
             },
             {
@@ -596,11 +594,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Reach ${format(Decimal.pow(Number.MAX_VALUE, 2))} Points.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.points, Decimal.pow(Number.MAX_VALUE, 2));
+                    return Decimal.gte(player.value.prog.main.points, Decimal.pow(Number.MAX_VALUE, 2));
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => { return true; }),
             },
@@ -614,14 +612,14 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Have over ${format(10)} effective Upgrade 1s without buying any.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gt(tmp.value.main.upgrades[0].effective, 10) && Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 0);
+                    return Decimal.gt(tmp.value.main.upgrades[0].effective, 10) && Decimal.eq(player.value.prog.main.upgrades[0].bought, 0);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
+                    return player.value.prog.unlocks.kproofs === undefined ? false : player.value.prog.unlocks.kproofs.main;
                 }),
                 status: computed(() => {
-                    return Decimal.eq(player.value.gameProgress.main.upgrades[0].bought, 0) ? true : `Failed due to having bought Upgrade 1.`
+                    return Decimal.eq(player.value.prog.main.upgrades[0].bought, 0) ? true : `Failed due to having bought Upgrade 1.`
                 })
             },
             // {
@@ -650,14 +648,14 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
         }),
         effect: computed(() => {
             let eff = D(1.1);
-            eff = Decimal.pow(eff, player.value.gameProgress.achievements[0].length);
+            eff = Decimal.pow(eff, player.value.prog.achievements[0].length);
             return eff;
         })
     },
     {
         type: "kua",
         show: computed(() => {
-            return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 10);
+            return Decimal.gte(player.value.prog.main.pr2.bestEver, 10);
         }),
         list: [
             {
@@ -670,13 +668,13 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Convert all of your PRai to Kuaraniai.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gt(player.value.gameProgress.kua.amount, 0);
+                    return Decimal.gt(player.value.prog.kua.amount, 0);
                 }),
                 reward: computed(() => {
                     return `Your number generation is increased by ${format(1e2)}%.`;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => { return true; })
             },
@@ -690,7 +688,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Save up ${format(1e12)} PRai on a Kuaraniai run.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.prai.amount, 1e12);
+                    return Decimal.gte(player.value.prog.main.prai.amount, 1e12);
                 }),
                 reward: computed(() => {
                     return `UP2 also boosts number gain at a reduced rate. Currently: ×${format(ACHIEVEMENT_DATA[1].list[1].effect!.value, 2)}`;
@@ -713,7 +711,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return eff;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => { return true; })
             },
@@ -727,11 +725,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Have ${format(0.01, 3)} Kuaraniai.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.kua.amount, 0.01);
+                    return Decimal.gte(player.value.prog.kua.amount, 0.01);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => { return true; })
             },
@@ -745,18 +743,16 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Have ${format(0.1, 2)} Kuaraniai.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.kua.amount, 0.095);
+                    return Decimal.gte(player.value.prog.kua.amount, 0.095);
                 }),
                 reward: computed(() => {
                     return `Kuaraniai gain is increased by ${format(50)}%, and KShards produce another point multiplier. Currently: ×${format(ACHIEVEMENT_DATA[1].list[3].effect!.value, 2)}`;
                 }),
                 effect: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.kua.kshards.totals[3]!, 5e11)
-                        ? Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).div(50).root(5).mul(10000)
-                        : Decimal.max(player.value.gameProgress.kua.kshards.totals[3]!, 0).mul(8).add(1).sqrt().sub(1).div(2).add(1);
+                    return Decimal.max(player.value.prog.kua.kshards.totalInLayer4, 0).mul(8).add(1).sqrt().sub(1).div(2).add(1);
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => { return true; })
             },
@@ -772,22 +768,21 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 autoComplete: false,
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.points, 1e80) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
+                        Decimal.gte(player.value.prog.main.points, 1e80) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].boughtInKua, 0)
                     );
                 }),
                 reward: computed(() => {
                     return `Upgrade 3 gets a small ${format(1, 2)}% boost to effectiveness.`;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
+                    return Decimal.lte(player.value.prog.main.upgrades[2].boughtInKua, 0)
                         ? true
                         : `Failed due to having Upgrade 3.`;
-                }),
-                extra: `You must do a Kuaraniai reset to earn this achievement!`
+                })
             },
             {
                 // id: 5
@@ -800,15 +795,15 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 100) &&
-                        Decimal.lte(player.value.gameProgress.main.prai.totals[2]!, 10)
+                        Decimal.gte(player.value.prog.main.upgrades[0].bought, 100) &&
+                        Decimal.lte(player.value.prog.main.prai.amount, 10)
                     );
                 }),
                 reward: computed(() => {
                     return `Upgrade 1's effectiveness is slightly increased based off of your PRai. Currently: ${format(ACHIEVEMENT_DATA[1].list[5].effect!.value.sub(1).mul(1e2), 3)}%`;
                 }),
                 effect: computed(() => {
-                    let eff = D(player.value.gameProgress.main.prai.amount);
+                    let eff = D(player.value.prog.main.prai.amount);
                     if (eff.gte(1e216)) {
                         eff = eff.log10().log(6).div(300).add(1)
                     } else {
@@ -817,10 +812,10 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return eff;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.main.prai.amount, 10)
+                    return Decimal.lte(player.value.prog.main.prai.amount, 10)
                         ? true
                         : `Failed due to having more than ${format(10)} PRai.`;
                 })
@@ -837,30 +832,30 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 autoComplete: false,
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.prai.best[2]!, 1e20) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
+                        Decimal.gte(player.value.prog.main.prai.bestInKua, 1e20) &&
+                        Decimal.lte(player.value.prog.main.upgrades[0].boughtInKua, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].boughtInKua, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].boughtInKua, 0)
                     );
                 }),
                 reward: computed(() => {
                     return `All upgrades' cost scaling is slightly slowed down based off of your time in this PRai reset. Currently: ${formatPerc(ACHIEVEMENT_DATA[1].list[6].effect!.value, 3)} slower`;
                 }),
                 effect: computed(() => {
-                    let eff = Decimal.div(player.value.gameProgress.main.prai.timeInPRai, 60);
+                    let eff = Decimal.div(player.value.prog.main.prai.timeInPRai, 60);
                     eff = eff.div(eff.mul(198).add(1)).add(1);
                     return eff;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => {
-                    if (Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)) {
+                    if (Decimal.lte(player.value.prog.main.upgrades[0].boughtInKua, 0) &&Decimal.lte(player.value.prog.main.upgrades[1].boughtInKua, 0) &&Decimal.lte(player.value.prog.main.upgrades[2].boughtInKua, 0)) {
                         return true;
                     }
                     const fail: Array<number> = [];
                     for (let i = 0; i < 3; i++) {
-                        if (Decimal.gt(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
+                        if (Decimal.gt(player.value.prog.main.upgrades[i].boughtInKua, 0)) {
                             fail.push(i);
                         }
                     }
@@ -874,8 +869,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                         txt += `${fail[0] + 1}.`;
                     }
                     return txt;
-                }),
-                extra: `You must do a Kuaraniai reset to earn this achievement!`
+                })
             },
             {
                 // id: 7
@@ -893,7 +887,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Upgrade 2's softcap is ${format(5)}% weaker.`;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => { return true; })
             },
@@ -909,7 +903,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 condition: computed(() => {
                     return (
                         Decimal.gte(tmp.value.kua.pending, 2.5) &&
-                        Decimal.lte(player.value.gameProgress.main.prai.times, 0)
+                        Decimal.lte(player.value.prog.main.prai.times, 0)
                     );
                 }),
                 autoComplete: false,
@@ -917,14 +911,13 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Increase PRai's gain exponent from ^${format(1 / 3, 3)} to ^${format(0.335, 3)}`;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.main.prai.times, 0)
+                    return Decimal.lte(player.value.prog.main.prai.times, 0)
                         ? true
-                        : `Failed due to having reset PRai ${format(player.value.gameProgress.main.prai.times)} times.`;
-                }),
-                extra: `You must do a Kuaraniai reset to earn this achievement!`
+                        : `Failed due to having reset PRai ${format(player.value.prog.main.prai.times)} times.`;
+                })
             },
             {
                 // id: 9
@@ -938,20 +931,19 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 autoComplete: false,
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 300) &&
-                        Decimal.lte(player.value.gameProgress.main.prai.amount, 10)
+                        Decimal.gte(player.value.prog.main.upgrades[0].bought, 300) &&
+                        Decimal.lte(player.value.prog.main.prai.amount, 10)
                     );
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.main.prai.amount, 10)
+                    return Decimal.lte(player.value.prog.main.prai.amount, 10)
                         ? true
                         : `Failed due to having more than ${format(10)} PRai.`;
-                }),
-                extra: `You must do a Kuaraniai reset to earn this achievement!`
+                })
             },
             {
                 // id: 10
@@ -965,29 +957,29 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 autoComplete: false,
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.best[2]!, 1e80) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
+                        Decimal.gte(player.value.prog.main.points, 1e80) &&
+                        Decimal.lte(player.value.prog.main.upgrades[0].boughtInKua, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].boughtInKua, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].boughtInKua, 0)
                     );
                 }),
                 reward: computed(() => {
                     return `Upgrade 1-6's base is increased by ${format(1, 2)}%.`;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => {
                     if (
-                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].boughtInReset[2], 0)
+                        Decimal.lte(player.value.prog.main.upgrades[0].boughtInKua, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].boughtInKua, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].boughtInKua, 0)
                     ) {
                         return true;
                     }
                     const fail: Array<number> = [];
                     for (let i = 0; i < 3; i++) {
-                        if (Decimal.gt(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
+                        if (Decimal.gt(player.value.prog.main.upgrades[i].boughtInKua, 0)) {
                             fail.push(i);
                         }
                     }
@@ -1001,8 +993,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                         txt += `${fail[0] + 1}.`;
                     }
                     return txt;
-                }),
-                extra: `You must do a Kuaraniai reset to earn this achievement!`
+                })
             },
             {
                 // id: 11
@@ -1015,8 +1006,8 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.upgrades[0].bought, 300) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
+                        Decimal.gte(player.value.prog.main.upgrades[0].bought, 300) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].boughtInKua, 0)
                     );
                 }),
                 autoComplete: false,
@@ -1032,14 +1023,13 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return eff;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0)
+                    return Decimal.lte(player.value.prog.main.upgrades[1].bought, 0)
                         ? true
                         : `Failed due to having Upgrade 2.`;
-                }),
-                extra: `You must do a Kuaraniai reset to earn this achievement!`
+                })
             },
             {
                 // id: 12
@@ -1052,9 +1042,9 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.best[2]!, 1e35) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
+                        Decimal.gte(player.value.prog.main.points, 1e35) &&
+                        Decimal.lte(player.value.prog.main.upgrades[0].boughtInKua, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].boughtInKua, 0)
                     );
                 }),
                 autoComplete: false,
@@ -1062,18 +1052,18 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Achievement "Stockpiler" is boosted.`;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => {
                     if (
-                        Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
+                        Decimal.lte(player.value.prog.main.upgrades[0].boughtInKua, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].boughtInKua, 0)
                     ) {
                         return true;
                     }
                     const fail = [
-                        !Decimal.lte(player.value.gameProgress.main.upgrades[0].boughtInReset[2], 0),
-                        !Decimal.lte(player.value.gameProgress.main.upgrades[1].boughtInReset[2], 0)
+                        !Decimal.lte(player.value.prog.main.upgrades[0].boughtInKua, 0),
+                        !Decimal.lte(player.value.prog.main.upgrades[1].boughtInKua, 0)
                     ];
                     let txt = `Failed due to having Upgrade `;
                     if (fail[0] && fail[1]) {
@@ -1087,8 +1077,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                         }
                     }
                     return txt;
-                }),
-                extra: `You must do a Kuaraniai reset to earn this achievement!`
+                })
             },
             {
                 // id: 13
@@ -1101,25 +1090,25 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 condition: computed(() => {
                     return (
-                        Decimal.gte(player.value.gameProgress.main.points, 1e260) &&
-                        Decimal.lte(player.value.gameProgress.kua.timeInKua, 5)
+                        Decimal.gte(player.value.prog.main.points, 1e260) &&
+                        Decimal.lte(player.value.prog.kua.timeInKua, 5)
                     );
                 }),
                 reward: computed(() => {
                     return `Point gain is boosted but it decays over the next ${format(60, 2)} seconds. Currently: ×${format(ACHIEVEMENT_DATA[1].list[13].effect!.value, 2)}`;
                 }),
                 effect: computed(() => {
-                    let eff = Decimal.max(player.value.gameProgress.main.prai.timeInPRai, 5).min(60);
+                    let eff = Decimal.max(player.value.prog.main.prai.timeInPRai, 5).min(60);
                     eff = Decimal.pow(1e2, Decimal.sub(55, eff.sub(5)).div(0.55).div(1e2).pow(2));
                     return eff;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.kua.timeInKua, 5)
+                    return Decimal.lte(player.value.prog.kua.timeInKua, 5)
                         ? true
-                        : `Failed due to taking ${formatTime(player.value.gameProgress.kua.timeInKua)} / ${formatTime(5)} in the current Kuaraniai run.`;
+                        : `Failed due to taking ${formatTime(player.value.prog.kua.timeInKua)} / ${formatTime(5)} in the current Kuaraniai run.`;
                 })
             },
             {
@@ -1132,11 +1121,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Reach ${format(25)} PR2.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.pr2.bestEver, 25);
+                    return Decimal.gte(player.value.prog.main.pr2.bestEver, 25);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1150,13 +1139,13 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Save up ${format(1e85)} PRai on a Kuaraniai run.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.prai.bestEver, 1e85);
+                    return Decimal.gte(player.value.prog.main.prai.bestEver, 1e85);
                 }),
                 reward: computed(() => {
                     return `Achievement "Stockpiler" is boosted again.`;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1170,11 +1159,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Get ${format(1e7)} Kuaraniai.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.kua.amount, 1e7);
+                    return Decimal.gte(player.value.prog.kua.amount, 1e7);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kua;
+                    return player.value.prog.unlocks.kua;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1188,11 +1177,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Buy 10 KShard and KPower upgrades.`;
                 }),
                 condition: computed(() => {
-                    return player.value.gameProgress.kua.kshards.upgrades >= 10 && player.value.gameProgress.kua.kpower.upgrades >= 10;
+                    return player.value.prog.kua.kshards.upgrades >= 10 && player.value.prog.kua.kpower.upgrades >= 10;
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1206,32 +1195,31 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Reach ${format(1e130)} points while buying only KShard or KPower upgrades.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.main.points, 1e130) &&
-                        (player.value.gameProgress.kua.upgrades === 0 &&
-                        (player.value.gameProgress.kua.kshards.upgrades >= 0 && player.value.gameProgress.kua.kpower.upgrades === 0) ||
-                        (player.value.gameProgress.kua.kpower.upgrades >= 0 && player.value.gameProgress.kua.kshards.upgrades === 0));
+                    return Decimal.gte(player.value.prog.main.points, 1e130) &&
+                        (player.value.prog.kua.upgrades === 0 &&
+                        (player.value.prog.kua.kshards.upgrades >= 0 && player.value.prog.kua.kpower.upgrades === 0) ||
+                        (player.value.prog.kua.kpower.upgrades >= 0 && player.value.prog.kua.kshards.upgrades === 0));
                 }),
                 autoComplete: false,
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => {
-                    if (player.value.gameProgress.kua.upgrades !== 0) {
+                    if (player.value.prog.kua.upgrades !== 0) {
                         return `Failed due to buying Kuaraniai upgrades.`;
                     }
-                    if (!(player.value.gameProgress.kua.kshards.upgrades >= 0 && player.value.gameProgress.kua.kpower.upgrades === 0) ||
-                    (player.value.gameProgress.kua.kpower.upgrades >= 0 && player.value.gameProgress.kua.kshards.upgrades === 0)) {
-                        if (!(player.value.gameProgress.kua.kpower.upgrades >= 0 && player.value.gameProgress.kua.kshards.upgrades === 0)) {
+                    if (!(player.value.prog.kua.kshards.upgrades >= 0 && player.value.prog.kua.kpower.upgrades === 0) ||
+                    (player.value.prog.kua.kpower.upgrades >= 0 && player.value.prog.kua.kshards.upgrades === 0)) {
+                        if (!(player.value.prog.kua.kpower.upgrades >= 0 && player.value.prog.kua.kshards.upgrades === 0)) {
                             return `Failed due to buying KShard upgrades while having KPower upgrades.`;
                         }
-                        if (!(player.value.gameProgress.kua.kshards.upgrades >= 0 && player.value.gameProgress.kua.kpower.upgrades === 0)) {
+                        if (!(player.value.prog.kua.kshards.upgrades >= 0 && player.value.prog.kua.kpower.upgrades === 0)) {
                             return `Failed due to buying kPower upgrades while having KShard upgrades.`;
                         }
                     }
                     return true;
-                }),
-                extra: `You must do a Kuaraniai reset to earn this achievement!`
+                })
             },
             {
                 // id: 19
@@ -1243,11 +1231,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Have your KProof amount higher than your points.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.kua.proofs.amount, player.value.gameProgress.main.points);
+                    return Decimal.gte(player.value.prog.kua.proofs.amount, player.value.prog.main.points);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.kproofs === undefined ? false : player.value.gameProgress.unlocks.kproofs.main;
+                    return player.value.prog.unlocks.kproofs === undefined ? false : player.value.prog.unlocks.kproofs.main;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1257,7 +1245,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
         }),
         effect: computed(() => {
             let eff = D(0.01);
-            eff = Decimal.mul(eff, player.value.gameProgress.achievements[1].length);
+            eff = Decimal.mul(eff, player.value.prog.achievements[1].length);
             eff = eff.add(1);
             return eff;
         })
@@ -1265,7 +1253,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
     {
         type: "col",
         show: computed(() => {
-            return player.value.gameProgress.unlocks.col;
+            return player.value.prog.unlocks.col;
         }),
         list: [
             {
@@ -1278,11 +1266,11 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Complete Colosseum Challenge 'No Kuaraniai.'`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.col.completed.nk, 1);
+                    return Decimal.gte(player.value.prog.col.completed.nk, 1);
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1296,14 +1284,14 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Fully complete a challenge with less than ${formatTime(10)} to spare.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.lte(player.value.gameProgress.col.time, 10);
+                    return Decimal.lte(player.value.prog.col.time, 10);
                 }),
                 autoComplete: false,
                 reward: computed(() => {
                     return `PRai gain is multiplied by ${format(5)}×.`;
                 }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1321,7 +1309,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1336,20 +1324,20 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 condition: computed(() => {
                     return inChallenge('su') && Decimal.eq(challengeDepth('su'), 1) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[0].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[1].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[2].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[3].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[4].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[5].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[6].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[7].bought, 0) &&
-                        Decimal.lte(player.value.gameProgress.main.upgrades[8].bought, 0)
+                        Decimal.lte(player.value.prog.main.upgrades[0].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[1].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[2].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[3].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[4].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[5].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[6].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[7].bought, 0) &&
+                        Decimal.lte(player.value.prog.main.upgrades[8].bought, 0)
                 }),
                 autoComplete: false,
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => {
                     if (!inChallenge('su')) {
@@ -1361,7 +1349,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
 
                     const fail: Array<number> = [];
                     for (let i = 0; i < 9; i++) {
-                        if (Decimal.gt(player.value.gameProgress.main.upgrades[i].boughtInReset[2], 0)) {
+                        if (Decimal.gt(player.value.prog.main.upgrades[i].boughtInKua, 0)) {
                             fail.push(i);
                         }
                     }
@@ -1378,8 +1366,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                         txt += `${fail[0] + 1}.`;
                     }
                     return txt;
-                }),
-                extra: `Complete the challenge to this: computed( a =>chievement!`
+                })
             },
             {
                 // id: 4
@@ -1392,13 +1379,13 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 condition: computed(() => {
                     return (
-                        player.value.gameProgress.inChallenge.nk.overall &&
-                        Decimal.gte(player.value.gameProgress.main.best[3]!, 1e100)
+                        player.value.prog.inChallenge.nk.overall &&
+                        Decimal.gte(player.value.prog.main.points, 1e100)
                     );
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1416,7 +1403,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1434,7 +1421,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.gameProgress.unlocks.col;
+                    return player.value.prog.unlocks.col;
                 }),
                 status: computed(() => { return true; })
             },
@@ -1444,14 +1431,14 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
         }),
         effect: computed(() => {
             let eff = D(0.004);
-            eff = Decimal.mul(eff, player.value.gameProgress.achievements[2].length);
+            eff = Decimal.mul(eff, player.value.prog.achievements[2].length);
             return eff;
         })
     },
     {
         type: "l4",
         show: computed(() => {
-            return player.value.gameProgress.layer4.timeInL4R !== 0;
+            return player.value.prog.layer4.timeInL4R !== 0;
         }),
         list: [
             {
@@ -1464,10 +1451,10 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Gain at least ${format(1e12)} Grōwan Solutions.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.layer4.gro.gEAmount, 1e12);
+                    return Decimal.gte(player.value.prog.layer4.gro.gEAmount, 1e12);
                 }),
                 reward: computed(() => { return ``; }),
-                show: computed(() => { return player.value.gameProgress.layer4.pickedFirst === 1; }),
+                show: computed(() => { return player.value.prog.layer4.pickedFirst === 1; }),
                 status: computed(() => { return true; })
             },
             {
@@ -1483,7 +1470,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return Decimal.gte(GROWAN_DATA.equCancel.eff.value, 2);
                 }),
                 reward: computed(() => { return ``; }),
-                show: computed(() => { return player.value.gameProgress.layer4.pickedFirst === 1; }),
+                show: computed(() => { return player.value.prog.layer4.pickedFirst === 1; }),
                 status: computed(() => { return true; })
             },
             {
@@ -1496,12 +1483,12 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     return `Complete No Kuaraniai in the first ${formatTime(240)} of a layer 4 reset.`;
                 }),
                 condition: computed(() => {
-                    return Decimal.gte(player.value.gameProgress.col.completed.nk, 1) && Decimal.lt(player.value.gameProgress.layer4.timeInL4R, 240);
+                    return Decimal.gte(player.value.prog.col.completed.nk, 1) && Decimal.lt(player.value.prog.layer4.timeInL4R, 240);
                 }),
                 autoComplete: false,
                 reward: computed(() => { return ``; }),
-                show: computed(() => { return player.value.gameProgress.layer4.pickedFirst === 1; }),
-                status: computed(() => { return Decimal.lt(player.value.gameProgress.layer4.timeInL4R, 240) ? true : `Failed due to taking ${formatTime(player.value.gameProgress.layer4.timeInL4R)} in a layer 4 reset.`; })
+                show: computed(() => { return player.value.prog.layer4.pickedFirst === 1; }),
+                status: computed(() => { return Decimal.lt(player.value.prog.layer4.timeInL4R, 240) ? true : `Failed due to taking ${formatTime(player.value.prog.layer4.timeInL4R)} in a layer 4 reset.`; })
             },
         ],
         rewardDescription: computed(() => {
@@ -1509,7 +1496,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
         }),
         effect: computed(() => {
             let eff = D(1.05);
-            eff = Decimal.pow(eff, player.value.gameProgress.achievements[3].length);
+            eff = Decimal.pow(eff, player.value.prog.achievements[3].length);
             return eff;
         })
     }
@@ -1517,7 +1504,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
 
 export const setAchievement = (type: number, id: number) => {
     if (!ifAchievement(type, id) && ACHIEVEMENT_DATA[type].list[id].condition.value) {
-        player.value.gameProgress.achievements[type].push(id);
+        player.value.prog.achievements[type].push(id);
         spawnPopup(0, ACHIEVEMENT_DATA[type].list[id].description.value, ACHIEVEMENT_DATA[type].list[id].name.value, 3, `#FFFF00`);
     }
     // return [ACHIEVEMENT_DATA[type].list[tmp.value.achievementList[type][id]].cond, ifAchievement(type, id), tmp.value.achievementList[type][id], player.value.gameProgress.achievements[type]]
@@ -1544,9 +1531,9 @@ export const fixAchievements = () => {
             }
         }
     }
-    const missing = ACHIEVEMENT_DATA.length - player.value.gameProgress.achievements.length;
+    const missing = ACHIEVEMENT_DATA.length - player.value.prog.achievements.length;
     for (let i = 0; i < missing; i++) {
-        player.value.gameProgress.achievements.push([]);
+        player.value.prog.achievements.push([]);
     }
 };
 
@@ -1563,5 +1550,5 @@ export const ifAchievement = (type: number, id: number) => {
         // for some reason, Vue is not letting tmp initalize tmp.value.achievementList before it draws
         fixAchievements();
     }
-    return player.value.gameProgress.achievements[type].includes(id);
+    return player.value.prog.achievements[type].includes(id);
 };

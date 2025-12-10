@@ -6,11 +6,11 @@ import { timesCompleted } from "../Game_ColChallenges/Game_ColChalHandler";
 import { player, tmp } from "@/main";
 
 export const getColXPtoNext = (id: number) => {
-    return Decimal.sub(player.value.gameProgress.col.research.xpTotal[id], getColResLevel(id).floor());
+    return Decimal.sub(player.value.prog.col.research.xpTotal[id], getColResLevel(id).floor());
 }
 
 export const getColResLevel = (id: number) => {
-    return COL_RESEARCH[id].scoreToLevel(player.value.gameProgress.col.research.xpTotal[id]);
+    return COL_RESEARCH[id].scoreToLevel(player.value.prog.col.research.xpTotal[id]);
 };
 
 export const getColResEffect = (id: number) => {
@@ -18,13 +18,13 @@ export const getColResEffect = (id: number) => {
 };
 
 export const allocColResearch = (id: number) => {
-    if (player.value.gameProgress.col.research.enabled[id]) {
+    if (player.value.prog.col.research.enabled[id]) {
         tmp.value.col.researchesAllocated -= 1;
-        player.value.gameProgress.col.research.enabled[id] = false;
+        player.value.prog.col.research.enabled[id] = false;
     } else {
         if (tmp.value.col.researchesAllocated < tmp.value.col.researchesAtOnce) {
             tmp.value.col.researchesAllocated += 1;
-            player.value.gameProgress.col.research.enabled[id] = true;
+            player.value.prog.col.research.enabled[id] = true;
         }
     }
 };

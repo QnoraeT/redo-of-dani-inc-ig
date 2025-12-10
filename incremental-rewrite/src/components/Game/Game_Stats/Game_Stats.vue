@@ -43,8 +43,8 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                             height: 2.5vw;
                         "
                     >
-                        <span class="whiteText" style="font-size: 0.9vw">
-                            {{ format(getEndgame(), 2) }}% to ENDGAME
+                        <span class="whiteText font0" style="font-size: 0.9vw">
+                            ~{{ format(getEndgame(), 2) }}% to ENDGAME
                         </span>
                         <div style="width: 100%; position: relative; height: 100%">
                             <div style=" background-color: #404040; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"></div>
@@ -66,7 +66,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                         margin-right: 0.5vw;
                                         padding: 0vw;
                                     "
-                                    class="fontVerdana"
+                                    class="font0"
                                 >
                                     <div
                                         :style="{ backgroundColor: item.colors.name }"
@@ -100,7 +100,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                             ~{{ format(item.progress.min(1).mul(100), 2) }}% complete
                                         </span>
                                     </div>
-                                    <div style="height: 15%; width: 100%; position: relative">
+                                    <div style="height: 16%; width: 100%; position: relative">
                                         <div
                                             :style="{
                                                 backgroundColor: item.colors.progressBarBase
@@ -141,7 +141,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
         <div v-if="tab.tabList[tab.currentTab][0] === 1">
             <div class="flex-container" style="flex-direction: row; justify-content: center">
                 <div v-for="(item, index) in tmp.scaleList" :key="index" style="color: #fff">
-                    <div :style="{ backgroundColor: SCALE_ATTR[index].color }" v-if="item.length > 0" style="border-radius: 6vw; width: 6vw; height: 1.2vw; color: #fff; text-align: center; padding: 2.4vw 0; margin-left: 0.15vw; margin-right: 0.15vw; font-size: 0.8vw;" class="tooltip fontVerdana">
+                    <div :style="{ backgroundColor: SCALE_ATTR[index].color }" v-if="item.length > 0" style="border-radius: 6vw; width: 6vw; height: 1.2vw; color: #fff; text-align: center; padding: 2.4vw 0; margin-left: 0.15vw; margin-right: 0.15vw; font-size: 0.8vw;" class="tooltip font0">
                         {{ SCALE_ATTR[index].name }}
                         <span class="tooltiptext">
                             <span v-for="(item2, index2) in item" :key="index2">
@@ -168,7 +168,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                             margin-right: 0.15vw;
                             font-size: 0.8vw;
                         "
-                        class="tooltip fontVerdana"
+                        class="tooltip font0"
                     >
                         {{ SOFT_ATTR[index].name }}
                         <span class="tooltiptext">
@@ -199,7 +199,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                     <div class="flex-container cont1">
                         <div class="flex-container cont2">
                             <div v-for="(item2, index2) in item.factors" :key="index2" style="display: contents; margin-top: 0.4vw">
-                                <div v-if="item2 !== undefined && item2.show" class="flex-container fontVerdana factorLayout" :style="{ color: factorColors[item2.color] }">
+                                <div v-if="item2 !== undefined && item2.show" class="flex-container font0 factorLayout" :style="{ color: factorColors[item2.color] }">
                                     <span class="leftF">{{ item2.name }}</span>
                                     <span class="centerF">{{ item2.effect }}</span>
                                     <span class="rightF">{{ item2.now }}</span>
@@ -224,7 +224,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                             <div class="flex-container cont1">
                                 <div class="flex-container cont2">
                                     <div v-for="(item3, index3) in item2.factors" :key="index3" style="display: contents; margin-top: 0.4vw">
-                                        <div v-if="item3 !== undefined && item3.show" class="flex-container fontVerdana factorLayout" :style="{ color: factorColors[item3.color] }">
+                                        <div v-if="item3 !== undefined && item3.show" class="flex-container font0 factorLayout" :style="{ color: factorColors[item3.color] }">
                                             <span class="leftF">{{ item3.name }}</span>
                                             <span class="centerF">{{ item3.effect }}</span>
                                             <span class="rightF">{{ item3.now }}</span>
@@ -249,7 +249,7 @@ import Tab_Button from "@/components/MainTabs/DefaultTabButton.vue";
                                     <div class="flex-container cont1">
                                         <div class="flex-container cont2">
                                             <div v-for="(item4, index4) in item3.factors" :key="index4" style="display: contents; margin-top: 0.4vw">
-                                                <div v-if="item4 !== undefined && item4.show" class="flex-container fontVerdana factorLayout" :style="{ color: factorColors[item4.color] }">
+                                                <div v-if="item4 !== undefined && item4.show" class="flex-container font0 factorLayout" :style="{ color: factorColors[item4.color] }">
                                                     <span class="leftF">{{ item4.name }}</span>
                                                     <span class="centerF">{{ item4.effect }}</span>
                                                     <span class="rightF">{{ item4.now }}</span>

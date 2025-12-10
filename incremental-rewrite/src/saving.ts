@@ -1,3 +1,4 @@
+import { formatTime } from "./format";
 import {
     game,
     initPlayer,
@@ -111,6 +112,7 @@ export const displayModesNonOptArray = (modes: Array<boolean>): string => {
 
 export const saveTheFrickingGame = (clicked = false): void => {
     gameVars.value.lastSave = gameVars.value.sessionTime;
+    game.value.list[game.value.currentSave].data = player.value;
     localStorage.setItem(saveID, compressSave(game.value));
     if (clicked) {
         spawnPopup(0, `The game has been saved!`, `Save`, 3, `#00FF00`);
@@ -214,6 +216,7 @@ export const switchToSave = (id: number): void => {
     saveTheFrickingGame();
     gameVars.value.lastSave = gameVars.value.sessionTime;
     tmp.value.gameIsRunning = false;
+    console.log(`expected offline time: ${formatTime((Date.now() - game.value.list[id].data.lastUpdated) / 1000)}`)
 };
 
 export const renameSave = (id: number): void => {

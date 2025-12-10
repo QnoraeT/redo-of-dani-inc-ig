@@ -1,6 +1,6 @@
 import { D, scale, smoothExp, smoothPoly } from "@/calc";
 import { format, formatPerc } from "@/format";
-import { player, tmp, updateAllBest, updateAllTotal } from "@/main";
+import { player, tmp } from "@/main";
 import Decimal from "break_eternity.js";
 import { computed, type ComputedRef } from "vue";
 import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
@@ -71,7 +71,7 @@ export const KUA_BLESS_TIER: KuaBlessTiers = {
             return smoothExp(i, 1.004, false).pow_base(2).mul(10);
         }),
         target: computed(() => {
-            const x = D(player.value.gameProgress.kua.blessings.best[3]!);
+            const x = D(player.value.prog.kua.blessings.bestInLayer4);
             if (Decimal.lt(x, 10)) { return D(-1); }
             let i = smoothExp(Decimal.div(x, 10).log(2), 1.004, true);
             i = i.mul(KUA_BLESS_UPGS[3].eff.value[2]);
@@ -192,7 +192,7 @@ export const KUA_BLESS_TIER: KuaBlessTiers = {
                 return eff;
             }),
             pr2Eff: computed(() => {
-                let eff = Decimal.pow(KUA_BLESS_TIER.tetr.base.pr2Eff.value, player.value.gameProgress.main.pr2.amount);
+                let eff = Decimal.pow(KUA_BLESS_TIER.tetr.base.pr2Eff.value, player.value.prog.main.pr2.amount);
                 if (!tmp.value.kua.active.blessings.ranks.tetr) {
                     eff = D(1);
                 }
@@ -226,14 +226,14 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
     {
         show: computed(() => { return true; }),
         cost: computed(() => {
-            let cost = smoothExp(smoothPoly(player.value.gameProgress.kua.blessings.upgrades[0], 2, 35, false), 1.02, false).pow_base(2.5).mul(10);
+            let cost = smoothExp(smoothPoly(player.value.prog.kua.blessings.upgrades[0], 2, 35, false), 1.02, false).pow_base(2.5).mul(10);
             if (cost.lt("ee6")) {
                 cost = cost.sub(cost.mod(cost.log10().sub(1).floor().pow10()));
             }
             return cost;
         }),
         target: computed(() => {
-            let target = D(player.value.gameProgress.kua.blessings.amount);
+            let target = D(player.value.prog.kua.blessings.amount);
             if (Decimal.lt(target, 10)) { return D(-1); }
             if (target.lt("ee6")) {
                 target = target.sub(target.mod(target.log10().sub(1).floor().pow10()));
@@ -241,7 +241,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return smoothPoly(smoothExp(Decimal.div(target, 10).log(2.5), 1.02, true), 2, 35, true);
         }),
         desc: computed(() => {
-            const x = player.value.gameProgress.kua.blessings.upgrades[0];
+            const x = player.value.prog.kua.blessings.upgrades[0];
             let txt = `KBs boost Upgrade 2's effect.`;
             if (Decimal.gte(x, 6)) {
                 txt += ` KShards and KPower effects act like they're higher based off of your KBs.`;
@@ -252,7 +252,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return txt;
         }),
         effDesc: computed(() => {
-            const x = player.value.gameProgress.kua.blessings.upgrades[0];
+            const x = player.value.prog.kua.blessings.upgrades[0];
             let txt = `^${format(KUA_BLESS_UPGS[0].eff.value[0], 3)}`;
             if (Decimal.gte(x, 6)) {
                 txt += `, ×${format(KUA_BLESS_UPGS[0].eff.value[1], 1)}`;
@@ -263,17 +263,17 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return txt;
         }),
         eff: computed(() => {
-            let x = player.value.gameProgress.kua.blessings.upgrades[0];
+            let x = player.value.prog.kua.blessings.upgrades[0];
             if (!tmp.value.kua.active.blessings.upgrades[0]) {
                 x = D(0);
             }
             const arr = [
-                Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).ln().div(100).mul(Decimal.sqrt(x)).add(1).root(1.5),
+                Decimal.add(player.value.prog.kua.blessings.amount, 1).ln().div(100).mul(Decimal.sqrt(x)).add(1).root(1.5),
                 Decimal.gte(x, 6) 
-                    ? Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).pow(Decimal.sub(x, 4).sqrt().sub(1).div(2))
+                    ? Decimal.add(player.value.prog.kua.blessings.amount, 1).pow(Decimal.sub(x, 4).sqrt().sub(1).div(2))
                     : D(1),
                 Decimal.gte(x, 12) 
-                    ? Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).ln().add(1).pow(Decimal.sub(x, 11).sqrt().div(2)).sub(1).div(Decimal.sub(player.value.gameProgress.kua.blessings.upgrades[0], 11).sqrt().div(2)).div(10).add(1).ln().mul(10)
+                    ? Decimal.add(player.value.prog.kua.blessings.amount, 1).ln().add(1).pow(Decimal.sub(x, 11).sqrt().div(2)).sub(1).div(Decimal.sub(player.value.prog.kua.blessings.upgrades[0], 11).sqrt().div(2)).div(10).add(1).ln().mul(10)
                     : D(0),
             ];
             if (arr[0].gte(50)) {
@@ -284,17 +284,17 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
     },
     {
         show: computed(() => {
-            return Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[0], 1);
+            return Decimal.gte(player.value.prog.kua.blessings.upgrades[0], 1);
         }),
         cost: computed(() => {
-            let cost = smoothExp(smoothPoly(player.value.gameProgress.kua.blessings.upgrades[1], 3, 50, false), 1.03, false).pow_base(3).mul(100);
+            let cost = smoothExp(smoothPoly(player.value.prog.kua.blessings.upgrades[1], 3, 50, false), 1.03, false).pow_base(3).mul(100);
             if (cost.lt("ee6")) {
                 cost = cost.sub(cost.mod(cost.log10().sub(1).floor().pow10()));
             }
             return cost;
         }),
         target: computed(() => {
-            let target = D(player.value.gameProgress.kua.blessings.amount);
+            let target = D(player.value.prog.kua.blessings.amount);
             if (Decimal.lt(target, 100)) { return D(-1); }
             if (target.lt("ee6")) {
                 target = target.sub(target.mod(target.log10().sub(1).floor().pow10()));
@@ -302,7 +302,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return smoothPoly(smoothExp(Decimal.div(target, 100).log(3), 1.03, true), 3, 50, true);
         }),
         desc: computed(() => {
-            const x = player.value.gameProgress.kua.blessings.upgrades[1];
+            const x = player.value.prog.kua.blessings.upgrades[1];
             let txt = `KBs delay Upgrade 1's hyper scaling.`;
             if (Decimal.gte(x, 6)) {
                 txt += ` KB gain is increased based off of how many KB upgrades you've bought.`;
@@ -313,7 +313,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return txt;
         }),
         effDesc: computed(() => {
-            const x = player.value.gameProgress.kua.blessings.upgrades[1];
+            const x = player.value.prog.kua.blessings.upgrades[1];
             let txt = `+${format(KUA_BLESS_UPGS[1].eff.value[0], 3)}`;
             if (Decimal.gte(x, 6)) {
                 txt += `, ×${format(KUA_BLESS_UPGS[1].eff.value[1], 1)}`;
@@ -324,16 +324,16 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return txt;
         }),
         eff: computed(() => {
-            let x = player.value.gameProgress.kua.blessings.upgrades[1];
+            let x = player.value.prog.kua.blessings.upgrades[1];
             if (!tmp.value.kua.active.blessings.upgrades[1]) {
                 x = D(0);
             }
             let totalKB = D(0);
             for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
-                totalKB = Decimal.add(totalKB, player.value.gameProgress.kua.blessings.upgrades[i]);
+                totalKB = Decimal.add(totalKB, player.value.prog.kua.blessings.upgrades[i]);
             }
             return [
-                Decimal.add(player.value.gameProgress.kua.blessings.amount, 1).ln().mul(Decimal.sqrt(x)),
+                Decimal.add(player.value.prog.kua.blessings.amount, 1).ln().mul(Decimal.sqrt(x)),
                 Decimal.gte(x, 6) 
                     ? Decimal.pow(Decimal.sub(x, 5).mul(0.01).add(1), totalKB)
                     : D(1),
@@ -345,17 +345,17 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
     },
     {
         show: computed(() => {
-            return Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[1], 1);
+            return Decimal.gte(player.value.prog.kua.blessings.upgrades[1], 1);
         }),
         cost: computed(() => {
-            let cost = smoothExp(smoothPoly(player.value.gameProgress.kua.blessings.upgrades[2], 4, 75, false), 1.04, false).pow_base(4).mul(250);
+            let cost = smoothExp(smoothPoly(player.value.prog.kua.blessings.upgrades[2], 4, 75, false), 1.04, false).pow_base(4).mul(250);
             if (cost.lt("ee6")) {
                 cost = cost.sub(cost.mod(cost.log10().sub(1).floor().pow10()));
             }
             return cost;
         }),
         target: computed(() => {
-            let target = D(player.value.gameProgress.kua.blessings.amount);
+            let target = D(player.value.prog.kua.blessings.amount);
             if (Decimal.lt(target, 250)) { return D(-1); }
             if (target.lt("ee6")) {
                 target = target.sub(target.mod(target.log10().sub(1).floor().pow10()));
@@ -363,7 +363,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return smoothPoly(smoothExp(Decimal.div(target, 250).log(4), 1.04, true), 4, 75, true);
         }),
         desc: computed(() => {
-            const x = player.value.gameProgress.kua.blessings.upgrades[2];
+            const x = player.value.prog.kua.blessings.upgrades[2];
             let txt = `Kuaraniai gain is boosted.`;
             if (Decimal.gte(x, 6)) {
                 txt += ` Kuaraniai's gain exponent is boosted.`;
@@ -374,7 +374,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return txt;
         }),
         effDesc: computed(() => {
-            const x = player.value.gameProgress.kua.blessings.upgrades[2];
+            const x = player.value.prog.kua.blessings.upgrades[2];
             let txt = `×${format(KUA_BLESS_UPGS[2].eff.value[0])}`;
             if (Decimal.gte(x, 6)) {
                 txt += `, +${format(KUA_BLESS_UPGS[2].eff.value[1], 3)}`;
@@ -385,7 +385,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return txt;
         }),
         eff: computed(() => {
-            let x = player.value.gameProgress.kua.blessings.upgrades[2];
+            let x = player.value.prog.kua.blessings.upgrades[2];
             if (!tmp.value.kua.active.blessings.upgrades[2]) {
                 x = D(0);
             }
@@ -402,17 +402,17 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
     },
     {
         show: computed(() => {
-            return Decimal.gte(player.value.gameProgress.kua.blessings.upgrades[2], 1);
+            return Decimal.gte(player.value.prog.kua.blessings.upgrades[2], 1);
         }),
         cost: computed(() => {
-            let cost = smoothExp(smoothPoly(player.value.gameProgress.kua.blessings.upgrades[3], 5, 100, false), 1.05, false).pow_base(5).mul(1000);
+            let cost = smoothExp(smoothPoly(player.value.prog.kua.blessings.upgrades[3], 5, 100, false), 1.05, false).pow_base(5).mul(1000);
             if (cost.lt("ee6")) {
                 cost = cost.sub(cost.mod(cost.log10().sub(1).floor().pow10()));
             }
             return cost;
         }),
         target: computed(() => {
-            let target = D(player.value.gameProgress.kua.blessings.amount);
+            let target = D(player.value.prog.kua.blessings.amount);
             if (Decimal.lt(target, 1000)) { return D(-1); }
             if (target.lt("ee6")) {
                 target = target.sub(target.mod(target.log10().sub(1).floor().pow10()));
@@ -420,7 +420,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return smoothPoly(smoothExp(Decimal.div(target, 1000).log10(), 1.05, true), 5, 100, true);
         }),
         desc: computed(() => {
-            const x = player.value.gameProgress.kua.blessings.upgrades[3];
+            const x = player.value.prog.kua.blessings.upgrades[3];
             let txt = `KBlessings boost KShard and KPower gain.`;
             if (Decimal.gte(x, 6)) {
                 txt += ` KShards and KPower gain boost each other.`;
@@ -431,7 +431,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return txt;
         }),
         effDesc: computed(() => {
-            const x = player.value.gameProgress.kua.blessings.upgrades[3];
+            const x = player.value.prog.kua.blessings.upgrades[3];
             let txt = `×${format(KUA_BLESS_UPGS[3].eff.value[0], 2)}`;
             if (Decimal.gte(x, 6)) {
                 txt += `, ×log10(x)^${format(KUA_BLESS_UPGS[3].eff.value[1], 2)}`;
@@ -442,12 +442,12 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return txt;
         }),
         eff: computed(() => {
-            let x = player.value.gameProgress.kua.blessings.upgrades[3];
+            let x = player.value.prog.kua.blessings.upgrades[3];
             if (!tmp.value.kua.active.blessings.upgrades[3]) {
                 x = D(0);
             }
             return [
-                Decimal.max(player.value.gameProgress.kua.blessings.amount, 1).log10().sqrt().add(1).pow(Decimal.pow(x, 0.75)),
+                Decimal.max(player.value.prog.kua.blessings.amount, 1).log10().sqrt().add(1).pow(Decimal.pow(x, 0.75)),
                 Decimal.gte(x, 6) 
                     ? Decimal.add(x, 4).sqrt().mul(1.5).sub(4.5)
                     : D(0),
@@ -472,21 +472,18 @@ export const initAllKBlessingUpgrades = () => {
 }
 
 export const gainKBOnClick = () => {
-    if (Decimal.lt(player.value.gameProgress.kua.blessings.clickCooldown, 0)) {
-        player.value.gameProgress.kua.blessings.clickCooldown = D(0.25);
-        player.value.gameProgress.kua.blessings.amount = Decimal.add(player.value.gameProgress.kua.blessings.amount, tmp.value.kua.blessings.perClick);
-        updateAllTotal(player.value.gameProgress.kua.blessings.totals, tmp.value.kua.blessings.perClick);
-        player.value.gameProgress.kua.blessings.totalEver = Decimal.add(player.value.gameProgress.kua.blessings.totalEver, tmp.value.kua.blessings.perClick);
-        updateAllBest(player.value.gameProgress.kua.blessings.best,player.value.gameProgress.kua.blessings.amount);
-        player.value.gameProgress.kua.blessings.bestEver = Decimal.max(player.value.gameProgress.kua.blessings.bestEver, player.value.gameProgress.kua.blessings.amount);
+    if (Decimal.lt(player.value.prog.kua.blessings.clickCooldown, 0)) {
+        player.value.prog.kua.blessings.clickCooldown = D(0.25);
+        player.value.prog.kua.blessings.amount = Decimal.add(player.value.prog.kua.blessings.amount, tmp.value.kua.blessings.perClick);
+        player.value.prog.kua.blessings.bestInLayer4 = Decimal.max(player.value.prog.kua.blessings.bestInLayer4, player.value.prog.kua.blessings.amount);
     }
 }
 
 export const buyKBUpg = (id: number) => {
-    if (Decimal.gte(player.value.gameProgress.kua.blessings.amount, KUA_BLESS_UPGS[id].cost.value)) {
+    if (Decimal.gte(player.value.prog.kua.blessings.amount, KUA_BLESS_UPGS[id].cost.value)) {
         if (!hasGrowanMilestone(2)) {
-            player.value.gameProgress.kua.blessings.amount = Decimal.sub(player.value.gameProgress.kua.blessings.amount, KUA_BLESS_UPGS[id].cost.value);
+            player.value.prog.kua.blessings.amount = Decimal.sub(player.value.prog.kua.blessings.amount, KUA_BLESS_UPGS[id].cost.value);
         }
-        player.value.gameProgress.kua.blessings.upgrades[id] = Decimal.add(player.value.gameProgress.kua.blessings.upgrades[id], 1);
+        player.value.prog.kua.blessings.upgrades[id] = Decimal.add(player.value.prog.kua.blessings.upgrades[id], 1);
     }
 }

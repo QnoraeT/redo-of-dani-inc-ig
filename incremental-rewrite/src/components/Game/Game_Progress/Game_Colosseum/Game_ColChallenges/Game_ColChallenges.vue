@@ -21,7 +21,7 @@ import { challengeToggle, completedChallenge, inChallenge, timesCompleted } from
                         : inChallenge(item.id),
                     normColBorderComp: completedChallenge(item.id)
                 }"
-                class="whiteText fontVerdana main-container"
+                class="whiteText font0 main-container"
                 style="padding: 0%; margin-left: 0.2vw; margin-right: 0.2vw"
                 @click="challengeToggle(item.id)"
             >
@@ -68,9 +68,9 @@ import { challengeToggle, completedChallenge, inChallenge, timesCompleted } from
                 >
                     <span class="centered-text" style="top: 1.2vw">{{ 
                         item.type === 1 || item.type === 3 
-                        ? Decimal.eq(player.gameProgress.inChallenge[item.id].optionalDiff, timesCompleted(item.id)) 
+                        ? Decimal.eq(player.prog.inChallenge[item.id].optionalDiff, timesCompleted(item.id)) 
                             ? ' - Next REWARD - ' 
-                            : (Decimal.lt(player.gameProgress.inChallenge[item.id].optionalDiff, Decimal.sub(timesCompleted(item.id), 1)) 
+                            : (Decimal.lt(player.prog.inChallenge[item.id].optionalDiff, Decimal.sub(timesCompleted(item.id), 1)) 
                                 ? ' - Previous REWARD - ' 
                                 : ' - Current REWARD - ') 
                         : ' - REWARD - '
@@ -81,15 +81,15 @@ import { challengeToggle, completedChallenge, inChallenge, timesCompleted } from
             </button>
             <!-- TODO: replace the slider with text input after cap > 20 or something -->
             <div v-if="(item.type === 1 || item.type === 3) && Decimal.gte(timesCompleted(item.id), 1)" 
-            class="whiteText fontVerdana generatorButton"
+            class="whiteText font0 generatorButton"
             style="padding: 0%; margin-left: 0.2vw; margin-right: 0.2vw; width: 14.28vw; height: 3vw; display: flex; flex-direction: column; border: 0.24vw solid #fff;">
                 <div class="first-cont" style="height: 40%">
                     <span class="generic-text" style="left: 0.3vw; top: 0.3vw; font-size: 0.65vw" >Select Difficulty</span>
-                    <span class="generic-text" style="right: 0.3vw; top: 0.3vw; font-size: 0.65vw" >{{ format(Decimal.add(player.gameProgress.inChallenge[item.id].optionalDiff, 1)) }} / {{ format(Decimal.add(timesCompleted(item.id), 1)) }}</span>
+                    <span class="generic-text" style="right: 0.3vw; top: 0.3vw; font-size: 0.65vw" >{{ format(Decimal.add(player.prog.inChallenge[item.id].optionalDiff, 1)) }} / {{ format(Decimal.add(timesCompleted(item.id), 1)) }}</span>
                 </div>
                 <div class="second-cont" style="height: 60%">
                     <div class="slidecontainer" style="position: absolute; left: 3%; width: 94%;">
-                        <input class="slider colSlider" style="position: absolute; padding: 0vw; margin: 0vw; top: 0.6vw;" type="range" v-model="player.gameProgress.inChallenge[item.id].optionalDiff" min="0" :max="new Decimal(timesCompleted(item.id)).toNumber()"/>
+                        <input class="slider colSlider" style="position: absolute; padding: 0vw; margin: 0vw; top: 0.6vw;" type="range" v-model="player.prog.inChallenge[item.id].optionalDiff" min="0" :max="new Decimal(timesCompleted(item.id)).toNumber()"/>
                     </div>
                 </div>
             </div>

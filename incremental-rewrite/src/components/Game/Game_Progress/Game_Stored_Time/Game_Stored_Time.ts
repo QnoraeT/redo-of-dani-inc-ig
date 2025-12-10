@@ -2,11 +2,11 @@ import { player } from "@/main";
 import Decimal from "break_eternity.js";
 
 export const timeSpeedBoost = (x = player.value.offlineTime) => {
-    return Decimal.pow(Decimal.div(x, 1000).add(1), player.value.gameProgress.dilatedTime.speed/2)
+    return Decimal.div(x, 1000).add(1).root(1.5).pow(player.value.prog.dilatedTime.speed)
 }
 
 export const speedToConsume = () => {
-    return Decimal.pow(Decimal.div(player.value.offlineTime, 1000).add(1), player.value.gameProgress.dilatedTime.speed).sub(1);
+    return Decimal.div(player.value.offlineTime, 1000).add(1).pow(player.value.prog.dilatedTime.speed).sub(1);
 }
 
 export const setNormalizationTime = () => {
@@ -25,6 +25,6 @@ export const setNormalizationTime = () => {
             alert("Your set normalization time is negative...");
             return;
         }
-        player.value.gameProgress.dilatedTime.normalizeTime = numI / 1000;
+        player.value.prog.dilatedTime.normalizeTime = numI / 1000;
     }
 };

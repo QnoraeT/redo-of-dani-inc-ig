@@ -7,13 +7,13 @@ import { getTaxUpgrade, TAX_UPGRADES } from "./Game_Taxation";
 <template>
     <div id="taxation">
         <div class="flex-container" style="flex-direction: column; justify-content: center; margin-bottom: 1vw">
-            <span style="text-shadow: #ca0 0vw 0vw 0.8vw; color: #fc0; text-align: center; font-size: 1.2vw;" class="fontVerdana" >
-                You have <span style="font-size: 1.5vw" ><b>{{ format(player.gameProgress.layer4.tax.amount, 3) }}</b></span> taxed coins, which boost your points gain by <b><span style="font-size: 1.5vw">{{ format(tmp.layer4.tax.ptsEff, 2) }}×</span></b>.
+            <span style="text-shadow: #ca0 0vw 0vw 0.8vw; color: #fc0; text-align: center; font-size: 1.2vw;" class="font0" >
+                You have <span style="font-size: 1.5vw" ><b>{{ format(player.prog.layer4.tax.amount, 3) }}</b></span> taxed coins, which boost your points gain by <b><span style="font-size: 1.5vw">{{ format(tmp.layer4.tax.ptsEff, 2) }}×</span></b>.
             </span>
-            <button class="whiteText smallTaxBorder taxButton fontVerdana" style="height: 4vw; width: 30vw; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.5vw;"> 
+            <button class="whiteText smallTaxBorder taxButton font0" style="height: 4vw; width: 30vw; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.5vw;"> 
                 <span v-if="tmp.layer4.tax.canDo">Gain <span style="font-size: 1vw" ><b>{{ format(tmp.layer4.tax.pending, 3) }}</b></span> taxed coins upon taxation.<br></span>
                 <span v-if="!tmp.layer4.tax.canDo">You need <span style="font-size: 1vw" ><b>{{ format(tmp.layer4.tax.req, 3) }}</b></span> points in order to preform a taxation!<br></span>
-                <span v-if="player.gameProgress.layer4.pickedFirst === 0">Warning: If you Taxation reset, you will be locked out of Grōwan!<br></span>
+                <span v-if="player.prog.layer4.pickedFirst === 0">Warning: If you Taxation reset, you will be locked out of Grōwan!<br></span>
                 <span style="font-size: 0.55vw">This is a layer 4 reset, and will reset all prior layers. You can reset even if you won't gain any coins.</span>
             </button>
             <div
@@ -48,7 +48,7 @@ import { getTaxUpgrade, TAX_UPGRADES } from "./Game_Taxation";
                         }"
                         v-if="item.show.value"
                         style="width: 12vw; height: 8vw; margin-left: 0.24vw; margin-right: 0.24vw; font-size: 0.75vw;"
-                        class="smallTaxBorder taxButton fontVerdana whiteText"
+                        class="smallTaxBorder taxButton font0 whiteText"
                     >
                         <span :style="{ color: item.type === 0 ? '#dd0' : '#ff8' }" style="font-size: 0.75vw; margin-right: 0.5vw" ><b>
                             #{{ index + 1 }} [{{item.type === 0 ? "One-Time" : "Repeatable"}}]

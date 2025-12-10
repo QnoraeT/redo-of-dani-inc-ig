@@ -1,31 +1,32 @@
 import { LABELS, pushFactor, resetFactor } from "@/components/Game/Game_Stats/Game_Stats";
 import { format } from "@/format";
 import { challengeDepth, getColChalCondEffects, getColChalRewEffects, inChallenge, timesCompleted } from "../../Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
-import { tmp } from "@/main";
+import { shiftDown, tmp } from "@/main";
 import { player } from "@/main";
 import Decimal, { type DecimalSource } from "break_eternity.js";
 import { getSCSLAttribute, setSCSLEffectDisp } from "@/softcapScaling";
 import { D, scale } from "@/calc";
 import { COL_CHALLENGES } from "../../Game_Colosseum/Game_ColChallenges/Game_ColChalData";
-import { updateStart } from "../Game_Main";
 import { getOMUpgrade, MAIN_ONE_UPGS } from "../Game_OneUpgrades/Game_OneUpgrades";
 import { getAchievementEffect, ifAchievement } from "@/components/Game/Game_Achievements/Game_Achievements";
 import { getKuaUpgrade, KUA_UPGRADES } from "../../Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
 import { KUA_BLESS_UPGS } from "../../Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
 import { computed, type ComputedRef } from "vue";
 import { hasGrowanMilestone } from "../../Game_Layer4/Game_Growan/Game_Growan";
+import { updateMainUpgrades } from "../Game_Main";
 
 export const buyGenUPG = (id: number): void => {
-    if (Decimal.gte(player.value.gameProgress.main.points, tmp.value.main.upgrades[id].cost)) {
-        player.value.gameProgress.main.points = Decimal.sub(player.value.gameProgress.main.points, tmp.value.main.upgrades[id].cost);
-        if (Decimal.lt(player.value.gameProgress.main.points, 0)) {
-            throw new Error(`aaa!! main upgrade sent pts to negative!!`)
+    if (Decimal.gte(player.value.prog.main.points, tmp.value.main.upgrades[id].cost)) {
+        player.value.prog.main.points = Decimal.sub(player.value.prog.main.points, tmp.value.main.upgrades[id].cost);
+
+        if (shiftDown) {
+            player.value.prog.main.upgrades[id].bought = tmp.value.main.upgrades[id].target.floor().add(1).max(player.value.prog.main.upgrades[id].bought);
+        } else {
+            player.value.prog.main.upgrades[id].bought = Decimal.add(player.value.prog.main.upgrades[id].bought, 1);
         }
-        player.value.gameProgress.main.upgrades[id].bought = Decimal.add(player.value.gameProgress.main.upgrades[id].bought, 1);
-        for (let i = 0; i < player.value.gameProgress.main.upgrades[id].boughtInReset.length; i++) {
-            player.value.gameProgress.main.upgrades[id].boughtInReset[i] = player.value.gameProgress.main.upgrades[id].bought;
-        }
-        updateStart(-(id + 1), 0);
+
+        player.value.prog.main.upgrades[id].boughtInKua = player.value.prog.main.upgrades[id].bought;
+        updateMainUpgrades(0, id);
     }
 }
 
@@ -90,6 +91,18 @@ export const initAllMainUpgrades = (): Array<TmpMainUpgrade> => {
     return arr;
 }
 
+export const MAIN_UPGRADE_COST_DATA = [
+    {exp: D(0), scale: [D(5),    D(1.55),   D(1)     ]},
+    {exp: D(0), scale: [D(1e3),  D(1.25),   D(1)     ]},
+    {exp: D(0), scale: [D(1e10), D(100),    D(1.05)  ]},
+    {exp: D(0), scale: [D(1e33), D(1.02),   D(1.0003)]},
+    {exp: D(0), scale: [D(1e45), D(1.03),   D(1.0002)]},
+    {exp: D(0), scale: [D(1e63), D(1.25),   D(1.025) ]},
+    {exp: D(1), scale: [D(1000), D(1.01),   D(1.0001)]},
+    {exp: D(1), scale: [D(1250), D(1.0075), D(1.0002)]},
+    {exp: D(1), scale: [D(1500), D(1.025),  D(1.0005)]},
+]
+
 export class MainUpgrades {
     index: number
     baseEffectBase: {
@@ -102,17 +115,7 @@ export class MainUpgrades {
     }
     constructor(index: number) {
         this.index = index;
-        this.baseCostGrowthData = [
-            {exp: D(0), scale: [D(5),    D(1.55),   D(1)     ]},
-            {exp: D(0), scale: [D(1e3),  D(1.25),   D(1)     ]},
-            {exp: D(0), scale: [D(1e10), D(100),    D(1.05)  ]},
-            {exp: D(0), scale: [D(1e33), D(1.02),   D(1.0003)]},
-            {exp: D(0), scale: [D(1e45), D(1.03),   D(1.0002)]},
-            {exp: D(0), scale: [D(1e63), D(1.25),   D(1.025) ]},
-            {exp: D(1), scale: [D(1000), D(1.01),   D(1.0001)]},
-            {exp: D(1), scale: [D(1250), D(1.0075), D(1.0002)]},
-            {exp: D(1), scale: [D(1500), D(1.025),  D(1.0005)]},
-        ][index];
+        this.baseCostGrowthData = MAIN_UPGRADE_COST_DATA[index];
         this.baseEffectBase = [
             {type: 1, val: computed(() => { return D(1.5); })},
             {type: 1, val: computed(() => { return D(1.2); })},
@@ -148,14 +151,14 @@ export class MainUpgrades {
         }
 
         if (this.index >= 0 && this.index <= 5) {
-            if (Decimal.gte(timesCompleted("dc"), 3) && !player.value.gameProgress.col.inAChallenge) {
+            if (Decimal.gte(timesCompleted("dc"), 3) && !player.value.prog.col.inAChallenge) {
                 eff = getColChalRewEffects("dc")[1];
                 extraLv = extraLv.add(eff);
                 pushFactor(FACTOR_ARR, COL_CHALLENGES.dc.labelRew.value, `+${format(eff, 2)}`, `+${format(eff)}`, "col");
             }
         }
 
-        if (Decimal.gte(timesCompleted("dc"), 11) && !player.value.gameProgress.inChallenge.dc.overall) {
+        if (Decimal.gte(timesCompleted("dc"), 11) && !player.value.prog.inChallenge.dc.overall) {
             eff = tmp.value.main.upgrades[this.index].dc11FreeLvs;
             extraLv = extraLv.add(eff);
             pushFactor(FACTOR_ARR, COL_CHALLENGES.dc.labelRew.value, `+${format(eff, 2)}`, `+${format(eff)}`, "col");
@@ -173,13 +176,13 @@ export class MainUpgrades {
         pushFactor(FACTOR_ARR, LABELS.def, `${format(effBase, 3)}`, `${format(effBase, 3)}`)
 
         if (this.index === 0) {
-            if (Decimal.gt(player.value.gameProgress.main.upgrades[2].bought, 0)) {
+            if (Decimal.gt(player.value.prog.main.upgrades[2].bought, 0)) {
                 eff = MAIN_UPG_DATA[2].effect.value;
                 effBase = effBase.add(eff);
                 pushFactor(FACTOR_ARR, LABELS.upg3, `+${format(eff, 3)}`, `${format(effBase, 3)}`);
             }
 
-            if (Decimal.gt(player.value.gameProgress.main.upgrades[5].bought, 0)) {
+            if (Decimal.gt(player.value.prog.main.upgrades[5].bought, 0)) {
                 eff = MAIN_UPG_DATA[5].effect.value;
                 effBase = effBase.add(eff);
                 pushFactor(FACTOR_ARR, LABELS.upg6, `+${format(eff, 3)}`, `${format(effBase, 3)}`);
@@ -191,13 +194,13 @@ export class MainUpgrades {
                 pushFactor(FACTOR_ARR, LABELS.ou2, `+${format(eff, 3)}`, `${format(effBase, 3)}`);
             }
 
-            if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 9)) {
+            if (Decimal.gte(player.value.prog.main.pr2.amount, 9)) {
                 eff = D(0.05);
                 effBase = effBase.add(eff);
                 pushFactor(FACTOR_ARR, LABELS.pr2_9, `+${format(eff, 3)}`, `${format(effBase, 3)}`);
             }
 
-            if (Decimal.gt(player.value.gameProgress.kua.blessings.amount, 0)) {
+            if (Decimal.gt(player.value.prog.kua.blessings.amount, 0)) {
                 eff = tmp.value.kua.blessings.upg1Base;
                 effBase = effBase.add(eff);
                 pushFactor(FACTOR_ARR, LABELS.kb, `+${format(eff, 3)}`, `${format(effBase, 3)}`, "kb");
@@ -213,7 +216,7 @@ export class MainUpgrades {
                 pushFactor(FACTOR_ARR, "Achievement ID: (0, 12)", `+${format(eff, 3)}`, `${format(effBase, 3)}`, "ach");
             }
 
-            if (Decimal.gte(player.value.gameProgress.main.pr2.amount, 4)) {
+            if (Decimal.gte(player.value.prog.main.pr2.amount, 4)) {
                 eff = D(0.1);
                 effBase = effBase.add(eff);
                 pushFactor(FACTOR_ARR, LABELS.pr2_4, `+${format(eff, 3)}`, `${format(effBase, 3)}`);
@@ -231,7 +234,7 @@ export class MainUpgrades {
                 pushFactor(FACTOR_ARR, LABELS.kshau14, `+${format(eff, 3)}`, `${format(effBase, 3)}`, "kua");
             }
 
-            if (Decimal.gt(player.value.gameProgress.kua.blessings.amount, 0)) {
+            if (Decimal.gt(player.value.prog.kua.blessings.amount, 0)) {
                 eff = tmp.value.kua.blessings.upg2Base;
                 effBase = effBase.add(eff);
                 pushFactor(FACTOR_ARR, LABELS.kb, `+${format(eff, 3)}`, `${format(effBase, 3)}`, "kb");
@@ -276,7 +279,7 @@ export class MainUpgrades {
         }
 
         if (this.index === 0) {
-            if (Decimal.gt(player.value.gameProgress.main.upgrades[8].bought, 0)) {
+            if (Decimal.gt(player.value.prog.main.upgrades[8].bought, 0)) {
                 eff = MAIN_UPG_DATA[8].effect.value;
                 effBase = effBase.mul(eff);
                 pushFactor(FACTOR_ARR, LABELS.upg9, `×${format(eff, 3)}`, `${format(effBase, 3)}`);
@@ -308,7 +311,7 @@ export class MainUpgrades {
     effective: ComputedRef<Decimal> = computed(() => {
         const FACTOR_ARR = [1, this.index, 0];
         // resetFactor(FACTOR_ARR);
-        let effLv = D(player.value.gameProgress.main.upgrades[this.index].bought);
+        let effLv = D(player.value.prog.main.upgrades[this.index].bought);
         let eff = D(0);
         effLv = effLv.add(this.freeExtra.value);
 
@@ -369,13 +372,13 @@ export class MainUpgrades {
     effect: ComputedRef<Decimal> = computed(() => {
         const FACTOR_ARR = [1, this.index, 0];
         resetFactor(FACTOR_ARR);
-        pushFactor(FACTOR_ARR, LABELS.def, `${format(player.value.gameProgress.main.upgrades[this.index].bought)}`, `${format(player.value.gameProgress.main.upgrades[this.index].bought)} effective`);
+        pushFactor(FACTOR_ARR, LABELS.def, `${format(player.value.prog.main.upgrades[this.index].bought)}`, `${format(player.value.prog.main.upgrades[this.index].bought)} effective`);
         let effect = this.effective.value;
         let eff: DecimalSource = D(0);
 
         // ! yes, the "freeExtra" part of the accumulated is moved HERE so that things like Basic Discoveries or other stuff that can add free levels can do something to the multiplier
         if (inChallenge('dc')) {
-            eff = player.value.gameProgress.main.upgrades[0].accumulated;
+            eff = player.value.prog.main.upgrades[0].accumulated;
             effect = effect.add(eff);
             pushFactor(FACTOR_ARR, COL_CHALLENGES.dc.labelRew.value, `+${format(eff, 3)}`, `${format(effect)} effective`, "col");
 
@@ -404,7 +407,7 @@ export class MainUpgrades {
                 pushFactor(FACTOR_ARR, COL_CHALLENGES.im.labelRew.value, `×${format(tmp.value.kua.blessings.upg1Base.add(1), 3)}^${format(COL_CHALLENGES.im.type2ChalEff!.value[1], 3)}`, `×${format(effect)}`, "col");
             }
 
-            if (Decimal.gt(player.value.gameProgress.main.upgrades[6].bought, 0)) {
+            if (Decimal.gt(player.value.prog.main.upgrades[6].bought, 0)) {
                 eff = MAIN_UPG_DATA[6].effect.value;
                 effect = effect.pow(eff);
                 pushFactor(FACTOR_ARR, LABELS.upg7, `^${format(eff, 3)}`, `×${format(effect)}`);
@@ -443,7 +446,7 @@ export class MainUpgrades {
                 pushFactor(FACTOR_ARR, COL_CHALLENGES.im.labelRew.value, `×${format(tmp.value.kua.blessings.upg2Base.add(1), 3)}^${format(COL_CHALLENGES.im.type2ChalEff!.value[1], 3)}`, `/${format(effect)}`, "col");
             }
 
-            if (Decimal.gt(player.value.gameProgress.kua.blessings.upgrades[0], 0)) {
+            if (Decimal.gt(player.value.prog.kua.blessings.upgrades[0], 0)) {
                 eff = KUA_BLESS_UPGS[0].eff.value[0];
                 effect = effect.pow(eff);
                 pushFactor(FACTOR_ARR, LABELS.kbu1, `^${format(eff, 3)}`, `/${format(effect)}`, "kb");

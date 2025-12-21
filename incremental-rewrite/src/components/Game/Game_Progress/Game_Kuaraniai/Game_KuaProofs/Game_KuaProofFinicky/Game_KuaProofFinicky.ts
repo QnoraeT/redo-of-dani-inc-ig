@@ -1,6 +1,4 @@
 import { D } from "@/calc";
-import { setFactor } from "@/components/Game/Game_Stats/Game_Stats";
-import { format } from "@/format";
 import type { DecimalSource } from "break_eternity.js";
 import Decimal from "break_eternity.js";
 
@@ -18,13 +16,10 @@ export const getFinickyKPExpGain = (x: DecimalSource) => {
     return exp;
 }
 
-export const getFinickyKPExp = (x: DecimalSource, updateFact: boolean) => {
+export const getFinickyKPExp = (x: DecimalSource) => {
     let exp = x;
     if (Decimal.lt(exp, 1)) { return D(0); }
     exp = Decimal.ln(exp).div(10).add(1);
-    if (updateFact) {
-        setFactor(0, [4, 8], "Base", `${format(1)}+ln(${format(x, 2)})/${format(10)}`, `^${format(exp, 2)}`, true);
-    }
 
     return exp;
 }

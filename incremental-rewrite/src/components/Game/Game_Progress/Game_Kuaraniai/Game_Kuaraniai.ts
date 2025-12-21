@@ -206,21 +206,15 @@ export const updateKuaProofs = (delta: DecimalSource) => {
     }
 
     tempKuaObj.proofs.exp = D(1);
-    setFactor(0, [4, 6], "Base", `${format(1, 2)}`, `^${format(tempKuaObj.proofs.exp, 2)}`, true);
     tempKuaObj.proofs.exp = tempKuaObj.proofs.exp.add(tempKuaObj.proofs.upgrades.kp[0].effect);
-    setFactor(1, [4, 6], "Simple Breakthrough", `+${format(tempKuaObj.proofs.upgrades.kp[0].effect, 2)}`, `^${format(tempKuaObj.proofs.exp, 2)}`, tempKuaObj.proofs.upgrades.kp[0].effect.gt(0), "kp");
     tempKuaObj.proofs.exp = tempKuaObj.proofs.exp.add(tempKuaObj.proofs.upgrades.kp[1].effect);
-    setFactor(2, [4, 6], "Trial and Error", `+${format(tempKuaObj.proofs.upgrades.kp[1].effect, 2)}`, `^${format(tempKuaObj.proofs.exp, 2)}`, tempKuaObj.proofs.upgrades.kp[1].effect.gt(0), "kp");
     tempKuaObj.proofs.exp = tempKuaObj.proofs.exp.add(tempKuaObj.proofs.fkpEff);
-    setFactor(3, [4, 6], "Finicky KProof Effect", `+${format(tempKuaObj.proofs.fkpEff, 2)}`, `^${format(tempKuaObj.proofs.exp, 2)}`, tempKuaObj.proofs.fkpEff.gt(0), "fkp");
     tempKuaObj.proofs.exp = tempKuaObj.proofs.exp.add(GROWAN_UPGS.overall[1].eff!.value.kpe);
-    setFactor(4, [4, 6], "Grōwan Overall Upg. 2", `+${format(GROWAN_UPGS.overall[1].eff!.value.kpe, 2)}`, `^${format(tempKuaObj.proofs.exp, 2)}`, player.value.prog.layer4.gro.upgrades.overall.includes(1), "growan");
     tempKuaObj.proofs.exp = tempKuaObj.proofs.exp.mul(tempKuaObj.proofs.upgrades.kp[2].effect);
-    setFactor(5, [4, 6], "Crafted Experiments", `×${format(tempKuaObj.proofs.upgrades.kp[2].effect, 2)}`, `^${format(tempKuaObj.proofs.exp, 2)}`, tempKuaObj.proofs.upgrades.kp[2].effect.gt(1), "kp");
     NaNCheck(tempKuaObj.proofs.exp, `KProof's exponent turned into NaN!`)
 
-    tempKuaObj.proofs.skpExp = getStrangeKPExp(playerKuaObj.proofs.strange.hiddenExp, true);
-    tempKuaObj.proofs.fkpExp = getFinickyKPExp(playerKuaObj.proofs.finicky.hiddenExp, true);
+    tempKuaObj.proofs.skpExp = getStrangeKPExp(playerKuaObj.proofs.strange.hiddenExp);
+    tempKuaObj.proofs.fkpExp = getFinickyKPExp(playerKuaObj.proofs.finicky.hiddenExp);
 
     if (player.value.prog.unlocks.kproofs.main && tempKuaObj.active.proofs.gain) {
         // why did i do this
@@ -294,57 +288,57 @@ export const updateKuaBlessings = (delta: DecimalSource) => {
     tempKuaObj.blessings.tier = KUA_BLESS_TIER.tier.rounded.value;
     tempKuaObj.blessings.tetr = KUA_BLESS_TIER.tetr.rounded.value;
 
-    resetFactor([4, 4]);
-    resetFactor([4, 5]);
+    resetFactor([3, 4]);
+    resetFactor([3, 5]);
 
     tempKuaObj.blessings.perClick = D(1);
     tempKuaObj.blessings.perSec = D(2);
-    setFactor(0, [4, 4], "Base", `${format(0.1, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, true);
-    setFactor(0, [4, 5], "Base", `${format(1, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, true);
+    setFactor(0, [3, 4], "Base", `${format(0.1, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, true);
+    setFactor(0, [3, 5], "Base", `${format(1, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, true);
 
     tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value);
     tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value);
-    setFactor(1, [4, 4], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, true, "kb");
-    setFactor(1, [4, 5], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, true, "kb");
+    setFactor(1, [3, 4], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, true, "kb");
+    setFactor(1, [3, 5], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, true, "kb");
 
     tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(KUA_BLESS_UPGS[1].eff.value[1]);
     tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(KUA_BLESS_UPGS[1].eff.value[1]);
-    setFactor(2, [4, 4], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(playerKuaObj.blessings.upgrades[1], 6), "kb");
-    setFactor(2, [4, 5], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(playerKuaObj.blessings.upgrades[1], 6), "kb");
+    setFactor(2, [3, 4], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(playerKuaObj.blessings.upgrades[1], 6), "kb");
+    setFactor(2, [3, 5], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(playerKuaObj.blessings.upgrades[1], 6), "kb");
 
     tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
     tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
-    setFactor(3, [4, 4], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(tempKuaObj.blessings.tetr, 1), "kb");
-    setFactor(3, [4, 5], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(tempKuaObj.blessings.tetr, 1), "kb");
+    setFactor(3, [3, 4], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(tempKuaObj.blessings.tetr, 1), "kb");
+    setFactor(3, [3, 5], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(tempKuaObj.blessings.tetr, 1), "kb");
 
     tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(tempKuaObj.effects.bless);
     tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(tempKuaObj.effects.bless);
-    setFactor(4, [4, 4], "Kuaraniai Upgrade 2", `×${format(tempKuaObj.effects.bless, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, playerKuaObj.upgrades >= 2, "kua");
-    setFactor(4, [4, 5], "Kuaraniai Upgrade 2", `×${format(tempKuaObj.effects.bless, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, playerKuaObj.upgrades >= 2, "kua");
+    setFactor(4, [3, 4], "Kuaraniai Upgrade 2", `×${format(tempKuaObj.effects.bless, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, playerKuaObj.upgrades >= 2, "kua");
+    setFactor(4, [3, 5], "Kuaraniai Upgrade 2", `×${format(tempKuaObj.effects.bless, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, playerKuaObj.upgrades >= 2, "kua");
 
     tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(tempKuaObj.proofs.upgrades.effect[2].effect);
     tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(tempKuaObj.proofs.upgrades.effect[2].effect);
-    setFactor(5, [4, 4], "Holy Process", `×${format(tempKuaObj.proofs.upgrades.effect[2].effect, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[2].effect, 1), "kp");
-    setFactor(5, [4, 5], "Holy Process", `×${format(tempKuaObj.proofs.upgrades.effect[2].effect, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[2].effect, 1), "kp");
+    setFactor(5, [3, 4], "Holy Process", `×${format(tempKuaObj.proofs.upgrades.effect[2].effect, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[2].effect, 1), "kp");
+    setFactor(5, [3, 5], "Holy Process", `×${format(tempKuaObj.proofs.upgrades.effect[2].effect, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[2].effect, 1), "kp");
 
     tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(getColResEffect(5));
     tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(getColResEffect(4));
-    setFactor(6, [4, 4], "Compliance", `×${format(getColResEffect(5), 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
-    setFactor(6, [4, 5], "Defiance", `×${format(getColResEffect(4), 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
+    setFactor(6, [3, 4], "Compliance", `×${format(getColResEffect(5), 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
+    setFactor(6, [3, 5], "Defiance", `×${format(getColResEffect(4), 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
 
     tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(ACHIEVEMENT_DATA[3].effect.value);
     tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(ACHIEVEMENT_DATA[3].effect.value);
-    setFactor(7, [4, 4], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].effect.value, 1), "ach");
-    setFactor(7, [4, 5], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].effect.value, 1), "ach");
+    setFactor(7, [3, 4], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].effect.value, 1), "ach");
+    setFactor(7, [3, 5], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].effect.value, 1), "ach");
 
     if (player.value.prog.layer4.gro.upgrades.idle.includes(0)) {
         tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(10);
-        pushFactor([4, 5], "Grōwan Idle Upg. 1", `×${format(10)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "growan");
+        pushFactor([3, 5], "Grōwan Idle Upg. 1", `×${format(10)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "growan");
     }
 
     if (player.value.prog.layer4.gro.upgrades.active.includes(0)) {
         tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(10);
-        pushFactor([4, 5], "Grōwan Active Upg. 1", `×${format(10)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "growan");
+        pushFactor([3, 5], "Grōwan Active Upg. 1", `×${format(10)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "growan");
     }
 
     data = {
@@ -367,7 +361,7 @@ export const updateKuaBlessings = (delta: DecimalSource) => {
 
         tempKuaObj.blessings.perClick = data.newKB.sub(data.oldKB).max(0.1);
     }
-    setFactor(7, [4, 4], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tempKuaObj.blessings.perClick), 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, inChallenge("df"), "col");
+    setFactor(7, [3, 4], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tempKuaObj.blessings.perClick), 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, inChallenge("df"), "col");
 
     data = {
         prevEff: tempKuaObj.blessings.perClick,
@@ -376,7 +370,7 @@ export const updateKuaBlessings = (delta: DecimalSource) => {
 
     tempKuaObj.blessings.perClick = scale(tempKuaObj.blessings.perClick, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
     setSCSLEffectDisp('kba', false, 0, `${format(data.prevEff.log(tempKuaObj.blessings.perClick), 3)}√`);
-    setFactor(8, [4, 4], "Softcap", `softcap(${format(data.prevEff)})`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gt(tempKuaObj.blessings.perClick, data.scal[0].start), "sc1");
+    setFactor(8, [3, 4], "Softcap", `softcap(${format(data.prevEff)})`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gt(tempKuaObj.blessings.perClick, data.scal[0].start), "sc1");
 
     data = {
         oldGain: tempKuaObj.blessings.perSec,
@@ -397,7 +391,7 @@ export const updateKuaBlessings = (delta: DecimalSource) => {
         );
         tempKuaObj.blessings.perSec = data.newKB.sub(data.oldKB).max(0.1);
     }
-    setFactor(7, [4, 5], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tempKuaObj.blessings.perSec), 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, inChallenge("df"), "col");
+    setFactor(7, [3, 5], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tempKuaObj.blessings.perSec), 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, inChallenge("df"), "col");
 
     data = {
         prevEff: tempKuaObj.blessings.perSec,
@@ -406,7 +400,7 @@ export const updateKuaBlessings = (delta: DecimalSource) => {
 
     tempKuaObj.blessings.perSec = scale(tempKuaObj.blessings.perSec, 2.1, false, data.scal[0].start, data.scal[0].power, data.scal[0].basePow);
     setSCSLEffectDisp('kbi', false, 0, `${format(data.prevEff.log(tempKuaObj.blessings.perSec), 3)}√`);
-    setFactor(8, [4, 5], "Softcap", `softcap(${format(data.prevEff)})`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gt(tempKuaObj.blessings.perSec, data.scal[0].start), "sc1");
+    setFactor(8, [3, 5], "Softcap", `softcap(${format(data.prevEff)})`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gt(tempKuaObj.blessings.perSec, data.scal[0].start), "sc1");
 
     NaNCheck(tempKuaObj.blessings.perClick, 'KB per click is NaN!');
     NaNCheck(tempKuaObj.blessings.perSec, 'KB per second is NaN!');
@@ -426,9 +420,11 @@ export const updateKuaBlessings = (delta: DecimalSource) => {
     if (player.value.prog.unlocks.kblessings) {
         generate = tempKuaObj.blessings.perSec.mul(delta);
         playerKuaObj.blessings.amount = Decimal.add(playerKuaObj.blessings.amount, generate);
+        playerKuaObj.blessings.bestInCol = Decimal.max(playerKuaObj.blessings.bestInCol, playerKuaObj.blessings.amount);
+        playerKuaObj.blessings.bestInLayer4 = Decimal.max(playerKuaObj.blessings.bestInLayer4, playerKuaObj.blessings.amount);
     }
 
-    i = Decimal.max(playerKuaObj.blessings.bestInLayer4, 0);
+    i = Decimal.max(playerKuaObj.blessings.bestInCol, 0);
     i = Decimal.mul(i, KUA_BLESS_TIER.tier.effects.kuaBlessEff.value)
     if (!tempKuaObj.active.blessings.effects) {
         i = D(0);
@@ -519,39 +515,39 @@ export const updateKuaBasics = (delta: DecimalSource) => {
         tempKuaObj.pending = tempKuaObj.effectivePrai.log(tempKuaObj.req);
         // this is to catch an edge-case, where the value above gets fucked because of floating point errors if this is way lower than the kua exponent, so i have to make an approximation here
         if (tempKuaObj.exp.div(tempKuaObj.pending).gte(1e9)) {
-            // yes i'm not joking this reduces down to a dilate 1.5 of PRai when kua exp is high enough
+            // yes i'm not joking this reduces down to PRai ^1.5 to exponent when kua exp is high enough
             tempKuaObj.pending = tempKuaObj.pending.pow(1.5).sub(5).pow10();
         } else {
             tempKuaObj.pending = tempKuaObj.pending.ln().mul(1.5).div(tempKuaObj.exp).add(1).pow(tempKuaObj.exp).sub(5).pow10();
         }
     } 
 
-    setFactor(0, [4, 1], "Base", `~10^(ln(log(${format(tempKuaObj.effectivePrai)})))^${format(tempKuaObj.exp, 2)}-${format(5)}) (approx.)`, `${format(tempKuaObj.pending, 4)}`, true);
+    setFactor(0, [3, 1], "Base", `~10^(ln(log(${format(tempKuaObj.effectivePrai)})))^${format(tempKuaObj.exp, 2)}-${format(5)}) (approx.)`, `${format(tempKuaObj.pending, 4)}`, true);
     
     if (getKuaUpgrade("s", 1)) {
         tempKuaObj.pending = tempKuaObj.pending.mul(1.5);
     }
-    setFactor(1, [4, 1], "KShard Upgrade 1", `×${format(1.5, 2)}`, `${format(tempKuaObj.pending, 4)}`, getKuaUpgrade("s", 1), "kua");
+    setFactor(1, [3, 1], "KShard Upgrade 1", `×${format(1.5, 2)}`, `${format(tempKuaObj.pending, 4)}`, getKuaUpgrade("s", 1), "kua");
 
     if (getKuaUpgrade("s", 12)) {
         tempKuaObj.pending = tempKuaObj.pending.mul(KUA_UPGRADES.KShards[11].eff!.value);
     }
-    setFactor(2, [4, 1], "KShard Upgrade 12", `×${format(KUA_UPGRADES.KShards[11].eff!.value, 2)}`, `${format(tempKuaObj.pending, 4)}`, getKuaUpgrade("s", 12), "kua");
+    setFactor(2, [3, 1], "KShard Upgrade 12", `×${format(KUA_UPGRADES.KShards[11].eff!.value, 2)}`, `${format(tempKuaObj.pending, 4)}`, getKuaUpgrade("s", 12), "kua");
 
     if (Decimal.gte(timesCompleted("df"), 1)) {
         tempKuaObj.pending = tempKuaObj.pending.mul(2);
     }
-    setFactor(3, [4, 1], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(tempKuaObj.pending, 1)}`, Decimal.gte(timesCompleted("df"), 1), "col");
+    setFactor(3, [3, 1], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(tempKuaObj.pending, 1)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
     if (Decimal.gte(playerKuaObj.blessings.upgrades[2], 1)) {
         tempKuaObj.pending = tempKuaObj.pending.mul(KUA_BLESS_UPGS[2].eff.value[0]);
     }
-    setFactor(4, [4, 1], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[0], 2)}`, `${format(tempKuaObj.pending, 1)}`, Decimal.gte(playerKuaObj.blessings.upgrades[2], 1), "kb");
+    setFactor(4, [3, 1], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[0], 2)}`, `${format(tempKuaObj.pending, 1)}`, Decimal.gte(playerKuaObj.blessings.upgrades[2], 1), "kb");
 
     if (Decimal.gt(player.value.prog.layer4.gro.totalAmt, 0)) {
         tempKuaObj.pending = tempKuaObj.pending.mul(tmp.value.layer4.growan.eff.kuaGain);
     }
-    setFactor(5, [4, 1], `Grōwan Effect`, `×${format(tmp.value.layer4.growan.eff.kuaGain, 2)}`, `${format(tempKuaObj.pending, 1)}`, Decimal.gt(player.value.prog.layer4.gro.totalAmt, 0), "growan");
+    setFactor(5, [3, 1], `Grōwan Effect`, `×${format(tmp.value.layer4.growan.eff.kuaGain, 2)}`, `${format(tempKuaObj.pending, 1)}`, Decimal.gt(player.value.prog.layer4.gro.totalAmt, 0), "growan");
 
     data = {
         oldGain: tempKuaObj.pending,
@@ -565,7 +561,7 @@ export const updateKuaBasics = (delta: DecimalSource) => {
 
         tempKuaObj.pending = data.newKua.sub(data.oldKua);
     }
-    setFactor(6, [4, 1], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tempKuaObj.pending), 2)}`, `${format(tempKuaObj.pending, 4)}`, inChallenge("df"), "col");
+    setFactor(6, [3, 1], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, tempKuaObj.pending), 2)}`, `${format(tempKuaObj.pending, 4)}`, inChallenge("df"), "col");
 
     if (playerKuaObj.auto) {
         generate = tempKuaObj.pending.mul(delta).mul(0.01);
@@ -589,25 +585,25 @@ export const updateKuaBasics = (delta: DecimalSource) => {
     };
 
     k = D(1);
-    setFactor(0, [4, 0], "Base", `${format(playerKuaObj.amount, 4)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true);
+    setFactor(0, [3, 0], "Base", `${format(playerKuaObj.amount, 4)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true);
 
     if (player.value.prog.unlocks.kblessings) {
         k = k.mul(tempKuaObj.blessings.kuaEff.log(Decimal.pow(playerKuaObj.amount, k)).add(1))
     }
-    setFactor(1, [4, 0], "KBlessings", `×${format(tempKuaObj.blessings.kuaEff, 2)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, player.value.prog.unlocks.kblessings, "kb");
+    setFactor(1, [3, 0], "KBlessings", `×${format(tempKuaObj.blessings.kuaEff, 2)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, player.value.prog.unlocks.kblessings, "kb");
 
     k = k.mul(ACHIEVEMENT_DATA[1].effect.value);
-    setFactor(2, [4, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].effect.value, 3)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true, "ach");
+    setFactor(2, [3, 0], "Achievement Tier 2", `^${format(ACHIEVEMENT_DATA[1].effect.value, 3)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, true, "ach");
 
     if (getKuaUpgrade("s", 11)) {
         k = k.mul(KUA_UPGRADES.KShards[10].eff!.value);
     }
-    setFactor(3, [4, 0], "KShard Upgrade 11", `^${format(KUA_UPGRADES.KShards[10].eff!.value, 3)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, getKuaUpgrade("s", 11), "kua");
+    setFactor(3, [3, 0], "KShard Upgrade 11", `^${format(KUA_UPGRADES.KShards[10].eff!.value, 3)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, getKuaUpgrade("s", 11), "kua");
 
     if (getKuaUpgrade("p", 15)) {
         k = k.mul(1.05);
     }
-    setFactor(4, [4, 0], "KPower Upgrade 15", `^${format(1.05, 3)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, getKuaUpgrade("p", 15), "kua");
+    setFactor(4, [3, 0], "KPower Upgrade 15", `^${format(1.05, 3)}`, `(${format(Decimal.pow(playerKuaObj.amount, k), 4)} eff.) ${format(k.mul(100), 2)}%`, getKuaUpgrade("p", 15), "kua");
     
     k = Decimal.pow(playerKuaObj.amount, k);
 
@@ -621,15 +617,15 @@ export const updateKuaBasics = (delta: DecimalSource) => {
 
         let exp = D(1);
 
-        if (getKuaUpgrade("k", 2)) { exp = exp.add(0.25); }
         if (getKuaUpgrade("k", 3)) { exp = exp.add(0.25); }
         if (getKuaUpgrade("k", 4)) { exp = exp.add(0.25); }
+        if (getKuaUpgrade("k", 5)) { exp = exp.add(0.25); }
 
         exp = exp.mul(tempKuaObj.proofs.upgrades.effect[4].effect)
 
-        // dilate 2
         // pow ^exp
-        // trilate 0.9
+        // ^2 to exponent
+        // ^0.9 to 2nd exponent
         tempKuaObj.effects.kshardPassive = Decimal.max(tempKuaObj.effectiveKS, 0.01).mul(1e3).log10().pow(2).sub(1).pow10().pow(0.05).pow(exp).log10().add(1).log10().add(1).pow(0.9).sub(1).pow10().sub(1).pow10();
         tempKuaObj.effects.kpowerPassive = Decimal.max(tempKuaObj.effectiveKP, 0.01).mul(1e3).log10().pow(2).sub(1).pow10().pow(0.05).pow(exp).log10().add(1).log10().add(1).pow(0.9).sub(1).pow10().sub(1).pow10();
 
@@ -672,20 +668,7 @@ export const updateKuaBasics = (delta: DecimalSource) => {
             : D(1);
 
         tempKuaObj.effects.pts = getKuaUpgrade("s", 7)
-            ? Decimal.max(k, 1)
-                    .mul(1e3)
-                    .cbrt()
-                    .log10()
-                    .pow(1.1)
-                    .mul(
-                        Decimal.max(player.value.prog.main.prai.timeInPRai, 0)
-                            .add(1)
-                            .ln()
-                            .mul(2)
-                            .add(1)
-                            .sqrt()
-                    )
-                    .pow10()
+            ? Decimal.max(k, 1).pow(Decimal.max(player.value.prog.main.prai.timeInPRai, 0).add(1).ln().mul(2).add(1).sqrt())
             : D(1);
 
         tempKuaObj.effects.bless = getKuaUpgrade("k", 2)
@@ -696,40 +679,40 @@ export const updateKuaBasics = (delta: DecimalSource) => {
     i = D(0);
     if (tempKuaObj.active.kshards.gain) {
         i = D(playerKuaObj.amount);
-        setFactor(0, [4, 2], "Base", `${format(playerKuaObj.amount, 4)}`, `${format(i, 3)}`, true);
+        setFactor(0, [3, 2], "Base", `${format(playerKuaObj.amount, 4)}`, `${format(i, 3)}`, true);
         
         i = i.pow(tempKuaObj.proofs.upgrades.effect[7].effect);
-        setFactor(1, [4, 2], "Constructive Interference", `^${format(tempKuaObj.proofs.upgrades.effect[7].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[7].effect, 1), "kp");
+        setFactor(1, [3, 2], "Constructive Interference", `^${format(tempKuaObj.proofs.upgrades.effect[7].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[7].effect, 1), "kp");
 
         if (getKuaUpgrade("p", 1)) {
             i = i.mul(2.5);
         }
-        setFactor(2, [4, 2], "KPower Upgrade 1", `×${format(2.5, 2)}`, `${format(i, 3)}`, getKuaUpgrade("p", 1), "kua");
+        setFactor(2, [3, 2], "KPower Upgrade 1", `×${format(2.5, 2)}`, `${format(i, 3)}`, getKuaUpgrade("p", 1), "kua");
 
         if (getKuaUpgrade("s", 13)) {
             i = i.mul(KUA_UPGRADES.KShards[12].eff!.value);
         }
-        setFactor(3, [4, 2], "KShard Upgrade 13", `×${format(KUA_UPGRADES.KShards[12].eff!.value, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 13), "kua");
+        setFactor(3, [3, 2], "KShard Upgrade 13", `×${format(KUA_UPGRADES.KShards[12].eff!.value, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 13), "kua");
 
         if (Decimal.gte(timesCompleted("df"), 1)) {
             i = i.mul(2);
         }
-        setFactor(4, [4, 2], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
+        setFactor(4, [3, 2], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
         if (Decimal.gte(playerKuaObj.blessings.upgrades[2], 1)) {
             i = i.mul(KUA_BLESS_UPGS[2].eff.value[2]);
         }
-        setFactor(5, [4, 2], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[2], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[2], 12), "kb");
+        setFactor(5, [3, 2], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[2], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[2], 12), "kb");
 
         if (Decimal.gte(playerKuaObj.blessings.upgrades[3], 1)) {
             i = i.mul(KUA_BLESS_UPGS[3].eff.value[0]);
         }
-        setFactor(6, [4, 2], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff.value[0], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[3], 1), "kb");
+        setFactor(6, [3, 2], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff.value[0], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[3], 1), "kb");
 
         if (Decimal.gte(playerKuaObj.blessings.upgrades[3], 6)) {
             i = i.mul(Decimal.max(playerKuaObj.kpower.amount, 1).log10().add(1).pow(KUA_BLESS_UPGS[3].eff.value[1]));
         }
-        setFactor(7, [4, 2], `KBlessing Upgrade 4`, `×log10(${format(playerKuaObj.kpower.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff.value[1], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[3], 6), "kb");
+        setFactor(7, [3, 2], `KBlessing Upgrade 4`, `×log10(${format(playerKuaObj.kpower.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff.value[1], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[3], 6), "kb");
 
         data = {
             oldGain: i,
@@ -743,47 +726,47 @@ export const updateKuaBasics = (delta: DecimalSource) => {
 
             i = data.newKua.sub(data.oldKua);
         }
-        setFactor(8, [4, 2], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
+        setFactor(8, [3, 2], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
     }
     tempKuaObj.shardGen = i;
 
     i = D(0);
     if (tempKuaObj.active.kpower.gain) {
         i = D(playerKuaObj.kshards.amount);
-        setFactor(0, [4, 3], "Base", `${format(playerKuaObj.kshards.amount, 4)}`, `${format(i, 3)}`, true);
+        setFactor(0, [3, 3], "Base", `${format(playerKuaObj.kshards.amount, 4)}`, `${format(i, 3)}`, true);
 
         i = i.pow(tempKuaObj.proofs.upgrades.effect[7].effect);
-        setFactor(1, [4, 3], "Constructive Interference", `^${format(tempKuaObj.proofs.upgrades.effect[7].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[7].effect, 1), "kp");
+        setFactor(1, [3, 3], "Constructive Interference", `^${format(tempKuaObj.proofs.upgrades.effect[7].effect, 3)}`, `${format(i, 3)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[7].effect, 1), "kp");
 
         if (getKuaUpgrade("s", 10)) {
             i = i.mul(tempKuaObj.effects.kpower);
         }
-        setFactor(2, [4, 3], "KShard Upgrade 10", `×${format(tempKuaObj.effects.kpower, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 10), "kua");
+        setFactor(2, [3, 3], "KShard Upgrade 10", `×${format(tempKuaObj.effects.kpower, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 10), "kua");
 
         if (getKuaUpgrade("s", 14)) {
             i = i.mul(KUA_UPGRADES.KShards[13].eff!.value);
         }
-        setFactor(3, [4, 3], "KShard Upgrade 14", `×${format(KUA_UPGRADES.KShards[13].eff!.value, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 14), "kua");
+        setFactor(3, [3, 3], "KShard Upgrade 14", `×${format(KUA_UPGRADES.KShards[13].eff!.value, 2)}`, `${format(i, 3)}`, getKuaUpgrade("s", 14), "kua");
 
         if (Decimal.gte(timesCompleted("df"), 1)) {
             i = i.mul(2);
         }
-        setFactor(4, [4, 3], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
+        setFactor(4, [3, 3], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(2, 2)}`, `${format(i, 3)}`, Decimal.gte(timesCompleted("df"), 1), "col");
 
         if (Decimal.gte(playerKuaObj.blessings.upgrades[2], 1)) {
             i = i.mul(KUA_BLESS_UPGS[2].eff.value[2]);
         }
-        setFactor(5, [4, 3], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[2], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[2], 12), "kb");
+        setFactor(5, [3, 3], `KBlessing Upgrade 3`, `×${format(KUA_BLESS_UPGS[2].eff.value[2], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[2], 12), "kb");
 
         if (Decimal.gte(playerKuaObj.blessings.upgrades[3], 1)) {
             i = i.mul(KUA_BLESS_UPGS[3].eff.value[0]);
         }
-        setFactor(6, [4, 3], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff.value[0], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[3], 1), "kb");
+        setFactor(6, [3, 3], `KBlessing Upgrade 4`, `×${format(KUA_BLESS_UPGS[3].eff.value[0], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[3], 1), "kb");
 
         if (Decimal.gte(playerKuaObj.blessings.upgrades[3], 6)) {
             i = i.mul(Decimal.max(playerKuaObj.kshards.amount, 1).log10().add(1).pow(KUA_BLESS_UPGS[3].eff.value[1]));
         }
-        setFactor(7, [4, 3], `KBlessing Upgrade 4`, `×log10(${format(playerKuaObj.kshards.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff.value[1], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[3], 6), "kb");
+        setFactor(7, [3, 3], `KBlessing Upgrade 4`, `×log10(${format(playerKuaObj.kshards.amount, 2)})^${format(KUA_BLESS_UPGS[3].eff.value[1], 2)}`, `${format(i, 3)}`, Decimal.gte(playerKuaObj.blessings.upgrades[3], 6), "kb");
 
         data = {
             oldGain: i,
@@ -797,7 +780,7 @@ export const updateKuaBasics = (delta: DecimalSource) => {
 
             i = data.newKua.sub(data.oldKua);
         }
-        setFactor(8, [4, 3], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
+        setFactor(8, [3, 3], "Decaying Feeling", `/${format(Decimal.div(data.oldGain, i), 2)}`, `${format(i, 4)}`, inChallenge("df"), "col");
     }
     tempKuaObj.powGen = i;
 

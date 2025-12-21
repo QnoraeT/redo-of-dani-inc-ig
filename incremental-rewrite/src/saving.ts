@@ -140,11 +140,7 @@ export const resetThisSave = (prompt: boolean): void => {
         if (!confirm("Are you sure you want to delete this save?")) {
             return;
         }
-        if (
-            !confirm(
-                "You cannot recover this save unless if you have an exported backup! Are you still sure? [Final Warning]"
-            )
-        ) {
+        if (!confirm("You cannot recover this save unless if you have an exported backup! Are you still sure? [Final Warning]")) {
             return;
         }
     }

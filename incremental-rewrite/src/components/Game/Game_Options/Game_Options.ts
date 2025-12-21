@@ -69,14 +69,16 @@ export const UPDATE_LOG = [
         name: `v2.0.0.0 - Dec-17-2024`,
         desc: `
         <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
-        None.<br>
+        New offline time system.<br>
         <br>
         <span style='font-size: 1.2vw'><b>< --- Changes --- ></b></span><br>
         Changed much of the code base. Unfortunately, that means that your saves are very likely to not work anymore.<br>
+        Buffed ${makeColor('Stored Time', '#0f0')} effect from ^0.5 to ^0.75. Higher multipliers use less stored time.<br>
         Changed ${makeColor('Achievement #1, 6', '#ff0')}'s requirement.<br>
+        ${makeColor('KBlessing', '#0f0')} upgrades now take into account Best ${makeColor('KB', '#0f0')} instead of current ${makeColor('KB', '#0f0')}.<br>
         <br>
         <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
-        None.<br>
+        Fixed ${makeColor('K. Upgrades', '#a4f')} to shard and power effects.<br><br>
         `
     },
     {

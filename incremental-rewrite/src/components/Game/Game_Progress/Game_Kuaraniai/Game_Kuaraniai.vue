@@ -10,7 +10,7 @@ import Game_KuaEnhancers from "./Game_KuaEnhancers/Game_KuaEnhancers.vue";
 </script>
 <template>
     <div id="kuaraniai" v-if="tab.currentTab === 4">
-        <div class="flex-container" style=" flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;">
+        <div class="flex-horizontal" style="font-size: 1.4vw; margin-bottom: 1vw;">
             <button @click="switchSubTab(-1, 0)" style="width: 10vw" class="kuaButton2 font0 whiteText normalTabButton">Bought Upgrades</button>
             <button :class="{ alert: tmp.kua.upgCanBuyUpg }" @click="switchSubTab(0, 0)" class="kuaButton2 font0 whiteText normalTabButton">Main</button>
             <button :class="{ alert: tmp.kua.blessings.canBuyUpg }" v-if="player.prog.unlocks.kblessings" @click="switchSubTab(1, 0)" class="kuaButton2 font0 whiteText normalTabButton">Blessings</button>
@@ -18,19 +18,20 @@ import Game_KuaEnhancers from "./Game_KuaEnhancers/Game_KuaEnhancers.vue";
             <!-- disable this for now, seems unbalanced -->
             <!-- <button @click="switchSubTab(1, 0)" v-if="player.gameProgress.unlocks.kuaEnhancers" class="kuaButton2 font0 whiteText normalTabButton">Enhancers</button> -->
         </div>
-        <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: column; justify-content: center;" v-if="tab.tabList[tab.currentTab][0] === -1">
+        <div class="flex-vertical" style="margin-left: auto; margin-right: auto;" v-if="tab.tabList[tab.currentTab][0] === -1">
             <Game_KuaBoughtUpgs />
         </div>
-        <div class="flex-container" style=" margin-left: auto; margin-right: auto; flex-direction: column; justify-content: center;" v-if="tab.tabList[tab.currentTab][0] === 0">
+        <div class="flex-vertical" style=" margin-left: auto; margin-right: auto;" v-if="tab.tabList[tab.currentTab][0] === 0">
             <Game_KuaUpgrades />
         </div>
-        <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 1">
+        <div class="flex-vertical" v-if="tab.tabList[tab.currentTab][0] === 1">
+            <span class="font0 whiteText" style="font-size: 1.0vw">KB upgrades will gain new effects every 6 levels, up to three effects.</span>
             <Game_KuaBlessings />
         </div>
-        <div class="flex-container" style="flex-direction: column" v-if="tab.tabList[tab.currentTab][0] === 2">
+        <div class="flex-vertical" v-if="tab.tabList[tab.currentTab][0] === 2">
             <Game_KuaProofs />
         </div>
-        <div class="flex-container" style="flex-direction: row" v-if="tab.tabList[tab.currentTab][0] === 99">
+        <div class="flex-horizontal" v-if="tab.tabList[tab.currentTab][0] === 99">
             <Game_KuaEnhancers />
         </div>
     </div>

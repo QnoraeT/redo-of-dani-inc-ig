@@ -52,8 +52,8 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
         <b>Kuaraniai Generator: {{ player.prog.kua.auto ? "On" : "Off" }}</b>
     </button>
     <div
-        class="flex-container"
-        style="flex-direction: column; justify-content: center"
+        class="flex-vertical"
+        
         :style="{
             backgroundColor: gRC(
                 4.5 + Math.sin(gameVars.sessionTime + Math.PI * 0.5) / 8,
@@ -63,7 +63,7 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
             border: `0.18vw solid ${gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI * 0.5) / 8, 0.5, 1.0)}`
         }"
     >
-        <div class="flex-container" style="flex-direction: column" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime) / 4, 1.0, 1.0), border: `0.18vw solid ${gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI * 0.5) / 8, 0.5, 1.0)}` }">
+        <div class="flex-vertical" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime) / 4, 1.0, 1.0), border: `0.18vw solid ${gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI * 0.5) / 8, 0.5, 1.0)}` }">
             <div style="text-align: center; font-size: 1vw" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime) / 4, 1.0, 1.0) }" class="font0">
                 You have <b>{{ format(player.prog.kua.kshards.amount, 3) }}</b> Kuaraniai shards.
                 <div v-if="tmp.kua.active.kshards.effects" class="font0 flex-vertical">
@@ -75,13 +75,13 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
                     <span v-if="player.prog.kua.kshards.upgrades >= 9">Delays Upgrade 2's cost growth (after scaling costs) by +{{format(KUA_UPGRADES.KShards[8].eff!.value, 2)}} purchases.</span>
                 </div>
             </div>
-            <div class="flex-container" style="flex-direction: row; justify-content: center">
+            <div class="flex-horizontal" style="padding: 0.5vw">
                 <div v-for="(item, index) in KUA_UPGRADES.KShards" :key="index">
                     <Game_KuaUpgrade
                         @click="buyKShardUpg(index)"
                         :style="{
                             opacity: 0.5 ** (index - player.prog.kua.kshards.upgrades),
-                            border: `0.24vw solid ${Decimal.lt(item.cost, player.prog.kua.kshards.amount) ? colorChange('#FF00FF', 1.0, 0.5 + 0.5 * Math.sin(Math.PI * gameVars.sessionTime)) : '#b900ff'}`
+                            border: `0.24vw solid ${Decimal.lt(item.cost, player.prog.kua.kshards.amount) ? colorChange('#FF00FF', 1.0, 0.5 + 0.5 * Math.sin(2 * Math.PI * gameVars.sessionTime)) : '#8000c0'}`
                         }"
                         v-if="
                             index >= player.prog.kua.kshards.upgrades &&
@@ -95,7 +95,7 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
                 </div>
             </div>
         </div>
-        <div class="flex-container" style="flex-direction: column" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 4, 1.0, 1.0), border: `0.18vw solid ${gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 8, 0.5, 1.0)}` }">
+        <div class="flex-vertical" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 4, 1.0, 1.0), border: `0.18vw solid ${gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 8, 0.5, 1.0)}` }">
             <div style="text-align: center; font-size: 1vw" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 4, 1.0, 1.0) }" class="font0">
                 You have <b>{{ format(player.prog.kua.kpower.amount, 3) }}</b> Kuaraniai power.
                 <div v-if="tmp.kua.active.kpower.effects" class="font0 flex-vertical">
@@ -107,13 +107,13 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
                     <span v-if="player.prog.kua.kpower.upgrades >= 5">Raises PRai's effect to ^{{format(KUA_UPGRADES.KPower[4].eff!.value, 4)}}.</span>
                 </div>
             </div>
-            <div class="flex-container" style="flex-direction: row; justify-content: center">
+            <div class="flex-horizontal" style="padding: 0.5vw">
                 <div v-for="(item, index) in KUA_UPGRADES.KPower" :key="index">
                     <Game_KuaUpgrade
                         @click="buyKPowerUpg(index)"
                         :style="{
                             opacity: 0.5 ** (index - player.prog.kua.kpower.upgrades),
-                            border: `0.24vw solid ${Decimal.lt(item.cost, player.prog.kua.kpower.amount) ? colorChange('#FF00FF', 1.0, 0.5 + 0.5 * Math.sin(Math.PI * gameVars.sessionTime)) : '#b900ff'}`
+                            border: `0.24vw solid ${Decimal.lt(item.cost, player.prog.kua.kpower.amount) ? colorChange('#FF00FF', 1.0, 0.5 + 0.5 * Math.sin(2 * Math.PI * gameVars.sessionTime)) : '#8000c0'}`
                         }"
                         v-if="
                             index >= player.prog.kua.kpower.upgrades &&
@@ -127,17 +127,17 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
                 </div>
             </div>
         </div>
-        <div v-if="player.prog.unlocks.kblessings" class="flex-container" style="flex-direction: column" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 4, 1.0, 1.0), border: `0.18vw solid ${gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 8, 0.5, 1.0)}` }">
+        <div v-if="player.prog.unlocks.kblessings" class="flex-vertical" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 4, 1.0, 1.0), border: `0.18vw solid ${gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 8, 0.5, 1.0)}` }">
             <div style="text-align: center; font-size: 1vw" :style="{ color: gRC(4.5 + Math.sin(gameVars.sessionTime + Math.PI) / 4, 1.0, 1.0) }" class="font0">
                 You have <b>{{ format(player.prog.kua.amount, 3) }}</b> Kuaraniai.
             </div>
-            <div class="flex-container" style="flex-direction: row; justify-content: center">
+            <div class="flex-horizontal" style="padding: 0.5vw">
                 <div v-for="(item, index) in KUA_UPGRADES.Kua" :key="index">
                     <Game_KuaUpgrade
                         @click="buyKMainUpg(index)"
                         :style="{
                             opacity: 0.5 ** (index - player.prog.kua.upgrades),
-                            border: `0.24vw solid ${Decimal.lt(item.cost, player.prog.kua.amount) ? colorChange('#FF00FF', 1.0, 0.5 + 0.5 * Math.sin(Math.PI * gameVars.sessionTime)) : '#b900ff'}`
+                            border: `0.24vw solid ${Decimal.lt(item.cost, player.prog.kua.amount) ? colorChange('#FF00FF', 1.0, 0.5 + 0.5 * Math.sin(2 * Math.PI * gameVars.sessionTime)) : '#8000c0'}`
                         }"
                         v-if="
                             index >= player.prog.kua.upgrades &&

@@ -13,7 +13,7 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                 <div class="whiteText" style="display: flex; justify-content: center; background-color: #631900; position: relative; width: 100%; height: 42.5%; font-size: 0.75vw;">
                     <span class="centered-text" style="height: 100%">{{ item.name }}</span>
                 </div>
-                <div class="whiteText" style="display: flex; justify-content: center; background-color: #7a1f00; position: relative; width: 100%; height: 42.5%; font-size: 0.75vw;">
+                <div class="whiteText" style="display: fle x; justify-content: center; background-color: #7a1f00; position: relative; width: 100%; height: 42.5%; font-size: 0.75vw;">
                     <span class="centered-text" style="height: 100%">
                         Level: {{ format(item.scoreToLevel(player.prog.col.research.xpTotal[index]).floor(), 0) }}
                     </span>

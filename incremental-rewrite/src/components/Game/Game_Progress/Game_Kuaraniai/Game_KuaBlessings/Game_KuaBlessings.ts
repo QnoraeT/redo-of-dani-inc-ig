@@ -1,4 +1,4 @@
-import { D, scale, smoothExp, smoothPoly } from "@/calc";
+import { D, smoothExp, smoothPoly } from "@/calc";
 import { format, formatPerc } from "@/format";
 import { player, tmp } from "@/main";
 import Decimal from "break_eternity.js";
@@ -68,12 +68,12 @@ export const KUA_BLESS_TIER: KuaBlessTiers = {
         req: computed(() => {
             let i = D(KUA_BLESS_TIER.rank.rounded.value);
             i = i.div(KUA_BLESS_UPGS[3].eff.value[2]);
-            return smoothExp(i, 1.004, false).pow_base(2).mul(10);
+            return smoothPoly(i, 2, 300, false).pow_base(2).mul(10);
         }),
         target: computed(() => {
-            const x = D(player.value.prog.kua.blessings.bestInLayer4);
+            const x = D(player.value.prog.kua.blessings.bestInCol);
             if (Decimal.lt(x, 10)) { return D(-1); }
-            let i = smoothExp(Decimal.div(x, 10).log(2), 1.004, true);
+            let i = smoothPoly(Decimal.div(x, 10).log(2), 2, 300, true);
             i = i.mul(KUA_BLESS_UPGS[3].eff.value[2]);
             return i;
         }),
@@ -268,17 +268,14 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
                 x = D(0);
             }
             const arr = [
-                Decimal.add(player.value.prog.kua.blessings.amount, 1).ln().div(100).mul(Decimal.sqrt(x)).add(1).root(1.5),
+                Decimal.add(player.value.prog.kua.blessings.bestInCol, 1).ln().div(100).mul(Decimal.sqrt(x)).add(1).root(1.5),
                 Decimal.gte(x, 6) 
-                    ? Decimal.add(player.value.prog.kua.blessings.amount, 1).pow(Decimal.sub(x, 4).sqrt().sub(1).div(2))
+                    ? Decimal.add(player.value.prog.kua.blessings.bestInCol, 1).pow(Decimal.sub(x, 4).sqrt().sub(1).div(2))
                     : D(1),
                 Decimal.gte(x, 12) 
-                    ? Decimal.add(player.value.prog.kua.blessings.amount, 1).ln().add(1).pow(Decimal.sub(x, 11).sqrt().div(2)).sub(1).div(Decimal.sub(player.value.prog.kua.blessings.upgrades[0], 11).sqrt().div(2)).div(10).add(1).ln().mul(10)
+                    ? Decimal.add(player.value.prog.kua.blessings.bestInCol, 1).ln().add(1).pow(Decimal.sub(x, 11).sqrt().div(2)).sub(1).div(Decimal.sub(player.value.prog.kua.blessings.upgrades[0], 11).sqrt().div(2)).div(10).add(1).ln().mul(10)
                     : D(0),
             ];
-            if (arr[0].gte(50)) {
-                arr[0] = scale(arr[0], 0.2, false, 50, 1, 0.5);
-            }
             return arr;
         })
     },
@@ -333,7 +330,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
                 totalKB = Decimal.add(totalKB, player.value.prog.kua.blessings.upgrades[i]);
             }
             return [
-                Decimal.add(player.value.prog.kua.blessings.amount, 1).ln().mul(Decimal.sqrt(x)),
+                Decimal.add(player.value.prog.kua.blessings.bestInCol, 1).ln().mul(Decimal.sqrt(x)),
                 Decimal.gte(x, 6) 
                     ? Decimal.pow(Decimal.sub(x, 5).mul(0.01).add(1), totalKB)
                     : D(1),
@@ -447,7 +444,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
                 x = D(0);
             }
             return [
-                Decimal.max(player.value.prog.kua.blessings.amount, 1).log10().sqrt().add(1).pow(Decimal.pow(x, 0.75)),
+                Decimal.max(player.value.prog.kua.blessings.bestInCol, 1).log10().sqrt().add(1).pow(Decimal.pow(x, 0.75)),
                 Decimal.gte(x, 6) 
                     ? Decimal.add(x, 4).sqrt().mul(1.5).sub(4.5)
                     : D(0),
@@ -475,6 +472,7 @@ export const gainKBOnClick = () => {
     if (Decimal.lt(player.value.prog.kua.blessings.clickCooldown, 0)) {
         player.value.prog.kua.blessings.clickCooldown = D(0.25);
         player.value.prog.kua.blessings.amount = Decimal.add(player.value.prog.kua.blessings.amount, tmp.value.kua.blessings.perClick);
+        player.value.prog.kua.blessings.bestInCol = Decimal.max(player.value.prog.kua.blessings.bestInCol, player.value.prog.kua.blessings.amount);
         player.value.prog.kua.blessings.bestInLayer4 = Decimal.max(player.value.prog.kua.blessings.bestInLayer4, player.value.prog.kua.blessings.amount);
     }
 }

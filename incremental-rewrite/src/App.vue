@@ -21,7 +21,7 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
         <canvas ref="canvas" id="canvas" style="height: 100vh; width: 100vw; position: absolute; top: 0vw; left: 0vw; z-index: -2;"></canvas>
         <div id="offlineTime" v-if="tmp.offlineTime.active">
             <div class="flex-vertical" style="font-size: 12px">
-                <span class="whiteText font0">You are in offline time.</span>
+                <span class="whiteText font0">{{gameVars.offlineTimeFailed ? "Executing offline time failed!" : "You are in offline time."}}</span>
                 <span class="whiteText font0">Ticks: {{ format(tmp.offlineTime.tickRemaining) }} / {{format(tmp.offlineTime.tickMax)}} ({{formatTime(tmp.offlineTime.tickRemaining * tmp.offlineTime.tickLength)}} / {{formatTime(tmp.offlineTime.tickMax * tmp.offlineTime.tickLength)}})</span>
                 <div id="offlineTimeProgress" style="height: 20px; width: 800px; position: relative; margin: 2px">
                     <div id="offlineTimeProgressBarBase" style="background-color: #808080; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"></div>
@@ -31,7 +31,7 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
                 </div>
                 <br>
                 <span style="color: #00ff00" class="font0">You have {{ formatTime(Decimal.div(player.offlineTime, 1000)) }} offline time in your reserve.</span>
-                <span v-if="player.prog.dilatedTime.normalizeTime && !player.prog.dilatedTime.paused" style="color: #00ff00" class="font0">You have set your time to be normalized, therefore all ticks will only be a maximum of 50ms. The leftover time will spill over into your offline time reserve.</span>
+                <span v-if="player.prog.dilatedTime.normalized && !player.prog.dilatedTime.paused" style="color: #00ff00" class="font0">You have set your time to be normalized, therefore all ticks will only be a maximum of 50ms. The leftover time will spill over into your offline time reserve.</span>
                 <span v-if="player.prog.dilatedTime.paused" style="color: #00ff00" class="font0">You have paused the game. All the time will be sent into your offline time reserve.</span>
                 <br>
                 <span class="whiteText font0">You have {{ format(player.prog.main.points) }} points.</span>

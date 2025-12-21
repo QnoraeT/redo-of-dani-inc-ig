@@ -244,7 +244,7 @@ export const resetFactor = (where: Array<number>) => {
         // ! I HAVE TO SPAM ! ON THIS SO THAT GITHUB CAN ACTUALLY BUILD THE SITE BUT VSCODE ISN'T GIVING ME ANY ISSUES ??? WTF?
         if (ALL_FACTORS[where[0]].factors! === null) {
             throw new Error(
-                `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                `W1: You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
             );
         }
         ALL_FACTORS[where[0]].factors! = [];
@@ -258,7 +258,7 @@ export const resetFactor = (where: Array<number>) => {
         if (where[2] === undefined) {
             if (ALL_FACTORS[where[0]].subTabs![where[1]].factors! === null) {
                 throw new Error(
-                    `You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
+                    `W2: You can't add effects to a subTab only stat! (Category: ${where[0]}, Subtabs: [${where[1]}, ${where[2]}, ${where[3]}])`
                 );
             }
             ALL_FACTORS[where[0]].subTabs![where[1]].factors! = [];
@@ -303,42 +303,7 @@ export const resetFactor = (where: Array<number>) => {
             }
         }
     }
-    throw new Error(`bad args for resetFactor: ${where}`)
 }
-
-export const initStatsFactors = () => {
-    const arr = [];
-    for (let i = 0; i < MAIN_UPG_DATA.length; i++) {
-        arr.push({
-            name: `Upgrade ${i + 1}`,
-            get show() {
-                return tmp.value.main.upgrades[i].shown;
-            },
-            subTabs: [
-                {
-                    name: `Upgrade ${i + 1} Effect`,
-                    show: true,
-                    subTabs: null,
-                    factors: []
-                },
-                {
-                    name: `Upgrade ${i + 1} Cost`,
-                    show: true,
-                    subTabs: null,
-                    factors: []
-                },
-                {
-                    name: `Upgrade ${i + 1} Base`,
-                    show: true,
-                    subTabs: null,
-                    factors: []
-                }
-            ],
-            factors: null
-        });
-    }
-    ALL_FACTORS[1].subTabs = arr;
-};
 
 // ! factors === null and subTabs === null should be mutually exclusive !
 export const ALL_FACTORS: Array<FactorsStat> = [
@@ -347,12 +312,6 @@ export const ALL_FACTORS: Array<FactorsStat> = [
         show: true,
         subTabs: null,
         factors: []
-    },
-    {
-        name: "Main Upgrades",
-        show: true,
-        subTabs: [],
-        factors: null
     },
     {
         name: "PRai",
@@ -366,12 +325,6 @@ export const ALL_FACTORS: Array<FactorsStat> = [
             },
             {
                 name: "PRai Effect",
-                show: true,
-                subTabs: null,
-                factors: []
-            },
-            {
-                name: "PRai Exponent",
                 show: true,
                 subTabs: null,
                 factors: []
@@ -392,19 +345,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
                 factors: []
             },
             {
-                name: "PR2 Cost Base",
-                show: true,
-                subTabs: null,
-                factors: []
-            },
-            {
                 name: "PR2 Effect",
-                show: true,
-                subTabs: null,
-                factors: []
-            },
-            {
-                name: "PR2 Effect Base",
                 show: true,
                 subTabs: null,
                 factors: []
@@ -457,31 +398,7 @@ export const ALL_FACTORS: Array<FactorsStat> = [
                 },
                 subTabs: null,
                 factors: []
-            },
-            {
-                name: "KProof Exponent",
-                get show() {
-                    return player.value.prog.unlocks.kproofs === undefined ? false : player.value.prog.unlocks.kproofs.main;
-                },
-                subTabs: null,
-                factors: []
-            },
-            {
-                name: "SKProof Exponent",
-                get show() {
-                    return player.value.prog.unlocks.kproofs === undefined ? false : player.value.prog.unlocks.kproofs.strange;
-                },
-                subTabs: null,
-                factors: []
-            },
-            {
-                name: "FKProof Exponent",
-                get show() {
-                    return player.value.prog.unlocks.kproofs === undefined ? false : player.value.prog.unlocks.kproofs.finicky;
-                },
-                subTabs: null,
-                factors: []
-            },
+            }
         ],
         factors: null
     },

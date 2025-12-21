@@ -169,6 +169,8 @@ export const reset = (layer: number) => {
 
             if (!hasGrowanMilestone(1)) {
                 player.value.prog.kua.blessings.amount = D(0);
+                player.value.prog.kua.blessings.bestInCol = D(0);
+
                 for (let i = 0; i < KUA_BLESS_UPGS.length; i++) {
                     player.value.prog.kua.blessings.upgrades[i] = D(0);
                 }
@@ -222,6 +224,12 @@ export const reset = (layer: number) => {
 
             player.value.prog.main.bestInLayer4 = D(0);
             player.value.prog.main.pr2.bestInLayer4 = D(0);
+            player.value.prog.kua.bestInLayer4 = D(0);
+            player.value.prog.kua.kshards.totalInLayer4 = D(0);
+            player.value.prog.kua.kshards.bestInLayer4 = D(0);
+            player.value.prog.kua.kpower.totalInLayer4 = D(0);
+            player.value.prog.kua.kpower.bestInLayer4 = D(0);
+            player.value.prog.kua.blessings.bestInLayer4 = D(0);
 
             for (const i in COL_CHALLENGES) {
                 if (COL_CHALLENGES[i as challengeIDList].layer === 0) {
@@ -284,7 +292,7 @@ export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, d
             player.value.prog.kua.proofs.strange.times = Decimal.add(player.value.prog.kua.proofs.strange.times, delta);
         }
 
-        tmp.value.kua.proofs.skpExp = getStrangeKPExp(player.value.prog.kua.proofs.strange.hiddenExp, false);
+        tmp.value.kua.proofs.skpExp = getStrangeKPExp(player.value.prog.kua.proofs.strange.hiddenExp);
         let data = Decimal.max(player.value.prog.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
         let calc = Decimal.max(player.value.prog.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed).pow(tmp.value.kua.proofs.skpExp).sub(1);
 
@@ -357,7 +365,7 @@ export const resetFromFKP = (reset = true, addTimes: boolean, addExp: boolean, d
             player.value.prog.kua.proofs.finicky.times = Decimal.add(player.value.prog.kua.proofs.finicky.times, delta);
         }
 
-        tmp.value.kua.proofs.fkpExp = getFinickyKPExp(player.value.prog.kua.proofs.finicky.hiddenExp, false);
+        tmp.value.kua.proofs.fkpExp = getFinickyKPExp(player.value.prog.kua.proofs.finicky.hiddenExp);
 
         if (inChallenge("df")) {
             player.value.prog.kua.proofs.finicky.amount = scale(player.value.prog.kua.proofs.finicky.amount, 2.1, true, 10, 1, 0.75);

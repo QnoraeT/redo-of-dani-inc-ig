@@ -18,13 +18,13 @@ export const updateColResearch = (delta: DecimalSource) => {
     tmp.value.col.researchesAtOnce = 1;
     tmp.value.col.researchesAllocated = 0;
     tmp.value.col.researchSpeed = D(1);
-    setFactor(0, [5, 1], "Base", `${format(1, 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, true);
+    setFactor(0, [4, 1], "Base", `${format(1, 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, true);
     tmp.value.col.researchSpeed = tmp.value.col.researchSpeed.mul(tmp.value.col.effects.res);
-    setFactor(1, [5, 1], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(tmp.value.col.effects.res, 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gte(timesCompleted("df"), 1), "col");
+    setFactor(1, [4, 1], `Decaying Feeling Completion ×${format(timesCompleted('df'))}`, `×${format(tmp.value.col.effects.res, 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gte(timesCompleted("df"), 1), "col");
     tmp.value.col.researchSpeed = tmp.value.col.researchSpeed.mul(COL_CHALLENGES.im.type2ChalEff!.value[0]);
-    setFactor(2, [5, 1], `I. Mechanics PB: ${format(timesCompleted('im'))}`, `×${format(COL_CHALLENGES.im.type2ChalEff!.value[0], 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gt(COL_CHALLENGES.im.type2ChalEff!.value[0], 1), "col");
+    setFactor(2, [4, 1], `I. Mechanics PB: ${format(timesCompleted('im'))}`, `×${format(COL_CHALLENGES.im.type2ChalEff!.value[0], 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gt(COL_CHALLENGES.im.type2ChalEff!.value[0], 1), "col");
     tmp.value.col.researchSpeed = tmp.value.col.researchSpeed.mul(getColResEffect(3));
-    setFactor(3, [5, 1], `Coliescence`, `×${format(getColResEffect(3), 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gte(timesCompleted("im"), 1e20), "col");
+    setFactor(3, [4, 1], `Coliescence`, `×${format(getColResEffect(3), 2)}`, `${format(tmp.value.col.researchSpeed, 2)}`, Decimal.gte(timesCompleted("im"), 1e20), "col");
 
     for (let i = 0; i < COL_RESEARCH.length; i++) {
         if (player.value.prog.col.research.enabled[i] === undefined) {
@@ -37,10 +37,7 @@ export const updateColResearch = (delta: DecimalSource) => {
         if (player.value.prog.col.research.enabled[i]) {
             tmp.value.col.researchesAllocated++;
             generate = tmp.value.col.researchSpeed.mul(delta);
-            player.value.prog.col.research.xpTotal[i] = Decimal.add(
-                player.value.prog.col.research.xpTotal[i],
-                generate
-            );
+            player.value.prog.col.research.xpTotal[i] = Decimal.add(player.value.prog.col.research.xpTotal[i], generate);
         }
     }
 }
@@ -57,10 +54,10 @@ export const updateColChallenges = (delta: DecimalSource) => {
 
     if (player.value.prog.unlocks.col) {
         i = Decimal.max(player.value.prog.kua.amount, 100).div(100);
-        setFactor(0, [5, 0], "Base", `${format(Decimal.max(player.value.prog.kua.amount, 100), 2)} / ${format(100)}`, `${format(i, 2)}`, true);
+        setFactor(0, [4, 0], "Base", `${format(Decimal.max(player.value.prog.kua.amount, 100), 2)} / ${format(100)}`, `${format(i, 2)}`, true);
         tmp.value.col.powGen = i;
         i = Decimal.cbrt(player.value.prog.col.power).mul(0.6).pow10().add(tmp.value.col.powGen).log10().div(0.6).pow(3).sub(player.value.prog.col.power);
-        setFactor(1, [5, 0], "Decay", `/${format(tmp.value.col.powGen.div(i), 2)}`, `${format(i, 2)}`, true);
+        setFactor(1, [4, 0], "Decay", `/${format(tmp.value.col.powGen.div(i), 2)}`, `${format(i, 2)}`, true);
 
         generate = tmp.value.col.powGen.mul(delta);
         i = player.value.prog.col.power;

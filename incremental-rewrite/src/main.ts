@@ -11,7 +11,7 @@ import { saveID, SAVE_MODES, saveTheFrickingGame, resetTheWholeGame, decompressS
 import { getSCSLAttribute, setSCSLEffectDisp, compileScalSoftList, updateAllSCSL } from "./softcapScaling";
 import { ACHIEVEMENT_DATA, fixAchievements, getAchievementEffect, ifAchievement, setAchievement } from "./components/Game/Game_Achievements/Game_Achievements";
 import { diePopupsDie } from "./popups";
-import { ALL_FACTORS, initStatsFactors, LABELS, pushFactor, resetFactor, setFactor, type FactorColorID } from "./components/Game/Game_Stats/Game_Stats";
+import { ALL_FACTORS, LABELS, pushFactor, resetFactor, setFactor, type FactorColorID } from "./components/Game/Game_Stats/Game_Stats";
 import { updatePlayerData } from "./versionControl";
 import { reset } from "./resets";
 import { UPDATE_LOG } from "./components/Game/Game_Options/Game_Options";
@@ -284,6 +284,7 @@ export type Player = {
             blessings: {
                 amount: DecimalSource,
                 clickCooldown: DecimalSource,
+                bestInCol: DecimalSource,
                 bestInLayer4: DecimalSource,
                 upgrades: Array<DecimalSource>
             },
@@ -550,6 +551,7 @@ export const initPlayer = (set = false): Player => {
                 blessings: {
                     amount: D(0),
                     clickCooldown: D(0),
+                    bestInCol: D(0),
                     bestInLayer4: D(0),
                     upgrades: [D(0), D(0), D(0), D(0)]
                 },
@@ -637,7 +639,7 @@ export const initPlayer = (set = false): Player => {
             },
             layer4: {
                 timeInL4R: D(0),
-                pickedFirst: 0, // gro = false, tax = true
+                pickedFirst: 0, // none = 0 gro = 1, tax = 2, both = 3
                 gro: {
                     totalAmt: D(0),
                     amount: D(0),
@@ -944,7 +946,7 @@ export const gameVars: Ref<gameVars> = ref({
 });
 
 export const tab: Ref<Tab> = ref({
-    currentTab: 0,
+    currentTab: 1,
     // fill this with values
     tabList: [
         [0, 0, 0, 0],
@@ -1213,43 +1215,43 @@ function doOfflineTime() {
     }
     for (let i = 0; i < Math.min(tmp.value.offlineTime.tickRemaining, 32); i++) {
         try {
-            gameLoop()
-            tmp.value.offlineTime.tickRemaining -= 1
+            gameLoop();
+            tmp.value.offlineTime.tickRemaining -= 1;
         } catch(e) {
-            console.error(`Offline time couldn't be done!`)
-            console.error(e)
-            gameVars.value.offlineTimeFailed = true
+            console.error(`Offline time couldn't be done!`);
+            console.error(e);
+            gameVars.value.offlineTimeFailed = true;
             return;
         }
     }
 
     if (tmp.value.offlineTime.tickRemaining > 0) {
-        window.setTimeout(doOfflineTime, 0)
+        window.setTimeout(doOfflineTime, 0);
     } else {
-        tmp.value.offlineTime.active = false
-        doGameLoopTicksLol()
-        console.log('offline time deactivated!')
+        tmp.value.offlineTime.active = false;
+        doGameLoopTicksLol();
+        console.log('offline time deactivated!');
     }
 } 
 
 function loadGame(): void {
+    const LOADED_GAME = localStorage.getItem(saveID);
     gameVars.value.lastFPSCheck = 0;
-    if (localStorage.getItem(saveID) !== null && localStorage.getItem(saveID) !== "null") {
+    if (LOADED_GAME !== null && LOADED_GAME !== "null") {
         try {
-            game.value = JSON.parse(decompressSave(localStorage.getItem(saveID)!));
+            game.value = JSON.parse(decompressSave(LOADED_GAME));
             player.value = updatePlayerData(game.value.list[game.value.currentSave].data);
         } catch (e) {
             alert("Your save file list is corrupt! It is not recommended that you save the game in it's current state as you will LOSE your entire save file list!\n\nYour save has been automatically printed in the console.")
             console.error(`loading the game.value went wrong!`);
             console.error(e);
-            console.error(localStorage.getItem(saveID)!);
+            console.error(LOADED_GAME);
         }
     }
 
     // initTmp part 2, account for save switching
     tmp.value = initTemp();
     fixAchievements();
-    initStatsFactors();
 
     gameVars.value.sessionStart = Date.now();
     // ! this ruins offline time calculations :c, not sure what this is supposed to be for
@@ -1869,7 +1871,8 @@ function gameLoop(): void {
         alert(
             `The game has crashed! Check the console to see the error(s) to report it to @TearonQ or @qnoraeT. \n\nYou may still be able to export your save normally by going into Options -> Saving -> Save List -> Export Save or Export Save List to Clipboard. \nIf you see any NaNs, you might have a clue!`
         );
-        console.error(
+        // throws back out the error because the offlineTime needs to detect an error
+        throw new Error(
             `The game has crashed! Here is the error(s) to report it to @TearonQ or @qnoraeT. \n\nYou may still be able to export your save normally by going into Options -> Saving -> Save List -> Export Save or Export Save List to Clipboard. \nIf you see any NaNs, you might have a clue!`
         );
     }

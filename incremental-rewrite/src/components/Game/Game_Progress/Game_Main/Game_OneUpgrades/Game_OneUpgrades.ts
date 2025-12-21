@@ -41,14 +41,14 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     { // 1
         cost: computed(() => {
             if (inChallenge("im")) {
-                return smoothPoly(getOMUpgrade(0), 2, 100, false).pow_base(100).mul(1e6);
+                return smoothPoly(getOMUpgrade(0), 2, 100, false).pow_base(1e44).mul(1e6);
             } else {
                 return D(1e6);
             }
         }),
         target: computed(() => {
             if (inChallenge("im")) {
-                return smoothPoly(Decimal.max(player.value.prog.main.prai.amount, 1e6).div(1e6).log(100), 2, 100, true);
+                return smoothPoly(Decimal.max(player.value.prog.main.prai.amount, 1e6).div(1e6).log(1e44), 2, 100, true);
             } else {
                 return Decimal.gte(player.value.prog.main.prai.amount, 1e6) ? D(1) : D(0);
             }
@@ -67,7 +67,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             if (Decimal.gte(getOMUpgrade(15), 1)) {
                 i = i.pow(MAIN_ONE_UPGS[15].effect.value);
             }
-            i = i.pow(Decimal.max(getOMUpgrade(0), 1).ln().add(1));
+            i = i.pow(Decimal.max(getOMUpgrade(0), 1));
             return i;
         }),
         desc: computed(() => { return `Divide Upgrade 2's cost based off of your PRai.`; }),
@@ -77,14 +77,14 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
     { // 2
         cost: computed(() => {
             if (inChallenge("im")) {
-                return smoothPoly(getOMUpgrade(1), 2, 50, false).pow_base(200).mul(4e6);
+                return smoothPoly(getOMUpgrade(1), 2, 50, false).pow_base(2.5e3).mul(4e6);
             } else {
                 return D(4e6);
             }
         }),
         target: computed(() => {
             if (inChallenge("im")) {
-                return smoothPoly(Decimal.max(player.value.prog.main.prai.amount, 4e6).div(4e6).log(200), 2, 50, true);
+                return smoothPoly(Decimal.max(player.value.prog.main.prai.amount, 4e6).div(4e6).log(2.5e3), 2, 50, true);
             } else {
                 return Decimal.gte(player.value.prog.main.prai.amount, 4e6) ? D(1) : D(0);
             }
@@ -337,7 +337,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             }
             return i;
         }),
-        desc: computed(() => { return `Add effective PR2 to PR2's base effect based off of how long you spent in a Kuaraniai reset.`; }),
+        desc: computed(() => { return `PR2's effect is stronger based off of how long you spent in a Kuaraniai reset.`; }),
         effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[8].effect.value, 3)}`; }),
         show: computed(() => { return Decimal.gt(player.value.prog.kua.amount, 0.0001); })
     },
@@ -367,7 +367,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             }
             return i;
         }),
-        desc: computed(() => { return `Multiply points gain based off of Upgrade 3 and 6's effect.`; }),
+        desc: computed(() => { return `Multiply point gain based off of Upgrade 3 and 6's effect.`; }),
         effectDesc: computed(() => { return `${format(MAIN_ONE_UPGS[9].effect.value, 3)}×`; }),
         show: computed(() => { return Decimal.gt(player.value.prog.kua.amount, 0.0001); })
     },

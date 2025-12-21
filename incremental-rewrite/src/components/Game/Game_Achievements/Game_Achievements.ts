@@ -5,7 +5,6 @@ import { colorChange, D, mixColor } from "@/calc";
 import { spawnPopup } from "@/popups";
 import { challengeDepth, inChallenge, timesCompleted } from "../Game_Progress/Game_Colosseum/Game_ColChallenges/Game_ColChalHandler";
 import { getColResLevel } from "../Game_Progress/Game_Colosseum/Game_ColResearches/Game_ColResearches";
-import { getKuaUpgrade } from "../Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/Game_KuaUpgrades";
 import { computed, type ComputedRef } from "vue";
 import { GROWAN_DATA } from "../Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 
@@ -598,7 +597,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 reward: computed(() => { return ``; }),
                 show: computed(() => {
-                    return player.value.prog.unlocks.col;
+                    return ifAchievement(0, 18);
                 }),
                 status: computed(() => { return true; }),
             },
@@ -703,9 +702,6 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     }
 
                     let eff = Decimal.max(tmp.value.main.upgrades[1].effect, 1);
-                    if (getKuaUpgrade("p", 7)) {
-                        eff = eff.root(3);
-                    }
                     eff = eff.pow(pow);
 
                     return eff;
@@ -1016,9 +1012,6 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 }),
                 effect: computed(() => {
                     let eff = Decimal.max(tmp.value.main.upgrades[1].effect, 1e10);
-                    if (getKuaUpgrade("p", 7)) {
-                        eff = eff.root(3).max(1e10);
-                    }
                     eff = eff.div(1e10).pow(0.015);
                     return eff;
                 }),

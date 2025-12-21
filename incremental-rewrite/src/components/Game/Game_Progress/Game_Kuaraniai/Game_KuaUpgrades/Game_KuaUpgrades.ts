@@ -144,7 +144,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 7
             desc: computed(() => {
-                return `Upgrade 1's linear cost scaling is multiplied by ×${format(0.95, 2)}, and Point gain is boosted by Kuaraniai, which increases over time in PRai.`;
+                return `Upgrade 1's cost scaling is slowed by ${format(2.5, 1)}%, and Point gain is boosted by Kuaraniai, which increases over time in PRai.`;
             }),
             cost: D(1e7),
             show: true
@@ -391,7 +391,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 7
             desc: computed(() => {
-                return `Upgrade 2's effect is cubed, but its other effects are not boosted.`;
+                return `Upgrade 2's effect is raised ^${format(1.5, 1)}.`;
             }),
             cost: D(1e8),
             show: true
@@ -399,7 +399,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 8
             desc: computed(() => {
-                return `Upgrade 1 is dilated by ^${format(1.01, 2)}, PR2's effect uses a better formula, and unlock KBlessings at ${format(1e6)} Kuaraniai.`;
+                return `Upgrade 1's effect is raised ^${format(1.01, 2)} to the exponent and PR2's effect uses a better formula. KBlessings are unlockable at ${format(1e6)} Kuaraniai.`;
             }),
             cost: D(1e11),
             show: true

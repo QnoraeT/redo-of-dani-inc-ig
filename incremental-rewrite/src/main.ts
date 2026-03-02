@@ -260,12 +260,14 @@ export type Player = {
             upgrades: number
             kshards: {
                 amount: DecimalSource,
+                totalInCol: DecimalSource,
                 totalInLayer4: DecimalSource,
                 bestInLayer4: DecimalSource,
                 upgrades: number
             },
             kpower: {
                 amount: DecimalSource,
+                totalInCol: DecimalSource,
                 totalInLayer4: DecimalSource,
                 bestInLayer4: DecimalSource,
                 upgrades: number
@@ -527,12 +529,14 @@ export const initPlayer = (set = false): Player => {
                 upgrades: 0,
                 kshards: {
                     amount: D(0),
+                    totalInCol: D(0),
                     totalInLayer4: D(0),
                     bestInLayer4: D(0),
                     upgrades: 0
                 },
                 kpower: {
                     amount: D(0),
+                    totalInCol: D(0),
                     totalInLayer4: D(0),
                     bestInLayer4: D(0),
                     upgrades: 0
@@ -553,7 +557,7 @@ export const initPlayer = (set = false): Player => {
                     clickCooldown: D(0),
                     bestInCol: D(0),
                     bestInLayer4: D(0),
-                    upgrades: [D(0), D(0), D(0), D(0)]
+                    upgrades: [D(0), D(0), D(0), D(0), D(0)]
                 },
                 proofs: {
                     amount: D(0),
@@ -821,8 +825,11 @@ type Tmp = {
             skpSpeed: Decimal,
             exp: Decimal,
             expPerSec: Decimal,
+            skpPerSecCur: Decimal,
+            skpPerSecNext: Decimal,
             skpExp: Decimal,
             skpEff: Decimal,
+            skpEff2: Decimal,
             fkpExp: Decimal,
             fkpGain: Decimal,
             fkpEff: Decimal,
@@ -1086,8 +1093,11 @@ function initTemp(): Tmp {
                 skpSpeed: D(1),
                 exp: D(1),
                 expPerSec: D(1),
+                skpPerSecCur: D(1),
+                skpPerSecNext: D(1),
                 skpExp: D(1),
                 skpEff: D(1),
+                skpEff2: D(1),
                 fkpExp: D(1),
                 fkpGain: D(1),
                 fkpEff: D(1),

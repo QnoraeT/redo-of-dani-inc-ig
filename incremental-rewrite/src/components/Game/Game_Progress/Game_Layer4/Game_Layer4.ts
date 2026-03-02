@@ -26,7 +26,7 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
             tmp.value.layer4.growan.req = D(1e24);
             tmp.value.layer4.growan.pending = Decimal.max(player.value.prog.kua.bestInLayer4, tmp.value.layer4.growan.req).log(tmp.value.layer4.growan.req).sub(player.value.prog.layer4.gro.totalAmt).max(0);
 
-            tmp.value.layer4.growan.nextAt = Decimal.pow(tmp.value.layer4.growan.req, player.value.prog.layer4.gro.totalAmt);
+            tmp.value.layer4.growan.nextAt = Decimal.max(player.value.prog.layer4.gro.totalAmt, 1).pow_base(tmp.value.layer4.growan.req);
             tmp.value.layer4.growan.canDo = Decimal.gte(player.value.prog.kua.bestInLayer4, tmp.value.layer4.growan.nextAt);
 
             i = Decimal.max(player.value.prog.layer4.gro.totalAmt, 0);
@@ -100,7 +100,7 @@ export const updateLayer4 = (type: number, delta: DecimalSource) => {
                     if (TAX_GAIN_CALC[j].name.value === 'Base') {
                         txt = `${format(100)}^((log(${format(player.value.prog.main.bestInLayer4, 2)})/${format(tmp.value.layer4.tax.req.log10())})^${format(0.5, 2)} - 1)`;
                     }
-                    setFactor(j, [6, 0], TAX_GAIN_CALC[j].name.value, txt, `${format(i, 1)}`, TAX_GAIN_CALC[j].active, TAX_GAIN_CALC[j].color);
+                    setFactor(j, [5, 0], TAX_GAIN_CALC[j].name.value, txt, `${format(i, 1)}`, TAX_GAIN_CALC[j].active, TAX_GAIN_CALC[j].color);
                 }
 
                 tmp.value.layer4.tax.pending = i;

@@ -47,6 +47,7 @@ export const resetStage = (resets: "prai" | "pr2" | "kua" | "col" | "tax" | "gro
                 if (!override) {
                     setAchievement(1, 8);
                     player.value.prog.kua.amount = Decimal.add(player.value.prog.kua.amount, tmp.value.kua.pending);
+                    player.value.prog.kua.bestInLayer4 = Decimal.max(player.value.prog.kua.bestInLayer4, player.value.prog.kua.amount);
                     player.value.prog.kua.times = Decimal.add(player.value.prog.kua.times, 1);
                 }
 
@@ -134,6 +135,8 @@ export const reset = (layer: number) => {
             break;
         case 3:
             player.value.prog.main.bestInCol = D(0);
+            player.value.prog.kua.kshards.totalInCol = D(0);
+            player.value.prog.kua.kpower.totalInCol = D(0);
 
             player.value.prog.kua.amount = D(0);
             player.value.prog.kua.times = D(0);
@@ -280,75 +283,106 @@ export const reset = (layer: number) => {
 };
 
 export const resetFromSKP = (reset = true, addTimes: boolean, addExp: boolean, delta: DecimalSource) => {
+    const playerKuaObj = player.value.prog.kua;
     if (reset) {
         delta = D(1);
     }
-    if (Decimal.gte(player.value.prog.kua.proofs.amount, 1e24) && (Decimal.lt(player.value.prog.kua.proofs.strange.cooldown, 0) || !reset)) {
-        if (reset) { player.value.prog.kua.proofs.strange.cooldown = 1; }
+    if (Decimal.gte(tmp.value.kua.proofs.exp, 15) && (Decimal.lt(playerKuaObj.proofs.strange.cooldown, 0) || !reset)) {
+        if (reset) { playerKuaObj.proofs.strange.cooldown = 1; }
+
+        const expGain = Decimal.log10(playerKuaObj.proofs.amount).div(2).mul(delta);
+
         if (addExp) {
-            player.value.prog.kua.proofs.strange.hiddenExp = Decimal.add(player.value.prog.kua.proofs.strange.hiddenExp, Decimal.log10(player.value.prog.kua.proofs.amount).div(2).mul(delta));
+            playerKuaObj.proofs.strange.hiddenExp = Decimal.add(playerKuaObj.proofs.strange.hiddenExp, expGain);
         }
         if (addTimes) {
-            player.value.prog.kua.proofs.strange.times = Decimal.add(player.value.prog.kua.proofs.strange.times, delta);
+            playerKuaObj.proofs.strange.times = Decimal.add(playerKuaObj.proofs.strange.times, delta);
         }
 
-        tmp.value.kua.proofs.skpExp = getStrangeKPExp(player.value.prog.kua.proofs.strange.hiddenExp);
-        let data = Decimal.max(player.value.prog.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
-        let calc = Decimal.max(player.value.prog.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        tmp.value.kua.proofs.skpExp = getStrangeKPExp(playerKuaObj.proofs.strange.hiddenExp);
+        const nextExp = getStrangeKPExp(Decimal.add(playerKuaObj.proofs.strange.hiddenExp, expGain.div(delta)));
+        // why did i do this
+        let safeGuard = Decimal.max(playerKuaObj.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        let KProofsNextExp = playerKuaObj.proofs.strange.amount;
+        let KProofsWOSoftcap1 = playerKuaObj.proofs.strange.amount;
+        let KProofsWOSoftcap2 = playerKuaObj.proofs.strange.amount;
+        const prev = playerKuaObj.proofs.strange.amount;
 
         const softcaps = {
-            prevEff: calc,
+            prevEff: D(0),
             scal: getSCSLAttribute('skp', false)
         }
 
-        if (data.gte(softcaps.scal[1].start)) {
-            data = scale(data, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            calc = scale(calc, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            player.value.prog.kua.proofs.strange.amount = scale(player.value.prog.kua.proofs.strange.amount, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            setSCSLEffectDisp('skp', false, 1, `${format(calc.log(softcaps.prevEff), 3)}√`);
-        }
-
-        if (data.gte(softcaps.scal[0].start)) {
-            data = scale(data, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            calc = scale(calc, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            player.value.prog.kua.proofs.strange.amount = scale(player.value.prog.kua.proofs.strange.amount, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            setSCSLEffectDisp('skp', false, 0, `/${format(calc.div(softcaps.prevEff), 3)}`);
-        }
-
         if (inChallenge("df")) {
-            data = scale(data, 2.1, true, 10, 1, 0.75);
-            calc = scale(calc, 2.1, true, 10, 1, 0.75);
-            player.value.prog.kua.proofs.strange.amount = scale(player.value.prog.kua.proofs.strange.amount, 2.1, true, 10, 1, 0.75);
+            safeGuard = scale(safeGuard, 2.1, true, 10, 1, 0.75);
+            KProofsNextExp = scale(KProofsNextExp, 2.1, true, 10, 1, 0.75);
+            KProofsWOSoftcap1 = scale(KProofsWOSoftcap1, 2.1, true, 10, 1, 0.75);
+            KProofsWOSoftcap2 = scale(KProofsWOSoftcap2, 2.1, true, 10, 1, 0.75);
+            playerKuaObj.proofs.strange.amount = scale(playerKuaObj.proofs.strange.amount, 2.1, true, 10, 1, 0.75);
         }
 
-        player.value.prog.kua.proofs.strange.amount = Decimal.max(player.value.prog.kua.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        if (safeGuard.gte(softcaps.scal[1].start)) {
+            safeGuard = scale(safeGuard, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+            KProofsNextExp = scale(KProofsNextExp, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+            KProofsWOSoftcap1 = scale(KProofsWOSoftcap1, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+            playerKuaObj.proofs.strange.amount = scale(playerKuaObj.proofs.strange.amount, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+        }
 
+        if (safeGuard.gte(softcaps.scal[0].start)) {
+            safeGuard = scale(safeGuard, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+            KProofsNextExp = scale(KProofsNextExp, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+            KProofsWOSoftcap2 = scale(KProofsWOSoftcap2, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+            playerKuaObj.proofs.strange.amount = scale(playerKuaObj.proofs.strange.amount, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+        }
+
+        KProofsNextExp = Decimal.max(KProofsNextExp, 0).add(1).root(nextExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(nextExp).sub(1);
+        KProofsWOSoftcap2 = Decimal.max(KProofsWOSoftcap2, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        KProofsWOSoftcap1 = Decimal.max(KProofsWOSoftcap1, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
+        playerKuaObj.proofs.strange.amount = Decimal.max(playerKuaObj.proofs.strange.amount, 0).add(1).root(tmp.value.kua.proofs.skpExp).add(tmp.value.kua.proofs.skpSpeed.mul(delta)).pow(tmp.value.kua.proofs.skpExp).sub(1);
+
+        if (safeGuard.gte(softcaps.scal[0].start)) {
+            safeGuard = scale(safeGuard, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+            KProofsNextExp = scale(KProofsNextExp, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+            KProofsWOSoftcap2 = scale(KProofsWOSoftcap2, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+            playerKuaObj.proofs.strange.amount = scale(playerKuaObj.proofs.strange.amount, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+        }
+
+        if (safeGuard.gte(softcaps.scal[1].start)) {
+            safeGuard = scale(safeGuard, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+            KProofsNextExp = scale(KProofsNextExp, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+            KProofsWOSoftcap1 = scale(KProofsWOSoftcap1, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+            playerKuaObj.proofs.strange.amount = scale(playerKuaObj.proofs.strange.amount, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+        }
+        
         if (inChallenge("df")) {
-            data = scale(data, 2.1, false, 10, 1, 0.75);
-            calc = scale(calc, 2.1, false, 10, 1, 0.75);
-            player.value.prog.kua.proofs.strange.amount = scale(player.value.prog.kua.proofs.strange.amount, 2.1, false, 10, 1, 0.75);
+            safeGuard = scale(safeGuard, 2.1, false, 10, 1, 0.75);
+            KProofsNextExp = scale(KProofsNextExp, 2.1, false, 10, 1, 0.75);
+            KProofsWOSoftcap1 = scale(KProofsWOSoftcap1, 2.1, false, 10, 1, 0.75);
+            KProofsWOSoftcap2 = scale(KProofsWOSoftcap2, 2.1, false, 10, 1, 0.75);
+            playerKuaObj.proofs.strange.amount = scale(playerKuaObj.proofs.strange.amount, 2.1, false, 10, 1, 0.75);
         }
 
-        if (data.gte(softcaps.scal[0].start)) {
-            data = scale(data, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            player.value.prog.kua.proofs.strange.amount = scale(player.value.prog.kua.proofs.strange.amount, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+        if (safeGuard.gte(softcaps.scal[0].start)) {
+            setSCSLEffectDisp('skp', false, 0, `/${format(KProofsWOSoftcap1.div(playerKuaObj.proofs.strange.amount).root(delta), 3)}`);
         }
 
-        if (data.gte(softcaps.scal[1].start)) {
-            data = scale(data, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            player.value.prog.kua.proofs.strange.amount = scale(player.value.prog.kua.proofs.strange.amount, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+        if (safeGuard.gte(softcaps.scal[1].start)) {
+            setSCSLEffectDisp('skp', false, 1, `${format(KProofsWOSoftcap2.div(playerKuaObj.proofs.strange.amount).log(Decimal.div(playerKuaObj.proofs.strange.amount, prev)), 3)}√`);
         }
 
-        NaNCheck(data);
-        NaNCheck(player.value.prog.kua.proofs.strange.amount);
+        NaNCheck(safeGuard);
+        NaNCheck(playerKuaObj.proofs.strange.amount);
 
         if (reset && !hasGrowanMilestone(1)) {
-            player.value.prog.kua.proofs.amount = D(0);
+            playerKuaObj.proofs.amount = D(0);
             for (let i = 0; i < KUA_PROOF_UPGS.kp.length; i++) {
-                player.value.prog.kua.proofs.upgrades.kp[i] = D(0);
+                playerKuaObj.proofs.upgrades.kp[i] = D(0);
             }
         }
+
+        return { gainAtReset: Decimal.div(playerKuaObj.proofs.strange.amount, prev).root(delta), gainAtNext: Decimal.div(KProofsNextExp, prev).root(delta) }
     }
+    return { gainAtReset: D(1), gainAtNext: D(1) }
 }
 
 export const resetFromFKP = (reset = true, addTimes: boolean, addExp: boolean, delta: DecimalSource) => {

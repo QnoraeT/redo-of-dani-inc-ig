@@ -162,20 +162,15 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                     ></div>
                 </div>
             </div>
-            <div class="flex-container whiteText font0" style="justify-content: center; background-color: #461100; position: relative; width: 100%; height: 59%; font-size: 0.9vw;">
-                <span class="centered-text" style="top: 0.4vw">
-                    {{COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDesc(getColResLevel(tab.tabList[tab.currentTab][1]).floor())}}
-                </span>
-                <span class="centered-text" style="top: 1.6vw">
-                    {{COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDescLevel(getColResLevel(tab.tabList[tab.currentTab][1]).floor())}}
-                </span>
+            <div class="flex-vertical whiteText font0" style="background-color: #461100; position: relative; width: 100%; height: 59%; font-size: 0.9vw;">
+                <span v-html="COL_RESEARCH[tab.tabList[tab.currentTab][1]].effectDesc(getColResLevel(tab.tabList[tab.currentTab][1]).floor())" class="flex-vertical alignCenter centered-text" style="top: 0.4vw"></span>
             </div>
-            <div class="flex-container whiteText font0" style="justify-content: center; background-color: #521400; position: relative; width: 100%; height: 4.5%; font-size: 1.1vw;">
+            <div class="flex-vertical whiteText font0" style="background-color: #521400; position: relative; width: 100%; height: 4.5%; font-size: 1.1vw;">
                 <span class="centered-text" style="top: 10%">
                     You currently have allocated {{ tmp.col.researchesAllocated }} / {{ tmp.col.researchesAtOnce }} researches.
                 </span>
             </div>
-            <div class="flex-container whiteText font0" style="justify-content: center; background-color: #461100; position: relative; width: 100%; height: 9.5%;">
+            <div class="flex-vertical whiteText font0" style="background-color: #461100; position: relative; width: 100%; height: 9.5%;">
                 <button @click="allocColResearch(tab.tabList[tab.currentTab][1])" class="smallColBorder colButton font0 whiteText" style="width: 50%; height: 80%; top: 10%; font-size: 0.75vw; position: relative;">
                     {{
                         player.prog.col.research.enabled[tab.tabList[tab.currentTab][1]]

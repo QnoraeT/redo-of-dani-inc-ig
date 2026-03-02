@@ -9,8 +9,8 @@ import { resetStage } from "@/resets";
 </script>
 <template>
     <div id="growan" v-if="tab.currentTab === 7">
-        <div class="flex-container" style="flex-direction: column">
-            <div class="flex-container" style="flex-direction: row; justify-content: center; font-size: 1.4vw; margin-bottom: 1vw;"> 
+        <div class="flex-vertical">
+            <div class="flex-horizontal" style="font-size: 1.4vw; margin-bottom: 1vw;"> 
                 <button @click="switchSubTab(0, 0)" style="color: #fa8" class="normalTabButton smallGroBorder groButton font0"> 
                     Equations
                 </button> 
@@ -34,7 +34,7 @@ import { resetStage } from "@/resets";
                 <span style="font-size: 0.55vw">This is a layer 4 reset, and will reset all prior layers. You can reset even if you won't gain any grōwan.</span>
             </button>
         </div>
-        <div v-if="tab.tabList[tab.currentTab][0] === 0" class="flex-container" style="flex-direction: column; justify-content: center; margin-bottom: 1vw">
+        <div v-if="tab.tabList[tab.currentTab][0] === 0" class="flex-vertical" style="justify-content: center; margin-bottom: 1vw">
             <span style="text-shadow: #840 0vw 0vw 0.8vw; color: #840; text-align: center; font-size: 0.9vw; margin-top: 1vw" class="font0">
                 You have <span style="font-size: 1.2vw" ><b>{{ format(player.prog.layer4.gro.gEAmount) }}</b></span> grōwan solutions, which boosts PRai effect by <b><span style="font-size: 1.2vw">^{{ format(tmp.layer4.growan.solEff.prai, 3) }}</span></b>.
             </span>
@@ -47,7 +47,7 @@ import { resetStage } from "@/resets";
             <span v-if="Decimal.gte(player.prog.layer4.gro.growanEqu[3].bought, 1) || Decimal.gte(player.prog.layer4.gro.equCancel, 1)" style="text-shadow: #840 0vw 0vw 0.8vw; color: #840; text-align: center; font-size: 0.8vw; margin-top: 0.2vw" class="font0">
                 Grōwan Cancellation Effect: -{{ format(GROWAN_DATA.equCancel.eff.value, 2) }} (-{{ format(GROWAN_DATA.equCancel.effPer.value, 2) }} per.)
             </span>
-            <div class="flex-container" style="margin-left: auto; margin-right: auto; flex-direction: column; width: 66.7vw; margin-top: 1vw;">
+            <div class="flex-vertical" style="margin-left: auto; margin-right: auto; width: 66.7vw; margin-top: 1vw;">
                 <button @click="buyMaxAllGroEqu()" class="whiteText smallGroBorder groButton font0" style="font-size: 0.8vw; height: 1.5vw; width: 8vw; margin-left: auto; margin-right: auto; margin-bottom: 1.0vw">
                     Buy Max
                 </button>
@@ -55,8 +55,8 @@ import { resetStage } from "@/resets";
                     Multiply all equations by {{ format(GROWAN_DATA.tick.eff.value, 3) }}×. ({{ format(GROWAN_DATA.tick.effPer.value, 3) }}× per.)<br>
                     Cost: {{ format(GROWAN_DATA.tick.cost.value) }} Grōwan Solutions
                 </button>
-                <div v-for="index in GROWAN_DATA.equ.list.length" :key="index">
-                    <div v-if="index === 1 ? true : Decimal.gte(player.prog.layer4.gro.growanEqu[index - 2].bought, 1)" class="flex-container" style="margin: 0.2vw">
+                <div v-for="index in GROWAN_DATA.equ.list.length" :key="index" style="width: 100%">
+                    <div v-if="index === 1 ? true : Decimal.gte(player.prog.layer4.gro.growanEqu[index - 2].bought, 1)" class="flex-horizontal" style="margin: 0.2vw">
                         <span class="font0" style="font-size: 1.0vw; color: #fa8; flex-grow: 1; flex-basis: 0; text-align: left;">
                             Grōwan Equation {{ index }}: {{ format(Decimal.add(player.prog.layer4.gro.growanEqu[index - 1].bought, player.prog.layer4.gro.growanEqu[index - 1].accumulated)) }} ( {{ format(player.prog.layer4.gro.growanEqu[index - 1].bought) }} )
                         </span>
@@ -78,7 +78,7 @@ import { resetStage } from "@/resets";
                 </button>
             </div>
         </div>
-        <div v-if="tab.tabList[tab.currentTab][0] === 1" class="flex-container" style="flex-direction: column; justify-content: center; margin-bottom: 1vw">
+        <div v-if="tab.tabList[tab.currentTab][0] === 1" class="flex-vertical" style="margin-bottom: 1vw">
             <!-- <span style="text-shadow: #840 0vw 0vw 0.8vw; color: #c60; text-align: center; font-size: 0.9vw; margin-top: 0.2vw" class="font0">
                 Idle and Active upgrades increase the other's cost by +{{ format(1) }} each and both increase Normal Upgrade costs by +{{ format(2) }} each!
             </span> -->
@@ -86,77 +86,88 @@ import { resetStage } from "@/resets";
                 Respec all Grōwan upgrades.<br>
                 Warning: This will cause a grōwan reset!
             </button>
-            <div class="flex-container" style="justify-content: center">
-                <div class="flex-container" style="flex-direction: column; align-items: center; background-color: #300; border: 0.24vw solid #c00; width: 30vw; margin: 0.25vw">
+            <div class="flex-horizontal">
+                <div class="flex-vertical" style="background-color: #300; border: 0.24vw solid #c00; width: 30vw; margin: 0.25vw">
                     <span class="whiteText font0" style="font-size: 1.0vw">You have bought {{ player.prog.layer4.gro.upgrades.active.length }} active upgrades.</span>
-                    <button
-                        @click="buyGroUpg('active', index)"
-                        v-for="(item, index) in GROWAN_UPGS.active" :key="index" style="border: 0.24vw solid #c00; width: 27.5vw; margin: 0.25vw; text-align: center;" 
-                        :style="{
-                            cursor: Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.active.value)) && !player.prog.layer4.gro.upgrades.active.includes(index)
-                                ? 'pointer'
-                                : 'not-allowed',
-                            backgroundColor: 
-                                player.prog.layer4.gro.upgrades.active.includes(index) 
-                                    ? '#600' 
-                                    : Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.active.value)) 
-                                        ? '#400' 
-                                        : '#200' 
-                        }">
-                        <span class="font0 whiteText" style="font-size: 0.75vw">{{ item.desc.value }}<br><br></span>
-                        <span class="font0 whiteText" style="font-size: 1.0vw">Cost: {{ format(item.cost.add(GROWAN_DATA.upgCostModif.active.value)) }} Grōwan</span>
-                    </button>
+                    <div v-for="(item, index) in GROWAN_UPGS.active" :key="index">
+                        <button
+                            v-if="item.cost.sub(tmp.layer4.growan.pending).lt(player.prog.layer4.gro.totalAmt)"
+                            @click="buyGroUpg('active', index)"
+                            style="border: 0.24vw solid #c00; width: 27.5vw; margin: 0.25vw; text-align: center;" 
+                            :style="{
+                                cursor: Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.active.value)) && !player.prog.layer4.gro.upgrades.active.includes(index)
+                                    ? 'pointer'
+                                    : 'not-allowed',
+                                backgroundColor: 
+                                    player.prog.layer4.gro.upgrades.active.includes(index) 
+                                        ? '#600' 
+                                        : Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.active.value)) 
+                                            ? '#400' 
+                                            : '#200' 
+                            }">
+                            <span class="font0 whiteText" style="font-size: 0.75vw">{{ item.desc.value }}<br><br></span>
+                            <span class="font0 whiteText" style="font-size: 1.0vw">Cost: {{ format(item.cost.add(GROWAN_DATA.upgCostModif.active.value)) }} Grōwan</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex-container" style="flex-direction: column; align-items: center; background-color: #210; border: 0.24vw solid #840; width: 30vw; margin: 0.25vw">
+                <div class="flex-vertical" style="background-color: #210; border: 0.24vw solid #840; width: 30vw; margin: 0.25vw">
                     <span class="whiteText font0" style="font-size: 1.0vw">You have bought {{ player.prog.layer4.gro.upgrades.overall.length }} normal upgrades.</span>
-                    <button
-                        @click="buyGroUpg('overall', index)"
-                        v-for="(item, index) in GROWAN_UPGS.overall" :key="index" style="border: 0.24vw solid #840; width: 27.5vw; margin: 0.25vw; text-align: center;" 
-                        :style="{
-                            cursor: Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.overall.value)) && !player.prog.layer4.gro.upgrades.overall.includes(index)
-                                ? 'pointer'
-                                : 'not-allowed',
-                            backgroundColor: 
-                                player.prog.layer4.gro.upgrades.overall.includes(index) 
-                                    ? '#630' 
-                                    : Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.overall.value)) 
-                                        ? '#420' 
-                                        : '#210' 
-                        }">
-                        <span class="font0 whiteText" style="font-size: 0.75vw">{{ item.desc.value }}<br><br></span>
-                        <span class="font0 whiteText" style="font-size: 1.0vw">Cost: {{ format(item.cost.add(GROWAN_DATA.upgCostModif.overall.value)) }} Grōwan</span>
-                    </button>
+                    <div v-for="(item, index) in GROWAN_UPGS.overall" :key="index">
+                        <button
+                            v-if="item.cost.sub(tmp.layer4.growan.pending).lt(player.prog.layer4.gro.totalAmt)"
+                            @click="buyGroUpg('overall', index)"
+                            style="border: 0.24vw solid #840; width: 27.5vw; margin: 0.25vw; text-align: center;" 
+                            :style="{
+                                cursor: Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.overall.value)) && !player.prog.layer4.gro.upgrades.overall.includes(index)
+                                    ? 'pointer'
+                                    : 'not-allowed',
+                                backgroundColor: 
+                                    player.prog.layer4.gro.upgrades.overall.includes(index) 
+                                        ? '#630' 
+                                        : Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.overall.value)) 
+                                            ? '#420' 
+                                            : '#210' 
+                            }">
+                            <span class="font0 whiteText" style="font-size: 0.75vw">{{ item.desc.value }}<br><br></span>
+                            <span class="font0 whiteText" style="font-size: 1.0vw">Cost: {{ format(item.cost.add(GROWAN_DATA.upgCostModif.overall.value)) }} Grōwan</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex-container" style="flex-direction: column; align-items: center; background-color: #023; border: 0.24vw solid #06c; width: 30vw; margin: 0.25vw">
+                <div class="flex-vertical" style="background-color: #023; border: 0.24vw solid #06c; width: 30vw; margin: 0.25vw">
                     <span class="whiteText font0" style="font-size: 1.0vw">You have bought {{ player.prog.layer4.gro.upgrades.idle.length }} idle upgrades.</span>
-                    <button
-                        @click="buyGroUpg('idle', index)"
-                        v-for="(item, index) in GROWAN_UPGS.idle" :key="index" style="border: 0.24vw solid #08c; width: 27.5vw; margin: 0.25vw; text-align: center;" 
-                        :style="{
-                            cursor: Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.idle.value)) && !player.prog.layer4.gro.upgrades.idle.includes(index)
-                                ? 'pointer'
-                                : 'not-allowed',
-                            backgroundColor: 
-                                player.prog.layer4.gro.upgrades.idle.includes(index) 
-                                    ? '#036' 
-                                    : Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.idle.value)) 
-                                        ? '#024' 
-                                        : '#012' 
-                        }">
-                        <span class="font0 whiteText" style="font-size: 0.75vw">{{ item.desc.value }}<br><br></span>
-                        <span class="font0 whiteText" style="font-size: 1.0vw">Cost: {{ format(item.cost.add(GROWAN_DATA.upgCostModif.idle.value)) }} Grōwan</span>
-                    </button>
+                    <div v-for="(item, index) in GROWAN_UPGS.idle" :key="index">
+                        <button
+                            v-if="item.cost.sub(tmp.layer4.growan.pending).lt(player.prog.layer4.gro.totalAmt)"
+                            @click="buyGroUpg('idle', index)"
+                            style="border: 0.24vw solid #08c; width: 27.5vw; margin: 0.25vw; text-align: center;" 
+                            :style="{
+                                cursor: Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.idle.value)) && !player.prog.layer4.gro.upgrades.idle.includes(index)
+                                    ? 'pointer'
+                                    : 'not-allowed',
+                                backgroundColor: 
+                                    player.prog.layer4.gro.upgrades.idle.includes(index) 
+                                        ? '#036' 
+                                        : Decimal.gte(player.prog.layer4.gro.amount, item.cost.add(GROWAN_DATA.upgCostModif.idle.value)) 
+                                            ? '#024' 
+                                            : '#012' 
+                            }">
+                            <span class="font0 whiteText" style="font-size: 0.75vw">{{ item.desc.value }}<br><br></span>
+                            <span class="font0 whiteText" style="font-size: 1.0vw">Cost: {{ format(item.cost.add(GROWAN_DATA.upgCostModif.idle.value)) }} Grōwan</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div v-if="tab.tabList[tab.currentTab][0] === 2" class="flex-container" style="flex-wrap: wrap; justify-content: center; margin-bottom: 1vw">
-            <div v-for="(item, index) in GROWAN_MILESTONES" :key="index" class="whiteText font0 flex-container" :style="{ backgroundColor: hasGrowanMilestone(index) ? '#632f00' : '#422000' }" style="flex-direction: column; width: 20vw; height: 4.5vw; font-size: 0.65vw; margin: 0.24vw; border: 0.18vw solid #c36100;">
-                <span class="font0 whiteText" style="text-align: center">{{ item.desc }}<br><br></span>
-                <span class="font0 whiteText" style="text-align: center; font-size: 0.8vw;">Requirement: <b>{{ format(item.req) }}</b> total grōwan</span>
-                <!-- <span v-if="tmp.layer4.growan.canDo">Gain <span style="font-size: 1vw"><b>{{ format(tmp.layer4.growan.pending, 3) }}</b></span> grōwan upon grōwanize.<br></span>
-                <span v-if="!tmp.layer4.growan.canDo">You need <span style="font-size: 1vw"><b>{{ format(tmp.layer4.growan.nextAt) }}</b></span> Kuaraniai to gain more grōwan.<br></span>
-                <span v-if="player.gameProgress.layer4.pickedFirst === 0">Warning: If you grōwan reset, you will be locked out of Taxation!<br></span>
-                <span style="font-size: 0.55vw">This is a layer 4 reset, and will reset all prior layers. You can reset even if you won't gain any grōwan.</span> -->
+        <div v-if="tab.tabList[tab.currentTab][0] === 2" class="flex-horizontal" style="flex-wrap: wrap; margin-bottom: 1vw">
+            <div v-for="(item, index) in GROWAN_MILESTONES" :key="index">
+                <div v-if="index === 0 || hasGrowanMilestone(index - 1)" class="whiteText font0 flex-vertical" :style="{ backgroundColor: hasGrowanMilestone(index) ? '#632f00' : '#422000' }" style="width: 20vw; height: 4.5vw; font-size: 0.65vw; margin: 0.24vw; border: 0.18vw solid #c36100;">
+                    <span class="font0 whiteText" style="text-align: center">{{ item.desc }}<br><br></span>
+                    <span class="font0 whiteText" style="text-align: center; font-size: 0.8vw;">Requirement: <b>{{ format(item.req) }}</b> total grōwan</span>
+                    <!-- <span v-if="tmp.layer4.growan.canDo">Gain <span style="font-size: 1vw"><b>{{ format(tmp.layer4.growan.pending, 3) }}</b></span> grōwan upon grōwanize.<br></span>
+                    <span v-if="!tmp.layer4.growan.canDo">You need <span style="font-size: 1vw"><b>{{ format(tmp.layer4.growan.nextAt) }}</b></span> Kuaraniai to gain more grōwan.<br></span>
+                    <span v-if="player.gameProgress.layer4.pickedFirst === 0">Warning: If you grōwan reset, you will be locked out of Taxation!<br></span>
+                    <span style="font-size: 0.55vw">This is a layer 4 reset, and will reset all prior layers. You can reset even if you won't gain any grōwan.</span> -->
+                </div>
             </div>
         </div>
     </div>

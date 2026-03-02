@@ -8,11 +8,9 @@ import { buyKProofUpg, KUA_PROOF_UPGS } from "../Game_KuaProofs";
 import { getSCSLAttribute } from "@/softcapScaling";
 </script>
 <template>
-    <div class="flex-container font0" style="background-color: #220; flex-direction: column; border: 0.24vw solid #ff0; padding: 0.6vw; height: 38vw; width: 40%;">
+    <div class="flex-vertical font0" style="background-color: #220; border: 0.24vw solid #ff0; padding: 0.6vw; height: 38vw;">
         <span style="color: #ff0; text-align: center; font-size: 1.2vw">
-            You have 
-            <span style="font-size: 1.4vw"><b>{{ format(player.prog.kua.proofs.strange.amount, 2) }}</b></span> 
-            Strange KProofs<sup>{{ format(tmp.kua.proofs.skpExp, 2) }}</sup>, which adds <span style="font-size: 1.4vw"><b>{{ format(tmp.kua.proofs.skpEff, 2) }}</b></span> free levels to the first 3 KProof upgrades.
+            You have <span style="font-size: 1.4vw"><b>{{ format(player.prog.kua.proofs.strange.amount, 2) }}</b></span> Strange KProofs<sup>{{ format(tmp.kua.proofs.skpExp, 2) }}</sup>.<br>
         </span>
         <span v-if="Decimal.gte(player.prog.kua.proofs.strange.amount, getSCSLAttribute('skp', false)[0].start)" style="color: #ff0; text-align: center; font-size: 0.7vw">
             Your Strange KProofs are getting odd at <span style="font-size: 0.8vw"><b>{{ format(getSCSLAttribute("skp", false)[0].start) }}</b></span>, which is dividing your Strange KProof gain by <span style="font-size: 0.8vw"><b>{{ getSCSLAttribute("skp", false)[0].displayedEffect }}</b></span>!
@@ -21,17 +19,22 @@ import { getSCSLAttribute } from "@/softcapScaling";
             Your Strange KProofs are getting unstable at <span style="font-size: 0.8vw"><b>{{ format(getSCSLAttribute("skp", false)[1].start) }}</b></span>, which is rooting your Strange KProof gain by <span style="font-size: 0.8vw"><b>{{ getSCSLAttribute("skp", false)[1].displayedEffect }}</b></span>!
         </span>
         <span style="color: #ff0; text-align: center; font-size: 0.75vw">
+            These add <span style="font-size: 0.85vw"><b>{{ format(tmp.kua.proofs.skpEff, 2) }}</b></span> free levels to the first 3 KProof upgrades.<br>
+            These also boost KB gain by <span style="font-size: 0.85vw"><b>{{ format(tmp.kua.proofs.skpEff2, 2) }}</b></span>×.
+        </span>
+        <span style="color: #ff0; text-align: center; font-size: 0.75vw">
             You have SKP reset
             <span style="font-size: 0.85vw"><b>{{ format(player.prog.kua.proofs.strange.times) }}</b></span> 
             times.
         </span>
-        <button @click="resetFromSKP(true, true, true, 1)" class="whiteText font0" style="border: 0.18vw solid #ff0; background-color: #440; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.2vw; padding-top: 0.75vw; padding-bottom: 0.75vw; padding-right: 1.5vw; padding-left: 1.5vw;"> 
-            Add <span style="font-size: 1vw"><b>{{ format(getStrangeKPExp(Decimal.log10(player.prog.kua.proofs.amount).div(2).add(player.prog.kua.proofs.strange.hiddenExp), false).sub(getStrangeKPExp(player.prog.kua.proofs.strange.hiddenExp, false)), 2) }}</b></span> to Strange KProof's exponent and add <span style="font-size: 1vw"><b>{{ formatTime(tmp.kua.proofs.skpSpeed, 3) }}</b></span> of it.<br>
-            <span v-if="Decimal.lte(player.prog.kua.proofs.strange.cooldown, 0) && Decimal.gte(player.prog.kua.proofs.amount, 1e24)">This will reset KProof progress, but will not reset Effects progress.<br></span>
-            <span v-if="Decimal.lt(player.prog.kua.proofs.amount, 1e24)">You cannot SKP reset until you get {{ format(1e24) }} KProofs!<br></span>
+        <span v-if="player.prog.kua.proofs.automationBought.other[0] && player.prog.kua.proofs.automationEnabled.other[0]" class="font0 whiteText" style="font-size: 0.7vw; text-align: center">SKPs are being multiplied by {{ format(tmp.kua.proofs.skpPerSecCur, 5) }}× -> {{ format(tmp.kua.proofs.skpPerSecNext, 5) }}× (after reset) every second.</span>
+        <button @click="resetFromSKP(true, true, true, 1)" :class="{ nope: !(Decimal.gte(tmp.kua.proofs.exp, 15) && Decimal.lt(player.prog.kua.proofs.strange.cooldown, 0)), ok: Decimal.gte(tmp.kua.proofs.exp, 15) && Decimal.lt(player.prog.kua.proofs.strange.cooldown, 0)}" class="whiteText font0" style="background-color: #440; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.2vw; padding-top: 0.75vw; padding-bottom: 0.75vw; padding-right: 1.5vw; padding-left: 1.5vw;"> 
+            Add <span style="font-size: 1vw"><b>{{ format(getStrangeKPExp(Decimal.log10(player.prog.kua.proofs.amount).div(2).add(player.prog.kua.proofs.strange.hiddenExp)).sub(getStrangeKPExp(player.prog.kua.proofs.strange.hiddenExp)), 2) }}</b></span> to Strange KProof's exponent and add <span style="font-size: 1vw"><b>{{ formatTime(tmp.kua.proofs.skpSpeed, 3) }}</b></span> of it.<br>
+            <span v-if="Decimal.lte(player.prog.kua.proofs.strange.cooldown, 0) && Decimal.gte(tmp.kua.proofs.exp, 15)">This will reset KProof progress, but will not reset Effects progress.<br></span>
+            <span v-if="Decimal.lt(tmp.kua.proofs.exp, 15)">You cannot SKP reset until your KProof exponent is above {{ format(15) }}!<br></span>
             <span v-if="Decimal.gt(player.prog.kua.proofs.strange.cooldown, 0)">You cannot SKP reset for {{ formatTime(player.prog.kua.proofs.strange.cooldown) }}!<br></span>
         </button>
-        <div class="flex-container" style="margin-top: 0.4vw; flex-wrap: wrap; justify-content: center;">
+        <div class="flex-horizontal" style="margin-top: 0.4vw; flex-wrap: wrap; width: 40vw;">
             <div v-for="(item, index) in KUA_PROOF_UPGS.skp" :key="index">
                 <!-- set padding to 0vw because it auto-inserts padding -->
                 <button @click="buyKProofUpg(index, 'skp')" :class="{ nope: !tmp.kua.proofs.upgrades.skp[index].canBuy, ok: tmp.kua.proofs.upgrades.skp[index].canBuy}" :style="{ cursor: tmp.kua.proofs.upgrades.skp[index].canBuy ? 'pointer' : 'not-allowed' }" v-if="item.show.value" style="width: 12vw; height: 8vw; margin-left: 0.15vw; margin-right: 0.15vw; margin-bottom: 0.3vw; font-size: 0.55vw; transition: 0.2s; background-color: #303000" class="font0 whiteText">

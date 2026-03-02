@@ -71,7 +71,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             return i;
         }),
         desc: computed(() => { return `Divide Upgrade 2's cost based off of your PRai.`; }),
-        effectDesc: computed(() => { return `/${format(MAIN_ONE_UPGS[0].effect.value, 2)}`; }),
+        effectDesc: computed(() => { return `/${format(MAIN_ONE_UPGS[0].effect.value)}`; }),
         show: computed(() => true)
     },
     { // 2
@@ -137,7 +137,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             return i;
         }),
         desc: computed(() => { return `Delay Upgrade 1's scaling by a little bit.`; }),
-        effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[2].effect.value, 3)}`; }),
+        effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[2].effect.value)}`; }),
         show: computed(() => true)
     },
     { // 4
@@ -176,7 +176,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             return i;
         }),
         desc: computed(() => { return `PRai gain is multiplied based off how much time you spent in this PRai reset.`; }),
-        effectDesc: computed(() => { return `${format(MAIN_ONE_UPGS[3].effect.value, 3)}×`; }),
+        effectDesc: computed(() => { return `${format(MAIN_ONE_UPGS[3].effect.value, 1)}×`; }),
         show: computed(() => { return Decimal.gte(player.value.prog.main.pr2.amount, 7); })
     },
     { // 5
@@ -208,7 +208,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             i = i.mul(Decimal.max(getOMUpgrade(4), 1).sqrt().div(10).add(0.9));
             return i;
         }),
-        desc: computed(() => { return `Raise One-Upgrade 1 based off of your points.`; }),
+        desc: computed(() => { return `Raise One-Upgrade 1's effect based off of your points.`; }),
         effectDesc: computed(() => { return `^${format(MAIN_ONE_UPGS[4].effect.value, 3)}`; }),
         show: computed(() => { return Decimal.gte(player.value.prog.main.pr2.amount, 7); })
     },
@@ -271,8 +271,9 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             }
             return i;
         }),
-        desc: computed(() => { return `Increase Upgrade 2's effective amount to its effect.`; }),
-        effectDesc: computed(() => { return `^${format(MAIN_ONE_UPGS[6].effect.value, 3)}`; }),
+        // ^1.01 to effectiveness
+        desc: computed(() => { return `Upgrade 2 gains additional free levels for every purchase.`; }),
+        effectDesc: computed(() => { return `~+${format(Decimal.pow(player.value.prog.main.upgrades[1].bought, MAIN_ONE_UPGS[6].effect.value).sub(player.value.prog.main.upgrades[1].bought), 1)}`; }),
         show: computed(() => { return Decimal.gt(player.value.prog.kua.amount, 0.0001); })
     },
     { // 8
@@ -302,7 +303,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             return i;
         }),
         desc: computed(() => { return `Delay Upgrade 2's scaling by a little bit.`; }),
-        effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[7].effect.value, 3)}`; }),
+        effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[7].effect.value)}`; }),
         show: computed(() => { return Decimal.gt(player.value.prog.kua.amount, 0.0001); })
     },
     { // 9
@@ -338,7 +339,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             return i;
         }),
         desc: computed(() => { return `PR2's effect is stronger based off of how long you spent in a Kuaraniai reset.`; }),
-        effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[8].effect.value, 3)}`; }),
+        effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[8].effect.value, 2)}`; }),
         show: computed(() => { return Decimal.gt(player.value.prog.kua.amount, 0.0001); })
     },
     { // 10
@@ -368,7 +369,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             return i;
         }),
         desc: computed(() => { return `Multiply point gain based off of Upgrade 3 and 6's effect.`; }),
-        effectDesc: computed(() => { return `${format(MAIN_ONE_UPGS[9].effect.value, 3)}×`; }),
+        effectDesc: computed(() => { return `${format(MAIN_ONE_UPGS[9].effect.value)}×`; }),
         show: computed(() => { return Decimal.gt(player.value.prog.kua.amount, 0.0001); })
     },
     { // 11
@@ -421,8 +422,9 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             i = i.sub(1).mul(Decimal.max(getOMUpgrade(11), 1).div(10).add(0.9)).add(1);
             return i;
         }),
-        desc: computed(() => { return `Gradually increase Upgrade 3's effectiveness over time in this Colosseum reset.`; }),
-        effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[11].effect.value.sub(1).mul(100), 2)}%`; }),
+        // +X% to effectiveness
+        desc: computed(() => { return `Upgrade 3 gains free levels over time in this Colosseum reset.`; }),
+        effectDesc: computed(() => { return `~+${format(Decimal.sub(MAIN_ONE_UPGS[11].effect.value, 1).mul(player.value.prog.main.upgrades[2].bought), 1)}`; }),
         show: computed(() => { return player.value.prog.unlocks.col; })
     },
     { // 13
@@ -449,7 +451,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             return i;
         }),
         desc: computed(() => { return `Delay Upgrade 3's scaling by a little bit.`; }),
-        effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[12].effect.value, 3)}`; }),
+        effectDesc: computed(() => { return `+${format(MAIN_ONE_UPGS[12].effect.value)}`; }),
         show: computed(() => { return player.value.prog.unlocks.col; })
     },
     { // 14
@@ -500,7 +502,7 @@ export const MAIN_ONE_UPGS: Array<MainOneUpg> = [
             return i;
         }),
         desc: computed(() => { return `Weaken Upgrade 1's hyper scaling by a good amount.`; }),
-        effectDesc: computed(() => { return `-${formatPerc(MAIN_ONE_UPGS[14].effect.value, 3)}`; }),
+        effectDesc: computed(() => { return `-${formatPerc(MAIN_ONE_UPGS[14].effect.value, 2)}`; }),
         show: computed(() => { return player.value.prog.unlocks.col; })
     },
     { // 16

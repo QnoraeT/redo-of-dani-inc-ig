@@ -13,13 +13,13 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
         <button @click="switchSubTab(3, 2)" class="kuaButton2 font0 whiteText normalTabButton">Strange KP</button>
         <button v-if="player.prog.unlocks.kproofs.finicky" @click="switchSubTab(4, 2)" class="kuaButton2 font0 whiteText normalTabButton">Finicky KP</button>
     </div>
-    <div class="flex-container font0" style="background-color: #222; margin-left: auto; margin-right: auto; flex-direction: column; border: 0.24vw solid #fff; padding: 0.6vw; height: 32vw; width: 40%;">
+    <div class="flex-vertical font0" style="background-color: #222; margin-left: auto; margin-right: auto; border: 0.24vw solid #fff; padding: 0.6vw; height: 32vw; width: 40vw;">
         <span style="color: #ff0; text-align: center; font-size: 1.2vw">
             You have 
             <span style="font-size: 1.4vw"><b>{{ format(player.prog.kua.proofs.strange.amount, 2) }}</b></span> 
             Strange KProofs<sup>{{ format(tmp.kua.proofs.skpExp, 2) }}</sup>.
         </span>
-        <div class="flex-container" style="margin-top: 0.4vw; flex-wrap: wrap; justify-content: center;">
+        <div class="flex-horizontal" style="margin-top: 0.4vw; flex-wrap: wrap;">
             <div v-for="(item, index) in KUA_PROOF_AUTO[KuaProofAutoTypeList[tab.tabList[tab.currentTab][2]]]" :key="index">
                 <!-- set padding to 0vw because it auto-inserts padding -->
                 <button @click="buyKProofAuto(index, KuaProofAutoTypeList[tab.tabList[tab.currentTab][2]])" :class="{ 
@@ -36,6 +36,7 @@ import { switchSubTab } from "@/components/MainTabs/MainTabs";
                     done: 
                         player.prog.kua.proofs.automationBought[KuaProofAutoTypeList[tab.tabList[tab.currentTab][2]]][index] && player.prog.kua.proofs.automationEnabled[KuaProofAutoTypeList[tab.tabList[tab.currentTab][2]]][index] }" 
                     :style="{ 
+                        cursor: player.prog.kua.proofs.automationBought[KuaProofAutoTypeList[tab.tabList[tab.currentTab][2]]][index] ? 'pointer' : 'not-allowed',
                         backgroundColor: player.prog.kua.proofs.automationBought[KuaProofAutoTypeList[tab.tabList[tab.currentTab][2]]][index] 
                             ? player.prog.kua.proofs.automationEnabled[KuaProofAutoTypeList[tab.tabList[tab.currentTab][2]]][index] 
                                 ? '#444' 

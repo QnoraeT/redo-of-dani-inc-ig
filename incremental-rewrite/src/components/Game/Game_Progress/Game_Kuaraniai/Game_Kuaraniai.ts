@@ -97,14 +97,13 @@ export const updateKuaAchievements = () => {
 export const updateKuaProofs = (delta: DecimalSource) => {
     const tempKuaObj = tmp.value.kua;
     const playerKuaObj = player.value.prog.kua;
-    let scal, k, data, calc;
+    let scal, k, data;
     playerKuaObj.proofs.strange.cooldown = Decimal.sub(playerKuaObj.proofs.strange.cooldown, delta);
     playerKuaObj.proofs.finicky.cooldown = Decimal.sub(playerKuaObj.proofs.finicky.cooldown, delta);
 
-    tempKuaObj.proofs.skpEff = D(0);
     tempKuaObj.proofs.skpEff = Decimal.max(playerKuaObj.proofs.strange.amount, 0).add(1).log2().add(1).ln().div(2).add(1).pow(2).sub(1).mul(3);
+    tempKuaObj.proofs.skpEff2 = Decimal.max(playerKuaObj.proofs.strange.amount, 0).add(1).log10().pow(0.5).div(4).pow10()
 
-    tempKuaObj.proofs.fkpEff = D(0);
     tempKuaObj.proofs.fkpEff = Decimal.max(playerKuaObj.proofs.finicky.amount, 0).add(1).log10().sqrt();
 
     tempKuaObj.proofs.speed = D(1);
@@ -202,7 +201,11 @@ export const updateKuaProofs = (delta: DecimalSource) => {
     }
 
     if (playerKuaObj.proofs.automationBought.other[0] && playerKuaObj.proofs.automationEnabled.other[0]) {
-        resetFromSKP(false, playerKuaObj.proofs.automationBought.other[1] && playerKuaObj.proofs.automationEnabled.other[1], playerKuaObj.proofs.automationBought.other[2] && playerKuaObj.proofs.automationEnabled.other[2], delta);
+        // resetFromSKP has side effects, don't call it more than once
+        // yeah yeah i know trash terrible coding i hate myself fuck this lmao
+        const SKPObjResult = resetFromSKP(false, playerKuaObj.proofs.automationBought.other[1] && playerKuaObj.proofs.automationEnabled.other[1], playerKuaObj.proofs.automationBought.other[2] && playerKuaObj.proofs.automationEnabled.other[2], delta)
+        tempKuaObj.proofs.skpPerSecCur = SKPObjResult.gainAtReset;
+        tempKuaObj.proofs.skpPerSecNext = SKPObjResult.gainAtNext;
     }
 
     tempKuaObj.proofs.exp = D(1);
@@ -211,6 +214,7 @@ export const updateKuaProofs = (delta: DecimalSource) => {
     tempKuaObj.proofs.exp = tempKuaObj.proofs.exp.add(tempKuaObj.proofs.fkpEff);
     tempKuaObj.proofs.exp = tempKuaObj.proofs.exp.add(GROWAN_UPGS.overall[1].eff!.value.kpe);
     tempKuaObj.proofs.exp = tempKuaObj.proofs.exp.mul(tempKuaObj.proofs.upgrades.kp[2].effect);
+    tempKuaObj.proofs.exp = tempKuaObj.proofs.exp.mul(KUA_BLESS_UPGS[4].eff.value[0]);
     NaNCheck(tempKuaObj.proofs.exp, `KProof's exponent turned into NaN!`)
 
     tempKuaObj.proofs.skpExp = getStrangeKPExp(playerKuaObj.proofs.strange.hiddenExp);
@@ -218,63 +222,68 @@ export const updateKuaProofs = (delta: DecimalSource) => {
 
     if (player.value.prog.unlocks.kproofs.main && tempKuaObj.active.proofs.gain) {
         // why did i do this
-        let fuck = playerKuaObj.proofs.amount;
-        data = Decimal.max(playerKuaObj.proofs.amount, 0).add(1).root(tempKuaObj.proofs.exp).add(tempKuaObj.proofs.speed.mul(delta)).pow(tempKuaObj.proofs.exp).sub(1);
-        calc = Decimal.max(playerKuaObj.proofs.amount, 0).add(1).root(tempKuaObj.proofs.exp).add(tempKuaObj.proofs.speed).pow(tempKuaObj.proofs.exp).sub(1);
+        // i have no idea what the fuck i am doing ngl
+        let safeGuard = Decimal.max(playerKuaObj.proofs.amount, 0).add(1).root(tempKuaObj.proofs.exp).add(tempKuaObj.proofs.speed.mul(delta)).pow(tempKuaObj.proofs.exp).sub(1);
+        let KProofsWOSoftcap1 = playerKuaObj.proofs.amount;
+        let KProofsWOSoftcap2 = playerKuaObj.proofs.amount;
+        const prev = playerKuaObj.proofs.amount;
 
         const softcaps = {
-            prevEff: calc,
+            prevEff: D(0),
             scal: getSCSLAttribute('kp', false)
         }
 
-        if (data.gte(softcaps.scal[1].start)) {
-            data = scale(data, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            calc = scale(calc, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            fuck = scale(fuck, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            playerKuaObj.proofs.amount = scale(playerKuaObj.proofs.amount, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            setSCSLEffectDisp('kp', false, 1, `${format(calc.log(softcaps.prevEff), 3)}√`);
-        }
-
-        if (data.gte(softcaps.scal[0].start)) {
-            data = scale(data, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            calc = scale(calc, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            fuck = scale(fuck, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            playerKuaObj.proofs.amount = scale(playerKuaObj.proofs.amount, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            setSCSLEffectDisp('kp', false, 0, `/${format(calc.div(softcaps.prevEff), 3)}`);
-        }
-
         if (inChallenge("df")) {
-            data = scale(data, 2.1, true, 10, 1, 0.75);
-            calc = scale(calc, 2.1, true, 10, 1, 0.75);
-            fuck = scale(fuck, 2.1, true, 10, 1, 0.75);
+            safeGuard = scale(safeGuard, 2.1, true, 10, 1, 0.75);
+            KProofsWOSoftcap1 = scale(KProofsWOSoftcap1, 2.1, true, 10, 1, 0.75);
+            KProofsWOSoftcap2 = scale(KProofsWOSoftcap2, 2.1, true, 10, 1, 0.75);
             playerKuaObj.proofs.amount = scale(playerKuaObj.proofs.amount, 2.1, true, 10, 1, 0.75);
         }
 
-        fuck = Decimal.max(fuck, 0).add(1).root(tempKuaObj.proofs.exp).add(tempKuaObj.proofs.speed).pow(tempKuaObj.proofs.exp).sub(1);
-        playerKuaObj.proofs.amount = Decimal.max(playerKuaObj.proofs.amount, 0).add(1).root(tempKuaObj.proofs.exp).add(tempKuaObj.proofs.speed.mul(delta)).pow(tempKuaObj.proofs.exp).sub(1);
-
-        if (inChallenge("df")) {
-            data = scale(data, 2.1, false, 10, 1, 0.75);
-            calc = scale(calc, 2.1, false, 10, 1, 0.75);
-            fuck = scale(fuck, 2.1, false, 10, 1, 0.75);
-            playerKuaObj.proofs.amount = scale(playerKuaObj.proofs.amount, 2.1, false, 10, 1, 0.75);
+        if (safeGuard.gte(softcaps.scal[1].start)) {
+            safeGuard = scale(safeGuard, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+            KProofsWOSoftcap1 = scale(KProofsWOSoftcap1, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+            playerKuaObj.proofs.amount = scale(playerKuaObj.proofs.amount, 2, true, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
         }
 
-        if (data.gte(softcaps.scal[0].start)) {
-            data = scale(data, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            calc = scale(calc, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
-            fuck = scale(fuck, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+        if (safeGuard.gte(softcaps.scal[0].start)) {
+            safeGuard = scale(safeGuard, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+            KProofsWOSoftcap2 = scale(KProofsWOSoftcap2, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+            playerKuaObj.proofs.amount = scale(playerKuaObj.proofs.amount, 0, true, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+        }
+
+        KProofsWOSoftcap2 = Decimal.max(KProofsWOSoftcap2, 0).add(1).root(tempKuaObj.proofs.exp).add(tempKuaObj.proofs.speed.mul(delta)).pow(tempKuaObj.proofs.exp).sub(1);
+        KProofsWOSoftcap1 = Decimal.max(KProofsWOSoftcap1, 0).add(1).root(tempKuaObj.proofs.exp).add(tempKuaObj.proofs.speed.mul(delta)).pow(tempKuaObj.proofs.exp).sub(1);
+        playerKuaObj.proofs.amount = Decimal.max(playerKuaObj.proofs.amount, 0).add(1).root(tempKuaObj.proofs.exp).add(tempKuaObj.proofs.speed.mul(delta)).pow(tempKuaObj.proofs.exp).sub(1);
+
+        if (safeGuard.gte(softcaps.scal[0].start)) {
+            safeGuard = scale(safeGuard, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
+            KProofsWOSoftcap2 = scale(KProofsWOSoftcap2, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
             playerKuaObj.proofs.amount = scale(playerKuaObj.proofs.amount, 0, false, softcaps.scal[0].start, softcaps.scal[0].power, softcaps.scal[0].basePow);
         }
 
-        if (data.gte(softcaps.scal[1].start)) {
-            data = scale(data, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            calc = scale(calc, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
-            fuck = scale(fuck, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+        if (safeGuard.gte(softcaps.scal[1].start)) {
+            safeGuard = scale(safeGuard, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
+            KProofsWOSoftcap1 = scale(KProofsWOSoftcap1, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
             playerKuaObj.proofs.amount = scale(playerKuaObj.proofs.amount, 2, false, softcaps.scal[1].start, softcaps.scal[1].power, softcaps.scal[1].basePow);
         }
 
-        tempKuaObj.proofs.expPerSec = fuck.div(playerKuaObj.proofs.amount);
+        if (inChallenge("df")) {
+            safeGuard = scale(safeGuard, 2.1, false, 10, 1, 0.75);
+            KProofsWOSoftcap1 = scale(KProofsWOSoftcap1, 2.1, false, 10, 1, 0.75);
+            KProofsWOSoftcap2 = scale(KProofsWOSoftcap2, 2.1, false, 10, 1, 0.75);
+            playerKuaObj.proofs.amount = scale(playerKuaObj.proofs.amount, 2.1, false, 10, 1, 0.75);
+        }
+
+        if (safeGuard.gte(softcaps.scal[0].start)) {
+            setSCSLEffectDisp('kp', false, 0, `/${format(KProofsWOSoftcap1.div(playerKuaObj.proofs.amount).root(delta), 3)}`);
+        }
+
+        if (safeGuard.gte(softcaps.scal[1].start)) {
+            setSCSLEffectDisp('kp', false, 1, `${format(KProofsWOSoftcap2.div(playerKuaObj.proofs.amount).log(Decimal.div(playerKuaObj.proofs.amount, prev)), 3)}√`);
+        }
+
+        tempKuaObj.proofs.expPerSec = Decimal.div(playerKuaObj.proofs.amount, prev).root(delta);
     }
 }
 
@@ -293,43 +302,62 @@ export const updateKuaBlessings = (delta: DecimalSource) => {
 
     tempKuaObj.blessings.perClick = D(1);
     tempKuaObj.blessings.perSec = D(2);
-    setFactor(0, [3, 4], "Base", `${format(0.1, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, true);
-    setFactor(0, [3, 5], "Base", `${format(1, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, true);
+    pushFactor([3, 4], "Base", `${format(0.1, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`);
+    pushFactor([3, 5], "Base", `${format(1, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`);
 
     tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value);
     tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value);
-    setFactor(1, [3, 4], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, true, "kb");
-    setFactor(1, [3, 5], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, true, "kb");
+    pushFactor([3, 4], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainActive.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "kb");
+    pushFactor([3, 5], "KBlessing Rank", `×${format(KUA_BLESS_TIER.rank.effects.kuaBlessGainIdle.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "kb");
 
-    tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(KUA_BLESS_UPGS[1].eff.value[1]);
-    tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(KUA_BLESS_UPGS[1].eff.value[1]);
-    setFactor(2, [3, 4], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(playerKuaObj.blessings.upgrades[1], 6), "kb");
-    setFactor(2, [3, 5], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(playerKuaObj.blessings.upgrades[1], 6), "kb");
+    if (Decimal.gte(playerKuaObj.blessings.upgrades[1], 6)) {
+        tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(KUA_BLESS_UPGS[1].eff.value[1]);
+        tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(KUA_BLESS_UPGS[1].eff.value[1]);
+        pushFactor([3, 4], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "kb");
+        pushFactor([3, 5], "KBlessing Upgrade 1", `×${format(KUA_BLESS_UPGS[1].eff.value[1], 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "kb");
+    }
 
-    tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
-    tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
-    setFactor(3, [3, 4], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(tempKuaObj.blessings.tetr, 1), "kb");
-    setFactor(3, [3, 5], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(tempKuaObj.blessings.tetr, 1), "kb");
+    if (Decimal.gte(tempKuaObj.blessings.tetr, 1)) {
+        tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
+        tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(KUA_BLESS_TIER.tetr.effects.pr2Eff.value);
+        pushFactor([3, 4], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "kb");
+        pushFactor([3, 5], "KBlessing Tetr", `×${format(KUA_BLESS_TIER.tetr.effects.pr2Eff.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "kb");
+    }
 
-    tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(tempKuaObj.effects.bless);
-    tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(tempKuaObj.effects.bless);
-    setFactor(4, [3, 4], "Kuaraniai Upgrade 2", `×${format(tempKuaObj.effects.bless, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, playerKuaObj.upgrades >= 2, "kua");
-    setFactor(4, [3, 5], "Kuaraniai Upgrade 2", `×${format(tempKuaObj.effects.bless, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, playerKuaObj.upgrades >= 2, "kua");
+    if (playerKuaObj.upgrades >= 2) {
+        tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(tempKuaObj.effects.bless);
+        tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(tempKuaObj.effects.bless);
+        pushFactor([3, 4], "Kuaraniai Upgrade 2", `×${format(tempKuaObj.effects.bless, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "kua");
+        pushFactor([3, 5], "Kuaraniai Upgrade 2", `×${format(tempKuaObj.effects.bless, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "kua");
+    }
 
-    tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(tempKuaObj.proofs.upgrades.effect[2].effect);
-    tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(tempKuaObj.proofs.upgrades.effect[2].effect);
-    setFactor(5, [3, 4], "Holy Process", `×${format(tempKuaObj.proofs.upgrades.effect[2].effect, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[2].effect, 1), "kp");
-    setFactor(5, [3, 5], "Holy Process", `×${format(tempKuaObj.proofs.upgrades.effect[2].effect, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gt(tempKuaObj.proofs.upgrades.effect[2].effect, 1), "kp");
+    if (Decimal.gt(tempKuaObj.proofs.upgrades.effect[2].effect, 1)) {
+        tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(tempKuaObj.proofs.upgrades.effect[2].effect);
+        tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(tempKuaObj.proofs.upgrades.effect[2].effect);
+        pushFactor([3, 4], "Holy Process", `×${format(tempKuaObj.proofs.upgrades.effect[2].effect, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "kp");
+        pushFactor([3, 5], "Holy Process", `×${format(tempKuaObj.proofs.upgrades.effect[2].effect, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "kp");
+    }
 
-    tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(getColResEffect(5));
-    tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(getColResEffect(4));
-    setFactor(6, [3, 4], "Compliance", `×${format(getColResEffect(5), 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
-    setFactor(6, [3, 5], "Defiance", `×${format(getColResEffect(4), 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(timesCompleted('im'), 1e33), "col");
+    if (Decimal.gt(tempKuaObj.proofs.skpEff2, 1)) {
+        tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(tempKuaObj.proofs.skpEff2)
+        tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(tempKuaObj.proofs.skpEff2)
+        pushFactor([3, 4], "SKP Effect", `×${format(tempKuaObj.proofs.skpEff2, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "skp");
+        pushFactor([3, 5], "SKP Effect", `×${format(tempKuaObj.proofs.skpEff2, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "skp");
+    }
 
-    tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(ACHIEVEMENT_DATA[3].effect.value);
-    tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(ACHIEVEMENT_DATA[3].effect.value);
-    setFactor(7, [3, 4], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].effect.value, 1), "ach");
-    setFactor(7, [3, 5], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, Decimal.gte(ACHIEVEMENT_DATA[3].effect.value, 1), "ach");
+    if (Decimal.gte(timesCompleted('im'), 1e33)) {
+        tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(getColResEffect(5));
+        tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(getColResEffect(4));
+        pushFactor([3, 4], "Compliance", `×${format(getColResEffect(5), 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "col");
+        pushFactor([3, 5], "Defiance", `×${format(getColResEffect(4), 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "col");
+    }
+
+    if (Decimal.gte(ACHIEVEMENT_DATA[3].effect.value, 1)) {
+        tempKuaObj.blessings.perClick = tempKuaObj.blessings.perClick.mul(ACHIEVEMENT_DATA[3].effect.value);
+        tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(ACHIEVEMENT_DATA[3].effect.value);
+        pushFactor([3, 4], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tempKuaObj.blessings.perClick, 2)}`, "ach");
+        pushFactor([3, 5], "Achievement Tier 4", `×${format(ACHIEVEMENT_DATA[3].effect.value, 2)}`, `${format(tempKuaObj.blessings.perSec, 2)}`, "ach");
+    }
 
     if (player.value.prog.layer4.gro.upgrades.idle.includes(0)) {
         tempKuaObj.blessings.perSec = tempKuaObj.blessings.perSec.mul(10);
@@ -483,8 +511,8 @@ export const updateKuaBasics = (delta: DecimalSource) => {
     const tempKuaObj = tmp.value.kua;
     const playerKuaObj = player.value.prog.kua;
     let i, j, k, data, generate;
-    tempKuaObj.effectiveKS = Decimal.max(playerKuaObj.kshards.totalInLayer4, 0);
-    tempKuaObj.effectiveKP = Decimal.max(playerKuaObj.kpower.totalInLayer4, 0);
+    tempKuaObj.effectiveKS = Decimal.max(playerKuaObj.kshards.totalInCol, 0);
+    tempKuaObj.effectiveKP = Decimal.max(playerKuaObj.kpower.totalInCol, 0);
 
     tempKuaObj.effectiveKS = tempKuaObj.effectiveKS.mul(KUA_BLESS_UPGS[0].eff.value[1]);
     tempKuaObj.effectiveKP = tempKuaObj.effectiveKP.mul(KUA_BLESS_UPGS[0].eff.value[1]);
@@ -512,14 +540,7 @@ export const updateKuaBasics = (delta: DecimalSource) => {
     tempKuaObj.canDo = tempKuaObj.effectivePrai.gte(tempKuaObj.req) && tempKuaObj.active.gain;
     tempKuaObj.pending = D(0);
     if (tempKuaObj.canDo) {
-        tempKuaObj.pending = tempKuaObj.effectivePrai.log(tempKuaObj.req);
-        // this is to catch an edge-case, where the value above gets fucked because of floating point errors if this is way lower than the kua exponent, so i have to make an approximation here
-        if (tempKuaObj.exp.div(tempKuaObj.pending).gte(1e9)) {
-            // yes i'm not joking this reduces down to PRai ^1.5 to exponent when kua exp is high enough
-            tempKuaObj.pending = tempKuaObj.pending.pow(1.5).sub(5).pow10();
-        } else {
-            tempKuaObj.pending = tempKuaObj.pending.ln().mul(1.5).div(tempKuaObj.exp).add(1).pow(tempKuaObj.exp).sub(5).pow10();
-        }
+        tempKuaObj.pending = calcKuaGain(tempKuaObj.effectivePrai, tempKuaObj.req, tempKuaObj.exp);
     } 
 
     setFactor(0, [3, 1], "Base", `~10^(ln(log(${format(tempKuaObj.effectivePrai)})))^${format(tempKuaObj.exp, 2)}-${format(5)}) (approx.)`, `${format(tempKuaObj.pending, 4)}`, true);
@@ -566,6 +587,7 @@ export const updateKuaBasics = (delta: DecimalSource) => {
     if (playerKuaObj.auto) {
         generate = tempKuaObj.pending.mul(delta).mul(0.01);
         playerKuaObj.amount = Decimal.add(playerKuaObj.amount, generate);
+        playerKuaObj.bestInLayer4 = Decimal.max(playerKuaObj.bestInLayer4, playerKuaObj.amount);
     }
 
     tempKuaObj.effects = {
@@ -803,11 +825,25 @@ export const updateKuaBasics = (delta: DecimalSource) => {
 
     generate = tempKuaObj.shardGen.mul(delta);
     playerKuaObj.kshards.amount = Decimal.add(playerKuaObj.kshards.amount, generate);
+    playerKuaObj.kshards.totalInCol = Decimal.add(playerKuaObj.kshards.totalInCol, generate);
     playerKuaObj.kshards.totalInLayer4 = Decimal.add(playerKuaObj.kshards.totalInLayer4, generate);
     playerKuaObj.kshards.bestInLayer4 = Decimal.max(playerKuaObj.kshards.bestInLayer4, playerKuaObj.kshards.amount);
 
     generate = tempKuaObj.powGen.mul(delta);
     playerKuaObj.kpower.amount = Decimal.add(playerKuaObj.kpower.amount, generate);
+    playerKuaObj.kpower.totalInCol = Decimal.add(playerKuaObj.kpower.totalInCol, generate);
     playerKuaObj.kpower.totalInLayer4 = Decimal.add(playerKuaObj.kpower.totalInLayer4, generate);
     playerKuaObj.kpower.bestInLayer4 = Decimal.max(playerKuaObj.kpower.bestInLayer4, playerKuaObj.kpower.amount);
+}
+
+export const calcKuaGain = (prai: DecimalSource, req: DecimalSource, exp: DecimalSource) => {
+    let pending = Decimal.log(prai, req);
+    // this is to catch an edge-case, where the value above gets fucked because of floating point errors if this is way lower than the kua exponent, so i have to make an approximation here
+    if (Decimal.div(exp, pending).gte(1e9)) {
+        // yes i'm not joking this reduces down to PRai ^1.5 to exponent when kua exp is high enough
+        pending = pending.pow(1.5).sub(5).pow10();
+    } else {
+        pending = pending.ln().mul(1.5).div(exp).add(1).pow(exp).sub(5).pow10();
+    }
+    return pending;
 }

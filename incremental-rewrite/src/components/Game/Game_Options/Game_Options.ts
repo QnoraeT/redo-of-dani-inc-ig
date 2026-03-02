@@ -66,19 +66,23 @@ export const makeColor = (text: string, color: string) => {
 
 export const UPDATE_LOG = [
     {
-        name: `v2.0.0.0 - Dec-17-2024`,
+        name: `v2.0.0.0 - Dec-23-2024`,
         desc: `
         <span style='font-size: 1.2vw'><b>< --- Features --- ></b></span><br>
         New offline time system.<br>
         <br>
         <span style='font-size: 1.2vw'><b>< --- Changes --- ></b></span><br>
         Changed much of the code base. Unfortunately, that means that your saves are very likely to not work anymore.<br>
+        Changed "upgrade effectiveness" into "free levels."<br>
         Buffed ${makeColor('Stored Time', '#0f0')} effect from ^0.5 to ^0.75. Higher multipliers use less stored time.<br>
         Changed ${makeColor('Achievement #1, 6', '#ff0')}'s requirement.<br>
         ${makeColor('KBlessing', '#0f0')} upgrades now take into account Best ${makeColor('KB', '#0f0')} instead of current ${makeColor('KB', '#0f0')}.<br>
+        ${makeColor('SKProofs', '#ff0')}'s requirement is changed from 1e24 ${makeColor('KProofs', '#0ff')} to ${makeColor('KProof<sup>15</sup>', '#0ff')}<br>
+        ${makeColor('SKProofs', '#ff0')} now has an extra effect of boosting ${makeColor('KBlessing', '#0f0')} gain.<br>
+        Changed ${makeColor('Coliescence', '#f60')}'s effect and cost scaling.<br>
         <br>
         <span style='font-size: 1.2vw'><b>< --- Bug Fixes --- ></b></span><br>
-        Fixed ${makeColor('K. Upgrades', '#a4f')} to shard and power effects.<br><br>
+        Fixed ${makeColor('K. Upgrades', '#a4f')} effect to shard and power effects.<br><br>
         `
     },
     {

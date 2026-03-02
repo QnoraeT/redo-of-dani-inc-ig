@@ -140,7 +140,7 @@ export const COL_CHALLENGES: colChallenges = {
                 txt += `<li>Upgrade 1's base is reduced by -${format(getColChalSelectedCond(COL_CHALLENGES.su.id, 1), 3)}.</li>`;
             }
             if (Decimal.gte(getColChalDisplayedDifficulty("su"), 4)) {
-                txt += `<li>Upgrade 2's effect is dilated to the ^${format(getColChalSelectedCond(COL_CHALLENGES.su.id, 2), 2)}.</li>`;
+                txt += `<li>Upgrade 2's effect is raised ^${format(getColChalSelectedCond(COL_CHALLENGES.su.id, 2), 2)} to the exponent.</li>`;
             }
             if (Decimal.gte(getColChalDisplayedDifficulty("su"), 7)) {
                 txt += `<li>Upgrades 4, 5, and 6 are disabled.</li>`;
@@ -341,7 +341,7 @@ export const COL_CHALLENGES: colChallenges = {
             }
             let txt = `
             <li>Upgs. now generate the previous upg. and all Upg. scalings and softcaps are removed. However, their effects are vastly reduced.</li>
-            <li>Multipliers to PPS and PRai other than Upg. 1 and Points (respectively) are dilated to the ^${format(0.5, 2)}.</li>`;
+            <li>Multipliers to PPS and PRai other than Upg. 1 and Points (respectively) are ^${format(0.5, 2)} to the exponent.</li>`;
             txt += `<li>Upgs.' effective costs are significantly increased.</li>`;
             if (Decimal.gte(getColChalDisplayedDifficulty("dc"), 10)) {
                 txt += `<li>Upgs.' multipliers are raised to the ^${format(COL_CHALLENGES.dc.type3ChalCond!(Decimal.add(getColChalDisplayedDifficulty("dc"), 1))[2], 2)}.</li>`;

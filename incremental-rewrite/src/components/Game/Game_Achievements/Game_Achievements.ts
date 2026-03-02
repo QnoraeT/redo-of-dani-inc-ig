@@ -769,7 +769,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                     );
                 }),
                 reward: computed(() => {
-                    return `Upgrade 3 gets a small ${format(1, 2)}% boost to effectiveness.`;
+                    return `For every Upgrade 3 level, gain ${format(0.01, 2)} free levels to Upgrade 3.`;
                 }),
                 show: computed(() => {
                     return player.value.prog.unlocks.kua;
@@ -1292,7 +1292,7 @@ export const ACHIEVEMENT_DATA: Array<AchievementTiers> = [
                 // id: 2
                 ordering: 2,
                 name: computed(() => {
-                    return `this challenge is only gonna more: computed( d =>ifficult`;
+                    return `This challenge is only going to get tougher`;
                 }),
                 description: computed(() => {
                     return `Complete "Sabotaged Upgrades" 5 times.`;

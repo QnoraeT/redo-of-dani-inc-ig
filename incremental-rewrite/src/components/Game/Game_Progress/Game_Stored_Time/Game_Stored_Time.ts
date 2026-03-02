@@ -2,7 +2,7 @@ import { player } from "@/main";
 import Decimal from "break_eternity.js";
 
 export const timeSpeedBoost = (x = player.value.offlineTime) => {
-    return Decimal.div(x, 1000).add(1).root(1.5).pow(player.value.prog.dilatedTime.speed)
+    return Decimal.div(x, 1000).add(1).root(1.25).pow(player.value.prog.dilatedTime.speed)
 }
 
 export const speedToConsume = () => {

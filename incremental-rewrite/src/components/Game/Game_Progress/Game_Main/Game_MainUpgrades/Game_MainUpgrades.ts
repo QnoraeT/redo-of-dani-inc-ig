@@ -336,10 +336,10 @@ export class MainUpgrades {
 
         // ! yes, the "freeExtra" part of the accumulated is moved HERE so that things like Basic Discoveries or other stuff that can add free levels can do something to the multiplier
         if (inChallenge('dc')) {
-            eff = player.value.prog.main.upgrades[0].accumulated;
+            eff = player.value.prog.main.upgrades[this.index].accumulated;
             effect = effect.add(eff);
 
-            eff = tmp.value.main.upgrades[0].multiplier;
+            eff = tmp.value.main.upgrades[this.index].multiplier;
             effect = effect.mul(eff);
 
             eff = effect;

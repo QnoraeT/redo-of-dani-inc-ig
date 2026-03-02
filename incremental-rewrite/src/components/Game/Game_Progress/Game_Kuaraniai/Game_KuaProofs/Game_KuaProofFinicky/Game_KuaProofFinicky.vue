@@ -7,7 +7,7 @@ import { buyKProofUpg, KUA_PROOF_UPGS } from "../Game_KuaProofs";
 import { getFinickyKPExp, getFinickyKPExpGain, getFinickySeconds } from "./Game_KuaProofFinicky";
 </script>
 <template>
-    <div class="flex-container font0" style="background-color: #020; flex-direction: column; border: 0.24vw solid #0f0; padding: 0.6vw; height: 38vw; width: 40%;">
+    <div class="flex-vertical font0" style="background-color: #020; border: 0.24vw solid #0f0; padding: 0.6vw; height: 38vw;">
         <span style="color: #0f0; text-align: center; font-size: 1.2vw">
             You have 
             <span style="font-size: 1.4vw"><b>{{ format(player.prog.kua.proofs.finicky.amount, 2) }}</b></span> 
@@ -19,12 +19,12 @@ import { getFinickyKPExp, getFinickyKPExpGain, getFinickySeconds } from "./Game_
             times.
         </span>
         <button @click="resetFromFKP(true, true, true, 1)" class="whiteText font0" style="border: 0.18vw solid #0f0; background-color: #040; font-size: 0.8vw; margin-left: auto; margin-right: auto; margin-top: 1.2vw; padding-top: 0.75vw; padding-bottom: 0.75vw; padding-right: 1.5vw; padding-left: 1.5vw;"> 
-            Add <span style="font-size: 1vw"><b>{{ format(getFinickyKPExp(Decimal.add(getFinickyKPExpGain(player.prog.kua.proofs.strange.amount), player.prog.kua.proofs.finicky.hiddenExp), false).sub(getFinickyKPExp(player.prog.kua.proofs.finicky.hiddenExp, false)), 2) }}</b></span> to Finicky KProof's exponent and add <span style="font-size: 1vw"><b>{{ formatTime(getFinickySeconds(player.prog.kua.proofs.strange.amount), 3) }}</b></span> of it.<br>
+            Add <span style="font-size: 1vw"><b>{{ format(getFinickyKPExp(Decimal.add(getFinickyKPExpGain(player.prog.kua.proofs.strange.amount), player.prog.kua.proofs.finicky.hiddenExp)).sub(getFinickyKPExp(player.prog.kua.proofs.finicky.hiddenExp)), 2) }}</b></span> to Finicky KProof's exponent and add <span style="font-size: 1vw"><b>{{ formatTime(getFinickySeconds(player.prog.kua.proofs.strange.amount), 3) }}</b></span> of it.<br>
             <span v-if="Decimal.lte(player.prog.kua.proofs.finicky.cooldown, 0) && Decimal.gte(player.prog.kua.proofs.strange.amount, 1e7)">This will reset SKP and KProof progress, but will not reset Effects progress.<br></span>
             <span v-if="Decimal.lt(player.prog.kua.proofs.strange.amount, 1e7)">You cannot FKP reset until you get {{ format(1e7) }} SKP!<br></span>
             <span v-if="Decimal.gt(player.prog.kua.proofs.finicky.cooldown, 0)">You cannot FKP reset for {{ formatTime(player.prog.kua.proofs.finicky.cooldown) }}!<br></span>
         </button>
-        <div class="flex-container" style="margin-top: 0.4vw; flex-wrap: wrap; justify-content: center;">
+        <div class="flex-horizontal" style="margin-top: 0.4vw; flex-wrap: wrap; width: 40vw;">
             <div v-for="(item, index) in KUA_PROOF_UPGS.fkp" :key="index">
                 <!-- set padding to 0vw because it auto-inserts padding -->
                 <button @click="buyKProofUpg(index, 'fkp')" :class="{ nope: !tmp.kua.proofs.upgrades.fkp[index].canBuy, ok: tmp.kua.proofs.upgrades.fkp[index].canBuy}" :style="{ cursor: tmp.kua.proofs.upgrades.fkp[index].canBuy ? 'pointer' : 'not-allowed' }" v-if="item.show.value" style="width: 12vw; height: 8vw; margin-left: 0.15vw; margin-right: 0.15vw; margin-bottom: 0.3vw; font-size: 0.55vw; transition: 0.2s; background-color: #003000" class="font0 whiteText">

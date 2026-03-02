@@ -247,7 +247,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             // 15
             desc: computed(() => {
                 if (hasGrowanMilestone(3)) {
-                    return `Upgrade 1 is ${format(10, 1)}% more effective.`;
+                    return `Buying Upgrade 1 also gives an extra ${format(0.1, 2)} levels to itself.`;
                 }
                 return `Unlock Upgrade 7 which raises Upgrade 1's effect.`;
             }),
@@ -258,7 +258,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             // 16
             desc: computed(() => {
                 if (hasGrowanMilestone(3)) {
-                    return `Upgrade 2 is ${format(10, 1)}% more effective.`;
+                    return `Buying Upgrade 2 also gives an extra ${format(0.1, 2)} levels to itself.`;
                 }
                 return `Unlock Upgrade 8 which raises Upgrade 1's cost.`;
             }),
@@ -269,7 +269,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             // 17
             desc: computed(() => {
                 if (hasGrowanMilestone(3)) {
-                    return `Upgrade 3 is ${format(10, 1)}% more effective.`;
+                    return `Buying Upgrade 3 also gives an extra ${format(0.1, 2)} levels to itself.`;
                 }
                 return `Unlock Upgrade 9 which multiplies Upgrade 1's base.`;
             }),
@@ -312,8 +312,8 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
             // 2
             desc: computed(() => {
                 return player.value.prog.unlocks.col
-                    ? `KPower increases UP3's effectiveness. Currently: +${format(KUA_UPGRADES.KPower[1].eff!.value.sub(1).mul(100), 3)}%`
-                    : `Be able to unlock a new feature at ${format(1e2)} Kuaraniai, and KPower increases UP3's effectiveness. Currently: +${format(KUA_UPGRADES.KPower[1].eff!.value.sub(1).mul(100), 3)}%`;
+                    ? `Upgrade 3 gains free levels based on your KPower. Currently: +${format(Decimal.sub(KUA_UPGRADES.KPower[1].eff!.value, 1).mul(player.value.prog.main.upgrades[2].bought), 2)}`
+                    : `Be able to unlock a new feature at ${format(1e2)} Kuaraniai, and Upgrade 3 gains free levels based on your KPower. Currently: +${format(Decimal.sub(KUA_UPGRADES.KPower[1].eff!.value, 1).mul(player.value.prog.main.upgrades[2].bought), 2)}`;
             }),
             eff: computed(() => {
                 let i = D(1);
@@ -452,7 +452,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 13
             desc: computed(() => {
-                return `Upgrade 2's linear cost scaling is reduced by ×${format(0.92, 2)}.`;
+                return `Upgrade 2's cost scaling is slowed by ${format(10, 2)}%.`;
             }),
             cost: D(1e28),
             show: true
@@ -476,7 +476,7 @@ export const KUA_UPGRADES: Kua_Upgrade_List = {
         {
             // 16
             desc: computed(() => {
-                return `Upgrade 1's effectiveness is increased based off of how much KPower you have. Currently: +${format(KUA_UPGRADES.KPower[15].eff!.value.sub(1).mul(100), 3)}%`;
+                return `Upgrade 1 gains free levels based on your KP. Currently: +${format(KUA_UPGRADES.KPower[15].eff!.value.sub(1).mul(player.value.prog.main.upgrades[0].bought), 2)}`;
             }),
             eff: computed(() => {
                 let eff = Decimal.max(tmp.value.kua.effectiveKP, 1e45);

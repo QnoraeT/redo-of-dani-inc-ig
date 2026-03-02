@@ -46,7 +46,7 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
         }"
         class="whiteText thinMediumButton font0 genAutoButton"
         id="autoKua"
-        v-if="Decimal.gte(player.prog.main.pr2.bestInLayer4, 75) && hasGrowanMilestone(3)"
+        v-if="Decimal.gte(player.prog.main.pr2.amount, 75) || hasGrowanMilestone(3)"
         @click="player.prog.kua.auto = !player.prog.kua.auto"
     >
         <b>Kuaraniai Generator: {{ player.prog.kua.auto ? "On" : "Off" }}</b>
@@ -102,7 +102,7 @@ import Game_KuaUpgrade from "./Game_KuaUpgrade.vue";
                     <span>Boosts Point gain by {{ format(tmp.kua.effects.kpowerPassive, 3) }}×.</span>
                     <span v-if="Decimal.gt(player.prog.kua.kpower.amount, 1)">Adds Upgrade 6, and makes it's base +{{format(tmp.kua.effects.upg6, 5)}}/bought.</span>
                     <span v-if="player.prog.kua.kpower.upgrades >= 1">Increases Upgrade 2's base by +{{format(KUA_UPGRADES.KPower[0].eff!.value, 3)}}.</span>
-                    <span v-if="player.prog.kua.kpower.upgrades >= 2">Makes Upgrade 3 {{ format(KUA_UPGRADES.KPower[1].eff!.value.sub(1).mul(100), 3) }}% more effective.</span>
+                    <span v-if="player.prog.kua.kpower.upgrades >= 2">Adds +{{ format(Decimal.sub(KUA_UPGRADES.KPower[1].eff!.value, 1).mul(player.prog.main.upgrades[2].bought), 2) }} free levels to Upgrade 3.</span>
                     <span v-if="player.prog.kua.kpower.upgrades >= 4">Delays Upgrade 2's softcap by {{ format(KUA_UPGRADES.KPower[3].eff!.value, 2) }}×.</span>
                     <span v-if="player.prog.kua.kpower.upgrades >= 5">Raises PRai's effect to ^{{format(KUA_UPGRADES.KPower[4].eff!.value, 4)}}.</span>
                 </div>

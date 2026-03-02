@@ -8,14 +8,15 @@ import { KUA_UPGRADES } from "../Game_Progress/Game_Kuaraniai/Game_KuaUpgrades/G
 import { KUA_BLESS_UPGS } from "../Game_Progress/Game_Kuaraniai/Game_KuaBlessings/Game_KuaBlessings";
 import { GROWAN_UPGS } from "../Game_Progress/Game_Layer4/Game_Growan/Game_Growan";
 
-export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "fkp" | "col" | "growan" | "tax" | "sc1" | "sc2"
-export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "fkp", "col", "growan", "tax", "sc1", "sc2"]
+export type FactorColorID = "norm" | "ach" | "kua" | "kb" | "kp" | "skp" | "fkp" | "col" | "growan" | "tax" | "sc1" | "sc2"
+export const factorColorIDList: Array<FactorColorID> = ["norm", "ach", "kua", "kb", "kp", "skp", "fkp", "col", "growan", "tax", "sc1", "sc2"]
 export const factorColors = {
     norm: "#FFFFFF",
     ach: "#FFFF80",
     kua: "#B080FF",
     kb: "#00FF40",
     kp: "#00FFFF",
+    skp: "#FFFF80",
     fkp: "#80FF80",
     col: "#FFA080",
     growan: "#804000",

@@ -1,9 +1,10 @@
-import { D, linearAdd, scale, sumHarmonicSeries } from "@/calc";
+import { D, linearAdd, smoothPoly, sumHarmonicSeries } from "@/calc";
 import { format } from "@/format";
 import type { DecimalSource } from "break_eternity.js";
 import Decimal from "break_eternity.js";
 import { timesCompleted } from "../Game_ColChallenges/Game_ColChalHandler";
 import { player, tmp } from "@/main";
+import { calcKuaGain } from "../../Game_Kuaraniai/Game_Kuaraniai";
 
 export const getColXPtoNext = (id: number) => {
     return Decimal.sub(player.value.prog.col.research.xpTotal[id], getColResLevel(id).floor());
@@ -34,10 +35,10 @@ export const COL_RESEARCH = [
         unlocked: true,
         name: "Dotgenous",
         effectDesc(level: DecimalSource) {
-            return `Multiply point gain by ${format(this.effect(level), 2)}×.`;
-        },
-        effectDescLevel(level: DecimalSource) {
-            return `Multiply point gain by ${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)}× for this level.`;
+            let txt = ``;
+            txt += `Multiply point gain by ${format(this.effect(level), 2)}×.<br>`;
+            txt += `Multiply point gain by ${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)}× for this level.`;
+            return txt;
         },
         effect(level: DecimalSource) {
             const effect = Decimal.sqrt(level).pow10();
@@ -47,17 +48,10 @@ export const COL_RESEARCH = [
             if (Decimal.lt(score, 2)) {
                 return D(0);
             }
-            let level = linearAdd(score, 2, 2, true);
-            if (Decimal.gte(level, 100000)) {
-                level = scale(level, 2.1, true, D(100000), D(1), D(2));
-            }
+            const level = linearAdd(score, 2, 2, true);
             return level;
         },
         levelToScore(level: DecimalSource) {
-            // i love doing a little trolling, the game doesn't need this scaling, but i'm doing this just to spite ppl who beaten SU10 on v1.1.5.1 when endgame was SU6 >:3
-            if (Decimal.gte(level, 100000)) {
-                level = scale(level, 2.1, false, D(100000), D(1), D(2));
-            }
             const score = linearAdd(level, 2, 2, false);
             return score;
         }
@@ -66,10 +60,10 @@ export const COL_RESEARCH = [
         unlocked: true,
         name: "Firsterious",
         effectDesc(level: DecimalSource) {
-            return `Multiply PRai gain by ${format(this.effect(level), 2)}×.`;
-        },
-        effectDescLevel(level: DecimalSource) {
-            return `Multiply PRai gain by ${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)}× for this level.`;
+            let txt = ``;
+            txt += `Multiply PRai gain by ${format(this.effect(level), 2)}×.<br>`;
+            txt += `Multiply PRai gain by ${format(this.effect(Decimal.add(level, 1)).div(this.effect(level)), 3)}× for this level.`;
+            return txt;
         },
         effect(level: DecimalSource) {
             const effect = Decimal.cbrt(level).pow_base(4);
@@ -91,10 +85,22 @@ export const COL_RESEARCH = [
         unlocked: true,
         name: "Kyston",
         effectDesc(level: DecimalSource) {
-            return `Increase Kuaraniai gain exponent by +${format(this.effect(level), 3)}.`;
-        },
-        effectDescLevel(level: DecimalSource) {
-            return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 4)} Kuaraniai gain exponent for this level.`;
+            let txt = ``;
+            const KUA_EXP_BEFORE = tmp.value.kua.exp;
+            const KUA_EXP_BEFORE_TOTAL = KUA_EXP_BEFORE.sub(this.effect(level));
+            const KUA_EXP_AFTER_TOTAL = KUA_EXP_BEFORE_TOTAL.add(this.effect(Decimal.add(level, 1)));
+            txt += `
+            Increase Kuaraniai gain exponent by +${format(this.effect(level), 3)}.<br>
+            <span style="font-size: 0.6vw;">
+                This roughly translates to a ×${format(calcKuaGain(tmp.value.kua.effectivePrai, tmp.value.kua.req, KUA_EXP_AFTER_TOTAL).div(calcKuaGain(tmp.value.kua.effectivePrai, tmp.value.kua.req, KUA_EXP_BEFORE_TOTAL)), 3)} to Kua. gain.
+            </span><br>
+            <br>
+            The next level will increase Kuaraniai gain exponent by +${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}.<br>
+            <span style="font-size: 0.6vw;">
+                This roughly translates to a ×${format(calcKuaGain(tmp.value.kua.effectivePrai, tmp.value.kua.req, KUA_EXP_AFTER_TOTAL).div(calcKuaGain(tmp.value.kua.effectivePrai, tmp.value.kua.req, KUA_EXP_BEFORE)), 3)} to Kua. gain.
+            </span><br>
+            <br>`;
+            return txt;
         },
         effect(level: DecimalSource) {
             const effect = sumHarmonicSeries(level).div(100);
@@ -118,25 +124,28 @@ export const COL_RESEARCH = [
         },
         name: "Coliescence",
         effectDesc(level: DecimalSource) {
-            return `Increase Research Speed by ${format(this.effect(level), 3)}×.`;
-        },
-        effectDescLevel(level: DecimalSource) {
-            return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}× Research Speed for this level.`;
+            let txt = ``;
+            txt += `Increase Research Speed by ${format(this.effect(level), 3)}×.<br>`;
+            txt += `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}× Research Speed for this level.`;
+            return txt;
         },
         effect(level: DecimalSource) {
-            const exp = D(14.75)
-            const effect = Decimal.div(level, exp).add(1).ln().add(1).mul(exp).sqrt().mul(exp.sqrt()).sub(exp).mul(2).pow_base(1.1);
+            const effect = Decimal.mul(level, 0.1).add(1);
             return effect;
         },
         scoreToLevel(score: DecimalSource) {
             if (Decimal.lt(score, 40)) {
                 return D(0);
             }
-            const level = linearAdd(score, 40, 40, true);
+            let level = linearAdd(score, 40, 40, true);
+            level = smoothPoly(level.ln(), 2, 20, true)
+            level = level.exp().sub(1);
             return level;
         },
         levelToScore(level: DecimalSource) {
-            const score = linearAdd(level, 40, 40, false);
+            let score = Decimal.add(level, 1).ln();
+            score = smoothPoly(score, 2, 20, false).exp();
+            score = linearAdd(score, 40, 40, false);
             return score;
         }
     },
@@ -146,10 +155,10 @@ export const COL_RESEARCH = [
         },
         name: "Defiance",
         effectDesc(level: DecimalSource) {
-            return `Increase KBlessing Idle generation by ${format(this.effect(level), 3)}×.`;
-        },
-        effectDescLevel(level: DecimalSource) {
-            return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}× KB per second for this level.`;
+            let txt = ``;
+            txt += `Increase KBlessing Idle generation by ${format(this.effect(level), 3)}×.<br>`;
+            txt += `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}× KB per second for this level.`;
+            return txt;
         },
         effect(level: DecimalSource) {
             const effect = Decimal.mul(level, 0.05).add(1);
@@ -173,10 +182,10 @@ export const COL_RESEARCH = [
         },
         name: "Compliance",
         effectDesc(level: DecimalSource) {
-            return `Increase KBlessing Active generation by ${format(this.effect(level), 3)}×.`;
-        },
-        effectDescLevel(level: DecimalSource) {
-            return `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}× KB per click for this level.`;
+            let txt = ``;
+            txt += `Increase KBlessing Active generation by ${format(this.effect(level), 3)}×.<br>`;
+            txt += `+${format(this.effect(Decimal.add(level, 1)).sub(this.effect(level)), 3)}× KB per click for this level.`;
+            return txt;
         },
         effect(level: DecimalSource) {
             const effect = Decimal.mul(level, 0.05).add(1);

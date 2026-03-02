@@ -414,7 +414,7 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             if (target.lt("ee6")) {
                 target = target.sub(target.mod(target.log10().sub(1).floor().pow10()));
             }
-            return smoothPoly(smoothExp(Decimal.div(target, 1000).log10(), 1.05, true), 5, 100, true);
+            return smoothPoly(smoothExp(Decimal.div(target, 1000).log(5), 1.05, true), 5, 100, true);
         }),
         desc: computed(() => {
             const x = player.value.prog.kua.blessings.upgrades[3];
@@ -446,11 +446,68 @@ export const KUA_BLESS_UPGS: Array<KuaBlessUpg> = [
             return [
                 Decimal.max(player.value.prog.kua.blessings.bestInCol, 1).log10().sqrt().add(1).pow(Decimal.pow(x, 0.75)),
                 Decimal.gte(x, 6) 
-                    ? Decimal.add(x, 4).sqrt().mul(1.5).sub(4.5)
+                    ? Decimal.sub(x, 5).mul(0.25)
                     : D(0),
                 Decimal.gte(x, 12) 
                     ? Decimal.sub(x, 11).div(50).add(1)
                     : D(1),
+            ]
+        })
+    },
+    {
+        show: computed(() => {
+            return player.value.prog.kua.upgrades >= 3;
+        }),
+        cost: computed(() => {
+            let cost = smoothExp(smoothExp(player.value.prog.kua.blessings.upgrades[4], 1.01, false), 1.05, false).pow_base(10).mul(1e6);
+            if (cost.lt("ee6")) {
+                cost = cost.sub(cost.mod(cost.log10().sub(1).floor().pow10()));
+            }
+            return cost;
+        }),
+        target: computed(() => {
+            let target = D(player.value.prog.kua.blessings.amount);
+            if (Decimal.lt(target, 1e6)) { return D(-1); }
+            if (target.lt("ee6")) {
+                target = target.sub(target.mod(target.log10().sub(1).floor().pow10()));
+            }
+            return smoothExp(smoothExp(Decimal.div(target, 1e6).log10(), 1.05, true), 1.01, true);
+        }),
+        desc: computed(() => {
+            const x = player.value.prog.kua.blessings.upgrades[4];
+            let txt = `KProof's exponent is higher based off of KB.`;
+            if (Decimal.gte(x, 6)) {
+                txt += ` SKP gain is multiplied.`;
+            }
+            if (Decimal.gte(x, 12)) {
+                txt += ` The first 3 KP upgrades gain levels.`;
+            }
+            return txt;
+        }),
+        effDesc: computed(() => {
+            const x = player.value.prog.kua.blessings.upgrades[4];
+            let txt = `×${format(KUA_BLESS_UPGS[4].eff.value[0], 2)}`;
+            if (Decimal.gte(x, 6)) {
+                txt += `, ×${format(KUA_BLESS_UPGS[4].eff.value[1], 2)}`;
+            }
+            if (Decimal.gte(x, 12)) {
+                txt += `, +${format(KUA_BLESS_UPGS[4].eff.value[2], 2)}`;
+            }
+            return txt;
+        }),
+        eff: computed(() => {
+            let x = player.value.prog.kua.blessings.upgrades[4];
+            if (!tmp.value.kua.active.blessings.upgrades[4]) {
+                x = D(0);
+            }
+            return [
+                Decimal.max(player.value.prog.kua.blessings.bestInCol, 1).log10().div(200).mul(x).add(1),
+                Decimal.gte(x, 6) 
+                    ? smoothExp(x, 1.1, false)
+                    : D(1),
+                Decimal.gte(x, 12) 
+                    ? Decimal.sub(x, 11).mul(2)
+                    : D(0),
             ]
         })
     }

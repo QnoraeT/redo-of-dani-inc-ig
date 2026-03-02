@@ -42,6 +42,8 @@ import { COL_CHALLENGES } from "./components/Game/Game_Progress/Game_Colosseum/G
                 <span v-if="Decimal.gte(player.prog.main.pr2.amount, 10)" style="color: #c080ff" class="font0">You have {{ format(player.prog.kua.kpower.amount, 3) }} Kuaraniai Power. (+{{ format(tmp.kua.powGen, 3) }}/s)</span>
                 <span v-if="Decimal.gte(player.prog.kua.amount, 100)" style="color: #ff4000" class="font0">You have {{ format(player.prog.col.power) }} Colosseum Power. (+{{ format(tmp.col.truePowGen) }}/s), ({{ formatTime(player.prog.col.maxTime) }})</span>
                 <span v-if="Decimal.gte(player.prog.kua.amount, 1e6)" style="color: #80ff80" class="font0">You have {{ format(player.prog.kua.blessings.amount) }} Kuaraniai Blessings. (+{{ format(tmp.kua.blessings.perSec) }}/s)</span>
+                <span v-if="Decimal.gte(player.prog.kua.proofs.amount, 1)" style="color: #00ffff" class="font0">You have {{ format(player.prog.kua.proofs.amount) }} Kuaraniai Proofs. (×{{ format(tmp.kua.proofs.expPerSec, 3) }}/s)</span>
+                <span v-if="Decimal.gte(player.prog.kua.proofs.strange.amount, 1)" style="color: #ffff00" class="font0">You have {{ format(player.prog.kua.proofs.strange.amount) }} Strange KProofs. (×{{ format(tmp.kua.proofs.skpPerSecCur, 3) }})</span>
             </div>
         </div>
         <div class="popup-container">

@@ -314,11 +314,6 @@ export const updateMainUpgrades = (delta: DecimalSource, index: number) => {
 
     tempMainUpg.costBase = MAIN_UPGRADE_COST_DATA[index];
 
-    if (index === 1) {
-        if (getKuaUpgrade("p", 13)) {
-            tempMainUpg.costBase.scale[1] = tempMainUpg.costBase.scale[1].mul(0.92);
-        }
-    }
     if (index === 3 || index === 4 || index === 5) {
         if (Decimal.gte(getOMUpgrade(17), 1)) {
             tempMainUpg.costBase.scale[1] = tempMainUpg.costBase.scale[1].pow(Decimal.sub(1, MAIN_ONE_UPGS[17].effect.value));
@@ -351,6 +346,10 @@ export const updateMainUpgrades = (delta: DecimalSource, index: number) => {
 
         if (getKuaUpgrade("p", 10)) {
             scal = scal.div(KUA_UPGRADES.KPower[9].eff!.value);
+        }
+
+        if (getKuaUpgrade("p", 13)) {
+            scal = scal.mul(0.9)
         }
     }
     if (index === 2) {
@@ -449,6 +448,9 @@ export const updateMainUpgrades = (delta: DecimalSource, index: number) => {
             }
         }
         if (index === 1) {
+            if (getKuaUpgrade("p", 13)) {
+                scal = scal.div(0.9)
+            }
             if (getKuaUpgrade("p", 10)) {
                 scal = scal.mul(KUA_UPGRADES.KPower[9].eff!.value)
             }
@@ -684,7 +686,7 @@ export const updatePRai = (delta: DecimalSource) => {
                 }
 
                 if (PRAI_GAIN_CALC[j].name.value === 'Base') {
-                    txt = `(1+${format(tempPRaiObj.gainExp, 3)}(${format(player.value.prog.main.totalInPrai)}/${format(tempPRaiObj.req)})^${format(tempPRaiObj.gainExp, 3)}-1) dilate ${format(0.9, 2)}`;
+                    txt = `~((${format(player.value.prog.main.totalInPrai)}/${format(tempPRaiObj.req)})^${format(tempPRaiObj.gainExp, 3)}) raised ^${format(0.9, 2)} to exponent`;
                 }
                 pushFactor([1, 0], PRAI_GAIN_CALC[j].name.value, txt, `${format(i, 1)}`, PRAI_GAIN_CALC[j].color);
             }
@@ -766,7 +768,7 @@ export const updatePRai = (delta: DecimalSource) => {
     setFactor(0, [1, 1], "Base", `${format(playerPRaiObj.amount)}`, `×${format(i, 2)}`, true);
 
     i = i.mul(j).add(1).log10().pow(0.975).pow10();
-    setFactor(1, [1, 1], "Base Mult", `(${format(playerPRaiObj.amount)} × ${format(j)}) dilate ${format(0.975, 3)}`, `×${format(i, 2)}`, true);
+    setFactor(1, [1, 1], "Base Mult", `(${format(playerPRaiObj.amount)} × ${format(j)}) raised ^${format(0.975, 3)} to exponent`, `×${format(i, 2)}`, true);
 
     if (ifAchievement(0, 9)) {
         i = i.mul(2);
@@ -891,29 +893,16 @@ export const updatePR2 = () => {
 
 export const getPR2Cost = (x: DecimalSource, inverse: boolean, updateFact: boolean) => {
     let costExp = D(10);
-    if (updateFact) {
-        setFactor(0, [2, 0], "Base", `${format(10, 2)}`, `${format(costExp, 2)}^`, true);
-    }
-
     if (ifAchievement(0, 14)) {
         costExp = costExp.sub(1);
-    }
-    if (updateFact) {
-        setFactor(1, [2, 0], "Achievement ID: (0, 14)", `-${format(1, 2)}`, `${format(costExp, 2)}^`, ifAchievement(0, 14), "ach");
     }
 
     if (getKuaUpgrade("k", 3)) { 
         costExp = costExp.sub(1); 
     }
-    if (updateFact) {
-        setFactor(2, [2, 0], "Kuaraniai Upgrade 4", `-${format(1, 2)}`, `${format(costExp, 2)}^`, getKuaUpgrade("k", 3), "kua");
-    }
 
     if (getKuaUpgrade("k", 4)) { 
         costExp = costExp.sub(1);
-    }
-    if (updateFact) {
-        setFactor(3, [2, 0], "Kuaraniai Upgrade 5", `-${format(1, 2)}`, `${format(costExp, 2)}^`, getKuaUpgrade("k", 4), "kua");
     }
 
     let cost = D(x);
@@ -957,7 +946,7 @@ export const getPR2Cost = (x: DecimalSource, inverse: boolean, updateFact: boole
         const effective = cost;
         cost = smoothExp(smoothPoly(cost, 2, 200, false), 1.03, false).add(1).pow_base(costExp);
         if (updateFact) {
-            setFactor(3, [2, 0], "Resulting Requirement", `${format(costExp, 2)} ^ (${format(effective)} × 1.03 ^ (${format(effective)}) ^ 2) (approx.)`, `${format(cost)}`, true);
+            setFactor(3, [2, 0], "Resulting Requirement", `~${format(costExp, 2)} ^ (${format(effective)} × 1.03 ^ (${format(effective)}) ^ 2) `, `${format(cost)}`, true);
         }
 
         if (ifAchievement(0, 7)) {
